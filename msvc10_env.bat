@@ -26,7 +26,7 @@ set PATH=%CMAKEDIR%\bin;%PATH%
 
 @REM -------------------------
 @REM CASCADE
-@SET CAS_ROOT_DIR=%PDIR%\OCCT-6.7.1
+@SET CAS_ROOT_DIR=%PDIR%\OCCT-6.8.0
 @SET CASROOT=%CAS_ROOT_DIR%
 @REM -------------------------
 
@@ -127,7 +127,7 @@ set PATH=%CMAKEDIR%\bin;%PATH%
 
 @SET NEW_GEOM_CONFIG_FILE=%ROOT_DIR%\install\plugins
 @SET PATH=%ROOT_DIR%\install\plugins;%ROOT_DIR%\install\bin;%PATH%
-@SET PYTHONPATH=%ROOT_DIR%\install\swig;%PYTHONPATH%
+@SET PYTHONPATH=%ROOT_DIR%\install\swig;%ROOT_DIR%\install\plugins;%PYTHONPATH%
 
 @REM -------------------------
 @REM PTHREAD
