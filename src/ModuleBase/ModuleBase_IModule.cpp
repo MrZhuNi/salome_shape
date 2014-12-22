@@ -19,6 +19,10 @@
 
 #include <QAction>
 
+//#ifdef _DEBUG
+#include <ctime>
+//#endif
+
 ModuleBase_IModule::ModuleBase_IModule(ModuleBase_IWorkshop* theParent)
   : QObject(theParent), myWorkshop(theParent) 
 {
@@ -97,7 +101,17 @@ void ModuleBase_IModule::createFeatures()
   registerFilters();
 
   Config_ModuleReader aXMLReader = Config_ModuleReader();
+//  #ifdef _DEBUG
+  std::cout << "ModuleBase_IModule::createFeatures: start loading libraries" << std::endl;
+  clock_t spent_time;
+  spent_time = clock();
+//  #endif
   aXMLReader.readAll();
+//  #ifdef _DEBUG
+  spent_time = clock() - spent_time;
+  std::cout << "ModuleBase_IModule::createFeatures: loading finished, took: "
+            << ((float) spent_time) / CLOCKS_PER_SEC << "s" << std::endl;
+//  #endif
   myFeaturesInFiles = aXMLReader.featuresInFiles();
 }
 

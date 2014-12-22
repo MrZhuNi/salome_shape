@@ -6,7 +6,9 @@
   <plugin library="ConstructionPlugin" configuration="plugin-Construction.xml"/>
   <plugin library="FeaturesPlugin" configuration="plugin-Features.xml"/>
   <plugin library="ExchangePlugin" configuration="plugin-Exchange.xml"/>
-  <plugin library="TemplatePlugin_1" configuration="plugin-Template_1.xml"/>
+  <template>
+  <plugin library="TemplatePlugin_{nplugin}" configuration="plugin-Template_{nplugin}.xml"/>
+  </template>
   <plugin library="SketchSolver"/>
   <plugin library="GeomValidators"/>
   <plugin library="DFBrowser"/>

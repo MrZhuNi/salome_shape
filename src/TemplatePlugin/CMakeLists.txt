@@ -1,0 +1,55 @@
+## Copyright (C) 2014-20xx CEA/DEN, EDF R&D -->
+
+INCLUDE(Common)
+
+SET(PROJECT_HEADERS
+    TemplatePlugin.h
+    TemplatePlugin_Plugin.h
+    TemplatePlugin_TemplateFeature.h
+)
+
+SET(PROJECT_SOURCES
+    TemplatePlugin_Plugin.cpp
+    TemplatePlugin_TemplateFeature.cpp
+)
+
+SET(XML_RESOURCES
+    template_widget.xml)
+    
+# Create a list of all generated files
+FILE(GLOB GENERATED_XML_RESOURCES "plugin-Template*.xml")
+
+INCLUDE_DIRECTORIES(
+  ../ModelAPI
+  ../GeomAPI
+  ../GeomAlgoAPI
+  ../Events
+)
+
+SET(PROJECT_LIBRARIES
+    Events
+    ModelAPI 
+    GeomAPI 
+    GeomAlgoAPI
+)
+
+ADD_DEFINITIONS(-DTEMPLATEPLUGIN_EXPORTS)
+
+SET(PLUGINS_COUNT 1)
+
+ADD_CUSTOM_COMMAND(TARGET "${PROJECT_NAME}_Template"
+    PRE_BUILD
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/xmlGenerator.py --plugins=${PLUGINS_COUNT}
+)
+
+WHILE(${PLUGINS_COUNT} GREATER 0)
+  ADD_LIBRARY(TemplatePlugin_${PLUGINS_COUNT} MODULE ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${XML_RESOURCES})
+  TARGET_LINK_LIBRARIES(TemplatePlugin_${PLUGINS_COUNT} ${PROJECT_LIBRARIES})
+  INSTALL(TARGETS TemplatePlugin_${PLUGINS_COUNT} DESTINATION plugins)
+  
+  MATH(EXPR PLUGINS_COUNT "${PLUGINS_COUNT} - 1")
+ENDWHILE(${PLUGINS_COUNT} GREATER 0)
+
+INSTALL(FILES ${XML_RESOURCES} DESTINATION plugins)
+INSTALL(FILES ${GENERATED_XML_RESOURCES} DESTINATION plugins)
+#INSTALL(DIRECTORY src/ DESTINATION plugins FILES_MATCHING PATTERN "*Template_*.xml")

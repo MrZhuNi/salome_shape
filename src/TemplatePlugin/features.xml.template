@@ -1,0 +1,16 @@
+<!-- Copyright (C) 2014-20xx CEA/DEN, EDF R&D -->
+<plugin>
+  <workbench id="TemplateWorkbench">
+    <group id="TemplateGroup">
+    <template>
+      <feature
+        id="TemplateFeature_{nfeature}_P_{nplugin}"
+        title="Template_{nfeature} P_{nplugin}"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      </template>
+    </group>
+  </workbench>
+</plugin>
