@@ -1,6 +1,6 @@
 <!-- Copyright (C) 2014-20xx CEA/DEN, EDF R&D -->
 <plugin>
-  <workbench id="TemplateWorkbench">
+  <workbench id="W1">
     <group id="TemplateGroup">
       <feature
         id="TemplateFeature_1_P_1"
@@ -33,6 +33,111 @@
       <feature
         id="TemplateFeature_5_P_1"
         title="Template_5 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_6_P_1"
+        title="Template_6 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_7_P_1"
+        title="Template_7 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_8_P_1"
+        title="Template_8 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_9_P_1"
+        title="Template_9 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_10_P_1"
+        title="Template_10 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_11_P_1"
+        title="Template_11 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_12_P_1"
+        title="Template_12 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_13_P_1"
+        title="Template_13 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_14_P_1"
+        title="Template_14 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_15_P_1"
+        title="Template_15 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_16_P_1"
+        title="Template_16 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_17_P_1"
+        title="Template_17 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_18_P_1"
+        title="Template_18 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_19_P_1"
+        title="Template_19 P_1"
+        tooltip="Generated feature for performance test"
+        icon=":pictures/wnd_undock.png">
+        <source path="template_widget.xml" />
+      </feature>
+      <feature
+        id="TemplateFeature_20_P_1"
+        title="Template_20 P_1"
         tooltip="Generated feature for performance test"
         icon=":pictures/wnd_undock.png">
         <source path="template_widget.xml" />

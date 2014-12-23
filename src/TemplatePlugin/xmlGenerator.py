@@ -48,6 +48,9 @@ def generateFeaturesXml(plugin_number, features_count=1):
     features_file = open(features_file_name, "w")
     skip = False
     for line in features_template_file:
+        if line.strip() == "<workbench id=\"W{0}\">":
+            features_file.write(line.format(plugin_number))
+            continue
         if line.strip() == "<template>":
             skip = True
             for n in xrange(1, features_count + 1):
@@ -69,7 +72,7 @@ def generatePluginsXml(plugins_count=1, features_count=1):
             skip = True
             for n in xrange(1, plugins_count + 1):
                 plugins_file.write(plugins_template.format(nplugin=n))
-                generateFeaturesXml(n, 5)
+                generateFeaturesXml(n, features_count)
         elif line.strip() == "</template>":
             skip = False
             continue
@@ -82,4 +85,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print "Number of plugins: ", args.plugins
     removeFeatureFiles()
-    generatePluginsXml(args.plugins)
+    generatePluginsXml(args.plugins, 20)
