@@ -159,11 +159,11 @@ bool PartSet_MenuMgr::addViewerItems(QMenu* theMenu, const QMap<QString, QAction
     if (aShape.ShapeType() == TopAbs_VERTEX) {
       // Find 2d coordinates
       FeaturePtr aSketchFea = myModule->sketchMgr()->activeSketch();
-      std::shared_ptr<SketchPlugin_Sketch> aSketch = 
-        std::dynamic_pointer_cast<SketchPlugin_Sketch>(aSketchFea);
+//      std::shared_ptr<SketchPlugin_Sketch> aSketch =
+//        std::dynamic_pointer_cast<SketchPlugin_Sketch>(aSketchFea);
       gp_Pnt aPnt = BRep_Tool::Pnt(TopoDS::Vertex(aShape));
       std::shared_ptr<GeomAPI_Pnt> aPnt3d(new GeomAPI_Pnt(aPnt.X(), aPnt.Y(), aPnt.Z()));
-      std::shared_ptr<GeomAPI_Pnt2d> aSelPnt = aSketch->to2D(aPnt3d);
+//      std::shared_ptr<GeomAPI_Pnt2d> aSelPnt = aSketch->to2D(aPnt3d);
 
       // Find coincident in these coordinates
       ObjectPtr aObj = aObjectsList.front();
@@ -176,10 +176,10 @@ bool PartSet_MenuMgr::addViewerItems(QMenu* theMenu, const QMap<QString, QAction
         FeaturePtr aConstrFeature = std::dynamic_pointer_cast<ModelAPI_Feature>(aAttr->owner());
         if (aConstrFeature->getKind() == SketchPlugin_ConstraintCoincidence::ID()) { 
           std::shared_ptr<GeomAPI_Pnt2d> a2dPnt = getPoint(aConstrFeature, SketchPlugin_ConstraintCoincidence::ENTITY_A());
-          if (aSelPnt->isEqual(a2dPnt)) {
-            aCoincident = aConstrFeature;
-            break;
-          }
+//          if (aSelPnt->isEqual(a2dPnt)) {
+//            aCoincident = aConstrFeature;
+//            break;
+//          }
         }
       }
       // If we have coincidence then add Detach menu
