@@ -50,7 +50,7 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
   aMainLay->addWidget(aTypeLabel, 0, 0);
 
   myTypeCombo = new QComboBox(this);
-  // There is no sence to paramerize list of types while we can not parametrize selection mode
+  // There is no sense to parameterize list of types while we can not parameterize selection mode
 
   myShapeValidator = new GeomValidators_ShapeType();
 
@@ -152,8 +152,8 @@ bool ModuleBase_WidgetMultiSelector::storeValueCustom() const
      TopAbs_ShapeEnum aCurrentType =
            ModuleBase_Tools::shapeType(myTypeCombo->currentText());
      aSelectionListAttr->setSelectionType(myTypeCombo->currentText().toStdString());
-  }   
-   return true;
+  }
+  return true;
 }
 
 //********************************************************************
@@ -392,7 +392,7 @@ void ModuleBase_WidgetMultiSelector::onSelectionChanged()
     }
   }
   emit valuesChanged();
-  // the updateObject method should be called to flush the updated sigal. The workshop listens it,
+  // the updateObject method should be called to flush the updated signal. The workshop listens it,
   // calls validators for the feature and, as a result, updates the Apply button state.
   updateObject(myFeature);
 
@@ -406,7 +406,7 @@ void ModuleBase_WidgetMultiSelector::onSelectionChanged()
 void ModuleBase_WidgetMultiSelector::setCurrentShapeType(const TopAbs_ShapeEnum theShapeType)
 {
   QString aShapeTypeName;
-  
+
   for (int idx = 0; idx < myTypeCombo->count(); ++idx) {
     aShapeTypeName = myTypeCombo->itemText(idx);
     TopAbs_ShapeEnum aRefType = ModuleBase_Tools::shapeType(aShapeTypeName);

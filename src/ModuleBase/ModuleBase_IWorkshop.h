@@ -26,7 +26,7 @@ class ModuleBase_FilterFactory;
 
 /**
  * \ingroup GUI
- * Class which provides access to Workshop object serveces
+ * Class which provides access to Workshop object services
  */
 class MODULEBASE_EXPORT ModuleBase_IWorkshop : public QObject
 {
@@ -64,14 +64,14 @@ Q_OBJECT
 
   //! Returns the factory of selection filters : the only one instance per application
   ModuleBase_FilterFactory* selectionFilters() const;
-  
+
   //! Returns currently active operation
   virtual ModuleBase_Operation* currentOperation() const = 0;
 
   //! Returns true if the operation with id theId can be started
   virtual bool canStartOperation(QString theId) = 0;
 
-  //! Returns AIS opbject by data object
+  //! Returns AIS object by data object
   virtual AISObjectPtr findPresentation(const ObjectPtr& theObject) const = 0;
 
   //! Returns data object by AIS
@@ -82,7 +82,7 @@ Q_OBJECT
   virtual void setSelected(const QList<ModuleBase_ViewerPrs>& theValues) = 0;
 
 signals:
-  /// Signal selection chaged.
+  /// Signal selection changed.
   void selectionChanged();
 
   /// Signal which is emited after activation of property panel

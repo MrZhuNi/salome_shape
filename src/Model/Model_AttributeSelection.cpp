@@ -854,7 +854,7 @@ std::string Model_AttributeSelection::namingName(const std::string& theDefaultNa
       }
       break;
     }
-    // register name			
+    // register name
     // aDoc->addNamingName(selectionLabel(), aName);
     // the selected sub-shape will not be shared and as result it will not require registration
   }
@@ -897,7 +897,7 @@ const TopoDS_Shape getShapeFromNS(
   const std::string& theSubShapeName, Handle(TNaming_NamedShape) theNS)
 {
   TopoDS_Shape aSelection;
-  std::string::size_type n = theSubShapeName.rfind('/');			
+  std::string::size_type n = theSubShapeName.rfind('/');
   if (n == std::string::npos) n = 0;
   std::string aSubString = theSubShapeName.substr(n + 1);
   n = aSubString.rfind('_');

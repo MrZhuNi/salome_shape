@@ -22,7 +22,7 @@ class ModelAPI_AttributeSelection : public ModelAPI_Attribute
   virtual void setValue(
     const ResultPtr& theContext, const std::shared_ptr<GeomAPI_Shape>& theSubShape) = 0;
 
-  /// Returns the selected subshape
+  /// Returns the selected sub-shape
   virtual std::shared_ptr<GeomAPI_Shape> value() = 0;
 
   /// Returns the context of the selection (the whole shape owner)
@@ -47,7 +47,6 @@ class ModelAPI_AttributeSelection : public ModelAPI_Attribute
   
   /// Returns an id of the selection
   virtual int Id() = 0;
-
 
   /// Selects sub-shape by the textual Name
   virtual void selectSubShape(const std::string& theType, const std::string& theSubShapeName) = 0;
