@@ -44,7 +44,7 @@ class MODELAPI_EXPORT ModelAPI_Session
   //! Closes all documents
   virtual void closeAll() = 0;
 
-  //! Starts a new operation (opens a tansaction)
+  //! Starts a new operation (opens a transaction)
   //! \param theId of operation for history (optional)
   virtual void startOperation(const std::string& theId = "") = 0;
   //! Finishes the previously started operation (closes the transaction)
@@ -98,7 +98,7 @@ class MODELAPI_EXPORT ModelAPI_Session
 
   /// Copies the document to the new one with the given id
   virtual std::shared_ptr<ModelAPI_Document> copy(std::shared_ptr<ModelAPI_Document> theSource,
-                                                    std::string theID) = 0;
+                                                  std::string theID) = 0;
 
   /// Returns the validators factory: the only one instance per application
   virtual ModelAPI_ValidatorsFactory* validators() = 0;

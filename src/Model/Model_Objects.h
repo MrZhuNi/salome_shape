@@ -86,7 +86,7 @@ class Model_Objects
   ///! Returns all (and disabled) results of the given type. Not fast method (iterates all features).
   void allResults(const std::string& theGroupID, std::list<ResultPtr>& theResults);
 
-  /// Creates a construction cresults
+  /// Creates a construction results
   std::shared_ptr<ModelAPI_ResultConstruction> createConstruction(
       const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0);
   /// Creates a body results

@@ -43,7 +43,7 @@ class QAction;
 *    tooltip="Select a set of objects" 
 *    type_choice="Vertices Edges Faces Solids" /> 
 * \endcode
-* It uses folloing parameters:
+* It uses following parameters:
 * - id - is a name of corresponded attribute
 * - tooltip - a tooltip for the widget
 * - type_choice - list of expected shape types.
@@ -55,7 +55,7 @@ class MODULEBASE_EXPORT ModuleBase_WidgetMultiSelector : public ModuleBase_Widge
   /// Constructor
   /// \param theParent the parent object
   /// \param theWorkshop instance of workshop interface
-  /// \param theData the widget configuation. The attribute of the model widget is obtained from
+  /// \param theData the widget configuration. The attribute of the model widget is obtained from
   /// \param theParentId is Id of a parent of the current attribute
   ModuleBase_WidgetMultiSelector(QWidget* theParent,
                                  ModuleBase_IWorkshop* theWorkshop,
@@ -74,7 +74,7 @@ class MODULEBASE_EXPORT ModuleBase_WidgetMultiSelector : public ModuleBase_Widge
 
   virtual bool eventFilter(QObject* , QEvent* );
 
-  /// The methiod called when widget is deactivated
+  /// The method called when widget is deactivated
   virtual void deactivate();
 
   /// Set the given wrapped value to the current widget
@@ -102,7 +102,7 @@ protected slots:
   void onListSelection();
 
  protected:
-  /// The methiod called when widget is activated
+  /// The method called when widget is activated
   virtual void activateCustom();
 
   /// Saves the internal parameters to the given feature

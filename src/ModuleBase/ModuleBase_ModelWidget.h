@@ -34,7 +34,7 @@ Q_OBJECT
  public:
   /// Constructor
   /// \param theParent the parent object
-  /// \param theData the widget configuation. The attribute of the model widget is obtained from
+  /// \param theData the widget configuration. The attribute of the model widget is obtained from
   /// \param theParentId is Id of a parent of the current attribute
   ModuleBase_ModelWidget(QWidget* theParent, const Config_WidgetAPI* theData,
                          const std::string& theParentId);
@@ -95,10 +95,10 @@ Q_OBJECT
   /// \return the state whether the widget can accept the focus
   virtual bool focusTo();
 
-  /// The methiod called when widget is activated
+  /// The method called when widget is activated
   void activate();
 
-  /// The methiod called when widget is deactivated
+  /// The method called when widget is deactivated
   virtual void deactivate() {}
 
   /// Returns list of widget controls
@@ -166,7 +166,7 @@ signals:
   void focusOutWidget(ModuleBase_ModelWidget* theWidget);
 
  protected:
-  /// Sets default value of widget. Nornaly, widget should fetch this value 
+  /// Sets default value of widget. Normally, widget should fetch this value
   /// from the xml. However, some widgets derived widgets could define it
   void setDefaultValue(const std::string& theValue);
   /// \brief Set the attribute name
@@ -184,7 +184,7 @@ signals:
   /// \return True in success
   virtual bool storeValueCustom() const = 0;
 
-  /// The methiod called when widget is activated
+  /// The method called when widget is activated
   virtual void activateCustom() {};
 
   /// Sends Update and Redisplay for the given object
@@ -202,16 +202,16 @@ protected slots:
  protected:
 
   /// The attribute name of the model feature
-  std::string myAttributeID; 
+  std::string myAttributeID;
 
   /// Name of parent
-  std::string myParentId;    
+  std::string myParentId;
 
   /// A feature which is processing by active operation
-  FeaturePtr myFeature;      
+  FeaturePtr myFeature;
 
   /// Flag which shows that current operation is in editing mode
-  bool myIsEditing; 
+  bool myIsEditing;
 
   /// Flag which shows whether current widget is obligatory
   /// The non-obligatory widgets should not accept the focus in the property panel
@@ -219,8 +219,8 @@ protected slots:
 
 private:
   /// Value should be computed on execute, like radius for circle's constraint (can not be zero)
-  bool myIsComputedDefault; 
-                        
+  bool myIsComputedDefault;
+
   /// the default value, which is defined in the XML for this attribute    
   std::string myDefaultValue; 
 

@@ -95,11 +95,11 @@ bool ExchangePlugin_ImportFeature::importFile(const std::string& theFileName)
   }
    // Check if shape is valid
   if ( aShape.IsNull() ) {
-     const static std::string aShapeError =
-       "An error occurred while importing " + theFileName + ": " + anError.ToCString();
-     setError(aShapeError);
-     return false;
-   }
+    const static std::string aShapeError =
+      "An error occurred while importing " + theFileName + ": " + anError.ToCString();
+    setError(aShapeError);
+    return false;
+  }
 
   // Pass the results into the model
   std::string anObjectName = aPath.Name().ToCString();

@@ -98,14 +98,14 @@ void Model_Update::processEvent(const std::shared_ptr<Events_Message>& theMessag
         myIsParamUpdated = true;
       }
       // created objects are always must be up to date (python box feature)
-      // and updated not in internal uptation chain
+      // and updated not in internal updating chain
       if (theMessage->eventID() == kCreatedEvent) {
         myJustCreated.insert(*anObjIter);
       } else if (myJustCreated.find(*anObjIter) == myJustCreated.end()) { // moved and updated
         myJustUpdated.insert(*anObjIter);
       }
     }
-     // this event is for solver update, not here, do not react immideately
+     // this event is for solver update, not here, do not react immediately
     if (!isOnlyResults && !(theMessage->eventID() == kMovedEvent))
       processOperation(false);
   } else if (theMessage->eventID() == kOpStartEvent) {

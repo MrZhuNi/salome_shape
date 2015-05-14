@@ -28,7 +28,7 @@ class ModelAPI_Object
 {
   std::shared_ptr<ModelAPI_Data> myData;  ///< manager of the data model of a feature
   std::shared_ptr<ModelAPI_Document> myDoc;  ///< document this object belongs to
- public:
+public:
   /// By default object is displayed in the object browser.
   MODELAPI_EXPORT virtual bool isInHistory();
 
