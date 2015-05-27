@@ -27,7 +27,7 @@ bool PartSet_WidgetFileSelector::restoreValue()
     return false;
 
   DataPtr aData = myFeature->data();
-  AttributeStringPtr aStringAttr = aData->string("export_file_format");
+  AttributeStringPtr aStringAttr = aData->string(attributeID("format"));
   mySelectedFilter = formatToFilter(shortFormatToFullFormat(QString::fromStdString(aStringAttr->value())));
 
   return ModuleBase_WidgetFileSelector::restoreValue();
@@ -40,7 +40,7 @@ bool PartSet_WidgetFileSelector::storeValueCustom() const
     return false;
 
   DataPtr aData = myFeature->data();
-  AttributeStringPtr aStringAttr = aData->string("export_file_format");
+  AttributeStringPtr aStringAttr = aData->string(attributeID("format"));
   aStringAttr->setValue(filterToShortFormat(mySelectedFilter).toStdString());
 
   return ModuleBase_WidgetFileSelector::storeValueCustom();

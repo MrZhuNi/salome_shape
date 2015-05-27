@@ -164,7 +164,7 @@ QStringList ModuleBase_WidgetFileSelector::getValidatorFormats() const
 
   std::list<ModelAPI_Validator*> allValidators;
   std::list<std::list<std::string> > allArguments;
-  aFactory->validators(myFeature->getKind(), myAttributeID, allValidators, allArguments);
+  aFactory->validators(myFeature->getKind(), attributeID(), allValidators, allArguments);
 
   QStringList aResult;
   std::list<std::string> anArgumentList = allArguments.front();
