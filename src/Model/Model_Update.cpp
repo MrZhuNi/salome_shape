@@ -277,13 +277,13 @@ void Model_Update::updateArguments(FeaturePtr theFeature) {
     theFeature->data()->attributes(ModelAPI_AttributeDouble::typeId());
   std::list<AttributePtr>::iterator aDoubleIter = aDoubles.begin();
   for(; aDoubleIter != aDoubles.end(); aDoubleIter++) {
-    AttributeDoublePtr aDouble =
+    AttributeDoublePtr aDoubleAttribute =
       std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(*aDoubleIter);
-    if (aDouble.get() && !aDouble->text().empty()) {
+    if (aDoubleAttribute.get() && !aDoubleAttribute->text().empty()) {
       if (myIsParamUpdated) {
-        ModelAPI_AttributeEvalMessage::send(aDouble, this);
+        ModelAPI_AttributeEvalMessage::send(aDoubleAttribute, this);
       }
-      if (aDouble->expressionInvalid()) {
+      if (aDoubleAttribute->expressionInvalid()) {
         aState = ModelAPI_StateInvalidArgument;
       }
     }

@@ -49,7 +49,7 @@ NewGeom_EXPORT CAM_Module* createModule()
   return new NewGeom_Module();
 }
 
-NewGeom_EXPORT char* getModuleVersion()
+NewGeom_EXPORT const char* getModuleVersion()
 {
   return "0.0";
 }

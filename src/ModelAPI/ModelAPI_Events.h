@@ -28,6 +28,8 @@ static const char * EVENT_OBJECT_CREATED = "ObjectCreated";
 static const char * EVENT_OBJECT_UPDATED = "ObjectUpdated";
 /// Event ID that data of feature is deleted (comes with Model_ObjectDeletedMessage)
 static const char * EVENT_OBJECT_DELETED = "ObjectDeleted";
+/// Event ID that name of feature is changed (comes with Model_ObjectRenamedMessage)
+static const char * EVENT_OBJECT_RENAMED = "ObjectRenamed";
 /// Event ID that data of feature is updated (comes with ModelAPI_ObjectUpdatedMessage)
 static const char * EVENT_OBJECT_MOVED = "ObjectsMoved";
 /// Event ID that visualization must be redisplayed (comes with ModelAPI_ObjectUpdatedMessage)
@@ -112,7 +114,7 @@ public:
 
 // TODO(sbh): Move this message into a separate package, like "GuiAPI"
 /// Contains the state information about the feature: is it enabled or disabled.
-class ModelAPI_FeatureStateMessage : public Events_Message
+class MODELAPI_EXPORT ModelAPI_FeatureStateMessage : public Events_Message
 {
 public:
   /// Creates an empty message
@@ -142,7 +144,7 @@ public:
 };
 
 /// Message that document (Part, PartSet) was created
-class ModelAPI_DocumentCreatedMessage : public Events_Message
+class MODELAPI_EXPORT ModelAPI_DocumentCreatedMessage : public Events_Message
 {
   DocumentPtr myDocument;
 
@@ -165,7 +167,7 @@ class ModelAPI_DocumentCreatedMessage : public Events_Message
 };
 
 /// Message that attribute text should be evaluated in the attribute value
-class ModelAPI_AttributeEvalMessage : public Events_Message
+class MODELAPI_EXPORT ModelAPI_AttributeEvalMessage : public Events_Message
 {
   AttributePtr myAttribute;
 
@@ -181,8 +183,7 @@ class ModelAPI_AttributeEvalMessage : public Events_Message
   /// Useful method that creates and sends the AttributeEvalMessage event
   MODELAPI_EXPORT static void send(AttributePtr theAttribute, const void* theSender)
   {
-    std::shared_ptr<ModelAPI_AttributeEvalMessage> aMessage =
-      std::shared_ptr<ModelAPI_AttributeEvalMessage>(
+    std::shared_ptr<ModelAPI_AttributeEvalMessage> aMessage(
       new ModelAPI_AttributeEvalMessage(eventId(), theSender));
     aMessage->setAttribute(theAttribute);
     Events_Loop::loop()->send(aMessage);
@@ -197,6 +198,47 @@ class ModelAPI_AttributeEvalMessage : public Events_Message
   MODELAPI_EXPORT AttributePtr attribute() const;
   /// Sets an attribute to the message
   MODELAPI_EXPORT void setAttribute(AttributePtr theAttribute);
+};
+
+/// Message that the object is renamed
+class MODELAPI_EXPORT ModelAPI_ObjectRenamedMessage : public Events_Message
+{
+  ObjectPtr myObject;
+  std::string myOldName;
+  std::string myNewName;
+
+ public:
+  /// Static. Returns EventID of the message.
+  MODELAPI_EXPORT static Events_ID& eventId()
+  {
+    static const char * MY_OBJECT_RENAMED_EVENT_ID("ObjectRenamed");
+    static Events_ID anId = Events_Loop::eventByName(MY_OBJECT_RENAMED_EVENT_ID);
+    return anId;
+  }
+
+  /// Useful method that creates and sends the AttributeEvalMessage event
+  MODELAPI_EXPORT static void send(ObjectPtr theObject,
+                                   const std::string& theOldName,
+                                   const std::string& theNewName,
+                                   const void* theSender);
+
+  /// Creates an empty message
+  MODELAPI_EXPORT ModelAPI_ObjectRenamedMessage(const Events_ID theID, const void* theSender = 0);
+  /// The virtual destructor
+  MODELAPI_EXPORT virtual ~ModelAPI_ObjectRenamedMessage();
+
+  /// Returns an object
+  MODELAPI_EXPORT ObjectPtr object() const;
+  /// Sets an object
+  MODELAPI_EXPORT void setObject(ObjectPtr theObject);
+  /// Returns an old name
+  MODELAPI_EXPORT std::string oldName() const;
+  /// Sets an old name
+  MODELAPI_EXPORT void setOldName(const std::string& theOldName);
+  /// Returns a new name
+  MODELAPI_EXPORT std::string newName() const;
+  /// Sets a new name
+  MODELAPI_EXPORT void setNewName(const std::string& theNewName);
 };
 
 #endif

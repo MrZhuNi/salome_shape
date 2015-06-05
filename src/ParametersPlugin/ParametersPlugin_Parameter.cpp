@@ -48,7 +48,7 @@ void ParametersPlugin_Parameter::attributeChanged(const std::string& theID)
   if (theID == EXPRESSION_ID()) { // recompute only on change of the expression
     ResultParameterPtr aParam = document()->createParameter(data());
 
-    std::string anExpression = string(EXPRESSION_ID())->value();
+    std::string anExpression = this->string(EXPRESSION_ID())->value();
     if(anExpression.empty()) {
       // clear error/result if the expression is empty
       setError("", false);
@@ -57,7 +57,7 @@ void ParametersPlugin_Parameter::attributeChanged(const std::string& theID)
     std::string outErrorMessage;
     double aValue = evaluate(anExpression, outErrorMessage);
     // Name
-    std::string aName = string(VARIABLE_ID())->value();
+    std::string aName = this->string(VARIABLE_ID())->value();
     std::ostringstream sstream;
     sstream << aValue;
     std::string aParamValue = sstream.str();
@@ -88,7 +88,6 @@ void ParametersPlugin_Parameter::execute()
 
 double ParametersPlugin_Parameter::evaluate(const std::string& theExpression, std::string& theError)
 {
-
   std::list<std::string> anExprParams = myInterp->compile(theExpression);
   // find expression's params in the model
   std::list<std::string> aContext;
