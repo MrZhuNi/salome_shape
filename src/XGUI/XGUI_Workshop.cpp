@@ -459,6 +459,7 @@ void XGUI_Workshop::onOperationStarted(ModuleBase_Operation* theOperation)
   }
   updateCommandStatus();
 
+  connectToPropertyPanel(true);
   myModule->operationStarted(aFOperation);
 
   // the objects of the current operation should be deactivated
@@ -507,6 +508,7 @@ void XGUI_Workshop::onOperationStopped(ModuleBase_Operation* theOperation)
   hidePropertyPanel();
   myPropertyPanel->cleanContent();
 
+  connectToPropertyPanel(false);
   myModule->operationStopped(aFOperation);
 
   // the deactivated objects of the current operation should be activated back.
@@ -600,6 +602,23 @@ void XGUI_Workshop::setPropertyPanel(ModuleBase_Operation* theOperation)
   myPropertyPanel->setWindowTitle(theOperation->getDescription()->description());
 
   myErrorMgr->setPropertyPanel(myPropertyPanel);
+}
+
+void XGUI_Workshop::connectToPropertyPanel(const bool isToConnect)
+{
+  XGUI_PropertyPanel* aPropertyPanel = propertyPanel();
+  if (aPropertyPanel) {
+    const QList<ModuleBase_ModelWidget*>& aWidgets = aPropertyPanel->modelWidgets();
+    foreach (ModuleBase_ModelWidget* aWidget, aWidgets) {
+       myModule->connectToPropertyPanel(aWidget, isToConnect);
+      if (isToConnect) {
+        connect(aWidget, SIGNAL(valueStateChanged()), this, SLOT(onValueStateChanged()));
+      }
+      else {
+        disconnect(aWidget, SIGNAL(valueStateChanged()), this, SLOT(onValueStateChanged()));
+      }
+    }
+  }
 }
 
 /*
@@ -834,6 +853,20 @@ void XGUI_Workshop::onPreferences()
     }
     displayer()->redisplayObjects();
   }
+}
+
+//******************************************************
+void XGUI_Workshop::onValueStateChanged()
+{
+  ModuleBase_ModelWidget* anActiveWidget = 0;
+  ModuleBase_Operation* anOperation = myOperationMgr->currentOperation();
+  if (anOperation) {
+    ModuleBase_IPropertyPanel* aPanel = anOperation->propertyPanel();
+    if (aPanel)
+      anActiveWidget = aPanel->activeWidget();
+  }
+  if (anActiveWidget && anActiveWidget->getValueState() != ModuleBase_ModelWidget::Stored)
+    operationMgr()->onValidateOperation();
 }
 
 //******************************************************

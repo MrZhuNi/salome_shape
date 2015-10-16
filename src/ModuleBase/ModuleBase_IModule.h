@@ -188,6 +188,11 @@ class MODULEBASE_EXPORT ModuleBase_IModule : public QObject
   //! \return string value
   virtual QString getFeatureError(const FeaturePtr& theFeature);
 
+  /// Connects or disconnects to the value changed signal of the property panel widgets
+  /// \param theWidget a property contol widget
+  /// \param isToConnect a boolean value whether connect or disconnect
+  virtual void connectToPropertyPanel(ModuleBase_ModelWidget* theWidget, const bool isToConnect) {};
+
 signals:
   /// Signal which is emitted when operation is launched
   void operationLaunched();

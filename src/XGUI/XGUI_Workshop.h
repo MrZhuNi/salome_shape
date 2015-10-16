@@ -304,6 +304,9 @@ signals:
   /// Rebuild data tree
   void onRebuild();
 
+  /// Validates the operation. Apply button is disabled if the widget value is in Modified state
+  void onValueStateChanged();
+
   /// Open preferences dialog box
   void onPreferences();
 
@@ -332,6 +335,10 @@ signals:
   /// into the operation
   /// \param theOperation an operation
   void setPropertyPanel(ModuleBase_Operation* theOperation);
+
+  /// Connects or disconnects to the value changed signal of the property panel widgets
+  /// \param isToConnect a boolean value whether connect or disconnect
+  void connectToPropertyPanel(const bool isToConnect);
 
 private:
   /// Display all results
