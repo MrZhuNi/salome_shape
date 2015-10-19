@@ -114,6 +114,18 @@ Q_OBJECT
   */
   virtual void activateWidget(ModuleBase_ModelWidget* theWidget);
 
+  void onFocusNextPrev();
+
+protected:
+  /// Makes the widget active, deactivate the previous, activate and hightlight the given one
+  /// \param theWidget a widget
+  void setActiveWidget(ModuleBase_ModelWidget* theWidget);
+
+  /// The parent method that processes the "Tab"/"SHIF + Tab" keyboard events
+  /// Emits a signal about focus change
+  /// If theIsNext is true, this function searches forward, if next is false, it searches backward.
+  virtual bool focusNextPrevChild(bool theIsNext);
+
  protected:
   /// A header widget
   QWidget* myHeaderWidget;
