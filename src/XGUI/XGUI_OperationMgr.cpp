@@ -421,8 +421,6 @@ void XGUI_OperationMgr::onOperationStopped()
 
 bool XGUI_OperationMgr::onKeyReleased(QKeyEvent* theEvent)
 {
-  qDebug("XGUI_OperationMgr::onKeyReleased");
-
   QObject* aSender = sender();
 
   // Let the manager decide what to do with the given key combination.
@@ -431,7 +429,6 @@ bool XGUI_OperationMgr::onKeyReleased(QKeyEvent* theEvent)
   switch (theEvent->key()) {
     case Qt::Key_Return:
     case Qt::Key_Enter: {
-      qDebug("XGUI_OperationMgr::onKeyReleased: Key_Return");
       ModuleBase_Operation* aOperation = currentOperation();
       ModuleBase_IPropertyPanel* aPanel = aOperation->propertyPanel();
       ModuleBase_ModelWidget* aActiveWgt = aPanel->activeWidget();
@@ -444,9 +441,8 @@ bool XGUI_OperationMgr::onKeyReleased(QKeyEvent* theEvent)
         else
           isAccepted = false;
       }
-      //else
-      //  isAccepted = false;
     }
+    break;
     case Qt::Key_N:
     case Qt::Key_P: {
       bool noModifiers = (theEvent->modifiers() == Qt::NoModifier);
