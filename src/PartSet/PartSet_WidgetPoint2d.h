@@ -22,7 +22,6 @@ class ModuleBase_ParamSpinBox;
 class ModuleBase_IViewWindow;
 class GeomAPI_Pnt2d;
 class ModuleBase_IWorkshop;
-class PartSet_LockApplyMgr;
 
 class QGroupBox;
 class QMouseEvent;
@@ -143,7 +142,6 @@ private slots:
    void setConstraintWith(const ObjectPtr& theObject);
 
   ModuleBase_IWorkshop* myWorkshop;
-  PartSet_LockApplyMgr* myLockApplyMgr; ///< a manager to lock/unlock Apply button in PP
 
   QGroupBox* myGroupBox;  ///< the parent group box for all intenal widgets
   ModuleBase_ParamSpinBox* myXSpin;  ///< the spin box for the X coordinate

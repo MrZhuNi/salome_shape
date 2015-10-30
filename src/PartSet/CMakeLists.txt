@@ -22,7 +22,6 @@ SET(PROJECT_HEADERS
 	PartSet_WidgetShapeSelector.h
 	PartSet_WidgetFileSelector.h
 	PartSet_Filters.h
-	PartSet_LockApplyMgr.h
 	PartSet_FilterInfinite.h
 	PartSet_SketcherMgr.h
 	PartSet_MenuMgr.h
@@ -46,7 +45,6 @@ SET(PROJECT_SOURCES
 	PartSet_WidgetShapeSelector.cpp
 	PartSet_WidgetFileSelector.cpp
 	PartSet_Filters.cpp
-	PartSet_LockApplyMgr.cpp
 	PartSet_FilterInfinite.cpp
 	PartSet_SketcherMgr.cpp
 	PartSet_MenuMgr.cpp

@@ -865,7 +865,7 @@ void XGUI_Workshop::onValueStateChanged()
     if (aPanel)
       anActiveWidget = aPanel->activeWidget();
   }
-  if (anActiveWidget && anActiveWidget->getValueState() != ModuleBase_ModelWidget::Stored)
+  if (anActiveWidget)
     operationMgr()->onValidateOperation();
 }
 
