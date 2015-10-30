@@ -37,8 +37,6 @@
 #include <QDebug>
 #endif
 
-#define APPLY_BY_ENTER_OR_TAB
-
 ModuleBase_OperationFeature::ModuleBase_OperationFeature(const QString& theId, QObject* theParent)
 : ModuleBase_Operation(theId, theParent),
   myIsEditing(false)
@@ -269,11 +267,9 @@ bool ModuleBase_OperationFeature::commit()
     // changed.
     ModuleBase_IPropertyPanel* aPropertyPanel = propertyPanel();
     if (aPropertyPanel) {
-#ifdef APPLY_BY_ENTER_OR_TAB
       ModuleBase_ModelWidget* aWidget = aPropertyPanel->activeWidget();
       if (aWidget)
         aWidget->storeValueByApply();
-#endif
       aPropertyPanel->cleanContent();
     }
     SessionPtr aMgr = ModelAPI_Session::get();

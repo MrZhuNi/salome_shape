@@ -31,8 +31,6 @@
 #include <iostream>
 #endif
 
-#define APPLY_BY_ENTER_OR_TAB
-
 ModuleBase_WidgetDoubleValue::ModuleBase_WidgetDoubleValue(QWidget* theParent,
                                                            const Config_WidgetAPI* theData,
                                                            const std::string& theParentId)
@@ -87,16 +85,10 @@ ModuleBase_WidgetDoubleValue::ModuleBase_WidgetDoubleValue(QWidget* theParent,
   mySpinBox->setToolTip(aTTip);
 
   aControlLay->addRow(myLabel, mySpinBox);
-#ifdef APPLY_BY_ENTER_OR_TAB
   // Apply widget value change by enter/tab event.
-  //connect(mySpinBox, SIGNAL(editingFinished()), this, SIGNAL(valuesChanged()));
   connect(mySpinBox, SIGNAL(valueStored()), this, SIGNAL(valuesChanged()));
   connect(mySpinBox, SIGNAL(valueChanged(const QString&)), this, SIGNAL(valuesModified()));
   connect(mySpinBox, SIGNAL(focusNextPrev()), this, SIGNAL(focusNextPrev()));
-
-#else
-  connect(mySpinBox, SIGNAL(valueChanged(const QString&)), this, SIGNAL(valuesChanged()));
-#endif
 }
 
 ModuleBase_WidgetDoubleValue::~ModuleBase_WidgetDoubleValue()
