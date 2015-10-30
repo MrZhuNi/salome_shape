@@ -200,6 +200,10 @@ public:
   //! \return string value
   virtual QString getFeatureError(const FeaturePtr& theFeature);
 
+  /// Validates the current operation and send the state change to sketch manager
+  /// \thePrevState the previous widget value state
+  virtual void widgetStateChanged(int thePreviousState);
+
 public slots:
   /// SLOT, that is called by no more widget signal emitted by property panel
   /// Set a specific flag to restart the sketcher operation
@@ -244,7 +248,7 @@ protected slots:
   /// A slot called on view window creation
   void onViewCreated(ModuleBase_IViewWindow*);
 
- protected:
+protected:
   /// Register validators for this module
   virtual void registerValidators();
 

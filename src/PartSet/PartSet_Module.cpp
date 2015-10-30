@@ -1067,3 +1067,9 @@ void PartSet_Module::onViewCreated(ModuleBase_IViewWindow*)
     }
   }
 }
+
+//******************************************************
+void PartSet_Module::widgetStateChanged(int thePreviousState)
+{
+  mySketchMgr->widgetStateChanged(thePreviousState);
+}

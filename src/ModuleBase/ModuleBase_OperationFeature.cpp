@@ -268,8 +268,6 @@ bool ModuleBase_OperationFeature::commit()
     ModuleBase_IPropertyPanel* aPropertyPanel = propertyPanel();
     if (aPropertyPanel) {
       ModuleBase_ModelWidget* aWidget = aPropertyPanel->activeWidget();
-      if (aWidget)
-        aWidget->storeValueByApply();
       aPropertyPanel->cleanContent();
     }
     SessionPtr aMgr = ModelAPI_Session::get();

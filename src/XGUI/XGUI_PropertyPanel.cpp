@@ -116,8 +116,8 @@ void XGUI_PropertyPanel::setModelWidgets(const QList<ModuleBase_ModelWidget*>& t
             this,    SLOT(activateNextWidget(ModuleBase_ModelWidget*)));
     connect(aWidget, SIGNAL(keyReleased(QKeyEvent*)),
             this,    SIGNAL(keyReleased(QKeyEvent*)));
-    connect(aWidget, SIGNAL(focusNextPrev()),
-            this, SLOT(onFocusNextPrev()));
+    //connect(aWidget, SIGNAL(focusNextPrev()),
+    //        this, SLOT(onFocusNextPrev()));
   }
 }
 

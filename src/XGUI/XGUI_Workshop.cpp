@@ -612,10 +612,10 @@ void XGUI_Workshop::connectToPropertyPanel(const bool isToConnect)
     foreach (ModuleBase_ModelWidget* aWidget, aWidgets) {
        myModule->connectToPropertyPanel(aWidget, isToConnect);
       if (isToConnect) {
-        connect(aWidget, SIGNAL(valueStateChanged()), this, SLOT(onValueStateChanged()));
+        connect(aWidget, SIGNAL(valueStateChanged(int)), this, SLOT(onWidgetStateChanged(int)));
       }
       else {
-        disconnect(aWidget, SIGNAL(valueStateChanged()), this, SLOT(onValueStateChanged()));
+        disconnect(aWidget, SIGNAL(valueStateChanged(int)), this, SLOT(onWidgetStateChanged(int)));
       }
     }
   }
@@ -856,7 +856,7 @@ void XGUI_Workshop::onPreferences()
 }
 
 //******************************************************
-void XGUI_Workshop::onValueStateChanged()
+void XGUI_Workshop::onWidgetStateChanged(int thePreviousState)
 {
   ModuleBase_ModelWidget* anActiveWidget = 0;
   ModuleBase_Operation* anOperation = myOperationMgr->currentOperation();
@@ -867,6 +867,8 @@ void XGUI_Workshop::onValueStateChanged()
   }
   if (anActiveWidget)
     operationMgr()->onValidateOperation();
+
+  myModule->widgetStateChanged(thePreviousState);
 }
 
 //******************************************************
