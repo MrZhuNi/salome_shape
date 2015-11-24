@@ -20,8 +20,8 @@ source ${INST_ROOT}/$(cd ${INST_ROOT} && ls *env_products.sh)
 set -u
 
 #------ SolveSpace ------
-export SOLVESPACE_ROOT_DIR=${NEWGEOM_PDIR}/solvespace-2.1
-export LD_LIBRARY_PATH=${SOLVESPACE_ROOT_DIR}/lib:${LD_LIBRARY_PATH}
+#export SOLVESPACE_ROOT_DIR=${NEWGEOM_PDIR}/solvespace-2.1
+#export LD_LIBRARY_PATH=${SOLVESPACE_ROOT_DIR}/lib:${LD_LIBRARY_PATH}
 ##
 
 #------ lcov ------
