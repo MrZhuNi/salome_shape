@@ -35,7 +35,7 @@ public:
   /// \param theContext object where the sub-shape was selected
   /// \param theSubShape selected sub-shape (if null, the whole context is selected)
   /// \param theTemporarily if it is true, do not store and name the added in the data framework
-  ///           (used to remove immideately, without the following updates)
+  ///           (used to remove immediately, without the following updates)
   MODEL_EXPORT virtual void append(
     const ResultPtr& theContext, const std::shared_ptr<GeomAPI_Shape>& theSubShape,
     const bool theTemporarily = false);
@@ -51,7 +51,7 @@ public:
   /// \param theIndices a list of indices of elements to be removed
   MODEL_EXPORT virtual void remove(const std::set<int>& theIndices);
 
-  /// Returns the number ofselection attributes in the list
+  /// Returns the number of selection attributes in the list
   MODEL_EXPORT virtual int size();
 
   /// Returns true if the object with the shape are in list

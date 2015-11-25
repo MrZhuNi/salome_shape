@@ -42,7 +42,7 @@ public:
   ///         geometry and no sub-shapes.
   GEOMAPI_EXPORT std::shared_ptr<GeomAPI_Shape> emptyCopied() const;
 
-  /// Returns true if the underlied shape is null
+  /// Returns true if the underlying shape is null
   GEOMAPI_EXPORT 
   bool isNull() const;
 

@@ -1032,7 +1032,7 @@ void Model_Document::setCurrentFeature(
       ModelAPI_EventCreator::get()->sendUpdated(anIter, aRedispEvent /*, false*/);
       aWasChanged = true;
     }
-    // update for everyone the concealment flag immideately: on edit feature in the midle of history
+    // update for everyone the concealment flag immediately: on edit feature in the midle of history
     if (aWasChanged) {
       std::list<ResultPtr> aResults;
       ModelAPI_Tools::allResults(anIter, aResults);

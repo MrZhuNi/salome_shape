@@ -21,7 +21,7 @@ class GeomAPI_Shape;
  *
  * Locates the selected placement_attractable_object (face, edge, vertex) of the solid into 
  * the selected placement_base_object. Faces must be planar, edges must be linear.
- * Orientation of the placed solid depends on the underlied planes of both faces.
+ * Orientation of the placed solid depends on the underlying planes of both faces.
  */
 class FeaturesPlugin_Placement : public ModelAPI_Feature
 {

@@ -23,7 +23,7 @@
 class GEOMALGOAPI_EXPORT GeomAlgoAPI_CompoundBuilder
 {
  public:
-  /// Creates compund of the given shapes
+  /// Creates compound of the given shapes
   /// \param theShapes a list of shapes
   static std::shared_ptr<GeomAPI_Shape> compound(
       std::list<std::shared_ptr<GeomAPI_Shape> > theShapes);

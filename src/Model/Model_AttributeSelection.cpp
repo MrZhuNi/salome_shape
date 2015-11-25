@@ -61,7 +61,7 @@ using namespace std;
 #ifdef DEB_NAMING
 #include <BRepTools.hxx>
 #endif
-/// added to the index in the packed map to signalize that the vertex of edge is selected
+/// Added to the index in the packed map to signalize that the vertex of edge is selected
 /// (multiplied by the index of the edge)
 static const int kSTART_VERTEX_DELTA = 1000000;
 // identifier that there is simple reference: selection equals to context
@@ -305,7 +305,7 @@ ResultPtr Model_AttributeSelection::context() {
       if (aPart.get() && aPart->data() == aResult->data()) {
         ResultPtr aPartResult = std::dynamic_pointer_cast<ModelAPI_Result>(aPart);
         FeaturePtr anOwnerFeature = std::dynamic_pointer_cast<ModelAPI_Feature>(owner());
-        // check that this result is not this-feature result (it is forbidden t oselect itself)
+        // check that this result is not this-feature result (it is forbidden to select itself)
         if (anOwnerFeature.get() && anOwnerFeature->firstResult() != aPartResult) {
           return aPartResult;
         }
@@ -340,7 +340,7 @@ TDF_LabelMap& Model_AttributeSelection::scope()
          aCompositeOwnerOwner = ModelAPI_Tools::compositeOwner(aCompositeOwner);
       }
     }
-    // for group Scope is not limitet: this is always up to date objects
+    // for group Scope is not limited: this is always up to date objects
     bool isGroup = aFeature.get() && aFeature->getKind() == "Group";
     for(; aFIter != allFeatures.end(); aFIter++) {
       if (*aFIter == owner()) {  // the left features are created later (except subs of composite)
@@ -539,7 +539,7 @@ bool Model_AttributeSelection::update()
                 if (allCurves.IsBound(aCurve)) {
                   aFound++;
                   int anOrient = allCurves.Find(aCurve);
-                  if (anOrient != 0) {  // extra comparision score is orientation
+                  if (anOrient != 0) {  // extra comparison score is orientation
                     if (edgeOrientation(aFace, anEdge) == anOrient)
                       aSameOrientation++;
                   }
