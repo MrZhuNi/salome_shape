@@ -30,7 +30,7 @@ public:
   GEOMAPI_EXPORT 
   GeomAPI_Shape();
 
-  /// Returns true if the underlied shape is null
+  /// Returns true if the underlying shape is null
   GEOMAPI_EXPORT 
   bool isNull() const;
 

@@ -971,7 +971,7 @@ void Model_Document::setCurrentFeature(
       ModelAPI_EventCreator::get()->sendUpdated(anIter, aRedispEvent /*, false*/);
       aWasChanged = true;
     }
-    // update for everyone the concealment flag immideately: on edit feature in the midle of history
+    // update for everyone the concealment flag immediately: on edit feature in the midle of history
     if (aWasChanged) {
       const std::list<std::shared_ptr<ModelAPI_Result> >& aResList = anIter->results();
       std::list<std::shared_ptr<ModelAPI_Result> >::const_iterator aRes = aResList.begin();

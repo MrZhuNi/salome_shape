@@ -50,7 +50,7 @@ class Model_Update : public Events_Listener
     std::shared_ptr<ModelAPI_CompositeFeature> myMain;
     /// The currently iterated sub-object of root document
     std::shared_ptr<ModelAPI_Feature> mySub;
-    /// If this is true, this iteration must be breaked immideately
+    /// If this is true, this iteration must be breaked immediately
     bool myBreaked;
     /// If this flag is true, the virtual iteration is performed, unbreackable
     bool myIsVirtual;

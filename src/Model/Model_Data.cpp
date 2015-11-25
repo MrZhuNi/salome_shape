@@ -379,7 +379,7 @@ void Model_Data::removeBackReference(AttributePtr theAttr)
 
   myRefsToMe.erase(theAttr);
 
-  // remove concealment immideately: on deselection it must be posible to reselect in GUI the same
+  // remove concealment immediately: on deselection it must be posible to reselect in GUI the same
   FeaturePtr aFeatureOwner = std::dynamic_pointer_cast<ModelAPI_Feature>(theAttr->owner());
   if (aFeatureOwner.get() &&
     ModelAPI_Session::get()->validators()->isConcealed(aFeatureOwner->getKind(), theAttr->id())) {

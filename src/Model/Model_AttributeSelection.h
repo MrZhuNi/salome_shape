@@ -30,7 +30,7 @@ public:
   /// \param theContext object where the sub-shape was selected
   /// \param theSubShape selected sub-shape (if null, the whole context is selected)
   /// \param theTemporarily if it is true, do not store and name the added in the data framework
-  ///           (used to remove immideately, without the following updates)
+  ///           (used to remove immediately, without the following updates)
   MODEL_EXPORT virtual void setValue(
     const ResultPtr& theContext, const std::shared_ptr<GeomAPI_Shape>& theSubShape,
     const bool theTemporarily = false);
@@ -44,27 +44,27 @@ public:
   /// Sets the feature object
   MODEL_EXPORT virtual void setObject(const std::shared_ptr<ModelAPI_Object>& theObject);
 
-  /// Updates the underlied selection due to the changes in the referenced objects
+  /// Updates the underlying selection due to the changes in the referenced objects
   /// \returns false if update is failed
   MODEL_EXPORT virtual bool update();
 
   /// Returns a textual string of the selection
   /// \param theDefaultValue a name, which is returned if the naming name can not be obtained
   MODEL_EXPORT virtual std::string namingName(const std::string& theDefaultValue = "");
-  
+
   /// Returns an Id of the selection
   /// NOTE: This method has been added for temporary export of groups towards old GEOM
   /// It should then be removed when a direct use of objects from NewGeom
   /// will be possible from SMESH module of SALOME.
   MODEL_EXPORT virtual int Id();
 
-  /// Selects (i.e. creates Naming data structure) of sub-shape specifed by textual name
+  /// Selects (i.e. creates Naming data structure) of sub-shape specified by textual name
   MODEL_EXPORT virtual void selectSubShape(const std::string& theType, const std::string& theSubShapeName);
 
   /// Returns true if attribute was  initialized by some value
   MODEL_EXPORT virtual bool isInitialized();
 
-  /// Returns true if recomute of selection become impossible
+  /// Returns true if recompute of selection become impossible
   MODEL_EXPORT virtual bool isInvalid();
 
 
@@ -85,7 +85,7 @@ protected:
   /// \param theContext the result - owner of the selection
   /// \param theSubShape selected shape
   /// \param theUpdate flag that shows that it must be just update, theShape is null
-  /// \returns true if eveything is selected correctly
+  /// \returns true if everything is selected correctly
   virtual bool selectPart(
     const ResultPtr& theContext, const std::shared_ptr<GeomAPI_Shape>& theSubShape,
     const bool theUpdate = false);

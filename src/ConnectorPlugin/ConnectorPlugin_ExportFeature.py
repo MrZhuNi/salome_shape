@@ -35,7 +35,7 @@ class ExportFeature(ModelAPI.ModelAPI_Feature):
     def getKind(self):
         return ExportFeature.ID()
 
-    ## This feature is action: has no property pannel and executes immideately.
+    ## This feature is action: has no property pannel and executes immediately.
     def isAction(self):
         return True
 

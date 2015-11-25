@@ -24,7 +24,7 @@ class Events_MessageGroup;
  * One per application, initialized on start. Listeners must register in this loop
  * to get events, called by senders. Sending of events is very fast (just adding to container).
  * Performing of events is processed in separated thread, so, sender takes 
- * control back immideately.
+ * control back immediately.
  */
 class Events_Loop
 {

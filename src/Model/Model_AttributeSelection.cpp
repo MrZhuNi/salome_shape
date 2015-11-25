@@ -61,7 +61,7 @@ using namespace std;
 #ifdef DEB_NAMING
 #include <BRepTools.hxx>
 #endif
-/// adeed to the index in the packed map to signalize that the vertex of edge is seleted
+/// Added to the index in the packed map to signalize that the vertex of edge is selected
 /// (multiplied by the index of the edge)
 static const int kSTART_VERTEX_DELTA = 1000000;
 // identifier that there is simple reference: selection equals to context
@@ -300,7 +300,7 @@ ResultPtr Model_AttributeSelection::context() {
       if (aPart.get() && aPart->data() == aResult->data()) {
         ResultPtr aPartResult = std::dynamic_pointer_cast<ModelAPI_Result>(aPart);
         FeaturePtr anOwnerFeature = std::dynamic_pointer_cast<ModelAPI_Feature>(owner());
-        // check that this result is not this-feature result (it is forbidden t oselect itself)
+        // check that this result is not this-feature result (it is forbidden to select itself)
         if (anOwnerFeature.get() && anOwnerFeature->firstResult() != aPartResult) {
           return aPartResult;
         }
@@ -320,7 +320,7 @@ void Model_AttributeSelection::setObject(const std::shared_ptr<ModelAPI_Object>&
 TDF_LabelMap& Model_AttributeSelection::scope()
 {
   if (myScope.IsEmpty()) { // create a new scope if not yet done
-    // gets all featueres with named shapes that are bofore this feature label (before in history)
+    // gets all features with named shapes that are before this feature label (before in history)
     DocumentPtr aMyDoc = owner()->document();
     std::list<std::shared_ptr<ModelAPI_Feature> > allFeatures = aMyDoc->allFeatures();
     std::list<std::shared_ptr<ModelAPI_Feature> >::iterator aFIter = allFeatures.begin();
@@ -335,7 +335,7 @@ TDF_LabelMap& Model_AttributeSelection::scope()
          aCompositeOwnerOwner = ModelAPI_Tools::compositeOwner(aCompositeOwner);
       }
     }
-    // for group Scope is not limitet: this is always up to date objects
+    // for group Scope is not limited: this is always up to date objects
     bool isGroup = aFeature.get() && aFeature->getKind() == "Group";
     for(; aFIter != allFeatures.end(); aFIter++) {
       if (*aFIter == owner()) {  // the left features are created later (except subs of composite)
@@ -518,7 +518,7 @@ bool Model_AttributeSelection::update()
                 if (allCurves.IsBound(aCurve)) {
                   aFound++;
                   int anOrient = allCurves.Find(aCurve);
-                  if (anOrient != 0) {  // extra comparision score is orientation
+                  if (anOrient != 0) {  // extra comparison score is orientation
                     if (edgeOrientation(aFace, anEdge) == anOrient)
                       aSameOrientation++;
                   }
@@ -681,7 +681,7 @@ static void registerSubShape(TDF_Label theMainLabel, TopoDS_Shape theShape,
       aName<<"f";
     else if (theOrientation == -1)
       aName<<"r";
-  } else { // make a compisite name from all sub-elements indexes: "1_2_3_4"
+  } else { // make a composite name from all sub-elements indexes: "1_2_3_4"
     TColStd_MapIteratorOfPackedMapOfInteger aRef(theRefs->GetMap());
     for(; aRef.More(); aRef.Next()) {
       aName<<"-"<<aRef.Key();
@@ -837,7 +837,7 @@ bool Model_AttributeSelection::selectPart(
     }
     return true; // nothing to do, referencing just by name
   }
-  // store the shape (in case part is not loaded it should be usefull
+  // store the shape (in case part is not loaded it should be useful
   TopoDS_Shape aShape;
   std::string aName = theContext->data()->name();
   if (!theSubShape.get() || theSubShape->isNull()) {// the whole part shape is selected
