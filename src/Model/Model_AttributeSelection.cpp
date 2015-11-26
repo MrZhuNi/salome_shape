@@ -970,7 +970,7 @@ void Model_AttributeSelection::setId(int theID)
 
     TopTools_IndexedMapOfShape aSubShapesMap;
     TopExp::MapShapes(aMainShape, aSubShapesMap);
-    const TopoDS_Shape& aSelShape = aSubShapesMap.FindKey(theID);
+    const TopoDS_Shape& aSelShape = aSubShapesMap.FindKey(theID); // exception
 
     std::shared_ptr<GeomAPI_Shape> aResult(new GeomAPI_Shape);
     aResult->setImpl(new TopoDS_Shape(aSelShape));

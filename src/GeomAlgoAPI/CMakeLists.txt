@@ -34,6 +34,7 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_ShapeTools.h
     GeomAlgoAPI_Partition.h
     GeomAlgoAPI_PaveFiller.h
+    GeomAlgoAPI_XAOImport.h
 )
 
 SET(PROJECT_SOURCES
@@ -64,12 +65,14 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_ShapeTools.cpp
     GeomAlgoAPI_Partition.cpp
     GeomAlgoAPI_PaveFiller.cpp
+    GeomAlgoAPI_XAOImport.cpp
 )
 
 SET(PROJECT_LIBRARIES
     GeomAPI
     GeomAlgoImpl
     ModelAPI
+    XAO
     ${CAS_OCAF}
     ${CAS_SHAPE}
     ${CAS_TKBO} 
@@ -99,6 +102,7 @@ INCLUDE_DIRECTORIES(
   ../GeomAPI
   ../GeomAlgoImpl
   ../ModelAPI
+  ../XAO
   ${CAS_INCLUDE_DIRS}
 )
 
