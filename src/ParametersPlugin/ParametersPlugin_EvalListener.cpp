@@ -8,8 +8,10 @@
 #include <pyconfig.h>
 
 #include <ParametersPlugin_EvalListener.h>
-#include <ParametersPlugin_Parameter.h>
-#include <ParametersPlugin_PyInterp.h>
+
+#include <string>
+#include <set>
+#include <sstream>
 
 #include <Events_InfoMessage.h>
 
@@ -25,6 +27,9 @@
 
 #include <GeomDataAPI_Point.h>
 #include <GeomDataAPI_Point2D.h>
+
+#include <ParametersPlugin_Parameter.h>
+#include <ParametersPlugin_PyInterp.h>
 
 #include <QMessageBox>
 
