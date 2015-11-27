@@ -34,6 +34,7 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_ShapeTools.h
     GeomAlgoAPI_Partition.h
     GeomAlgoAPI_PaveFiller.h
+    GeomAlgoAPI_XAOExport.h
     GeomAlgoAPI_XAOImport.h
 )
 
@@ -65,6 +66,7 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_ShapeTools.cpp
     GeomAlgoAPI_Partition.cpp
     GeomAlgoAPI_PaveFiller.cpp
+    GeomAlgoAPI_XAOExport.cpp
     GeomAlgoAPI_XAOImport.cpp
 )
 
