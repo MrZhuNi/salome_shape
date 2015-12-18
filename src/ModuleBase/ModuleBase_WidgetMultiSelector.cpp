@@ -113,6 +113,9 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
   QLabel* aListLabel = new QLabel(!aLabelText.empty() ? aLabelText.c_str()
                                                       : tr("Selected objects:"), this);
   aMainLay->addWidget(aListLabel, 1, 0);
+  bool aUseListLabel = theData->getBooleanAttribute("use_label", true);
+  if (!aUseListLabel)
+    aListLabel->setVisible(false);
   // if the xml definition contains one type, an information label should be shown near to the latest
   if (aShapeTypes.size() <= 1) {
     QString aLabelIcon = QString::fromStdString(theData->widgetIcon());

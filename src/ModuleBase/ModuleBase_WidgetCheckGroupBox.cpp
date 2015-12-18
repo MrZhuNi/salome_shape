@@ -7,6 +7,8 @@
 #include <ModuleBase_WidgetCheckGroupBox.h>
 #include <ModelAPI_AttributeBoolean.h>
 
+#include <ModuleBase_WidgetFactory.h>
+
 #include <Config_WidgetAPI.h>
 #include <Config_Keywords.h>
 
@@ -25,10 +27,12 @@ ModuleBase_WidgetCheckGroupBox::ModuleBase_WidgetCheckGroupBox(QWidget* theParen
 {
   QString aToolTip = QString::fromStdString(theData->widgetTooltip());
   bool isChecked = theData->getBooleanAttribute(ATTR_DEFAULT, false);
+  QString aGroupName = QString::fromStdString(theData->getProperty(CONTAINER_PAGE_NAME));
 
   QVBoxLayout* aMainLayout = new QVBoxLayout(this);
   ModuleBase_Tools::zeroMargins(aMainLayout);
   myGroupBox = new QGroupBox(this);
+  myGroupBox->setTitle(aGroupName);
   myGroupBox->setCheckable(true);
   myGroupBox->setToolTip(aToolTip);
   myGroupBox->setChecked(isChecked);
@@ -44,11 +48,6 @@ ModuleBase_WidgetCheckGroupBox::ModuleBase_WidgetCheckGroupBox(QWidget* theParen
 
 ModuleBase_WidgetCheckGroupBox::~ModuleBase_WidgetCheckGroupBox()
 {
-}
-
-void ModuleBase_WidgetCheckGroupBox::setTitle(const QString& theTitle)
-{
-  myGroupBox->setTitle(theTitle);
 }
 
 QWidget* ModuleBase_WidgetCheckGroupBox::pageWidget()

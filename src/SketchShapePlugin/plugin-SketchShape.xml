@@ -18,7 +18,8 @@
               tooltip="Select list of vertices"
               type_choice="Vertices Edges Faces"
               use_external="false"
-              use_choice="false">
+              use_choice="false"
+              use_label="false">
               <validator id="SketchShapePlugin_FeatureValidator" />
             </sketchshape_multi_selector>
           </sketchshape_check_groupbox>
@@ -28,7 +29,8 @@
               tooltip="Select list of edges"
               type_choice="Vertices Edges Faces"
               use_external="false"
-              use_choice="false">
+              use_choice="false"
+              use_label="false">
               <validator id="SketchShapePlugin_FeatureValidator" />
             </sketchshape_multi_selector>
           </sketchshape_check_groupbox>
@@ -38,7 +40,8 @@
               tooltip="Select list of faces"
               type_choice="Vertices Edges Faces"
               use_external="false"
-              use_choice="false">
+              use_choice="false"
+              use_label="false">
               <validator id="SketchShapePlugin_FeatureValidator" />
             </sketchshape_multi_selector>
           </sketchshape_check_groupbox>

@@ -31,8 +31,6 @@ public:
                                  const std::string& theParentId);
   virtual ~ModuleBase_WidgetCheckGroupBox();
 
-  void setTitle(const QString& theTitle);
-
   /// Methods to be redefined from ModuleBase_PageBase: start
   /// Cast the page to regular QWidget
   virtual QWidget* pageWidget();

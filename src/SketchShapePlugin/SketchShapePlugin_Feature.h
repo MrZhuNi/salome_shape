@@ -97,6 +97,9 @@ class SketchShapePlugin_Feature : public ModelAPI_Feature
 
   /// Use plugin manager for features creation
   SketchShapePlugin_Feature();
+
+protected:
+  bool myIsAttributeChangeBlocked; /// flag to do not apply attributeChanged functionality
 };
 
 #endif

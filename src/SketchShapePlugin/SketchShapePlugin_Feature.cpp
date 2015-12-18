@@ -14,7 +14,7 @@
 #include <ModelAPI_Validator.h>
 
 SketchShapePlugin_Feature::SketchShapePlugin_Feature()
-: ModelAPI_Feature()
+: ModelAPI_Feature(), myIsAttributeChangeBlocked(false)
 {
 }
 
@@ -41,6 +41,9 @@ void SketchShapePlugin_Feature::execute()
 
 void SketchShapePlugin_Feature::attributeChanged(const std::string& theID)
 {
+  if (myIsAttributeChangeBlocked)
+    return;
+
   if (theID == VERTEX_CHOICE_ID() ||
       theID == EDGE_CHOICE_ID() ||
       theID == FACE_CHOICE_ID()) {
@@ -51,25 +54,74 @@ void SketchShapePlugin_Feature::attributeChanged(const std::string& theID)
     AttributeBooleanPtr aChoiceAttribute = std::dynamic_pointer_cast<ModelAPI_AttributeBoolean>(
                                            data()->attribute(theID));
     if (!aChoiceAttribute->value()) {
-      AttributeSelectionListPtr aListAttribute =
-        std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(data()->attribute(aListAttrId));
+      AttributeSelectionListPtr aListAttribute = data()->selectionList(aListAttrId);
       aListAttribute->clear();
     }
   }
   else if (theID == VERTEX_LIST_ID() ||
            theID == EDGE_LIST_ID() ||
            theID == FACE_LIST_ID()) {
-    AttributeSelectionListPtr aSelectionListAttr = 
-                      std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(data()->attribute(theID));
-    for (int i = 0, aSize = aSelectionListAttr->size(); i < aSize; i++) {
-      AttributeSelectionPtr aSelectAttr = aSelectionListAttr->value(i);
-      ObjectPtr anObject = aSelectAttr->context();
+    myIsAttributeChangeBlocked = true;
+
+    DataPtr aData = data();
+    AttributeSelectionListPtr aChangedAttr = aData->selectionList(theID);
+
+    AttributeSelectionListPtr aVertexAttr = aData->selectionList(VERTEX_LIST_ID());
+    AttributeSelectionListPtr anEdgeAttr = aData->selectionList(EDGE_LIST_ID());
+    AttributeSelectionListPtr aFaceAttr = aData->selectionList(FACE_LIST_ID());
+
+    if (theID != VERTEX_LIST_ID())
+      aVertexAttr->clear();
+    if (theID != EDGE_LIST_ID())
+      anEdgeAttr->clear();
+    if (theID != FACE_LIST_ID())
+      aFaceAttr->clear();
+
+    std::list<std::pair<ResultPtr, GeomShapePtr> > aChangedAttrValues;
+    for (int i = 0, aSize = aChangedAttr->size(); i < aSize; i++) {
+      AttributeSelectionPtr aSelectAttr = aChangedAttr->value(i);
+      ResultPtr anObject = aSelectAttr->context();
       if (!anObject.get())
         continue;
       else {
-        FeaturePtr aFeature = ModelAPI_Feature::feature(anObject);
+        GeomShapePtr aGeomShape = aSelectAttr->value();
+        if (aGeomShape.get() == NULL)
+          aGeomShape = anObject->shape();
+
+        if (aGeomShape.get() == NULL)
+          continue;
+
+        GeomAPI_Shape::ShapeType aShapeType = aGeomShape->shapeType();
+        if (aGeomShape->isVertex()) {
+          if (theID == VERTEX_LIST_ID())
+            aChangedAttrValues.push_back(std::make_pair(anObject, aGeomShape));
+          else {
+            aVertexAttr->append(anObject, aGeomShape);
+          }
+        }
+        else if (aGeomShape->isEdge()) {
+          if (theID == EDGE_LIST_ID())
+            aChangedAttrValues.push_back(std::make_pair(anObject, aGeomShape));
+          else {
+            anEdgeAttr->append(anObject, aGeomShape);
+          }
+        }
+        else if (aGeomShape->isFace()) {
+          if (theID == FACE_LIST_ID())
+            aChangedAttrValues.push_back(std::make_pair(anObject, aGeomShape));
+          else {
+            aFaceAttr->append(anObject, aGeomShape);
+          }
+        }
       }
     }
+    //aChangedAttr->clear();
+    std::list<std::pair<ResultPtr, GeomShapePtr> >::const_iterator anIt = aChangedAttrValues.begin(),
+                                                                   aLast = aChangedAttrValues.end();
+    for (; anIt != aLast; anIt++)
+      aChangedAttr->append((*anIt).first, (*anIt).second);
+
+    myIsAttributeChangeBlocked = false;
   }
 }
 

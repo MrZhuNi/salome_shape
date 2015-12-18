@@ -6,6 +6,9 @@
 
 #include <SketchShapePlugin_PageGroupBox.h>
 
+#include <QListWidget>
+#include <QList>
+
 SketchShapePlugin_PageGroupBox::SketchShapePlugin_PageGroupBox(QWidget* theParent)
 : ModuleBase_PageGroupBox(theParent)
 {
@@ -13,6 +16,12 @@ SketchShapePlugin_PageGroupBox::SketchShapePlugin_PageGroupBox(QWidget* theParen
 
 void SketchShapePlugin_PageGroupBox::setHighlightedGroupBox(bool isHighlighted)
 {
-  ModuleBase_Tools::setShadowEffect(this, isHighlighted);
+  QList<QListWidget*> aListWidgets = findChildren<QListWidget*>();
+
+  QList<QListWidget*>::const_iterator anIt = aListWidgets.begin(), aLast = aListWidgets.end();
+  for (; anIt != aLast; anIt++) {
+    QListWidget* aListWidget = *anIt;
+    ModuleBase_Tools::setShadowEffect(aListWidget, isHighlighted);
+  }
 }
 
