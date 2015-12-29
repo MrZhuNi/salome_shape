@@ -5,7 +5,7 @@ Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 
 import ModelAPI
 
-from model.roots import Interface
+from ...model.roots import Interface
 
 
 def addPart(partset):

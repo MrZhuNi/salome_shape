@@ -1,5 +1,5 @@
 import unittest
-import model
+from config import model
 import TestSketcher
 from TestSketcher import SketcherTestCase
 

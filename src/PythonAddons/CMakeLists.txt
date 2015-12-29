@@ -3,8 +3,14 @@
 
 SET(CMAKE_AUTOMOC ON)
 
-INSTALL(FILES addons_Features.py addons_Features.xml DESTINATION plugins)
+# configuration
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/addons_Features.xml.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/addons_Features.xml"
+  )
 
+INSTALL(FILES addons_Features.py DESTINATION ${PYTHONAPI_DIR}/plugins)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/addons_Features.xml DESTINATION plugins)
 
-INSTALL(FILES __init__.py DESTINATION addons)
-INSTALL(DIRECTORY macros DESTINATION addons)
+INSTALL(FILES __init__.py DESTINATION ${PYTHONAPI_DIR}/addons)
+INSTALL(DIRECTORY macros DESTINATION ${PYTHONAPI_DIR}/addons)

@@ -6,7 +6,7 @@ Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 import ModelAPI
 import GeomAPI
 
-import geom  # To be removed when gp_Ax3 will be Pythonized
+from .. import geom  # To be removed when gp_Ax3 will be Pythonized
 
 
 def moduleDocument ():

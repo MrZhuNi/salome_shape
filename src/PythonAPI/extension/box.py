@@ -3,8 +3,8 @@ Author: Daniel Brunier-Coulin
 Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 """
 
-from model import Interface
-from macros.box.feature import BoxFeature as MY
+from ..model import Interface
+from ..addons.macros.box.feature import BoxFeature as MY
 
 
 def addBox(part, *args):

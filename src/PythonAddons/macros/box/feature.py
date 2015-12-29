@@ -3,8 +3,8 @@ Authors: Renaud Nedelec - Daniel Brunier-Coulin
 Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 """
 
-import model
-import geom
+from .... import model
+from .... import geom
 
 
 class BoxFeature(model.Feature):

@@ -1,6 +1,6 @@
 import unittest
-import model
-import geom
+from config import model
+from config import geom
 
 if __name__ == "__main__":
     unittest.main()

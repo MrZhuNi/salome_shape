@@ -12,7 +12,7 @@ Example of code:
 
 .. doctest::
 
-   >>> import model
+   >>> from shaper import model
    >>> model.begin()
    >>> partset = model.moduleDocument()
    >>> part = model.addPart(partset).document()
@@ -29,13 +29,13 @@ from ModelAPI import modelAPI_ResultConstruction, featureToCompositeFeature
 from GeomDataAPI import geomDataAPI_Point, geomDataAPI_Dir
 from GeomAlgoAPI import GeomAlgoAPI_SketchBuilder, ShapeList
 
-from model.sketcher.point import Point
-from model.sketcher.line import Line
-from model.sketcher.circle import Circle
-from model.sketcher.arc import Arc
-from model.sketcher.mirror import Mirror
-from model.roots import Interface
-from model.tools import Selection
+from ...model.sketcher.point import Point
+from ...model.sketcher.line import Line
+from ...model.sketcher.circle import Circle
+from ...model.sketcher.arc import Arc
+from ...model.sketcher.mirror import Mirror
+from ...model.roots import Interface
+from ...model.tools import Selection
 
 
 def addSketch(document, plane):

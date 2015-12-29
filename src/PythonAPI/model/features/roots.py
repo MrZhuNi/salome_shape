@@ -1,5 +1,5 @@
 
-from model.roots import Interface
+from ...model.roots import Interface
 
 
 class CompositeBoolean(Interface):

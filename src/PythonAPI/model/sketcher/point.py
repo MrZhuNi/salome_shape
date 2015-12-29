@@ -1,15 +1,15 @@
 """Sketch point feature interface."""
 
 from GeomDataAPI import geomDataAPI_Point2D
-from model.roots import Interface
-from model.errors import FeatureInputInvalid
+from ...model.roots import Interface
+from ...model.errors import FeatureInputInvalid
 
 class Point(Interface):
     """Interface on point feature for data manipulation."""
     def __init__(self, feature, x, y):
         Interface.__init__(self, feature)
         assert(self._feature.getKind() == "SketchPoint")
-        
+
         # Initialize attributes of the feature
         self._point_data = geomDataAPI_Point2D(
             self._feature.data().attribute("PointCoordindates")

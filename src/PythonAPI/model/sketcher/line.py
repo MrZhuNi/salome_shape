@@ -1,6 +1,6 @@
 from GeomDataAPI import geomDataAPI_Point2D
-from model.roots import Interface
-from model.errors import WrongNumberOfArguments
+from ...model.roots import Interface
+from ...model.errors import WrongNumberOfArguments
 
 from .entity import Entity
 

@@ -3,7 +3,7 @@ Author: Sergey Pokhodenko
 Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 """
 
-from model.roots import Interface
+from ...model.roots import Interface
 
 
 def exportToGEOM(part):

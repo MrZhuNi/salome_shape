@@ -4,8 +4,8 @@ Author: Daniel Brunier-Coulin with contribution by Mikhail Ponikarov
 Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 """
 
-from model.roots import Interface
-from model import Selection
+from ...model.roots import Interface
+from ...model import Selection
 
 def addExtrusion(part, *args):
     """Add an Extrusion feature to the Part and return Extrusion.
@@ -131,10 +131,10 @@ class Extrusion(Interface):
 
         See __init__.
         """
-        # MPV: with "clear" calling here the extrusion all the time becomes modificed (height is set to 
+        # MPV: with "clear" calling here the extrusion all the time becomes modificed (height is set to
         # zero and then to actual value, but this function is used in macro Bax, that causes "modified"
         # values without changes that causes cyclic dependency
-        #self.__clear()
+        # self.__clear()
         self._fillAttribute(self._CreationMethod, "BySizes")
         self._fillAttribute(self._to_size, to_size)
         self._fillAttribute(self._from_size, from_size)

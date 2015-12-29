@@ -2,15 +2,15 @@
 
 from GeomDataAPI import geomDataAPI_Point2D
 from ModelAPI import ModelAPI_Feature
-from model.roots import Interface
-from model.errors import FeatureInputInvalid
+from ...model.roots import Interface
+from ...model.errors import FeatureInputInvalid
 
 class Mirror(Interface):
     """Interface on mirror constraint for data manipulation."""
     def __init__(self, feature, mirror_line, *mirror_objects):
         Interface.__init__(self, feature)
         assert(self._feature.getKind() == "SketchConstraintMirror")
-        
+
         self._feature.data().refattr("ConstraintEntityA").setObject(mirror_line)
         self._feature.data().reflist("ConstraintEntityB").clear()
         for object_ in mirror_objects:

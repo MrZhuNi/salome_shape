@@ -5,7 +5,7 @@ Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 
 import ModelAPI
 
-from model import tools
+from . import tools
 
 
 class Feature(ModelAPI.ModelAPI_Feature):

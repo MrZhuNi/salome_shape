@@ -3,5 +3,5 @@
 
 # Main packages
 
-import geom
-import model
+from . import geom
+from . import model

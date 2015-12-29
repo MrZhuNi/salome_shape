@@ -2,7 +2,7 @@
 """
 
 import ModelAPI
-from macros.box.feature      import BoxFeature
+from ..addons.macros.box.feature      import BoxFeature
 
 
 class PythonFeaturesPlugin(ModelAPI.ModelAPI_Plugin):

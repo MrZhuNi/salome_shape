@@ -2,8 +2,8 @@ import unittest
 
 import ModelAPI
 
-import model
-from model.tools import Selection
+from config import model
+# from config.model.tools import Selection
 
 #-----------------------------------------------------------------------------
 # Fixtures
@@ -37,8 +37,8 @@ class FeaturesRevolutionFixture(FeaturesAddRevolutionFixture):
         model.do()
 
         base = base_sketch.selectFace(circle.lastResult())
-        axis_object = Selection(axis_sketch.firstResult(),
-                                line.firstResult().shape())
+        axis_object = model.Selection(axis_sketch.firstResult(),
+                                      line.firstResult().shape())
 
         self.revolution = model.addRevolution(self.part, base, axis_object,
                                               0, 180)
@@ -71,8 +71,8 @@ class FeaturesAddRevolutionTestCase(FeaturesAddRevolutionFixture):
         model.do()
 
         base = base_sketch.selectFace(circle.lastResult())
-        axis_object = Selection(axis_sketch.firstResult(),
-                                line.firstResult().shape())
+        axis_object = model.Selection(axis_sketch.firstResult(),
+                                      line.firstResult().shape())
 
         revolution = model.addRevolution(self.part, base, axis_object,
                                          0, 180)
@@ -106,8 +106,8 @@ class FeaturesAddRevolutionTestCase(FeaturesAddRevolutionFixture):
         model.do()
 
         base = base_sketch.selectFace(base_circle.result())
-        axis_object = Selection(axis_sketch.firstResult(),
-                                line.firstResult().shape())
+        axis_object = model.Selection(axis_sketch.firstResult(),
+                                      line.firstResult().shape())
         to_obejct = to_sketch.selectFace(to_circle.result())[0]
         from_object = from_sketch.selectFace(from_circle.result())[0]
 
@@ -184,8 +184,8 @@ class FeaturesRevolutionTestCase(FeaturesRevolutionFixture):
         model.do()
 
         base = base_sketch.selectFace(base_circle.result())
-        axis_object = Selection(axis_sketch.firstResult(),
-                                line.firstResult().shape())
+        axis_object = model.Selection(axis_sketch.firstResult(),
+                                      line.firstResult().shape())
         to_obejct = to_sketch.selectFace(to_circle.result())[0]
         from_object = from_sketch.selectFace(from_circle.result())[0]
 

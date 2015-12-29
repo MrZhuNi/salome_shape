@@ -2,26 +2,14 @@
 # Author: Sergey POKHODENKO
 # -----------------------------
 
-import geom
-import model
-
-# Initialisation
-model.begin()
-partset = model.moduleDocument()
-
-# Create a new Part
-part = model.addPart(partset).document()
+from .. import geom
+from .. import model
 
 L = 64
 E = 16
 P = 80
 
-# Create Parameters
-model.addParameter(part, "L", L)
-model.addParameter(part, "E", E)
-model.addParameter(part, "P", P)
-
-def vertical_body():
+def vertical_body(part):
     # Create YOZ sketch
     sketch = model.addSketch(part, model.defaultPlane("YOZ"))
 
@@ -52,7 +40,7 @@ def vertical_body():
 
     return body
 
-def bottom_body():
+def bottom_body(part):
     # Create XOY sketch
     sketch = model.addSketch(part, "Extrusion_1_1/LateralFace_2")
 
@@ -105,7 +93,7 @@ def bottom_body():
 
     return body
 
-def body_3():
+def body_3(part):
     # Create XOZ sketch
     sketch = model.addSketch(part, "Boolean_1_1/Modified_3")
 
@@ -158,7 +146,7 @@ def body_3():
 
     return body
 
-def body_4():
+def body_4(part):
     # Create XOZ 2nd sketch
     sketch = model.addSketch(part, "Boolean_2_1/Modified_7")
 
@@ -185,19 +173,34 @@ def body_4():
 
     return body
 
+def main():
+    # Initialisation
+    model.begin()
+    partset = model.moduleDocument()
 
-b1 = vertical_body()
-b2 = bottom_body()
+    # Create a new Part
+    part = model.addPart(partset).document()
 
-boolean = model.addAddition(part, b1.result() + b2.result())
-model.do()
+    # Create Parameters
+    model.addParameter(part, "L", L)
+    model.addParameter(part, "E", E)
+    model.addParameter(part, "P", P)
 
-b3 = body_3()
+    b1 = vertical_body(part)
+    b2 = bottom_body(part)
 
-boolean = model.addAddition(part, boolean.result() + b3.result())
-model.do()
+    boolean = model.addAddition(part, b1.result() + b2.result())
+    model.do()
 
-b4 = body_4()
+    b3 = body_3(part)
 
-boolean = model.addAddition(part, boolean.result() + b4.result())
-model.do()
+    boolean = model.addAddition(part, boolean.result() + b3.result())
+    model.do()
+
+    b4 = body_4(part)
+
+    boolean = model.addAddition(part, boolean.result() + b4.result())
+    model.do()
+
+if __name__ == '__main__':
+    main()

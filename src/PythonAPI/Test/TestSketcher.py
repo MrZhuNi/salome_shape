@@ -1,5 +1,5 @@
 import unittest
-import model
+from config import model
 
 # Delta value for almost equal comparisons
 DELTA = 1e-10

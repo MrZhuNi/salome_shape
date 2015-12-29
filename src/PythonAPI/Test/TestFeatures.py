@@ -2,7 +2,7 @@ import unittest
 
 import ModelAPI
 
-import model
+from config import model
 
 #-----------------------------------------------------------------------------
 # Fixtures

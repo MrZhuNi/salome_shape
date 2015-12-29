@@ -1,0 +1,3 @@
+<plugin>
+  <source path="../@PYTHONAPI_DIR@/addons/macros/box/widget.xml"/>
+</plugin>

@@ -1,5 +1,5 @@
 import unittest
-import model
+from config import model
 from TestSketcher import SketcherTestCase
 
 class SketcherSetTangent(SketcherTestCase):

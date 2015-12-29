@@ -1,8 +1,8 @@
 """Sketch circle feature interface."""
 
 from GeomDataAPI import geomDataAPI_Point2D
-from model.errors import WrongNumberOfArguments
-from model.roots import Interface
+from ...model.errors import WrongNumberOfArguments
+from ...model.roots import Interface
 
 class Arc(Interface):
     """Interface to a sketch arc feature."""

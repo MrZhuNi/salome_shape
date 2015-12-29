@@ -5,8 +5,8 @@ Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 
 from GeomAlgoAPI import GeomAlgoAPI_Boolean
 
-from model.roots import Interface
-from model import Selection
+from ...model.roots import Interface
+from ...model import Selection
 
 def addAddition(part, *args):
     """Perform addition in the Part.
@@ -17,8 +17,8 @@ def addAddition(part, *args):
 
     Args:
         part (ModelAPI_Document): part document
-        main_objects (list of :class:`model.Selection`): main objects
-        tool_objects (list of :class:`model.Selection`): (optional) tool_objects objects
+        main_objects (list of :class:`...model.Selection`): main objects
+        tool_objects (list of :class:`...model.Selection`): (optional) tool_objects objects
 
     Returns:
         Boolean: boolean object
@@ -38,8 +38,8 @@ def addSubtraction(part, *args):
 
     Args:
         part (ModelAPI_Document): part document
-        main_objects (list of :class:`model.Selection`): main objects
-        tool_objects (list of :class:`model.Selection`): tool_objects objects
+        main_objects (list of :class:`...model.Selection`): main objects
+        tool_objects (list of :class:`...model.Selection`): tool_objects objects
 
     Returns:
         Boolean: boolean object
@@ -60,8 +60,8 @@ def addIntersection(part, *args):
 
     Args:
         part (ModelAPI_Document): part document
-        main_objects (list of :class:`model.Selection`): main objects
-        tool_objects (list of :class:`model.Selection`): tool_objects objects
+        main_objects (list of :class:`...model.Selection`): main objects
+        tool_objects (list of :class:`...model.Selection`): tool_objects objects
 
     Returns:
         Boolean: boolean object
@@ -122,7 +122,7 @@ class Boolean(Interface):
         """Modify main_objects attribute of the feature.
 
         Args:
-            main_objects (list of :class:`model.Selection`): main objects
+            main_objects (list of :class:`...model.Selection`): main objects
         """
         self._fillAttribute(self._main_objects, main_objects)
         pass
@@ -131,7 +131,7 @@ class Boolean(Interface):
         """Modify tool_objects attribute of the feature.
 
         Args:
-            tool_objects (list of :class:`model.Selection`): tool objects
+            tool_objects (list of :class:`...model.Selection`): tool objects
         """
         self._fillAttribute(self._tool_objects, tool_objects)
         pass

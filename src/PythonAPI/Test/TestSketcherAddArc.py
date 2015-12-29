@@ -1,8 +1,7 @@
 import unittest
 
-import model
-import geom
-from model import WrongNumberOfArguments
+from config import model
+from config import geom
 
 from TestSketcher import SketcherTestCase
 
@@ -23,9 +22,9 @@ class SketcherAddArc(SketcherTestCase):
         self.assertEqual(arc.startPoint().y(), 0)
 
     def test_number_of_args(self):
-        with self.assertRaises(WrongNumberOfArguments):
+        with self.assertRaises(model.WrongNumberOfArguments):
             self.sketch.addArc(0, 1, 1, 1)
-        with self.assertRaises(WrongNumberOfArguments):
+        with self.assertRaises(model.WrongNumberOfArguments):
             self.sketch.addArc(0, 1)
 
     def test_modify_arc(self):
