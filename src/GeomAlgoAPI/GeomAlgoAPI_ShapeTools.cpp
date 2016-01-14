@@ -7,8 +7,7 @@
 #include <GeomAlgoAPI_ShapeTools.h>
 
 #include <GeomAlgoAPI_CompoundBuilder.h>
-
-#include <gp_Pln.hxx>
+#include <GeomAPI_ShapeExplorer.h>
 
 #include <Bnd_Box.hxx>
 #include <BOPTools.hxx>
@@ -20,17 +19,18 @@
 #include <Geom_Plane.hxx>
 #include <GeomLib_IsPlanarSurface.hxx>
 #include <GeomLib_Tool.hxx>
+#include <gp_Pln.hxx>
 #include <GProp_GProps.hxx>
 #include <IntAna_IntConicQuad.hxx>
 #include <IntAna_Quadric.hxx>
 #include <NCollection_Vector.hxx>
 #include <TCollection_AsciiString.hxx>
+#include <TopExp_Explorer.hxx>
 #include <TopoDS_Builder.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Shell.hxx>
 #include <TopoDS.hxx>
-#include <TopExp_Explorer.hxx>
 
 
 //=================================================================================================
@@ -287,4 +287,23 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::fitPlaneToBox(const std::
   aResultShape->setImpl(new TopoDS_Shape(BRepLib_MakeFace(aFacePln, UMin, UMax, VMin, VMax).Face()));
 
   return aResultShape;
+}
+
+//=================================================================================================
+void GeomAlgoAPI_ShapeTools::getSolidsInCompSolid(const std::shared_ptr<GeomAPI_Shape> theCompSolid,
+                                                  const ListOfShape& theSolidsToAvoid,
+                                                  ListOfShape& theSolidsInCompSolid)
+{
+  for(GeomAPI_ShapeExplorer anExp(theCompSolid, GeomAPI_Shape::SOLID); anExp.more(); anExp.next()) {
+    std::shared_ptr<GeomAPI_Shape> aSolidInCompSolid = anExp.current();
+    ListOfShape::const_iterator anIt = theSolidsToAvoid.begin();
+    for(; anIt != theSolidsToAvoid.end(); anIt++) {
+      if(aSolidInCompSolid->isEqual(*anIt)) {
+        break;
+      }
+    }
+    if(anIt == theSolidsToAvoid.end()) {
+      theSolidsInCompSolid.push_back(aSolidInCompSolid);
+    }
+  }
 }
