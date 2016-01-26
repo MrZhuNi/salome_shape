@@ -82,11 +82,6 @@ def bottom_body():
     sketch.setEqual(top.result(), bottom.result())
     sketch.setEqual(h1.result(), h2.result())
 
-    sketch.setLength(top.result(), "P")
-    sketch.setLength(right.result(), 16)
-    sketch.setLength(v1.result(), 16)
-    sketch.setLength(h2.result(), 20)
-
     sketch.setCoincident(arc.center(), v1.result())
     sketch.setCoincident(arc.startPoint(), h2.endPoint())
     sketch.setCoincident(arc.endPoint(), h1.startPoint())
@@ -97,6 +92,13 @@ def bottom_body():
     sketch.setCoincident(left_e.endPoint(), left.startPoint())
 
     model.do()  #!!!
+
+    # Dimensions
+    sketch.setLength(v1.result(), 16)
+    sketch.setLength(h2.result(), 20)
+    sketch.setLength(right.result(), 16)
+    sketch.setLength(top.result(), "P")
+    model.do()
 
     # Create extrusion
     body = model.addExtrusion(part, sketch.selectFace(), "-E")
