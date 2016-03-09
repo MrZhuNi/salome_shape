@@ -1187,6 +1187,9 @@ void PartSet_Module::onBooleanOperationChange(int theOperation)
   case 2:
     aPanel->setWindowTitle(tr("Common"));
     break;
+  case 3:
+    aPanel->setWindowTitle(tr("Smash"));
+    break;
   }
 }
 
