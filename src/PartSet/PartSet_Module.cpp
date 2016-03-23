@@ -49,6 +49,7 @@
 #include <ModelAPI_Session.h>
 #include <ModelAPI_ResultBody.h>
 #include <ModelAPI_AttributeString.h>
+#include <ModelAPI_AttributeSelectionList.h>
 
 #include <GeomDataAPI_Point2D.h>
 #include <GeomDataAPI_Point.h>
@@ -794,6 +795,11 @@ void PartSet_Module::onFeatureTriggered()
     }
   }
   ModuleBase_IModule::onFeatureTriggered();
+}
+
+bool PartSet_Module::canCommitOperation() const
+{
+  return PartSet_WidgetSketchCreator::canCommitCurrentSketch(myWorkshop);
 }
 
 void PartSet_Module::launchOperation(const QString& theCmdId)

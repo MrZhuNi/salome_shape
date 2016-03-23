@@ -105,9 +105,10 @@ Q_OBJECT
   /// \param theOperation an aborted operation
   void abortOperation(ModuleBase_Operation* theOperation);
 
-public slots:
   /// Slot that commits the current operation.
-  void onCommitOperation();
+  bool onCommitOperation();
+
+public slots:
   /// Slot that aborts the current operation.
   void onAbortOperation();
   /// Slot that validates the current operation using the validateOperation method.

@@ -230,13 +230,14 @@ bool XGUI_OperationMgr::abortAllOperations()
 
 bool XGUI_OperationMgr::commitAllOperations()
 {
-  bool isCompositeCommitted = false;
+  bool isCompositeCommitted = false, anOperationProcessed = false;
   while (hasOperation()) {
     ModuleBase_Operation* anOperation = currentOperation();
     if (workshop()->errorMgr()->isApplyEnabled()) {
-      onCommitOperation();
+      anOperationProcessed = onCommitOperation();
     } else {
       abortOperation(anOperation);
+      anOperationProcessed = true;
     }
     ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
                                                                             (anOperation);
@@ -248,6 +249,12 @@ bool XGUI_OperationMgr::commitAllOperations()
       if (isCompositeCommitted)
         break;
     }
+    // not processed[committed] operation might be used in composite feature,
+    // so the while will be stopped by the previous check.
+    // this code is not necessary, but logically should be done when the processing will not
+    // be done for not composite feature by some reasons
+    if (!anOperationProcessed)
+      break;
   }
   return true;
 }
@@ -297,11 +304,12 @@ bool XGUI_OperationMgr::canStopOperation(ModuleBase_Operation* theOperation)
 
 bool XGUI_OperationMgr::commitOperation()
 {
-  if (hasOperation() && currentOperation()->isValid()) {
-    onCommitOperation();
-    return true;
-  }
-  return false;
+  //if (hasOperation() && currentOperation()->isValid()) {
+  //  onCommitOperation();
+  //  return true;
+  //}
+  //return false;
+  return onCommitOperation();
 }
 
 void XGUI_OperationMgr::resumeOperation(ModuleBase_Operation* theOperation)
@@ -386,11 +394,13 @@ void XGUI_OperationMgr::abortOperation(ModuleBase_Operation* theOperation)
   }
 }
 
-void XGUI_OperationMgr::onCommitOperation()
+bool XGUI_OperationMgr::onCommitOperation()
 {
+  bool isCommitted = false;
   ModuleBase_Operation* anOperation = currentOperation();
-  if (anOperation)
-    anOperation->commit();
+  if (anOperation && myWorkshop->module()->canCommitOperation())
+    isCommitted = anOperation->commit();
+  return isCommitted;
 }
 
 void XGUI_OperationMgr::onAbortOperation()

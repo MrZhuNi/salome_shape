@@ -91,6 +91,10 @@ public:
   virtual bool createWidgets(ModuleBase_Operation* theOperation,
                              QList<ModuleBase_ModelWidget*>& theWidgets) const;
 
+  /// Returns true if the operation can be committed. Result in default implementation is true.
+  /// \return boolean value
+  virtual bool canCommitOperation() const;
+
   /// Creates an operation and send it to loop
   /// \param theCmdId the operation name
   virtual void launchOperation(const QString& theCmdId);
