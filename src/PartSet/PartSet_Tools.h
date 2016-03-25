@@ -249,6 +249,13 @@ public:
   * \param theStartCoin the coincedence feature
   */
   static std::shared_ptr<GeomAPI_Pnt2d> getCoincedencePoint(FeaturePtr theStartCoin);
+
+  /**
+   * Returns true if the object is a sketch entity, where auxiliary attribute has true vlaue
+   * \param theObject a result or feature
+   * \return boolean result
+   */
+  static bool isAuxiliarySketchEntity(const ObjectPtr& theObject);
 };
 
 #endif
