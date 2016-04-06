@@ -800,7 +800,7 @@ void PartSet_Module::onFeatureTriggered()
 
 bool PartSet_Module::canCommitOperation() const
 {
-  return PartSet_WidgetSketchCreator::canCommitCurrentSketch(myWorkshop);
+  return true;
 }
 
 void PartSet_Module::launchOperation(const QString& theCmdId)
