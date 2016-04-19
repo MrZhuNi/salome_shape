@@ -2,9 +2,6 @@
  <qresource>
      <file>icons/activate.png</file>
      <file>icons/angle_32x32.png</file>
-     <file>icons/box.png</file>
-     <file>icons/box_2pt_32x32.png</file>
-     <file>icons/box_dxyz_32x32.png</file>
      <file>icons/color.png</file>
      <file>icons/deactivate.png</file>
      <file>icons/edit.png</file>

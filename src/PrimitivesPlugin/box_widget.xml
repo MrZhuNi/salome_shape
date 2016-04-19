@@ -2,7 +2,7 @@
 
 <source>
   <toolbox id="CreationMethod">
-    <box id="BoxByDimensions" title="By dimensions" icon=":icons/box_dxyz_32x32.png">
+    <box id="BoxByDimensions" title="By dimensions" icon="icons/Primitives/box_dxyz_32x32.png">
       <doublevalue
         id="dx"
         label="DX"
@@ -31,17 +31,17 @@
         tooltip="Dimension in Z">
       </doublevalue>
     </box>
-    <box id="BoxByTwoPoints" title="By two points" icon=":icons/box_2pt_32x32.png">
+    <box id="BoxByTwoPoints" title="By two points" icon="icons/Primitives/box_2pt_32x32.png">
       <shape_selector id="FirstPoint"
         label="First point"
-        icon=":icons/point.png"
+        icon="icons/Primitives/point.png"
         tooltip="Select a first point"
         shape_types="vertex">
         <validator id="GeomValidators_ShapeType" parameters="vertex"/>
       </shape_selector>
       <shape_selector id="SecondPoint"
         label="Second point"
-        icon=":icons/point.png"
+        icon="icons/Primitives/point.png"
         tooltip="Select a second point"
         shape_types="vertex">
         <validator id="GeomValidators_ShapeType" parameters="vertex"/>

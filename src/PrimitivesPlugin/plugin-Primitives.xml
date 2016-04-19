@@ -3,7 +3,7 @@
 <plugin> 
   <workbench id="Primitives" document="Part">
     <group id="Primitives">
-      <feature id="Box" title="Create a box" tooltip="Create a box" icon=":icons/box.png">
+      <feature id="Box" title="Create a box" tooltip="Create a box" icon="icons/Primitives/box.png">
         <source path="box_widget.xml"/>
       </feature>
     </group>
