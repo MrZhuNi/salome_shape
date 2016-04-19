@@ -3,6 +3,8 @@
 // File:        GeomAlgoAPI_MakeShape.cpp
 // Created:     20 Oct 2014
 // Author:      Sergey ZARITCHNY
+//
+// Modified by Clarisse Genrault (CEA) : 17 Mar 2016
 
 #include "GeomAlgoAPI_MakeShape.h"
 
@@ -15,6 +17,7 @@
 #include <TopExp_Explorer.hxx>
 #include <TopTools_ListOfShape.hxx>
 #include <TopTools_ListIteratorOfListOfShape.hxx>
+#include <GeomAPI_ShapeExplorer.h>
 
 //=================================================================================================
 GeomAlgoAPI_MakeShape::GeomAlgoAPI_MakeShape()
@@ -191,5 +194,16 @@ void GeomAlgoAPI_MakeShape::initialize() {
     std::shared_ptr<GeomAPI_Shape> aCurrentShape(new GeomAPI_Shape());
     aCurrentShape->setImpl(new TopoDS_Shape(anExp.Current()));
     myMap->bind(aCurrentShape, aCurrentShape);
+  }
+}
+
+//=================================================================================================
+void GeomAlgoAPI_MakeShape::prepareNamingFaces()
+{
+  int index = 1;
+  GeomAPI_ShapeExplorer anExp(shape(), GeomAPI_Shape::FACE);
+  for(GeomAPI_ShapeExplorer anExp(shape(), GeomAPI_Shape::FACE); anExp.more(); anExp.next()) {
+    std::shared_ptr<GeomAPI_Shape> aFace = anExp.current();
+    myCreatedFaces["Face_" + std::to_string(index++)] = aFace;
   }
 }

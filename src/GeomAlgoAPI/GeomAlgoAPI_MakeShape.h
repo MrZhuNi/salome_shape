@@ -3,6 +3,8 @@
 // File:        GeomAlgoAPI_MakeShape.h
 // Created:     17 Oct 2014
 // Author:      Sergey ZARITCHNY
+//
+// Modified by Clarisse Genrault (CEA) : 17 Mar 2016
 #ifndef GeomAlgoAPI_MakeShape_H_
 #define GeomAlgoAPI_MakeShape_H_
 
@@ -11,6 +13,7 @@
 
 #include <list>
 #include <memory>
+#include <map>
 
 /// \class GeomAlgoAPI_MakeShape
 /// \ingroup DataAlgo
@@ -80,6 +83,18 @@ public:
   /// \param[in] theShape base shape.
   GEOMALGOAPI_EXPORT virtual bool isDeleted(const std::shared_ptr<GeomAPI_Shape> theShape);
 
+  /// \return true if the data were correct.
+  GEOMALGOAPI_EXPORT virtual bool check() { return true; };
+
+  ///  \return the list of created faces.
+  GEOMALGOAPI_EXPORT std::map< std::string, std::shared_ptr<GeomAPI_Shape> > getCreatedFaces() {return myCreatedFaces;}
+
+  /// \return the error.
+  GEOMALGOAPI_EXPORT std::string getError() { return myError; }
+
+  /// \brief Prepare the naming of faces.
+  GEOMALGOAPI_EXPORT virtual void prepareNamingFaces();
+
 protected:
   /// \brief Sets builder type.
   /// \param[in] theBuilderType new builder type.
@@ -92,6 +107,9 @@ protected:
   /// \brief Sets result shape.
   /// \param[in] theShape new shape.
   void setShape(const std::shared_ptr<GeomAPI_Shape> theShape);
+
+  std::string myError; /// Error occurred during the execution of an algorithm.
+  std::map< std::string, std::shared_ptr<GeomAPI_Shape> > myCreatedFaces; /// Map of created faces with their name for naming.
 
 protected:
   std::shared_ptr<GeomAPI_DataMapOfShapeShape> myMap; ///< Data map to keep correct orientation of sub-shapes.

@@ -37,6 +37,10 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Intersection.h
     GeomAlgoAPI_Pipe.h
     GeomAlgoAPI_WireBuilder.h
+    GeomAlgoAPI_Box.h
+    GeomAlgoAPI_BoxPoints.h
+    GeomAlgoAPI_DirectAPI.h
+    GeomAlgoAPI_Exception.h
 )
 
 SET(PROJECT_SOURCES
@@ -70,6 +74,10 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Intersection.cpp
     GeomAlgoAPI_Pipe.cpp
     GeomAlgoAPI_WireBuilder.cpp
+    GeomAlgoAPI_Box.cpp
+    GeomAlgoAPI_BoxPoints.cpp
+    GeomAlgoAPI_DirectAPI.cpp
+    GeomAlgoAPI_Exception.cpp
 )
 
 SET(PROJECT_LIBRARIES

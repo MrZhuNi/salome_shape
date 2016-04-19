@@ -37,6 +37,10 @@
   #include "GeomAlgoAPI_Intersection.h"
   #include "GeomAlgoAPI_Pipe.h"
   #include "GeomAlgoAPI_WireBuilder.h"
+  #include "GeomAlgoAPI_Box.h"
+  #include "GeomAlgoAPI_BoxPoints.h"
+  #include "GeomAlgoAPI_DirectAPI.h"
+  #include "GeomAlgoAPI_Exception.h"
 
   #include <memory>
   #include <string>
