@@ -195,6 +195,8 @@ AttributePtr Model_Data::addAttribute(const std::string& theID, const std::strin
       myAttrs.find(theID); \
     if (aFound != myAttrs.end()) { \
       aRes = std::dynamic_pointer_cast<ATTR_TYPE>(aFound->second); \
+    } else { \
+      Events_Error::send("Can not receive unknown attribute " + theID + " of type " + #ATTR_TYPE); \
     } \
     return aRes; \
   }
