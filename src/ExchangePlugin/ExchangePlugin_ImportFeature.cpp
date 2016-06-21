@@ -2,16 +2,12 @@
 
 // File:    ExchangePlugin_ImportFeature.cpp
 // Created: Aug 28, 2014
-// Author:  Sergey BELASH
+// Authors:  Sergey BELASH, Sergey POKHODENKO
 
 #include <ExchangePlugin_ImportFeature.h>
 
 #include <algorithm>
 #include <string>
-#ifdef _DEBUG
-#include <iostream>
-#include <ostream>
-#endif
 
 #include <Config_Common.h>
 #include <Config_PropManager.h>
@@ -57,9 +53,10 @@ ExchangePlugin_ImportFeature::~ExchangePlugin_ImportFeature()
 void ExchangePlugin_ImportFeature::initAttributes()
 {
   data()->addAttribute(ExchangePlugin_ImportFeature::FILE_PATH_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(ExchangePlugin_ImportFeature::GROUP_LIST_ID(), ModelAPI_AttributeRefList::typeId());
+  data()->addAttribute(ExchangePlugin_ImportFeature::FEATURES_ID(), ModelAPI_AttributeRefList::typeId());
 
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), ExchangePlugin_ImportFeature::GROUP_LIST_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(
+      getKind(), ExchangePlugin_ImportFeature::FEATURES_ID());
 }
 
 /*
@@ -138,23 +135,23 @@ void ExchangePlugin_ImportFeature::importXAO(const std::string& theFileName)
   XAO::Geometry* aXaoGeometry = aXao.getGeometry();
 
   // use the geometry name or the file name for the feature
-  std::string aBodyName = aXaoGeometry->getName().empty()
-      ? GeomAlgoAPI_Tools::File_Tools::name(theFileName)
-      : aXaoGeometry->getName();
+  std::string aBodyName = aXaoGeometry->getName();
+  if (aBodyName.empty())
+    aBodyName = GeomAlgoAPI_Tools::File_Tools::name(theFileName);
   data()->setName(aBodyName);
 
   ResultBodyPtr aResultBody = createResultBody(aGeomShape);
   setResult(aResultBody);
 
   // Process groups
-  AttributeRefListPtr aRefListOfGroups = reflist(ExchangePlugin_ImportFeature::GROUP_LIST_ID());
+  std::shared_ptr<ModelAPI_AttributeRefList> aRefListOfGroups =
+      std::dynamic_pointer_cast<ModelAPI_AttributeRefList>(data()->attribute(FEATURES_ID()));
 
   // Remove previous groups stored in RefList
   std::list<ObjectPtr> anGroupList = aRefListOfGroups->list();
   std::list<ObjectPtr>::iterator anGroupIt = anGroupList.begin();
   for (; anGroupIt != anGroupList.end(); ++anGroupIt) {
-    std::shared_ptr<ModelAPI_Feature> aFeature =
-        std::dynamic_pointer_cast<ModelAPI_Feature>(*anGroupIt);
+    std::shared_ptr<ModelAPI_Feature> aFeature = ModelAPI_Feature::feature(*anGroupIt);
     if (aFeature)
       document()->removeFeature(aFeature);
   }
@@ -163,7 +160,7 @@ void ExchangePlugin_ImportFeature::importXAO(const std::string& theFileName)
   for (int aGroupIndex = 0; aGroupIndex < aXao.countGroups(); ++aGroupIndex) {
     XAO::Group* aXaoGroup = aXao.getGroup(aGroupIndex);
 
-    std::shared_ptr<ModelAPI_Feature> aGroupFeature = document()->addFeature("Group", false);
+    std::shared_ptr<ModelAPI_Feature> aGroupFeature = addFeature("Group");
 
     // group name
     if (!aXaoGroup->getName().empty())
@@ -188,13 +185,13 @@ void ExchangePlugin_ImportFeature::importXAO(const std::string& theFileName)
 
       aSelectionList->value(anElementIndex)->setId(aReferenceID);
     }
-
-    aRefListOfGroups->append(aGroupFeature);
-
-    // hide the group in the history
-    document()->setCurrentFeature(aGroupFeature, false);
-    // groups features is internal part of the import
-    aGroupFeature->setInHistory(aGroupFeature, false);
+//
+//    aRefListOfGroups->append(aGroupFeature);
+//
+//    // hide the group in the history
+//    document()->setCurrentFeature(aGroupFeature, false);
+//    // groups features is internal part of the import
+//    aGroupFeature->setInHistory(aGroupFeature, false);
   }
 
   } catch (XAO::XAO_Exception& e) {
@@ -202,6 +199,79 @@ void ExchangePlugin_ImportFeature::importXAO(const std::string& theFileName)
     setError("An error occurred while importing " + theFileName + ": " + anError);
     return;
   }
+}
+
+//============================================================================
+std::shared_ptr<ModelAPI_Feature> ExchangePlugin_ImportFeature::addFeature(
+    std::string theID)
+{
+  std::shared_ptr<ModelAPI_Feature> aNew = document()->addFeature(theID, false);
+  if (aNew)
+    data()->reflist(FEATURES_ID())->append(aNew);
+  // set as current also after it becomes sub to set correctly enabled for other subs
+  document()->setCurrentFeature(aNew, false);
+  return aNew;
+}
+
+void ExchangePlugin_ImportFeature::removeFeature(
+    std::shared_ptr<ModelAPI_Feature> theFeature)
+{
+  if (!data()->isValid())
+    return;
+  AttributeRefListPtr aList = reflist(FEATURES_ID());
+  // if the object is last, remove it from the list (needed to skip empty transaction on edit of sketch feature)
+  if (aList->object(aList->size(true) - 1, true) == theFeature) {
+    aList->remove(theFeature);
+  } else {
+    // to keep the persistent sub-elements indexing, do not remove elements from list,
+    // but substitute by nulls
+    aList->substitute(theFeature, ObjectPtr());
+  }
+}
+
+int ExchangePlugin_ImportFeature::numberOfSubs(bool forTree) const
+{
+  if (forTree)
+    return 0;
+  return data()->reflist(FEATURES_ID())->size(false);
+}
+
+std::shared_ptr<ModelAPI_Feature> ExchangePlugin_ImportFeature::subFeature(
+    const int theIndex, bool forTree)
+{
+  if (forTree)
+    return FeaturePtr();
+
+  ObjectPtr anObj = data()->reflist(FEATURES_ID())->object(theIndex, false);
+  FeaturePtr aRes = std::dynamic_pointer_cast<ModelAPI_Feature>(anObj);
+  return aRes;
+}
+
+int ExchangePlugin_ImportFeature::subFeatureId(const int theIndex) const
+{
+  std::shared_ptr<ModelAPI_AttributeRefList> aRefList = std::dynamic_pointer_cast<
+      ModelAPI_AttributeRefList>(data()->attribute(FEATURES_ID()));
+  std::list<ObjectPtr> aFeatures = aRefList->list();
+  std::list<ObjectPtr>::const_iterator anIt = aFeatures.begin();
+  int aResultIndex = 1; // number of the counted (created) features, started from 1
+  int aFeatureIndex = -1; // number of the not-empty features in the list
+  for (; anIt != aFeatures.end(); anIt++) {
+    if (anIt->get())
+      aFeatureIndex++;
+    if (aFeatureIndex == theIndex)
+      break;
+    aResultIndex++;
+  }
+  return aResultIndex;
+}
+
+bool ExchangePlugin_ImportFeature::isSub(ObjectPtr theObject) const
+{
+  // check is this feature of result
+  FeaturePtr aFeature = ModelAPI_Feature::feature(theObject);
+  if (aFeature)
+    return data()->reflist(FEATURES_ID())->isInList(aFeature);
+  return false;
 }
 
 //============================================================================
