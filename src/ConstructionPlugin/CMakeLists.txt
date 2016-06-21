@@ -7,15 +7,15 @@ SET(PROJECT_HEADERS
     ConstructionPlugin.h
     ConstructionPlugin_Plugin.h
     ConstructionPlugin_Point.h
-	ConstructionPlugin_Axis.h
-	ConstructionPlugin_Plane.h
+    ConstructionPlugin_Axis.h
+    ConstructionPlugin_Plane.h
 )
 
 SET(PROJECT_SOURCES
     ConstructionPlugin_Plugin.cpp
     ConstructionPlugin_Point.cpp
-	ConstructionPlugin_Axis.cpp
-	ConstructionPlugin_Plane.cpp
+    ConstructionPlugin_Axis.cpp
+    ConstructionPlugin_Plane.cpp
 )
 
 SET(XML_RESOURCES
@@ -49,4 +49,5 @@ INCLUDE_DIRECTORIES(
 
 
 ADD_UNIT_TESTS(TestAxisCreation.py
-               TestPointName.py)
+               TestPointName.py
+               UnitTestAxis.py)
