@@ -209,7 +209,7 @@ std::shared_ptr<ModelAPI_Feature> ExchangePlugin_ImportFeature::addFeature(
   if (aNew)
     data()->reflist(FEATURES_ID())->append(aNew);
   // set as current also after it becomes sub to set correctly enabled for other subs
-  document()->setCurrentFeature(aNew, false);
+  //document()->setCurrentFeature(aNew, false);
   return aNew;
 }
 
@@ -231,17 +231,12 @@ void ExchangePlugin_ImportFeature::removeFeature(
 
 int ExchangePlugin_ImportFeature::numberOfSubs(bool forTree) const
 {
-  if (forTree)
-    return 0;
   return data()->reflist(FEATURES_ID())->size(false);
 }
 
 std::shared_ptr<ModelAPI_Feature> ExchangePlugin_ImportFeature::subFeature(
     const int theIndex, bool forTree)
 {
-  if (forTree)
-    return FeaturePtr();
-
   ObjectPtr anObj = data()->reflist(FEATURES_ID())->object(theIndex, false);
   FeaturePtr aRes = std::dynamic_pointer_cast<ModelAPI_Feature>(anObj);
   return aRes;
