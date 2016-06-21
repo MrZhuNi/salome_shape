@@ -23,18 +23,27 @@
 
 # --- options ---
 
+INCLUDE(Common)
+INCLUDE(XMLProcessing)
+
+INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/src/Events
+                     ${PYTHON_INCLUDE_DIR}
+                     ${CAS_INCLUDE_DIRS})
+
 # additional include directories
-INCLUDE_DIRECTORIES(
-  ${PTHREAD_INCLUDE_DIR}
-  ${LIBXML2_INCLUDE_DIR}
-  ${CAS_INCLUDE_DIRS}
-  )
+#INCLUDE_DIRECTORIES(
+#  ${PTHREAD_INCLUDE_DIR}
+#  ${LIBXML2_INCLUDE_DIR}
+#  ${CAS_INCLUDE_DIRS}
+#  )
 
 # additional preprocessor / compiler flags
-ADD_DEFINITIONS(
-  ${LIBXML2_DEFINITIONS} 
-  ${CAS_DEFINITIONS}
-  )
+#ADD_DEFINITIONS(
+#  ${LIBXML2_DEFINITIONS} 
+#  ${CAS_DEFINITIONS}
+#  )
+ADD_DEFINITIONS(${CAS_DEFINITIONS})
+
 
 # libraries to link to
 SET(_link_LIBRARIES
@@ -42,6 +51,12 @@ SET(_link_LIBRARIES
   ${LIBXML2_LIBRARIES}
   ${CAS_TKBRep} ${CAS_TKTopAlgo} ${CAS_TKG2d}
   )
+
+SET(PROJECT_LIBRARIES
+    ${LIBXML2_LIBRARIES}
+    ${PYTHON_LIBRARIES}
+)
+
 
 # --- headers ---
 
