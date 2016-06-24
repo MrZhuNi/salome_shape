@@ -8,6 +8,8 @@
 
 #include "FeaturesPlugin_Union.h"
 
+#include <Events_InfoMessage.h>
+
 #include <ModelAPI_Attribute.h>
 #include <ModelAPI_AttributeInteger.h>
 #include <ModelAPI_AttributeSelectionList.h>
@@ -22,6 +24,7 @@
 #include <GeomValidators_ShapeType.h>
 
 #include <GeomAPI_DataMapOfShapeShape.h>
+#include <GeomAPI_Lin.h>
 #include <GeomAPI_PlanarEdges.h>
 #include <GeomAPI_ShapeExplorer.h>
 #include <GeomAPI_ShapeIterator.h>
@@ -31,10 +34,13 @@
 #include <GeomAlgoAPI_ShapeTools.h>
 #include <GeomAlgoAPI_WireBuilder.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 //==================================================================================================
 bool FeaturesPlugin_ValidatorPipePath::isValid(const AttributePtr& theAttribute,
                                                const std::list<std::string>& theArguments,
-                                               std::string& theError) const
+                                               Events_InfoMessage& theError) const
 {
   AttributeSelectionPtr aPathAttrSelection = std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(theAttribute);
   if(!aPathAttrSelection.get()) {
@@ -60,7 +66,7 @@ bool FeaturesPlugin_ValidatorPipePath::isValid(const AttributePtr& theAttribute,
 //==================================================================================================
 bool FeaturesPlugin_ValidatorPipeLocations::isValid(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                                     const std::list<std::string>& theArguments,
-                                                    std::string& theError) const
+                                                    Events_InfoMessage& theError) const
 {
   static const std::string aCreationMethodID = "creation_method";
   static const std::string aBaseObjectsID = "base_objects";
@@ -110,7 +116,7 @@ bool FeaturesPlugin_ValidatorPipeLocations::isNotObligatory(std::string theFeatu
 //==================================================================================================
 bool FeaturesPlugin_ValidatorBaseForGeneration::isValid(const AttributePtr& theAttribute,
                                                         const std::list<std::string>& theArguments,
-                                                        std::string& theError) const
+                                                        Events_InfoMessage& theError) const
 {
   if(theArguments.empty()) {
     theError = "Error: Validator parameters is empty.";
@@ -203,7 +209,7 @@ bool FeaturesPlugin_ValidatorBaseForGeneration::isValid(const AttributePtr& theA
 //==================================================================================================
 bool FeaturesPlugin_ValidatorBaseForGeneration::isValidAttribute(const AttributePtr& theAttribute,
                                                                  const std::list<std::string>& theArguments,
-                                                                 std::string& theError) const
+                                                                 Events_InfoMessage& theError) const
 {
   if(!theAttribute.get()) {
     theError = "Error: Empty attribute.";
@@ -271,12 +277,14 @@ bool FeaturesPlugin_ValidatorBaseForGeneration::isValidAttribute(const Attribute
     GeomValidators_ShapeType aShapeTypeValidator;
     if(!aShapeTypeValidator.isValid(anAttr, theArguments, theError)) {
       theError = "Error: Selected shape has unacceptable type. Acceptable types are: faces or wires on sketch, "
-                 "whole sketch(if it has at least one face), and whole objects with shape types: ";
-      std::list<std::string>::const_iterator anIt = theArguments.cbegin();
-      theError += *anIt;
-      for(++anIt; anIt != theArguments.cend(); ++anIt) {
-        theError += ", " + *anIt;
+                 "whole sketch(if it has at least one face), and whole objects with shape types: %1";
+      std::string anArgumentString;
+      for(auto anIt = theArguments.cbegin(); anIt != theArguments.cend(); ++anIt) {
+        if (!anArgumentString.empty())
+          anArgumentString += ", ";
+        anArgumentString += *anIt;
       }
+      theError.arg(anArgumentString);
       return false;
     }
 
@@ -291,7 +299,7 @@ bool FeaturesPlugin_ValidatorBaseForGeneration::isValidAttribute(const Attribute
 //==================================================================================================
 bool FeaturesPlugin_ValidatorCompositeLauncher::isValid(const AttributePtr& theAttribute,
                                                         const std::list<std::string>& theArguments,
-                                                        std::string& theError) const
+                                                        Events_InfoMessage& theError) const
 {
   if (theAttribute->attributeType() != ModelAPI_AttributeReference::typeId()) {
     theError = "Error: The attribute with the " + theAttribute->attributeType() + " type is not processed";
@@ -334,9 +342,9 @@ bool FeaturesPlugin_ValidatorCompositeLauncher::isValid(const AttributePtr& theA
 }
 
 //==================================================================================================
-bool FeaturesPlugin_ValidatorCanBeEmpty::isValid(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+bool FeaturesPlugin_ValidatorExtrusionDir::isValid(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                                  const std::list<std::string>& theArguments,
-                                                 std::string& theError) const
+                                                 Events_InfoMessage& theError) const
 {
   if(theArguments.size() != 2) {
     theError = "Error: Validator should be used with 2 parameters for extrusion.";
@@ -348,46 +356,82 @@ bool FeaturesPlugin_ValidatorCanBeEmpty::isValid(const std::shared_ptr<ModelAPI_
   AttributePtr aCheckAttribute = theFeature->attribute(*anArgsIt);
   ++anArgsIt;
 
-  if(isShapesCanBeEmpty(aCheckAttribute, theError)) {
-    return true;
-  }
-
+  GeomShapePtr aDirShape;
   AttributeSelectionPtr aSelAttr = theFeature->selection(*anArgsIt);
-  if(!aSelAttr.get()) {
-    theError = "Error: Could not get selection attribute \"" + *anArgsIt + "\".";
-    return false;
+  if(aSelAttr.get()) {
+    aDirShape = aSelAttr->value();
+    if(!aDirShape.get()) {
+      ResultPtr aContext = aSelAttr->context();
+      if(aContext.get()) {
+        aDirShape = aContext->shape();
+      }
+    }
   }
 
-  GeomShapePtr aShape = aSelAttr->value();
-  if(!aShape.get()) {
-    ResultPtr aContext = aSelAttr->context();
-    if(!aContext.get()) {
+  if(!aDirShape.get()) {
+    // Check that dir can be empty.
+    if(!isShapesCanBeEmpty(aCheckAttribute, theError)) {
       theError = "Error: Base objects list contains vertex or edge, so attribute \"" + *anArgsIt
                + "\" can not be used with default value. Select direction for extrusion.";
       return false;
+    } else {
+      return true;
     }
-
-    aShape = aContext->shape();
   }
 
-  if(!aShape.get()) {
-    theError = "Error: Base objects list contains vertex or edge, so attribute \"" + *anArgsIt
-              + "\" can not be used with default value. Select direction for extrusion.";
-    return false;
+  std::shared_ptr<GeomAPI_Edge> aDirEdge(new GeomAPI_Edge(aDirShape));
+
+  // If faces selected check that direction not parallel with them.
+  AttributeSelectionListPtr aListAttr = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(aCheckAttribute);
+  for(int anIndex = 0; anIndex < aListAttr->size(); ++anIndex) {
+    AttributeSelectionPtr anAttr = aListAttr->value(anIndex);
+    GeomShapePtr aShapeInList = anAttr->value();
+    if(!aShapeInList.get()) {
+      aShapeInList = anAttr->context()->shape();
+    }
+    bool isParallel = true;
+    if(aShapeInList->shapeType() == GeomAPI_Shape::FACE || aShapeInList->shapeType() == GeomAPI_Shape::SHELL) {
+      for(GeomAPI_ShapeExplorer anExp(aShapeInList, GeomAPI_Shape::FACE); anExp.more(); anExp.next()) {
+        std::shared_ptr<GeomAPI_Face> aFace(new GeomAPI_Face(anExp.current()));
+        isParallel = GeomAlgoAPI_ShapeTools::isParallel(aDirEdge, aFace);
+        if(isParallel) {
+          break;
+        }
+      }
+    } else if(aShapeInList->shapeType() == GeomAPI_Shape::COMPOUND) {
+      std::shared_ptr<GeomAPI_PlanarEdges> aPlanarEdges = std::dynamic_pointer_cast<GeomAPI_PlanarEdges>(aShapeInList);
+      if(aPlanarEdges.get()) {
+        std::shared_ptr<GeomAPI_Dir> aSketchDir = aPlanarEdges->norm();
+        if(aDirEdge->isLine()) {
+          std::shared_ptr<GeomAPI_Dir> aDir = aDirEdge->line()->direction();
+          isParallel = abs(aSketchDir->angle(aDir) - M_PI / 2.0) < 10e-7;
+        } else {
+          isParallel = false;
+        }
+      } else {
+        isParallel = false;
+      }
+    } else {
+      isParallel = false;
+    }
+    if(isParallel) {
+      theError = "Error: Direction is parallel to one of the selected face or face on selected shell.";
+      return false;
+    }
   }
 
   return true;
 }
 
 //==================================================================================================
-bool FeaturesPlugin_ValidatorCanBeEmpty::isNotObligatory(std::string theFeature, std::string theAttribute)
+bool FeaturesPlugin_ValidatorExtrusionDir::isNotObligatory(std::string theFeature, std::string theAttribute)
 {
   return false;
 }
 
 //==================================================================================================
-bool FeaturesPlugin_ValidatorCanBeEmpty::isShapesCanBeEmpty(const AttributePtr& theAttribute,
-                                                            std::string& theError) const
+bool FeaturesPlugin_ValidatorExtrusionDir::isShapesCanBeEmpty(const AttributePtr& theAttribute,
+                                                              Events_InfoMessage& theError) const
 {
   if(!theAttribute.get()) {
     return true;
@@ -434,7 +478,7 @@ bool FeaturesPlugin_ValidatorCanBeEmpty::isShapesCanBeEmpty(const AttributePtr& 
 //==================================================================================================
 bool FeaturesPlugin_ValidatorBooleanSelection::isValid(const AttributePtr& theAttribute,
                                                        const std::list<std::string>& theArguments,
-                                                       std::string& theError) const
+                                                       Events_InfoMessage& theError) const
 {
   AttributeSelectionListPtr anAttrSelectionList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(theAttribute);
   if(!anAttrSelectionList.get()) {
@@ -496,7 +540,7 @@ bool FeaturesPlugin_ValidatorBooleanSelection::isValid(const AttributePtr& theAt
 //==================================================================================================
 bool FeaturesPlugin_ValidatorPartitionSelection::isValid(const AttributePtr& theAttribute,
                                                          const std::list<std::string>& theArguments,
-                                                         std::string& theError) const
+                                                         Events_InfoMessage& theError) const
 {
   AttributeSelectionListPtr anAttrSelectionList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(theAttribute);
   if(!anAttrSelectionList.get()) {
@@ -540,7 +584,7 @@ bool FeaturesPlugin_ValidatorPartitionSelection::isValid(const AttributePtr& the
 //==================================================================================================
 bool FeaturesPlugin_ValidatorRemoveSubShapesSelection::isValid(const AttributePtr& theAttribute,
                                                                const std::list<std::string>& theArguments,
-                                                               std::string& theError) const
+                                                               Events_InfoMessage& theError) const
 {
   AttributeSelectionListPtr aSubShapesAttrList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(theAttribute);
   if(!aSubShapesAttrList.get()) {
@@ -593,7 +637,7 @@ bool FeaturesPlugin_ValidatorRemoveSubShapesSelection::isValid(const AttributePt
 //==================================================================================================
 bool FeaturesPlugin_ValidatorRemoveSubShapesResult::isValid(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                                             const std::list<std::string>& theArguments,
-                                                            std::string& theError) const
+                                                            Events_InfoMessage& theError) const
 {
   static const std::string aBaseShapeID = "base_shape";
   static const std::string aSubShapesID = "subshapes";
@@ -649,7 +693,7 @@ bool FeaturesPlugin_ValidatorRemoveSubShapesResult::isNotObligatory(std::string 
 //==================================================================================================
 bool FeaturesPlugin_ValidatorUnionSelection::isValid(const AttributePtr& theAttribute,
                                                      const std::list<std::string>& theArguments,
-                                                     std::string& theError) const
+                                                     Events_InfoMessage& theError) const
 {
   AttributeSelectionListPtr aBaseObjectsAttrList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(theAttribute);
   if(!aBaseObjectsAttrList.get()) {
@@ -676,7 +720,7 @@ bool FeaturesPlugin_ValidatorUnionSelection::isValid(const AttributePtr& theAttr
 //==================================================================================================
 bool FeaturesPlugin_ValidatorUnionArguments::isValid(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                                      const std::list<std::string>& theArguments,
-                                                     std::string& theError) const
+                                                     Events_InfoMessage& theError) const
 {
   // Check feature kind.
   if(theFeature->getKind() != FeaturesPlugin_Union::ID()) {

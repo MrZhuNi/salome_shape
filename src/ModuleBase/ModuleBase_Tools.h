@@ -144,7 +144,7 @@ MODULEBASE_EXPORT void selectionInfo(Handle_AIS_InteractiveContext& theContext,
 /// Converts string value (name of shape type) to shape enum value
 /// \param theType - string with shape type name
 /// \return TopAbs_ShapeEnum value
-MODULEBASE_EXPORT TopAbs_ShapeEnum shapeType(const QString& theType);
+MODULEBASE_EXPORT int shapeType(const QString& theType);
 
 /// Checks whether the object is a sub result. It gets the feature of the object,
 /// obtains all results of the feature and check if the object is a sub result
@@ -223,7 +223,8 @@ MODULEBASE_EXPORT bool hasObject(const AttributePtr& theAttribute, const ObjectP
 /// \param theTemporarily if it is true, do not store and name the added in the data framework
 /// \param theCheckIfAttributeHasObject if it is true, the check isInList is called
 ///        It is useful for attribute selection
-MODULEBASE_EXPORT void setObject(const AttributePtr& theAttribute, const ObjectPtr& theObject,
+/// \return true if the attribute is filled with the given parameters
+MODULEBASE_EXPORT bool setObject(const AttributePtr& theAttribute, const ObjectPtr& theObject,
                                  const std::shared_ptr<GeomAPI_Shape>& theShape,
                                  ModuleBase_IWorkshop* theWorkshop,
                                  const bool theTemporarily,

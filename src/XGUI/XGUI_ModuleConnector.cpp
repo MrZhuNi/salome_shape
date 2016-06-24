@@ -16,6 +16,7 @@
 
 #include <ModuleBase_IModule.h>
 #include <ModuleBase_ViewerPrs.h>
+#include <ModuleBase_OperationDescription.h>
 
 #include <AIS_Shape.hxx>
 
@@ -129,6 +130,26 @@ bool XGUI_ModuleConnector::canStartOperation(QString theId)
   return myWorkshop->operationMgr()->canStartOperation(theId);
 }
 
+void XGUI_ModuleConnector::processLaunchOperation(ModuleBase_Operation* theOperation,
+                                                  const bool isUpdatePropertyPanel)
+{
+  XGUI_OperationMgr* anOperationMgr = workshop()->operationMgr();
+
+  if (anOperationMgr->startOperation(theOperation)) {
+    if (isUpdatePropertyPanel) {
+      ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>(theOperation);
+      if (aFOperation) {
+        workshop()->propertyPanel()->updateContentWidget(aFOperation->feature());
+        workshop()->propertyPanel()->createContentPanel(aFOperation->feature());
+      }
+    }
+    if (!theOperation->getDescription()->hasXmlRepresentation()) {
+      if (theOperation->commit())
+        workshop()->updateCommandStatus();
+    }
+  }
+}
+
 ModuleBase_Operation* XGUI_ModuleConnector::findStartedOperation(const QString& theId)
 {
   return myWorkshop->operationMgr()->findOperation(theId);
@@ -139,9 +160,9 @@ bool XGUI_ModuleConnector::canStopOperation(ModuleBase_Operation* theOperation)
   return myWorkshop->operationMgr()->canStopOperation(theOperation);
 }
 
-void XGUI_ModuleConnector::abortOperation(ModuleBase_Operation* theOperation)
+void XGUI_ModuleConnector::stopOperation(ModuleBase_Operation* theOperation)
 {
-  myWorkshop->operationMgr()->abortOperation(theOperation);
+  myWorkshop->operationMgr()->stopOperation(theOperation);
 }
 
 void XGUI_ModuleConnector::updateCommandStatus()

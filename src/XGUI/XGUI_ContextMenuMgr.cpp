@@ -132,7 +132,7 @@ void XGUI_ContextMenuMgr::createActions()
   addAction("SELECT_FACE_CMD", aAction);
   //mySelectActions->addAction(aAction);
 
-  aAction = ModuleBase_Tools::createAction(QIcon(":pictures/result.png"), tr("Result"), aDesktop,
+  aAction = ModuleBase_Tools::createAction(QIcon(":pictures/result.png"), tr("Results"), aDesktop,
                                            this, SLOT(onResultSelection(bool)));
   aAction->setCheckable(true);
   addAction("SELECT_RESULT_CMD", aAction);
@@ -562,7 +562,8 @@ void XGUI_ContextMenuMgr::addViewerMenu(QMenu* theMenu) const
     aSelMenu->addAction(action("SELECT_VERTEX_CMD"));
     aSelMenu->addAction(action("SELECT_EDGE_CMD"));
     aSelMenu->addAction(action("SELECT_FACE_CMD"));
-    aSelMenu->addSeparator();
+    //IMP: an attempt to use result selection with other selection modes
+    //aSelMenu->addSeparator();
     aSelMenu->addAction(action("SELECT_RESULT_CMD"));
     theMenu->addMenu(aSelMenu);
     theMenu->addSeparator();

@@ -57,6 +57,11 @@ Q_OBJECT
   //! Returns true if the operation with id theId can be started
   virtual bool canStartOperation(QString theId);
 
+  //! Performs the operation launch
+  //! \param theOperation an operation to be launched
+  virtual void processLaunchOperation(ModuleBase_Operation* theOperation,
+                                      const bool isUpdatePropertyPanel);
+
   //! Returns started operation by the operation identifier. The operation manager is called.
   //! \param theId an operation id
   //! \return an operation instance or NULL
@@ -67,9 +72,9 @@ Q_OBJECT
   //! \return boolean result
   virtual bool canStopOperation(ModuleBase_Operation* theOperation);
 
-  //! Aborts the operation. The operation manager is called.
+  //! Commits if possible or aborts the given operation.
   //! \param theOperation an aborted operation
-  void abortOperation(ModuleBase_Operation* theOperation);
+  virtual void stopOperation(ModuleBase_Operation* theOperation);
 
   //! Returns AIS object by data object
   virtual AISObjectPtr findPresentation(const ObjectPtr& theObject) const;

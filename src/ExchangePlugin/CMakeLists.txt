@@ -8,6 +8,7 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Events
                     ${PROJECT_SOURCE_DIR}/src/ModelAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomAlgoAPI
+                    ${PROJECT_SOURCE_DIR}/src/XAO
 )
 
 SET(PROJECT_HEADERS
@@ -28,6 +29,7 @@ SET(PROJECT_SOURCES
 )
 
 SET(XML_RESOURCES
+    export_widget.xml
     plugin-Exchange.xml
 )
 
@@ -41,6 +43,7 @@ SET(PROJECT_LIBRARIES
     ModelAPI
     GeomAPI
     GeomAlgoAPI
+    XAO
 )
 SOURCE_GROUP ("Resource Files" FILES ${TEXT_RESOURCES})
 
@@ -56,9 +59,22 @@ INSTALL(FILES ${TEXT_RESOURCES} DESTINATION ${SHAPER_INSTALL_XML_RESOURCES})
 
 ADD_UNIT_TESTS(TestImport.py TestExport.py)
 
-CONFIGURE_FILE(Test/Data/solid.brep Data/solid.brep COPYONLY)
-CONFIGURE_FILE(Test/Data/solid.brp Data/solid.brp COPYONLY)
-CONFIGURE_FILE(Test/Data/screw.step Data/screw.step COPYONLY)
-CONFIGURE_FILE(Test/Data/screw.stp Data/screw.stp COPYONLY)
-CONFIGURE_FILE(Test/Data/bearing.iges Data/bearing.iges COPYONLY)
-CONFIGURE_FILE(Test/Data/bearing.igs Data/bearing.igs COPYONLY)
+SET(DATA_FILES
+  solid.brep
+  solid.brp
+  screw.step
+  screw.stp
+  bearing.iges
+  bearing.igs
+  Box_1.brep
+  test.xao
+  export_ref.xao
+)
+
+FOREACH(file ${DATA_FILES})
+  CONFIGURE_FILE(
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Data/${file}
+    ${CMAKE_CURRENT_BINARY_DIR}/Data/${file}
+    COPYONLY)
+ENDFOREACH(file ${DATA_FIELS})
+

@@ -43,6 +43,8 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Exception.h
     GeomAlgoAPI_Box.h
     GeomAlgoAPI_BoxPoints.h
+    GeomAlgoAPI_XAOExport.h
+    GeomAlgoAPI_XAOImport.h
 )
 
 SET(PROJECT_SOURCES
@@ -82,12 +84,15 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Exception.cpp
     GeomAlgoAPI_Box.cpp
     GeomAlgoAPI_BoxPoints.cpp
+    GeomAlgoAPI_XAOExport.cpp
+    GeomAlgoAPI_XAOImport.cpp
 )
 
 SET(PROJECT_LIBRARIES
     GeomAPI
     GeomAlgoImpl
     ModelAPI
+    XAO
     ${CAS_OCAF}
     ${CAS_SHAPE}
     ${CAS_TKBO}
@@ -117,6 +122,7 @@ INCLUDE_DIRECTORIES(
   ../GeomAPI
   ../GeomAlgoImpl
   ../ModelAPI
+  ../XAO
   ${CAS_INCLUDE_DIRS}
 )
 

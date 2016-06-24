@@ -12,6 +12,7 @@
 #include <ModuleBase_IWorkshop.h>
 #include <ModuleBase_IModule.h>
 #include <ModuleBase_IconFactory.h>
+#include <ModuleBase_ResultPrs.h>
 
 #include <ModelAPI_Attribute.h>
 #include <ModelAPI_AttributeRefAttr.h>
@@ -43,6 +44,8 @@
 
 #include <Prs3d_PointAspect.hxx>
 #include <Graphic3d_AspectMarker3d.hxx>
+
+#include <Image_AlienPixMap.hxx>
 
 #include <QWidget>
 #include <QLayout>
@@ -80,6 +83,12 @@ const double DEFAULT_DEVIATION_COEFFICIENT = 1.e-4;
 #include <StdSelect_BRepOwner.hxx>
 #include <TColStd_ListOfInteger.hxx>
 #include <TColStd_ListIteratorOfListOfInteger.hxx>
+#endif
+
+#ifdef WIN32
+# define FSEP "\\"
+#else
+# define FSEP "/"
 #endif
 
 namespace ModuleBase_Tools {
@@ -340,6 +349,8 @@ QString getShapeTypeInfo(const int theType)
     case TopAbs_EDGE:      anInfo = "edge"; break;
     case TopAbs_VERTEX:    anInfo = "vertex"; break;
     case TopAbs_SHAPE:     anInfo = "shape"; break;
+    case ModuleBase_ResultPrs::Sel_Result:
+                           anInfo = "result_shape"; break;
     default: break;
   }
   return anInfo;
@@ -513,10 +524,10 @@ void selectionInfo(Handle(AIS_InteractiveContext)& theContext, const std::string
 #endif
 }
 
-typedef QMap<QString, TopAbs_ShapeEnum> ShapeTypes;
+typedef QMap<QString, int> ShapeTypes;
 static ShapeTypes myShapeTypes;
 
-TopAbs_ShapeEnum shapeType(const QString& theType)
+int shapeType(const QString& theType)
 {
   if (myShapeTypes.count() == 0) {
     myShapeTypes["compound"]   = TopAbs_COMPOUND;
@@ -535,7 +546,8 @@ TopAbs_ShapeEnum shapeType(const QString& theType)
     myShapeTypes["edges"]      = TopAbs_EDGE;
     myShapeTypes["vertex"]     = TopAbs_VERTEX;
     myShapeTypes["vertices"]   = TopAbs_VERTEX;
-    myShapeTypes["objects"]    = TopAbs_SHAPE;
+    myShapeTypes["object"]     = ModuleBase_ResultPrs::Sel_Result;
+    myShapeTypes["objects"]    = ModuleBase_ResultPrs::Sel_Result;
   }
   QString aType = theType.toLower();
   if(myShapeTypes.contains(aType))
@@ -773,13 +785,14 @@ bool hasObject(const AttributePtr& theAttribute, const ObjectPtr& theObject,
   return aHasObject;
 }
 
-void setObject(const AttributePtr& theAttribute, const ObjectPtr& theObject,
+bool setObject(const AttributePtr& theAttribute, const ObjectPtr& theObject,
                const GeomShapePtr& theShape, ModuleBase_IWorkshop* theWorkshop,
                const bool theTemporarily, const bool theCheckIfAttributeHasObject)
 {
   if (!theAttribute.get())
-    return;
+    return false;
 
+  bool isDone = true;
   std::string aType = theAttribute->attributeType();
   if (aType == ModelAPI_AttributeReference::typeId()) {
     AttributeReferencePtr aRef = std::dynamic_pointer_cast<ModelAPI_AttributeReference>(theAttribute);
@@ -816,8 +829,12 @@ void setObject(const AttributePtr& theAttribute, const ObjectPtr& theObject,
   }
   else if (aType == ModelAPI_AttributeRefList::typeId()) {
     AttributeRefListPtr aRefListAttr = std::dynamic_pointer_cast<ModelAPI_AttributeRefList>(theAttribute);
-    if (!theCheckIfAttributeHasObject || !aRefListAttr->isInList(theObject))
-      aRefListAttr->append(theObject);
+    if (!theCheckIfAttributeHasObject || !aRefListAttr->isInList(theObject)) {
+      if (theObject.get())
+        aRefListAttr->append(theObject);
+      else
+        isDone = false;
+    }
   }
   else if (aType == ModelAPI_AttributeRefAttrList::typeId()) {
     AttributeRefAttrListPtr aRefAttrListAttr = std::dynamic_pointer_cast<ModelAPI_AttributeRefAttrList>(theAttribute);
@@ -828,10 +845,15 @@ void setObject(const AttributePtr& theAttribute, const ObjectPtr& theObject,
         aRefAttrListAttr->append(anAttribute);
     }
     else {
-      if (!theCheckIfAttributeHasObject || !aRefAttrListAttr->isInList(theObject))
-        aRefAttrListAttr->append(theObject);
+      if (!theCheckIfAttributeHasObject || !aRefAttrListAttr->isInList(theObject)) {
+        if (theObject.get())
+          aRefAttrListAttr->append(theObject);
+        else
+          isDone = false;
+      }
     }
   }
+  return isDone;
 }
 
 GeomShapePtr getShape(const AttributePtr& theAttribute, ModuleBase_IWorkshop* theWorkshop)
@@ -1159,10 +1181,47 @@ void translate(const std::string& theContext, std::string& theMessage)
 
 void setPointBallHighlighting(AIS_Shape* theAIS)
 {
+  static Handle(Image_AlienPixMap) aPixMap;
+  if(aPixMap.IsNull()) {
+    // Load icon for the presentation
+    std::string aFile;
+    char* anEnv = getenv("SHAPER_ROOT_DIR");
+    if(anEnv) {
+      aFile = std::string(anEnv) +
+        FSEP + "share" + FSEP + "salome" + FSEP + "resources" + FSEP + "shaper";
+    } else {
+      anEnv = getenv("OPENPARTS_ROOT_DIR");
+      if (anEnv)
+        aFile = std::string(anEnv) + FSEP + "resources";
+    }
+
+    aFile += FSEP;
+    static const std::string aMarkerName = "marker_dot.png";
+    aFile += aMarkerName;
+    aPixMap = new Image_AlienPixMap();
+    if(!aPixMap->Load(aFile.c_str())) {
+      // The icon for constraint is not found
+      static const std::string aMsg = "Error: Point market not found by path: \"" + aFile + "\". Falling back.";
+      //Events_InfoMessage("ModuleBase_Tools::setPointBallHighlighting", aMsg).send();
+    }
+  }
+
+  Handle(Graphic3d_AspectMarker3d) anAspect;
   Handle(Prs3d_Drawer) aDrawer = theAIS->HilightAttributes();
-  if (aDrawer->HasOwnPointAspect()) {
+  if(aDrawer->HasOwnPointAspect()) {
     Handle(Prs3d_PointAspect) aPntAspect = aDrawer->PointAspect();
-    aPntAspect->Aspect()->SetType(Aspect_TOM_BALL);
+    if(aPixMap->IsEmpty()) {
+      anAspect = aPntAspect->Aspect();
+      anAspect->SetType(Aspect_TOM_BALL);
+    } else {
+      if(aPixMap->Format() == Image_PixMap::ImgGray) {
+        aPixMap->SetFormat (Image_PixMap::ImgAlpha);
+      } else if(aPixMap->Format() == Image_PixMap::ImgGrayF) {
+        aPixMap->SetFormat (Image_PixMap::ImgAlphaF);
+      }
+      anAspect = new Graphic3d_AspectMarker3d(aPixMap);
+      aPntAspect->SetAspect(anAspect);
+    }
     aDrawer->SetPointAspect(aPntAspect);
     theAIS->SetHilightAttributes(aDrawer);
   }

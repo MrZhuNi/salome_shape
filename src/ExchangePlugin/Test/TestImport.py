@@ -6,10 +6,7 @@
 # Initialization of the test
 #=========================================================================
 from ModelAPI import *
-from GeomDataAPI import *
 from GeomAlgoAPI import *
-from GeomAPI import *
-import os
 import math
 
 __updated__ = "2015-05-22"
@@ -33,7 +30,6 @@ def testImport(theType, theFile, theVolume, theDelta):
     file = anImportFeature.string(aFieldName)
     assert file, "{0}: Can not receive string field {1}".format(theType, aFieldName)
     file.setValue(theFile)
-    anImportFeature.execute()
     aSession.finishOperation()
 
     # Check results
@@ -48,6 +44,46 @@ def testImport(theType, theFile, theVolume, theDelta):
     aRefVolume = theVolume
     aResVolume = GeomAlgoAPI_ShapeTools.volume(aShape)
     assert (math.fabs(aResVolume - aRefVolume) < theDelta), "{0}: The volume is wrong: expected = {1}, real = {2}".format(theType, aRefVolume, aResVolume)
+
+def testImportXAO():
+    # Create a part for import
+    aSession.startOperation("Create part for import")
+    aPartFeature = aSession.moduleDocument().addFeature("Part")
+    aSession.finishOperation()
+    aPart = aSession.activeDocument()
+
+    aSession.startOperation("Import XAO")
+    anImportFeature = aPart.addFeature("Import")
+    anImportFeature.string("file_path").setValue("Data/test.xao")
+    aSession.finishOperation()
+
+    # Check results
+    assert anImportFeature.error() == ''
+    assert anImportFeature.name() == "mygeom"
+    assert len(anImportFeature.results()) == 1
+    assert modelAPI_ResultBody(anImportFeature.firstResult())
+    assert anImportFeature.firstResult().data().name() == "mygeom_1"
+    aCompositeFeature = featureToCompositeFeature(anImportFeature)
+    assert aCompositeFeature.numberOfSubs(False) == 2
+
+    aFeature1 = aCompositeFeature.subFeature(0, False)
+    assert aFeature1.getKind() == "Group"
+    assert aFeature1.name() == "boite_1"
+
+    aSelectionList = aFeature1.selectionList("group_list")
+    assert aSelectionList.selectionType() == "solid"
+    assert aSelectionList.size() == 1
+    assert aSelectionList.value(0).namingName("") == "mygeom_1_1"
+
+    aFeature2 = aCompositeFeature.subFeature(1, False)
+    assert aFeature2.getKind() == "Group"
+    assert aFeature2.name() == "Group_2"
+
+    aSelectionList = aFeature2.selectionList("group_list") 
+    assert aSelectionList.selectionType() == "face"
+    assert aSelectionList.size() == 2
+    assert aSelectionList.value(0).namingName("") == "mygeom_1/Shape1_1"
+    assert aSelectionList.value(1).namingName("") == "mygeom_1/Shape2_1"
 
 if __name__ == '__main__':
 #=========================================================================
@@ -65,6 +101,10 @@ if __name__ == '__main__':
 #=========================================================================
     testImport("IGES", "Data/bearing.iges", 6.86970803067e-14, 10 ** -25)
     testImport("IGS", "Data/bearing.igs", 6.86970803067e-14, 10 ** -25)
+#=========================================================================
+# Create a shape imported from XAO
+#=========================================================================
+    testImportXAO()
 #=========================================================================
 # End of test
 #=========================================================================

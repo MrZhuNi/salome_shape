@@ -78,7 +78,8 @@ void ModuleBase_WidgetSelector::updateOnSelectionChanged(const bool theDone)
 QIntList ModuleBase_WidgetSelector::getShapeTypes() const
 {
   QIntList aShapeTypes = shapeTypes();
-  if (aShapeTypes.contains(TopAbs_SOLID) || aShapeTypes.contains(TopAbs_SHAPE)) {
+  if (/*aShapeTypes.contains(TopAbs_SOLID) ||*/ // this type should be mentioned in XML, poor selection otherwise
+      aShapeTypes.contains(ModuleBase_ResultPrs::Sel_Result/*TopAbs_SHAPE*/)) {
     // it should be selectable for both, "solids" and "objects" types
     aShapeTypes.append(TopAbs_COMPSOLID);
   }
@@ -104,8 +105,8 @@ bool ModuleBase_WidgetSelector::acceptSubShape(const GeomShapePtr& theShape,
     aValid = true;
     return aValid;
   }
-  // when the SHAPE type is provided by XML, the hole result shape can be selected.
-  if (!aShape.get() && aShapeTypes.contains(TopAbs_SHAPE)) {
+  // when the SHAPE type is provided by XML as Object, the whole result shape should be selected.
+  if (!aShape.get() && aShapeTypes.contains(ModuleBase_ResultPrs::Sel_Result)) {
     aValid = true;
     return aValid;
   }
@@ -194,8 +195,7 @@ bool ModuleBase_WidgetSelector::setSelectionCustom(const ModuleBase_ViewerPrsPtr
   getGeomSelection(thePrs, anObject, aShape);
 
   // the last flag is to be depending on hasObject is called before. To be corrected later
-  ModuleBase_Tools::setObject(attribute(), anObject, aShape, myWorkshop, myIsInValidate, true);
-  return true;
+  return ModuleBase_Tools::setObject(attribute(), anObject, aShape, myWorkshop, myIsInValidate, true);
 }
 
 //********************************************************************

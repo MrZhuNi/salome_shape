@@ -70,6 +70,7 @@
 #include <XGUI_ErrorMgr.h>
 #include <XGUI_CustomPrs.h>
 #include <XGUI_SelectionMgr.h>
+#include <XGUI_ActionsMgr.h>
 
 #include <SketchPlugin_Feature.h>
 #include <SketchPlugin_Sketch.h>
@@ -503,6 +504,15 @@ void PartSet_Module::updateViewerMenu(const QMap<QString, QAction*>& theStdActio
   myMenuMgr->updateViewerMenu(theStdActions);
 }
 
+bool PartSet_Module::isActionEnableStateFixed(const int theActionId) const
+{
+  bool isEnabledFixed = false;
+  if (theActionId == XGUI_ActionsMgr::AcceptAll &&
+      mySketchReentrantMgr->isInternalEditStarted())
+    isEnabledFixed = true;
+  return isEnabledFixed;
+}
+
 QString PartSet_Module::getFeatureError(const FeaturePtr& theFeature)
 {
   QString anError = ModuleBase_IModule::getFeatureError(theFeature);
@@ -796,7 +806,9 @@ bool PartSet_Module::deleteObjects()
 
 void PartSet_Module::onFeatureTriggered()
 {
-  QAction* aCmd = dynamic_cast<QAction*>(sender());
+  // is commented for imp: Unpressing the button of the current action must behave like
+  // a validation if the entity can be created (instead of Cancel, as currently)
+  /*QAction* aCmd = dynamic_cast<QAction*>(sender());
   if (aCmd->isCheckable() && aCmd->isChecked()) {
     // 1. check whether the delete should be processed in the module
     ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
@@ -811,7 +823,7 @@ void PartSet_Module::onFeatureTriggered()
         launchOperation(aCmd->data().toString());
       }
     }
-  }
+  }*/
   ModuleBase_IModule::onFeatureTriggered();
 }
 
@@ -826,12 +838,13 @@ bool PartSet_Module::canCommitOperation() const
   return true;
 }
 
-void PartSet_Module::launchOperation(const QString& theCmdId)
+void PartSet_Module::launchOperation(const QString& theCmdId,
+                                     const bool isUpdatePropertyPanel)
 {
   storeConstraintsState(theCmdId.toStdString());
   updateConstraintsState(theCmdId.toStdString());
 
-  ModuleBase_IModule::launchOperation(theCmdId);
+  ModuleBase_IModule::launchOperation(theCmdId, isUpdatePropertyPanel);
 }
 
 void PartSet_Module::storeConstraintsState(const std::string& theFeatureKind)

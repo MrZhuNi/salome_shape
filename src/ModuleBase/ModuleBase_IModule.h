@@ -82,7 +82,8 @@ class MODULEBASE_EXPORT ModuleBase_IModule : public QObject
 
   /// Creates an operation and send it to loop
   /// \param theCmdId the operation name
-  virtual void launchOperation(const QString& theCmdId);
+  /// \param isUpdatePropertyPanel if false, the property panel filling might be postponed
+  virtual void launchOperation(const QString& theCmdId, const bool isUpdatePropertyPanel = true);
 
   /// Executes feature as a modal dialog box
   /// \param theCmdId the operation name
@@ -240,7 +241,8 @@ class MODULEBASE_EXPORT ModuleBase_IModule : public QObject
 
   /// Sends the operation for launching
   /// \param theOperation the operation
-  virtual void sendOperation(ModuleBase_Operation* theOperation);
+  /// \param isUpdatePropertyPanel if false, the property panel filling might be postponed
+  virtual void sendOperation(ModuleBase_Operation* theOperation, const bool isUpdatePropertyPanel = true);
 
   /// Create specific for the module presentation
   /// \param theResult an object for presentation
@@ -263,6 +265,11 @@ class MODULEBASE_EXPORT ModuleBase_IModule : public QObject
   /// Update state of pop-up menu items in viewer
   /// \param theStdActions - a map of standard actions
   virtual void updateViewerMenu(const QMap<QString, QAction*>& theStdActions) {}
+
+  /// Returns true if the action should be always enabled
+  /// \param theActionId an action index: Accept or Accept All
+  /// \return boolean value
+  virtual bool isActionEnableStateFixed(const int theActionId) const { return false; }
 
   //! Returns the feature error if the current state of the feature in the module is not correct
   //! If the feature is correct, it returns an empty value

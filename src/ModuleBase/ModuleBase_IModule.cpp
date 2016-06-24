@@ -69,7 +69,8 @@ void ModuleBase_IModule::launchModal(const QString& theCmdId)
 }
 
 
-void ModuleBase_IModule::launchOperation(const QString& theCmdId)
+void ModuleBase_IModule::launchOperation(const QString& theCmdId,
+                                         const bool isUpdatePropertyPanel)
 {
   if (!myWorkshop->canStartOperation(theCmdId))
     return;
@@ -80,18 +81,15 @@ void ModuleBase_IModule::launchOperation(const QString& theCmdId)
     ModuleBase_ISelection* aSelection = myWorkshop->selection();
     // Initialise operation with preliminary selection
     aFOperation->initSelection(aSelection, myWorkshop->viewer());
-    sendOperation(aFOperation);
+    sendOperation(aFOperation, isUpdatePropertyPanel);
   }
 }
 
 
-void ModuleBase_IModule::sendOperation(ModuleBase_Operation* theOperation)
+void ModuleBase_IModule::sendOperation(ModuleBase_Operation* theOperation,
+                                       const bool isUpdatePropertyPanel)
 {
-  static Events_ID aModuleEvent = Events_Loop::eventByName(EVENT_OPERATION_LAUNCHED);
-  std::shared_ptr<Config_PointerMessage> aMessage =
-      std::shared_ptr<Config_PointerMessage>(new Config_PointerMessage(aModuleEvent, this));
-  aMessage->setPointer(theOperation);
-  Events_Loop::loop()->send(aMessage);
+  workshop()->processLaunchOperation(theOperation, isUpdatePropertyPanel);
 }
 
 Handle(AIS_InteractiveObject) ModuleBase_IModule::createPresentation(const ResultPtr& theResult)
@@ -201,7 +199,7 @@ void ModuleBase_IModule::onFeatureTriggered()
   if (aCmd->isCheckable() && !aCmd->isChecked()) {
     ModuleBase_Operation* anOperation = myWorkshop->findStartedOperation(aCmd->data().toString());
     if (myWorkshop->canStopOperation(anOperation))
-      myWorkshop->abortOperation(anOperation);
+      myWorkshop->stopOperation(anOperation);
     else {
       aCmd->setChecked(true);
     }
