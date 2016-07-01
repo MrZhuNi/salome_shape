@@ -358,6 +358,7 @@ void Model_Session::processEvent(const std::shared_ptr<Events_Message>& theMessa
     const std::shared_ptr<Config_FeatureMessage> aMsg = 
       std::dynamic_pointer_cast<Config_FeatureMessage>(theMessage);
     if (aMsg) {
+
       // process the plugin info, load plugin
       if (myPlugins.find(aMsg->id()) == myPlugins.end()) {
         myPlugins[aMsg->id()] = std::pair<std::string, std::string>(
@@ -367,6 +368,7 @@ void Model_Session::processEvent(const std::shared_ptr<Events_Message>& theMessa
       const std::shared_ptr<Config_AttributeMessage> aMsgAttr = 
         std::dynamic_pointer_cast<Config_AttributeMessage>(theMessage);
       if (aMsgAttr) {
+
         if (!aMsgAttr->isObligatory()) {
           validators()->registerNotObligatory(aMsgAttr->featureId(), aMsgAttr->attributeId());
         }

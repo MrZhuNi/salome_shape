@@ -24,6 +24,7 @@
 #include <XGUI_PropertyPanel.h>
 #include <XGUI_ViewerProxy.h>
 #include <XGUI_OperationMgr.h>
+#include <XGUI_ErrorMgr.h>
 #include <XGUI_Tools.h>
 
 #include <ModuleBase_IPropertyPanel.h>
@@ -92,6 +93,7 @@
 #include <QMainWindow>
 
 //#define DEBUG_DO_NOT_BY_ENTER
+//#define DEBUG_SKETCHER_ENTITIES
 
 //#define DEBUG_CURSOR
 
@@ -875,7 +877,6 @@ void PartSet_SketcherMgr::startSketch(ModuleBase_Operation* theOperation)
   myCurrentSketch->setDisplayed(false);
 
   // Remove invalid sketch entities
-  /*
   std::set<FeaturePtr> anInvalidFeatures;
   ModelAPI_ValidatorsFactory* aFactory = ModelAPI_Session::get()->validators();
   for (int i = 0; i < myCurrentSketch->numberOfSubs(); i++) {
@@ -885,20 +886,40 @@ void PartSet_SketcherMgr::startSketch(ModuleBase_Operation* theOperation)
         anInvalidFeatures.insert(aFeature);
     }
   }
-  std::map<FeaturePtr, std::set<FeaturePtr> > aReferences;
-  ModelAPI_Tools::findAllReferences(anInvalidFeatures, aReferences, false);
-  std::set<FeaturePtr> aFeatureRefsToDelete;
-  if (ModuleBase_Tools::askToDelete(anInvalidFeatures, aReferences, aConnector->desktop(), aFeatureRefsToDelete)) {
-    if (!aFeatureRefsToDelete.empty())
-      anInvalidFeatures.insert(aFeatureRefsToDelete.begin(), aFeatureRefsToDelete.end());
-    bool aDone = ModelAPI_Tools::removeFeatures(anInvalidFeatures, false);
+  if (!anInvalidFeatures.empty()) {
+    std::map<FeaturePtr, std::set<FeaturePtr> > aReferences;
+    ModelAPI_Tools::findAllReferences(anInvalidFeatures, aReferences, false);
+
+    std::set<FeaturePtr>::const_iterator anIt = anInvalidFeatures.begin(),
+                                         aLast = anInvalidFeatures.end();
+    // separate features to references to parameter features and references to others
+    QStringList anInvalidFeatureNames;
+    for (; anIt != aLast; anIt++) {
+      FeaturePtr aFeature = *anIt;
+      if (aFeature.get())
+        anInvalidFeatureNames.append(aFeature->name().c_str());
+    }
+    std::string aPrefixInfo = QString("Invalid features of the sketch will be deleted: %1.\n\n").
+                                  arg(anInvalidFeatureNames.join(", ")).toStdString().c_str();
+    std::set<FeaturePtr> aFeatureRefsToDelete;
+    if (ModuleBase_Tools::askToDelete(anInvalidFeatures, aReferences, aConnector->desktop(),
+                                      aFeatureRefsToDelete, aPrefixInfo)) {
+      if (!aFeatureRefsToDelete.empty())
+        anInvalidFeatures.insert(aFeatureRefsToDelete.begin(), aFeatureRefsToDelete.end());
+      ModelAPI_Tools::removeFeatures(anInvalidFeatures, true);
+      Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_UPDATED));
+      // TODO: call the next method in the XGUI_OperationMgr::onOperationStarted().
+      workshop()->errorMgr()->updateAcceptAllAction(myCurrentSketch);
+    }
   }
-  else
-    return;
-  */
+
   // Display sketcher objects
+  QStringList anInfo;
   for (int i = 0; i < myCurrentSketch->numberOfSubs(); i++) {
     FeaturePtr aFeature = myCurrentSketch->subFeature(i);
+#ifdef DEBUG_SKETCHER_ENTITIES
+    anInfo.append(ModuleBase_Tools::objectInfo(aFeature));
+#endif
     std::list<ResultPtr> aResults = aFeature->results();
     std::list<ResultPtr>::const_iterator aIt;
     for (aIt = aResults.begin(); aIt != aResults.end(); ++aIt) {
@@ -906,6 +927,10 @@ void PartSet_SketcherMgr::startSketch(ModuleBase_Operation* theOperation)
     }
     aFeature->setDisplayed(true);
   }
+#ifdef DEBUG_SKETCHER_ENTITIES
+  QString anInfoStr = anInfo.join(";\t");
+  qDebug(QString("startSketch: %1, %2").arg(anInfo.size()).arg(anInfoStr).toStdString().c_str());
+#endif
 
   if(myCirclePointFilter.IsNull()) {
     myCirclePointFilter = new PartSet_CirclePointFilter(myModule->workshop());
