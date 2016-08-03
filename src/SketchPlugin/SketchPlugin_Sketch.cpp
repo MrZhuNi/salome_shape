@@ -11,6 +11,7 @@
 
 #include <GeomAPI_Dir.h>
 #include <GeomAPI_PlanarEdges.h>
+#include <GeomAPI_Vertex.h>
 
 #include <GeomDataAPI_Point2D.h>
 #include <GeomAlgoAPI_PointBuilder.h>
@@ -215,7 +216,8 @@ void SketchPlugin_Sketch::attributeChanged(const std::string& theID) {
       data()->selection(SketchPlugin_SketchEntity::EXTERNAL_ID())->value();
     if (aSelection) { // update arguments due to the selection value
       // update the sketch plane
-      std::shared_ptr<GeomAPI_Pln> aPlane = GeomAlgoAPI_FaceBuilder::plane(aSelection);
+      std::shared_ptr<GeomAPI_Face> aFace(new GeomAPI_Face(aSelection));
+      std::shared_ptr<GeomAPI_Pln> aPlane = GeomAlgoAPI_FaceBuilder::plane(aFace);
       if (aPlane) {
         double anA, aB, aC, aD;
         aPlane->coefficients(anA, aB, aC, aD);
@@ -272,7 +274,7 @@ void SketchPlugin_Sketch::createPoint2DResult(ModelAPI_Feature* theFeature,
   std::shared_ptr<GeomAPI_Pnt> aCenter(theSketch->to3D(aPoint->x(), aPoint->y()));
   //std::cout<<"Execute circle "<<aCenter->x()<<" "<<aCenter->y()<<" "<<aCenter->z()<<std::endl;
   // make a visible point
-  std::shared_ptr<GeomAPI_Shape> aCenterPointShape = GeomAlgoAPI_PointBuilder::point(aCenter);
+  std::shared_ptr<GeomAPI_Shape> aCenterPointShape = GeomAlgoAPI_PointBuilder::vertex(aCenter);
   std::shared_ptr<ModelAPI_ResultConstruction> aResult = theFeature->document()->createConstruction(
                      theFeature->data(), theIndex);
   aResult->setShape(aCenterPointShape);

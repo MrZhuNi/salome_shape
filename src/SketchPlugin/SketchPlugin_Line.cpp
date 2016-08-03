@@ -10,6 +10,7 @@
 #include <ModelAPI_ResultConstruction.h>
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeBoolean.h>
+#include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_Validator.h>
 #include <ModelAPI_Session.h>
 
@@ -25,6 +26,14 @@ using namespace std;
 SketchPlugin_Line::SketchPlugin_Line()
     : SketchPlugin_SketchEntity()
 {}
+
+void SketchPlugin_Line::initAttributes()
+{
+  SketchPlugin_SketchEntity::initAttributes();
+  /// new attributes should be added to end of the feature in order to provide
+  /// correct attribute values in previous saved studies
+  data()->addAttribute(LENGTH_ID(), ModelAPI_AttributeDouble::typeId());
+}
 
 void SketchPlugin_Line::initDerivedClassAttributes()
 {
@@ -123,6 +132,22 @@ void SketchPlugin_Line::attributeChanged(const std::string& theID) {
       std::shared_ptr<GeomDataAPI_Point2D> anEndAttr = 
         std::dynamic_pointer_cast<GeomDataAPI_Point2D>(attribute(END_ID()));
       anEndAttr->setValue(sketch()->to2D(anEdge->lastPoint()));
+      updateLenghtValue();
     }
+  }
+  else if (theID == START_ID() || theID == END_ID()) {
+    updateLenghtValue();
+  }
+}
+
+void SketchPlugin_Line::updateLenghtValue()
+{
+  std::shared_ptr<GeomDataAPI_Point2D> aStartAttr = std::dynamic_pointer_cast<
+      GeomDataAPI_Point2D>(data()->attribute(START_ID()));
+  std::shared_ptr<GeomDataAPI_Point2D> anEndAttr = std::dynamic_pointer_cast<
+      GeomDataAPI_Point2D>(data()->attribute(END_ID()));
+  if (aStartAttr->isInitialized() && anEndAttr->isInitialized()) {
+    double aDistance = aStartAttr->pnt()->distance(anEndAttr->pnt());
+    data()->real(LENGTH_ID())->setValue(aDistance);
   }
 }

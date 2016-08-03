@@ -17,6 +17,8 @@
 #include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_Events.h>
 
+#include <ModelGeomAlgo_Point2D.h>
+
 #include <Events_InfoMessage.h>
 
 #include <GeomDataAPI_Point2D.h>
@@ -32,11 +34,6 @@
 #include <Precision.hxx>
 
 #include <AIS_Dimension.hxx>
-
-// it is not possible to use 0x2211 as summ symbol because it is not supported by
-// debian Linux platform
-static const Standard_ExtCharacter MyEmptySymbol(' ');
-static const Standard_ExtCharacter MySigmaSymbol('=');//0x03A3); // using equal instead of sigma
 
 namespace SketcherPrs_Tools {
 
@@ -82,27 +79,8 @@ std::shared_ptr<GeomAPI_Shape> getShape(ObjectPtr theObject)
 std::shared_ptr<GeomAPI_Pnt2d> getPoint(ModelAPI_Feature* theFeature,
                                         const std::string& theAttribute)
 {
-  std::shared_ptr<GeomDataAPI_Point2D> aPointAttr;
-
-  /// essential check as it is called in openGl thread
-  if (!theFeature || !theFeature->data().get() || !theFeature->data()->isValid())
-    return std::shared_ptr<GeomAPI_Pnt2d>();
-
-  FeaturePtr aFeature;
-  std::shared_ptr<ModelAPI_AttributeRefAttr> anAttr = std::dynamic_pointer_cast<
-      ModelAPI_AttributeRefAttr>(theFeature->data()->attribute(theAttribute));
-  if(!anAttr.get()) {
-    return std::shared_ptr<GeomAPI_Pnt2d>();
-  }
-  aFeature = ModelAPI_Feature::feature(anAttr->object());
-
-  if (aFeature && aFeature->getKind() == SketchPlugin_Point::ID())
-    aPointAttr = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-        aFeature->data()->attribute(SketchPlugin_Point::COORD_ID()));
-
-  else if (anAttr->attr()) {
-    aPointAttr = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(anAttr->attr());
-  }
+  std::shared_ptr<GeomDataAPI_Point2D> aPointAttr = ModelGeomAlgo_Point2D::getPointOfRefAttr(
+               theFeature, theAttribute, SketchPlugin_Point::ID(), SketchPlugin_Point::COORD_ID());
   if (aPointAttr.get() != NULL)
     return aPointAttr->pnt();
   return std::shared_ptr<GeomAPI_Pnt2d>();
@@ -302,33 +280,6 @@ std::shared_ptr<GeomAPI_Pnt> getAnchorPoint(const ModelAPI_Feature* theConstrain
   aFlyoutPnt->setX(aCenter->x() + aFlyoutPnt->x() * aRadius / aLen);
   aFlyoutPnt->setY(aCenter->y() + aFlyoutPnt->y() * aRadius / aLen);
   return thePlane->to3D(aFlyoutPnt->x(), aFlyoutPnt->y());
-}
-
-void setDisplaySpecialSymbol(AIS_Dimension* theDimension, const bool& theToDisplay)
-{
-  if (theToDisplay) {
-    theDimension->SetSpecialSymbol(MySigmaSymbol);
-    theDimension->SetDisplaySpecialSymbol(AIS_DSS_Before);
-  }
-  else {
-    theDimension->SetSpecialSymbol(MyEmptySymbol);
-    theDimension->SetDisplaySpecialSymbol(AIS_DSS_No);
-  }
-}
-
-void setDisplayParameter(AIS_Dimension* theDimension, const std::string& theParameter,
-                         const bool& theToDisplay)
-{
-   if (theToDisplay) {
-    theDimension->DimensionAspect()->MakeUnitsDisplayed(true);
-    theDimension->SetDisplayUnits(TCollection_AsciiString(theParameter.c_str()));
-    theDimension->DimensionAspect()->SetValueStringFormat("");
-  }
-  else {
-    theDimension->DimensionAspect()->MakeUnitsDisplayed(false);
-    theDimension->SetDisplayUnits(TCollection_AsciiString()); // THE_UNDEFINED_UNITS in AIS_Dimension
-    theDimension->DimensionAspect()->SetValueStringFormat("%g");
-  }
 }
 
 void sendExpressionShownEvent(const bool& theState)

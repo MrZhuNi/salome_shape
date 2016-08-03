@@ -196,10 +196,19 @@ Q_OBJECT
   //! \return boolean value
   bool canChangeColor() const;
 
-  //! Change color of the features if it is possible
+  //! Change color of the results if it is possible
   //! The operation is available for construction, body and group results
   //! theObjects a list of selected objects
   void changeColor(const QObjectPtrList& theObjects);
+
+  //! Returns true if there is at least one selected body/construction/group result
+  //! \return boolean value
+  bool canChangeDeflection() const;
+
+  //! Change deflection of the results if it is possible
+  //! The operation is available for construction, body and group results
+  //! theObjects a list of selected objects
+  void changeDeflection(const QObjectPtrList& theObjects);
 
   //! Show the given features in 3d Viewer
   void showObjects(const QObjectPtrList& theList, bool isVisible);
@@ -246,6 +255,12 @@ Q_OBJECT
    */
   bool abortAllOperations();
 
+  /// Updates workshop state according to the started operation, e.g. visualizes the property panel
+  /// and connect to it.
+  /// \param theOpertion a started operation
+  void operationStarted(ModuleBase_Operation* theOperation);
+
+
   //! Delete features. Delete the referenced features. There can be a question with a list of
   //! referenced objects.
   //! \param theFeatures a list of objects to be deleted
@@ -277,7 +292,7 @@ Q_OBJECT
   /// Update the property panel content by the XML description of the operation and set the panel
   /// into the operation
   /// \param theOperation an operation
-  void setPropertyPanel(ModuleBase_Operation* theOperation);
+  void fillPropertyPanel(ModuleBase_Operation* theOperation);
 
   /// Connects or disconnects to the value changed signal of the property panel widgets
   /// \param isToConnect a boolean value whether connect or disconnect
@@ -301,6 +316,10 @@ Q_OBJECT
   /// A constant string used for "Move to end" command definition
   /// It is used for specific processing of Undo/Redo for this command.
   static QString MOVE_TO_END_COMMAND;
+
+  //! Closes all in the current session and load the directory
+  //! \param theDirectory a path to directory
+  void openDirectory(const QString& theDirectory);
 
 signals:
   /// Emitted when selection happens in Salome viewer
@@ -405,7 +424,7 @@ private:
   /// SLOT, that is called after the operation is started. Update workshop state according to
   /// the started operation, e.g. visualizes the property panel and connect to it.
   /// \param theOpertion a started operation
-  void onOperationStarted(ModuleBase_Operation* theOperation);
+  // void onOperationStarted(ModuleBase_Operation* theOperation);
 
   /// SLOT, that is called after the operation is resumed. Update workshop state according to
   /// the started operation, e.g. visualizes the property panel and connect to it.

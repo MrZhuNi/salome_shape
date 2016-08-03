@@ -43,7 +43,8 @@ void SketchSolver_ConstraintMulti::getEntities(std::list<EntityWrapperPtr>& theE
     if (!aFeature)
       continue;
 
-    myStorage->update(aFeature);
+    if (!myStorage->update(aFeature)) // the entity is not created, so it is a copy in "multi" constraint, force its creation
+      myStorage->update(aFeature, myGroupID, true);
     theEntities.push_back(myStorage->entity(aFeature));
     myFeatures.insert(aFeature);
     for (int i = 0; i < myNumberOfCopies && anObjIt != anObjectList.end(); ++i, ++anObjIt) {
@@ -113,19 +114,19 @@ void SketchSolver_ConstraintMulti::adjustConstraint()
     return;
   }
 
-  FeaturePtr aFeature;
+  FeaturePtr anOriginal, aFeature;
   std::list<ObjectPtr> anObjectList = aRefList->list();
   std::list<ObjectPtr>::iterator anObjIt = anObjectList.begin();
   while (anObjIt != anObjectList.end()) {
-    aFeature = ModelAPI_Feature::feature(*anObjIt++);
-    if (!aFeature)
+    anOriginal = ModelAPI_Feature::feature(*anObjIt++);
+    if (!anOriginal)
       continue;
 
     // Fill lists of coordinates of points composing a feature
     std::list<double> aX, aY;
     std::list<double>::iterator aXIt, aYIt;
     double aXCoord, aYCoord;
-    EntityWrapperPtr anEntity = myStorage->entity(aFeature);
+    EntityWrapperPtr anEntity = myStorage->entity(anOriginal);
     std::list<EntityWrapperPtr> aSubs = anEntity->subEntities();
     std::list<EntityWrapperPtr>::const_iterator aSIt = aSubs.begin();
     for (; aSIt != aSubs.end(); ++aSIt) {
@@ -157,9 +158,12 @@ void SketchSolver_ConstraintMulti::adjustConstraint()
       } else if (aFeature->getKind() == SketchPlugin_Line::ID()) {
         aPoints.push_back(aFeature->attribute(SketchPlugin_Line::START_ID()));
         aPoints.push_back(aFeature->attribute(SketchPlugin_Line::END_ID()));
-      } else if (aFeature->getKind() == SketchPlugin_Circle::ID())
+      } else if (aFeature->getKind() == SketchPlugin_Circle::ID()) {
         aPoints.push_back(aFeature->attribute(SketchPlugin_Circle::CENTER_ID()));
-      else if (aFeature->getKind() == SketchPlugin_Point::ID() ||
+        // update circle's radius
+        aFeature->real(SketchPlugin_Circle::RADIUS_ID())->setValue(
+            anOriginal->real(SketchPlugin_Circle::RADIUS_ID())->value());
+      } else if (aFeature->getKind() == SketchPlugin_Point::ID() ||
                aFeature->getKind() == SketchPlugin_IntersectionPoint::ID())
         aPoints.push_back(aFeature->attribute(SketchPlugin_Point::COORD_ID()));
 
@@ -176,6 +180,13 @@ void SketchSolver_ConstraintMulti::adjustConstraint()
       // update feature in the storage if it is used by another constraints
       if (anEntity)
         myStorage->update(aFeature);
+      else { // update attributes, if they exist in the storage
+        for (aPtIt = aPoints.begin(); aPtIt != aPoints.end(); ++aPtIt) {
+          EntityWrapperPtr aPntEnt = myStorage->entity(*aPtIt);
+          if (aPntEnt)
+            myStorage->update(*aPtIt);
+        }
+      }
 
       if (!anEntity || !myStorage->isEventsBlocked())
         aFeature->data()->blockSendAttributeUpdated(false);
@@ -187,6 +198,24 @@ void SketchSolver_ConstraintMulti::adjustConstraint()
 
 bool SketchSolver_ConstraintMulti::isUsed(FeaturePtr theFeature) const
 {
-  return myFeatures.find(theFeature) != myFeatures.end() ||
-         SketchSolver_Constraint::isUsed(theFeature);
+  return theFeature && (myFeatures.find(theFeature) != myFeatures.end() ||
+         SketchSolver_Constraint::isUsed(theFeature));
+}
+
+bool SketchSolver_ConstraintMulti::isUsed(AttributePtr theAttribute) const
+{
+  AttributePtr anAttribute = theAttribute;
+  AttributeRefAttrPtr aRefAttr =
+      std::dynamic_pointer_cast<ModelAPI_AttributeRefAttr>(anAttribute);
+  if (aRefAttr) {
+    if (aRefAttr->isObject())
+      return isUsed(ModelAPI_Feature::feature(aRefAttr->object()));
+    else
+      anAttribute = aRefAttr->attr();
+  }
+  if (!anAttribute)
+    return false;
+
+  FeaturePtr anOwner = ModelAPI_Feature::feature(anAttribute->owner());
+  return myFeatures.find(anOwner) != myFeatures.end();
 }

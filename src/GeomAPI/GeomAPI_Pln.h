@@ -56,6 +56,10 @@ class GeomAPI_Pln : public GeomAPI_Interface
   GEOMAPI_EXPORT
   bool isCoincident(const std::shared_ptr<GeomAPI_Pln> thePlane, const double theTolerance = 1.e-7);
 
+  /// Returns true if plane is parallel to theLine.
+  GEOMAPI_EXPORT
+  bool isParallel(const std::shared_ptr<GeomAPI_Lin> theLine);
+
   /// Returns intersection point or empty if no intersections
   GEOMAPI_EXPORT
   std::shared_ptr<GeomAPI_Pnt> intersect(const std::shared_ptr<GeomAPI_Lin>& theLine) const;
@@ -63,6 +67,18 @@ class GeomAPI_Pln : public GeomAPI_Interface
   /// Returns projection of the given point onto the plane
   GEOMAPI_EXPORT
   std::shared_ptr<GeomAPI_Pnt> project(const std::shared_ptr<GeomAPI_Pnt>& thePoint) const;
+
+  /// \return distance between planes.
+  GEOMAPI_EXPORT
+  double distance(const std::shared_ptr<GeomAPI_Pln> thePlane) const;
+
+  /// Translates the plane along direction theDir on distance theDist
+  GEOMAPI_EXPORT
+  void translate(const std::shared_ptr<GeomAPI_Dir> theDir, const double theDist);
+
+  /// \return intersection line of two planes. Empty if they are parallel.
+  GEOMAPI_EXPORT
+  std::shared_ptr<GeomAPI_Lin> intersect(const std::shared_ptr<GeomAPI_Pln> thePlane) const;
 };
 
 #endif

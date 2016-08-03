@@ -10,6 +10,7 @@
 #include "PartSet_WidgetPoint2DFlyout.h"
 #include "PartSet_WidgetShapeSelector.h"
 #include "PartSet_WidgetMultiSelector.h"
+#include "PartSet_WidgetSubShapeSelector.h"
 #include "PartSet_WidgetEditor.h"
 #include "PartSet_WidgetFileSelector.h"
 #include "PartSet_WidgetSketchCreator.h"
@@ -123,7 +124,8 @@ extern "C" PARTSET_EXPORT ModuleBase_IModule* createModule(ModuleBase_IWorkshop*
 
 PartSet_Module::PartSet_Module(ModuleBase_IWorkshop* theWshop)
 : ModuleBase_IModule(theWshop),
-  myVisualLayerId(0)
+  myVisualLayerId(0),
+  myIsOperationIsLaunched(false)
 {
   new PartSet_IconFactory();
 
@@ -162,6 +164,10 @@ PartSet_Module::PartSet_Module(ModuleBase_IWorkshop* theWshop)
   Config_PropManager::registerProp("Visualization", "operation_highlight_color",
                           "Multi selector item color in operation", Config_Prop::Color,
                           PartSet_CustomPrs::OPERATION_HIGHLIGHT_COLOR());
+
+
+  Config_PropManager::registerProp(SKETCH_TAB_NAME, "disable_input_fields", "Disable input fields",
+                          Config_Prop::Boolean, "true");
 }
 
 PartSet_Module::~PartSet_Module()
@@ -238,11 +244,11 @@ void PartSet_Module::registerFilters()
 
 void PartSet_Module::registerProperties()
 {
-  Config_PropManager::registerProp("Sketch planes", "planes_size", "Size", Config_Prop::Double,
+  Config_PropManager::registerProp(SKETCH_TAB_NAME, "planes_size", "Size", Config_Prop::Double,
                                    PLANE_SIZE);
-  Config_PropManager::registerProp("Sketch planes", "planes_thickness", "Thickness",
+  Config_PropManager::registerProp(SKETCH_TAB_NAME, "planes_thickness", "Thickness",
                                    Config_Prop::Integer, SKETCH_WIDTH);
-  Config_PropManager::registerProp("Sketch planes", "rotate_to_plane", "Rotate to plane when selected",
+  Config_PropManager::registerProp(SKETCH_TAB_NAME, "rotate_to_plane", "Rotate to plane when selected",
     Config_Prop::Boolean, "false");
 }
 
@@ -253,7 +259,7 @@ void PartSet_Module::connectToPropertyPanel(ModuleBase_ModelWidget* theWidget, c
 
 void PartSet_Module::operationCommitted(ModuleBase_Operation* theOperation) 
 {
-  if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation)) {
+  if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation, sketchMgr()->activeSketch())) {
     mySketchMgr->commitNestedSketch(theOperation);
   }
 
@@ -278,97 +284,99 @@ void PartSet_Module::operationAborted(ModuleBase_Operation* theOperation)
 
 void PartSet_Module::operationStarted(ModuleBase_Operation* theOperation)
 {
-  ModuleBase_IWorkshop* anIWorkshop = workshop();
-  if (!theOperation->getDescription()->hasXmlRepresentation()) {  //!< No need for property panel
-    anIWorkshop->updateCommandStatus();
-  }
-  else {
-    ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
-                                                                                 (theOperation);
-    if (aFOperation) {
-      XGUI_Workshop* aWorkshop = XGUI_Tools::workshop(anIWorkshop);
-      XGUI_PropertyPanel* aPropertyPanel = aWorkshop->propertyPanel();
-      ModuleBase_ModelWidget* aFilledWidget = 0;
-      bool aPostonedWidgetActivation = false;
-      FeaturePtr aFeature = aFOperation->feature();
+  ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
+                                                                                (theOperation);
+  if (aFOperation) {
+    XGUI_Workshop* aWorkshop = XGUI_Tools::workshop(workshop());
+    XGUI_PropertyPanel* aPropertyPanel = aWorkshop->propertyPanel();
 
-      std::string aGreedAttributeId = ModuleBase_Tools::findGreedAttribute(anIWorkshop, aFeature);
+    ModuleBase_ModelWidget* aFilledWidget = 0;
+    bool aPostonedWidgetActivation = false;
+
+    FeaturePtr aFeature = aFOperation->feature();
+    /// Restart sketcher operations automatically
+    /// it is important to call method of sketch reentrant manager before filling of PP
+    /// because it fills some created feature attributes, these new values should be used
+    /// to fill the property panel
+    mySketchReentrantMgr->operationStarted(theOperation);
+
+    aWorkshop->fillPropertyPanel(aFOperation);
+    // filling the operation values by the current selection
+    // if the operation can be committed after the controls filling, the method perform should
+    // be stopped. Otherwise unnecessary presentations can be shown(e.g. operation prs in sketch)
+    bool isOperationCommitted = false;
+    if (!aFOperation->isEditOperation()) {
+      std::string aGreedAttributeId = ModuleBase_Tools::findGreedAttribute(workshop(), aFeature);
       // if there is a greed attribute, automatic commit by preselection for this feature is prohibited
-      aWorkshop->setPropertyPanel(aFOperation);
-
-      // filling the operation values by the current selection
-      // if the operation can be committed after the controls filling, the method perform should
-      // be stopped. Otherwise unnecessary presentations can be shown(e.g. operation prs in sketch)
-      bool isOperationCommitted = false;
-      if (!aFOperation->isEditOperation()) {
-        aFilledWidget = aFOperation->activateByPreselection(aGreedAttributeId);
-        if (currentOperation() != aFOperation)
-          isOperationCommitted = true;
-        else {
-          if (aGreedAttributeId.empty()) {
-            // a signal should be emitted before the next widget activation
-            // because, the activation of the next widget will give a focus to the widget. As a result
-            // the value of the widget is initialized. And commit may happens until the value is entered.
-            if (aFilledWidget) {
-              if (mySketchReentrantMgr->canBeCommittedByPreselection())
-                isOperationCommitted = mySketchMgr->operationActivatedByPreselection();
-              // activate the next obligatory widget
-              if (!isOperationCommitted)
-                aPropertyPanel->activateNextWidget(aFilledWidget);
-            }
-          }
-          else { // there is a greed widget
-            const QList<ModuleBase_ModelWidget*>& aWidgets = aPropertyPanel->modelWidgets();
-            std::string aFirstAttributeId = aWidgets.front()->attributeID();
-            // activate next widget after greeded if it is the first widget in the panel
-            // else the first panel widget is already activated by operation start
-            if (aFirstAttributeId == aGreedAttributeId)
-              aPostonedWidgetActivation = true;
+      aFilledWidget = aFOperation->activateByPreselection(aGreedAttributeId);
+      if (currentOperation() != aFOperation)
+        isOperationCommitted = true;
+      else {
+        if (aGreedAttributeId.empty()) {
+          // a signal should be emitted before the next widget activation
+          // because, the activation of the next widget will give a focus to the widget. As a result
+          // the value of the widget is initialized. And commit may happens until the value is entered.
+          if (aFilledWidget) {
+            if (mySketchReentrantMgr->canBeCommittedByPreselection())
+              isOperationCommitted = mySketchMgr->operationActivatedByPreselection();
+            // activate the next obligatory widget
+            if (!isOperationCommitted)
+              aPropertyPanel->activateNextWidget(aFilledWidget);
           }
         }
-      } if (!isOperationCommitted) {
-        anIWorkshop->updateCommandStatus();
-        aWorkshop->connectToPropertyPanel(true);
-        operationStartedInternal(aFOperation);
+        else { // there is a greed widget
+          const QList<ModuleBase_ModelWidget*>& aWidgets = aPropertyPanel->modelWidgets();
+          std::string aFirstAttributeId = aWidgets.front()->attributeID();
+          // activate next widget after greeded if it is the first widget in the panel
+          // else the first panel widget is already activated by operation start
+          if (aFirstAttributeId == aGreedAttributeId)
+            aPostonedWidgetActivation = true;
+        }
+      }
+    } if (!isOperationCommitted) {
+      workshop()->updateCommandStatus();
+      aWorkshop->connectToPropertyPanel(true);
+      updateSketcherOnStart(aFOperation);
+      updatePresentationsOnStart(aFOperation);
 
-        // the objects of the current operation should be deactivated
-        QObjectPtrList anObjects;
-        anObjects.append(aFeature);
-        std::list<ResultPtr> aResults;
-        ModelAPI_Tools::allResults(aFeature, aResults);
-        std::list<ResultPtr>::const_iterator aIt;
-        for (aIt = aResults.begin(); aIt != aResults.end(); ++aIt) {
-          anObjects.append(*aIt);
-        }
-        QObjectPtrList::const_iterator anIt = anObjects.begin(), aLast = anObjects.end();
-        for (; anIt != aLast; anIt++)
-          aWorkshop->deactivateActiveObject(*anIt, false);
-        if (anObjects.size() > 0) {
-          XGUI_Displayer* aDisplayer = aWorkshop->displayer();
-          aDisplayer->updateViewer();
-        }
+      // the objects of the current operation should be deactivated
+      QObjectPtrList anObjects;
+      anObjects.append(aFeature);
+      std::list<ResultPtr> aResults;
+      ModelAPI_Tools::allResults(aFeature, aResults);
+      std::list<ResultPtr>::const_iterator aIt;
+      for (aIt = aResults.begin(); aIt != aResults.end(); ++aIt) {
+        anObjects.append(*aIt);
       }
-      if (aPostonedWidgetActivation) {
-        // if the widget is an empty in the chain of activated widgets, the current operation
-        // is restarted. It should be performed after functionality of the operation starting
-        aPropertyPanel->activateNextWidget(aFilledWidget);
+      QObjectPtrList::const_iterator anIt = anObjects.begin(), aLast = anObjects.end();
+      for (; anIt != aLast; anIt++)
+        aWorkshop->deactivateActiveObject(*anIt, false);
+      if (anObjects.size() > 0) {
+        XGUI_Displayer* aDisplayer = aWorkshop->displayer();
+        aDisplayer->updateViewer();
       }
+    }
+    if (aPostonedWidgetActivation) {
+      // if the widget is an empty in the chain of activated widgets, the current operation
+      // is restarted. It should be performed after functionality of the operation starting
+      aPropertyPanel->activateNextWidget(aFilledWidget);
     }
   }
 }
 
-void PartSet_Module::operationStartedInternal(ModuleBase_Operation* theOperation)
+void PartSet_Module::updateSketcherOnStart(ModuleBase_Operation* theOperation)
 {
-  /// Restart sketcher operations automatically
-  mySketchReentrantMgr->operationStarted(theOperation);
-
   if (PartSet_SketcherMgr::isSketchOperation(theOperation)) {
     mySketchMgr->startSketch(theOperation);
   }
-  else if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation)) {
+  else if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation,
+                                                        sketchMgr()->activeSketch())) {
     mySketchMgr->startNestedSketch(theOperation);
   }
+}
 
+void PartSet_Module::updatePresentationsOnStart(ModuleBase_Operation* theOperation)
+{
   ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>(theOperation);
   if (aFOperation) {
     myCustomPrs->activate(aFOperation->feature(), ModuleBase_IModule::CustomizeArguments, true);
@@ -393,7 +401,7 @@ void PartSet_Module::operationStopped(ModuleBase_Operation* theOperation)
   bool isModifiedResults = myCustomPrs->deactivate(ModuleBase_IModule::CustomizeResults, false);
   bool isModified = isModifiedArgs || isModifiedResults;
 
-  if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation)) {
+  if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation, sketchMgr()->activeSketch())) {
     mySketchMgr->stopNestedSketch(theOperation);
   }
   else if (PartSet_SketcherMgr::isSketchOperation(theOperation))
@@ -482,7 +490,8 @@ bool PartSet_Module::canActivateSelection(const ObjectPtr& theObject) const
 
   ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
   bool isSketchOp = PartSet_SketcherMgr::isSketchOperation(anOperation),
-       isNestedOp = PartSet_SketcherMgr::isNestedSketchOperation(anOperation);
+       isNestedOp = PartSet_SketcherMgr::isNestedSketchOperation(anOperation,
+                                                                 sketchMgr()->activeSketch());
   if (isSketchOp || isNestedOp) {
     // in active sketch operation it is possible to activate operation object in selection
     // in the edit operation, e.g. points of the line can be moved when the line is edited
@@ -551,6 +560,17 @@ void PartSet_Module::customSubShapesSelectionModes(QIntList& theTypes)
 bool PartSet_Module::isMouseOverWindow()
 {
   return mySketchMgr->isMouseOverWindow();
+}
+
+bool PartSet_Module::isSketchNeutralPointActivated() const
+{
+  bool isNeutralPoint = true;
+  if (sketchReentranceMgr()->isInternalEditStarted())
+    isNeutralPoint = false;
+  if (myIsOperationIsLaunched)
+    isNeutralPoint = false;
+
+  return isNeutralPoint;
 }
 
 void PartSet_Module::closeDocument()
@@ -705,6 +725,12 @@ ModuleBase_ModelWidget* PartSet_Module::createWidgetByType(const std::string& th
     aShapeSelectorWgt->setSketcher(mySketchMgr->activeSketch());
     aWgt = aShapeSelectorWgt;
   }
+  else if (theType == "sketch_sub_shape_selector") {
+    PartSet_WidgetSubShapeSelector* aSubShapeSelectorWgt =
+                          new PartSet_WidgetSubShapeSelector(theParent, aWorkshop, theWidgetApi);
+    aSubShapeSelectorWgt->setSketcher(mySketchMgr->activeSketch());
+    aWgt = aSubShapeSelectorWgt;
+  }
   else if (theType == WDG_DOUBLEVALUE_EDITOR) {
     aWgt = new PartSet_WidgetEditor(theParent, aWorkshop, theWidgetApi);
   } else if (theType == "export_file_selector") {
@@ -728,7 +754,7 @@ ModuleBase_ModelWidget* PartSet_Module::activeWidget() const
     ModuleBase_Operation* aOperation = myWorkshop->currentOperation();
     if (aOperation) {
       ModuleBase_IPropertyPanel* aPanel = aOperation->propertyPanel();
-      anActiveWidget = aPanel->activeWidget();
+      anActiveWidget = aPanel ? aPanel->activeWidget() : 0;
     }
   }
   return anActiveWidget;
@@ -745,7 +771,8 @@ bool PartSet_Module::deleteObjects()
   // 1. check whether the delete should be processed in the module
   ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
   bool isSketchOp = PartSet_SketcherMgr::isSketchOperation(anOperation),
-       isNestedOp = PartSet_SketcherMgr::isNestedSketchOperation(anOperation);
+       isNestedOp = PartSet_SketcherMgr::isNestedSketchOperation(anOperation,
+                                                                 sketchMgr()->activeSketch());
   if (isSketchOp || isNestedOp) {
     isProcessed = true;
     // 2. find selected presentations
@@ -838,13 +865,15 @@ bool PartSet_Module::canCommitOperation() const
   return true;
 }
 
-void PartSet_Module::launchOperation(const QString& theCmdId,
-                                     const bool isUpdatePropertyPanel)
+void PartSet_Module::launchOperation(const QString& theCmdId)
 {
+  myIsOperationIsLaunched = true;
   storeConstraintsState(theCmdId.toStdString());
   updateConstraintsState(theCmdId.toStdString());
 
-  ModuleBase_IModule::launchOperation(theCmdId, isUpdatePropertyPanel);
+  ModuleBase_IModule::launchOperation(theCmdId);
+
+  myIsOperationIsLaunched = false;
 }
 
 void PartSet_Module::storeConstraintsState(const std::string& theFeatureKind)
@@ -859,7 +888,8 @@ void PartSet_Module::storeConstraintsState(const std::string& theFeatureKind)
 
 void PartSet_Module::updateConstraintsState(const std::string& theFeatureKind)
 {
-  if (PartSet_SketcherMgr::constraintsIdList().contains(theFeatureKind.c_str())) {
+  if (PartSet_SketcherMgr::constraintsIdList().contains(theFeatureKind.c_str()) ||
+      PartSet_SketcherMgr::replicationsIdList().contains(theFeatureKind.c_str())) {
     // Show constraints if a constraint was anOperation
     mySketchMgr->updateBySketchParameters(PartSet_Tools::Geometrical, true);
     mySketchMgr->updateBySketchParameters(PartSet_Tools::Dimensional, true);
@@ -945,6 +975,11 @@ void PartSet_Module::onViewTransformed(int theTrsfType)
   }
   if (isModified)
     aDisplayer->updateViewer();
+}
+
+bool PartSet_Module::isCustomPrsActivated(const ModuleBase_CustomizeFlag& theFlag) const
+{
+  return myCustomPrs->isActive(theFlag);
 }
 
 void PartSet_Module::activateCustomPrs(const FeaturePtr& theFeature, const ModuleBase_CustomizeFlag& theFlag,
@@ -1280,11 +1315,6 @@ bool PartSet_Module::processEnter(const std::string& thePreviousAttributeID)
 }
 
 //******************************************************
-void PartSet_Module::beforeOperationStarted(ModuleBase_Operation* theOperation)
-{
-}
-
-//******************************************************
 void PartSet_Module::beforeOperationStopped(ModuleBase_Operation* theOperation)
 {
   if (PartSet_SketcherMgr::isSketchOperation(theOperation)) {
@@ -1298,7 +1328,8 @@ GeomShapePtr PartSet_Module::findShape(const AttributePtr& theAttribute)
   GeomShapePtr aGeomShape;
 
   ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
-  if (anOperation && PartSet_SketcherMgr::isNestedSketchOperation(anOperation)) {
+  if (anOperation && PartSet_SketcherMgr::isNestedSketchOperation(anOperation,
+                                                                  sketchMgr()->activeSketch())) {
     aGeomShape = PartSet_Tools::findShapeBy2DPoint(theAttribute, myWorkshop);
   }
   return aGeomShape;

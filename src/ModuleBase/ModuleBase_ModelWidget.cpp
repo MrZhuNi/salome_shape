@@ -20,6 +20,7 @@
 #include <Config_Keywords.h>
 #include <Config_WidgetAPI.h>
 #include <Config_Translator.h>
+#include <Config_PropManager.h>
 
 #include <Events_Loop.h>
 
@@ -53,6 +54,13 @@ ModuleBase_ModelWidget::ModuleBase_ModelWidget(QWidget* theParent,
   myAttributeID = theData ? theData->widgetId() : "";
   myIsObligatory = theData->getBooleanAttribute(ATTR_OBLIGATORY, true);
 
+  myIsValueEnabled = On; // not defined or "true"
+  std::string anEnableValue = theData->getProperty(DOUBLE_WDG_ENABLE_VALUE);
+  if (anEnableValue == "false")
+    myIsValueEnabled = Off;
+  if (anEnableValue == DOUBLE_WDG_ENABLE_VALUE_BY_PREFERENCES)
+    myIsValueEnabled = DefinedInPreferences;
+
   connect(this, SIGNAL(valuesChanged()), this, SLOT(onWidgetValuesChanged()));
   connect(this, SIGNAL(valuesModified()), this, SLOT(onWidgetValuesModified()));
 }
@@ -76,6 +84,19 @@ bool ModuleBase_ModelWidget::reset()
 bool ModuleBase_ModelWidget::isInitialized(ObjectPtr theObject) const
 {
   return theObject->data()->attribute(attributeID())->isInitialized();
+}
+
+bool ModuleBase_ModelWidget::isValueEnabled() const
+{
+  bool anEnabled = true;
+  if (myIsValueEnabled == DefinedInPreferences) {
+    bool aCanDisable = Config_PropManager::boolean(SKETCH_TAB_NAME, "disable_input_fields", "true");
+    if (aCanDisable)
+      anEnabled = false;
+  }
+  else if (myIsValueEnabled == Off)
+    anEnabled = false;
+  return anEnabled;
 }
 
 void ModuleBase_ModelWidget::processValueState()
@@ -188,8 +209,13 @@ void ModuleBase_ModelWidget::setFeature(const FeaturePtr& theFeature, const bool
   /// after debug, it may be corrected
   myFlushUpdateBlocked = !isUpdateFlushed;
   myFeature = theFeature;
-  if (theToStoreValue)
-    storeValue();
+  if (theToStoreValue) {
+    /// it is possible that the attribute is filled before the operation is started,
+    /// e.g. by reentrant operation case some attributes are filled by values of
+    /// feature of previous operation, we should not lost them here
+    if (!theFeature->data()->attribute(attributeID())->isInitialized())
+      storeValue();
+  }
   myFlushUpdateBlocked = false;
 }
 

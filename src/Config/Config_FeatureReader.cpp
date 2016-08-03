@@ -71,21 +71,36 @@ void Config_FeatureReader::processNode(xmlNodePtr theNode)
         aMessage->setAttributeId(anAttributeID);
         aMessage->setObligatory(getBooleanAttribute(theNode, ATTR_OBLIGATORY, true));
         aMessage->setConcealment(getBooleanAttribute(theNode, ATTR_CONCEALMENT, false));
-        // nested "paged" widgets are not allowed, this issue may be resolved here:
-        if (hasParentRecursive(theNode, WDG_SWITCH_CASE, WDG_TOOLBOX_BOX, NULL)) {
-          const char* kWdgCase = hasParentRecursive(theNode, WDG_SWITCH_CASE, NULL)
-                                 ? WDG_SWITCH_CASE
-                                 : WDG_TOOLBOX_BOX;
-          const char* kWdgSwitch = hasParentRecursive(theNode, WDG_SWITCH_CASE, NULL)
-                                   ? WDG_SWITCH
-                                   : WDG_TOOLBOX;
-          aMessage->setCaseId(restoreAttribute(kWdgCase, _ID));
-          aMessage->setSwitchId(restoreAttribute(kWdgSwitch, _ID));
+
+        std::list<std::pair<std::string, std::string> > aCases;
+        xmlNodePtr aCaseNode = hasParentRecursive(theNode, WDG_SWITCH_CASE, WDG_TOOLBOX_BOX, WDG_OPTIONALBOX, NULL);
+        while(aCaseNode) {
+          std::string aCaseNodeID = getProperty(aCaseNode, _ID);
+          std::string aSwitchNodeID = "";
+          const xmlChar* aName = aCaseNode->name;
+          xmlNodePtr aSwitchNode;
+          if (!xmlStrcmp(aName, (const xmlChar *) WDG_SWITCH_CASE)) {
+            aSwitchNode = hasParentRecursive(aCaseNode, WDG_SWITCH, NULL);
+          }
+          else if (!xmlStrcmp(aName, (const xmlChar *) WDG_TOOLBOX_BOX)) {
+            aSwitchNode = hasParentRecursive(aCaseNode, WDG_TOOLBOX, NULL);
+          }
+          if (!xmlStrcmp(aName, (const xmlChar *) WDG_OPTIONALBOX)) {
+            /// the box is optional, attribute is in case if the optional attribute value is not empty
+            aSwitchNode = aCaseNode;
+          }
+          if (aSwitchNode)
+            aSwitchNodeID = getProperty(aSwitchNode, _ID);
+
+          aCases.push_back(std::make_pair(aSwitchNodeID, aCaseNodeID));
+          aCaseNode = hasParentRecursive(aSwitchNode, WDG_SWITCH_CASE, WDG_TOOLBOX_BOX, WDG_OPTIONALBOX, NULL);
         }
+        aMessage->setCases(aCases);
         Events_Loop::loop()->send(aMessage);
       }
     // container pages, like "case" or "box"
-    } else if (isNode(theNode, WDG_SWITCH, WDG_SWITCH_CASE, WDG_TOOLBOX, WDG_TOOLBOX_BOX, NULL)) {
+    } else if (isNode(theNode, WDG_OPTIONALBOX, WDG_SWITCH, WDG_SWITCH_CASE,
+                      WDG_TOOLBOX, WDG_TOOLBOX_BOX, NULL)) {
       storeAttribute(theNode, _ID); // save case:caseId (or box:boxId)
     }
   }
@@ -95,7 +110,8 @@ void Config_FeatureReader::processNode(xmlNodePtr theNode)
 
 void Config_FeatureReader::cleanup(xmlNodePtr theNode)
 {
-  if (isNode(theNode, WDG_SWITCH, WDG_SWITCH_CASE, WDG_TOOLBOX, WDG_TOOLBOX_BOX, NULL)) {
+  if (isNode(theNode, WDG_OPTIONALBOX, WDG_SWITCH, WDG_SWITCH_CASE,
+             WDG_TOOLBOX, WDG_TOOLBOX_BOX, NULL)) {
     // cleanup id of cases when leave case node
     cleanupAttribute(theNode, _ID);
   }
@@ -106,7 +122,7 @@ bool Config_FeatureReader::processChildren(xmlNodePtr theNode)
   bool result = isNode(theNode, NODE_WORKBENCH, NODE_GROUP, NULL);
   if(!result && myIsProcessWidgets) {
     result = isNode(theNode, NODE_FEATURE, 
-                             WDG_GROUP, WDG_CHECK_GROUP,
+                             WDG_GROUP, WDG_OPTIONALBOX,
                              WDG_TOOLBOX, WDG_TOOLBOX_BOX,
                              WDG_SWITCH, WDG_SWITCH_CASE, NULL);
   }

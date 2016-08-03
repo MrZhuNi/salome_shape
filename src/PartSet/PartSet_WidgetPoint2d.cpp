@@ -101,6 +101,7 @@ PartSet_WidgetPoint2D::PartSet_WidgetPoint2D(QWidget* theParent,
     aGroupLay->addWidget(myXSpin, 0, 1);
 
     connect(myXSpin, SIGNAL(valueChanged(const QString&)), this, SIGNAL(valuesModified()));
+    myXSpin->setValueEnabled(isValueEnabled());
   }
   {
     QLabel* aLabel = new QLabel(myGroupBox);
@@ -115,6 +116,7 @@ PartSet_WidgetPoint2D::PartSet_WidgetPoint2D(QWidget* theParent,
     aGroupLay->addWidget(myYSpin, 1, 1);
 
     connect(myYSpin, SIGNAL(valueChanged(const QString&)), this, SIGNAL(valuesModified()));
+    myYSpin->setValueEnabled(isValueEnabled());
   }
   QVBoxLayout* aLayout = new QVBoxLayout(this);
   ModuleBase_Tools::zeroMargins(aLayout);
@@ -131,10 +133,6 @@ bool PartSet_WidgetPoint2D::isValidSelectionCustom(const ModuleBase_ViewerPrsPtr
   PartSet_Module* aModule = dynamic_cast<PartSet_Module*>(myWorkshop->module());
   if (aModule->sketchReentranceMgr()->isInternalEditActive()) 
     return true; /// when internal edit is started a new feature is created. I has not results, AIS
-
-  // workaround for feature, where there is no results
-  //if (myFeature->getKind() == "SketchRectangle")
-  //  return true;
 
   /// the selection is not possible if the current feature has no presentation for the current
   /// attribute not in AIS not in results. If so, no object in current feature where make
@@ -221,24 +219,6 @@ bool PartSet_WidgetPoint2D::setSelection(QList<ModuleBase_ViewerPrsPtr>& theValu
     if (getPoint2d(aView, aTDShape, aX, aY)) {
       isDone = setPoint(aX, aY);
       PartSet_Tools::setConstraints(mySketch, feature(), attributeID(), aX, aY);
-    }
-  }
-  else if (canBeActivatedByMove()) {
-    if (feature()->getKind() == SketchPlugin_Line::ID()) {
-      FeaturePtr aFeature = std::dynamic_pointer_cast<ModelAPI_Feature>(aValue->object());
-      // Initialize new line with first point equal to end of previous
-      if (aFeature.get()) {
-        std::shared_ptr<ModelAPI_Data> aData = aFeature->data();
-        std::shared_ptr<GeomDataAPI_Point2D> aPoint = 
-          std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-                                       aData->attribute(SketchPlugin_Line::END_ID()));
-        if (aPoint) {
-          setPoint(aPoint->x(), aPoint->y());
-          PartSet_Tools::setConstraints(mySketch, feature(), attributeID(), aPoint->x(),
-                                        aPoint->y());
-          isDone = true;
-        }
-      }
     }
   }
   return isDone;
@@ -376,12 +356,6 @@ QList<QWidget*> PartSet_WidgetPoint2D::getControls() const
 
 void PartSet_WidgetPoint2D::activateCustom()
 {
-  ModuleBase_IViewer* aViewer = myWorkshop->viewer();
-  connect(aViewer, SIGNAL(mouseMove(ModuleBase_IViewWindow*, QMouseEvent*)), 
-          this, SLOT(onMouseMove(ModuleBase_IViewWindow*, QMouseEvent*)));
-  connect(aViewer, SIGNAL(mouseRelease(ModuleBase_IViewWindow*, QMouseEvent*)), 
-          this, SLOT(onMouseRelease(ModuleBase_IViewWindow*, QMouseEvent*)));
-
   QIntList aModes;
   aModes << TopAbs_VERTEX;
   aModes << TopAbs_EDGE;
@@ -392,16 +366,6 @@ void PartSet_WidgetPoint2D::activateCustom()
     if (aFeature.get() && aFeature->getKind() == SketchPlugin_Point::ID())
       storeValue();
   }
-}
-
-bool PartSet_WidgetPoint2D::canBeActivatedByMove()
-{
-  bool aCanBeActivated = false;
-  if (feature()->getKind() == SketchPlugin_Line::ID() &&
-      attributeID() == SketchPlugin_Line::START_ID())
-    aCanBeActivated = true;
-
-  return aCanBeActivated;
 }
 
 void PartSet_WidgetPoint2D::deactivate()
@@ -415,12 +379,6 @@ void PartSet_WidgetPoint2D::deactivate()
     storeValue();
 
   ModuleBase_ModelWidget::deactivate();
-  ModuleBase_IViewer* aViewer = myWorkshop->viewer();
-  disconnect(aViewer, SIGNAL(mouseMove(ModuleBase_IViewWindow*, QMouseEvent*)),
-             this, SLOT(onMouseMove(ModuleBase_IViewWindow*, QMouseEvent*)));
-  disconnect(aViewer, SIGNAL(mouseRelease(ModuleBase_IViewWindow*, QMouseEvent*)), 
-             this, SLOT(onMouseRelease(ModuleBase_IViewWindow*, QMouseEvent*)));
-
   myWorkshop->deactivateSubShapesSelection();
 }
 
@@ -482,14 +440,14 @@ bool PartSet_WidgetPoint2D::setConstraintWith(const ObjectPtr& theObject)
   return true;
 }
 
-void PartSet_WidgetPoint2D::onMouseRelease(ModuleBase_IViewWindow* theWnd, QMouseEvent* theEvent)
+void PartSet_WidgetPoint2D::mouseReleased(ModuleBase_IViewWindow* theWindow, QMouseEvent* theEvent)
 {
   // the contex menu release by the right button should not be processed by this widget
   if (theEvent->button() != Qt::LeftButton)
     return;
 
   ModuleBase_ISelection* aSelection = myWorkshop->selection();
-  Handle(V3d_View) aView = theWnd->v3dView();
+  Handle(V3d_View) aView = theWindow->v3dView();
 
   QList<ModuleBase_ViewerPrsPtr> aList = aSelection->getSelected(ModuleBase_ISelection::Viewer);
   ModuleBase_ViewerPrsPtr aFirstValue = aList.size() > 0 ? aList.first() : ModuleBase_ViewerPrsPtr();
@@ -533,6 +491,15 @@ void PartSet_WidgetPoint2D::onMouseRelease(ModuleBase_IViewWindow* theWnd, QMous
                 anOrphanPoint = isOrphanPoint(aFixedFeature, mySketch, aX, aY);
               }
             }
+            else {
+              // point is taken from mouse event and set in attribute. It should be done before setting
+              // coinident constraint to the external line. If a point is created, it should be in the mouse
+              // clicked point
+              gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWindow->v3dView());
+              double aX, anY;
+              PartSet_Tools::convertTo2D(aPoint, mySketch, aView, aX, anY);
+              setPoint(aX, anY);
+            }
           }
           if (aFixedObject.get())
             setConstraintWith(aFixedObject);
@@ -566,11 +533,13 @@ void PartSet_WidgetPoint2D::onMouseRelease(ModuleBase_IViewWindow* theWnd, QMous
           PartSet_Tools::setConstraints(mySketch, feature(), attributeID(), aX, aY);
         }
         else if (aShape.ShapeType() == TopAbs_EDGE) {
-          if (!setConstraintWith(aObject)) {
-            gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWnd->v3dView());
-            PartSet_Tools::convertTo2D(aPoint, mySketch, aView, aX, aY);
-            setPoint(aX, aY);
-          }
+          // point is taken from mouse event and set in attribute. It should be done before setting
+          // coinident constraint to the external line. If a point is created, it should be in the mouse
+          // clicked point
+          gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWindow->v3dView());
+          PartSet_Tools::convertTo2D(aPoint, mySketch, aView, aX, aY);
+          setPoint(aX, aY);
+          setConstraintWith(aObject);
           setValueState(Stored); // in case of edge selection, Apply state should also be updated
           isAuxiliaryFeature = PartSet_Tools::isAuxiliarySketchEntity(aObject);
         }
@@ -590,7 +559,7 @@ void PartSet_WidgetPoint2D::onMouseRelease(ModuleBase_IViewWindow* theWnd, QMous
   // End of Bug dependent fragment
   else {
     // A case when point is taken from mouse event
-    gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWnd->v3dView());
+    gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWindow->v3dView());
     double aX, anY;
     PartSet_Tools::convertTo2D(aPoint, mySketch, aView, aX, anY);
 
@@ -618,15 +587,17 @@ void PartSet_WidgetPoint2D::onMouseRelease(ModuleBase_IViewWindow* theWnd, QMous
 }
 
 
-void PartSet_WidgetPoint2D::onMouseMove(ModuleBase_IViewWindow* theWnd, QMouseEvent* theEvent)
+void PartSet_WidgetPoint2D::mouseMoved(ModuleBase_IViewWindow* theWindow, QMouseEvent* theEvent)
 {
-  if (isEditingMode())
+  PartSet_Module* aModule = dynamic_cast<PartSet_Module*>(myWorkshop->module());
+
+  if (isEditingMode() || aModule->sketchReentranceMgr()->isInternalEditStarted())
     return;
 
-  gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWnd->v3dView());
+  gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWindow->v3dView());
 
   double aX, anY;
-  PartSet_Tools::convertTo2D(aPoint, mySketch, theWnd->v3dView(), aX, anY);
+  PartSet_Tools::convertTo2D(aPoint, mySketch, theWindow->v3dView(), aX, anY);
   if (myState != ModifiedInViewer)
     storeCurentValue();
   // we need to block the value state change 

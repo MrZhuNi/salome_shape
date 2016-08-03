@@ -13,6 +13,8 @@
 
 #include <gp_Pln.hxx>
 
+#include <IntAna_QuadQuadGeo.hxx>
+
 using namespace std;
 
 GeomAPI_Pln::GeomAPI_Pln(const std::shared_ptr<GeomAPI_Ax3>& theAxis)
@@ -65,6 +67,18 @@ bool GeomAPI_Pln::isCoincident(const std::shared_ptr<GeomAPI_Pln> thePlane, cons
   return (aMyPln.Contains(anOtherPln.Location(), theTolerance) && aMyPln.Axis().IsParallel(anOtherPln.Axis(), theTolerance));
 }
 
+bool GeomAPI_Pln::isParallel(const std::shared_ptr<GeomAPI_Lin> theLine)
+{
+  std::shared_ptr<GeomAPI_XYZ> aLineDir = theLine->direction()->xyz();
+  std::shared_ptr<GeomAPI_XYZ> aLineLoc = theLine->location()->xyz();
+
+  std::shared_ptr<GeomAPI_XYZ> aNormal = direction()->xyz();
+  std::shared_ptr<GeomAPI_XYZ> aLocation = location()->xyz();
+
+  double aDot = aNormal->dot(aLineDir);
+  return Abs(aDot) < Precision::SquareConfusion();
+}
+
 std::shared_ptr<GeomAPI_Pnt> GeomAPI_Pln::intersect(const std::shared_ptr<GeomAPI_Lin>& theLine) const
 {
   std::shared_ptr<GeomAPI_XYZ> aLineDir = theLine->direction()->xyz();
@@ -91,4 +105,53 @@ std::shared_ptr<GeomAPI_Pnt> GeomAPI_Pln::project(const std::shared_ptr<GeomAPI_
   std::shared_ptr<GeomAPI_XYZ> aProjection = 
       aLocation->added(aVec->decreased(aNormal->multiplied(aDot)));
   return std::shared_ptr<GeomAPI_Pnt>(new GeomAPI_Pnt(aProjection));
+}
+
+double GeomAPI_Pln::distance(const std::shared_ptr<GeomAPI_Pln> thePlane) const
+{
+  const gp_Pln& aMyPln = impl<gp_Pln>();
+  const gp_Pln& anOtherPln = thePlane->impl<gp_Pln>();
+
+  return aMyPln.Distance(anOtherPln);
+}
+
+void GeomAPI_Pln::translate(const std::shared_ptr<GeomAPI_Dir> theDir, double theDist)
+{
+  gp_Vec aVec(theDir->impl<gp_Dir>());
+  aVec.Normalize();
+  aVec.Multiply(theDist);
+  implPtr<gp_Pln>()->Translate(aVec);
+}
+
+std::shared_ptr<GeomAPI_Lin> GeomAPI_Pln::intersect(const std::shared_ptr<GeomAPI_Pln> thePlane) const
+{
+  std::shared_ptr<GeomAPI_Lin> aRes;
+
+  if(!thePlane.get()) {
+    return aRes;
+  }
+
+  const gp_Pln& aMyPln = impl<gp_Pln>();
+  const gp_Pln& anOtherPln = thePlane->impl<gp_Pln>();
+
+  IntAna_QuadQuadGeo aQuad(aMyPln, anOtherPln, Precision::Confusion(), Precision::Confusion());
+
+  if(aQuad.IsDone() != Standard_True) {
+    return aRes;
+  }
+
+  if(aQuad.NbSolutions() != 1) {
+    return aRes;
+  }
+
+  gp_Lin aLin = aQuad.Line(1);
+  gp_Pnt aLoc = aLin.Location();
+  gp_Dir aDir = aLin.Direction();
+
+  std::shared_ptr<GeomAPI_Pnt> aGeomLoc(new GeomAPI_Pnt(aLoc.X(), aLoc.Y(), aLoc.Z()));
+  std::shared_ptr<GeomAPI_Dir> aGeomDir(new GeomAPI_Dir(aDir.X(), aDir.Y(), aDir.Z()));
+
+  aRes.reset(new GeomAPI_Lin(aGeomLoc, aGeomDir));
+
+  return aRes;
 }

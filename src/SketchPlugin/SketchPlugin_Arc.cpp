@@ -29,6 +29,7 @@
 #include <GeomAPI_Lin2d.h>
 #include <GeomAPI_Lin.h>
 #include <GeomAPI_Pnt2d.h>
+#include <GeomAPI_Vertex.h>
 #include <GeomAPI_XY.h>
 #include <GeomDataAPI_Point2D.h>
 #include <GeomDataAPI_Dir.h>
@@ -119,7 +120,7 @@ void SketchPlugin_Arc::execute()
 
     std::shared_ptr<GeomAPI_Pnt> aCenter(aSketch->to3D(aCenterAttr->x(), aCenterAttr->y()));
     // make a visible point
-    std::shared_ptr<GeomAPI_Shape> aCenterPointShape = GeomAlgoAPI_PointBuilder::point(aCenter);
+    std::shared_ptr<GeomAPI_Shape> aCenterPointShape = GeomAlgoAPI_PointBuilder::vertex(aCenter);
     std::shared_ptr<ModelAPI_ResultConstruction> aConstr1 = document()->createConstruction(
         data(), 0);
     aConstr1->setShape(aCenterPointShape);
@@ -242,7 +243,7 @@ AISObjectPtr SketchPlugin_Arc::getAISObject(AISObjectPtr thePrevious)
           }
         }
         // make a visible point
-        std::shared_ptr<GeomAPI_Shape> aCenterPointShape = GeomAlgoAPI_PointBuilder::point(aCenter);
+        std::shared_ptr<GeomAPI_Shape> aCenterPointShape = GeomAlgoAPI_PointBuilder::vertex(aCenter);
         aShapes.push_back(aCenterPointShape);
       }
       if (!aShapes.empty()) {
@@ -369,6 +370,8 @@ void SketchPlugin_Arc::attributeChanged(const std::string& theID)
       std::shared_ptr<GeomDataAPI_Point2D> aTangentPoint =
           std::dynamic_pointer_cast<GeomDataAPI_Point2D>(aTangPtAttr->attr());
       std::shared_ptr<GeomAPI_Pnt2d> aTangPnt2d = aTangentPoint->pnt();
+      if (aTangPnt2d->isEqual(anEndAttr->pnt()))
+        return;
       FeaturePtr aTangFeature = ModelAPI_Feature::feature(aTangentPoint->owner());
       std::shared_ptr<GeomAPI_Edge> aTangEdge = std::dynamic_pointer_cast<GeomAPI_Edge>(
           aTangFeature->lastResult()->shape());

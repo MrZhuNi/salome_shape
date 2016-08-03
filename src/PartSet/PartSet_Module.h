@@ -102,8 +102,7 @@ public:
 
   /// Creates an operation and send it to loop
   /// \param theCmdId the operation name
-  /// \param isUpdatePropertyPanel if false, the property panel filling might be postponed
-  virtual void launchOperation(const QString& theCmdId, const bool isUpdatePropertyPanel = true);
+  virtual void launchOperation(const QString& theCmdId);
 
   /// Realizes some functionality by an operation start
   /// Displays all sketcher sub-Objects, hides sketcher result, appends selection filters
@@ -202,11 +201,16 @@ public:
   PartSet_SketcherMgr* sketchMgr() const { return mySketchMgr; }
 
   /// Returns sketch reentrant manager
-  PartSet_SketcherReetntrantMgr* sketchReentranceMgr() { return mySketchReentrantMgr; }
+  PartSet_SketcherReetntrantMgr* sketchReentranceMgr() const { return mySketchReentrantMgr; }
 
   /// Returns listener of overconstraint signal
   /// \return the listener
   PartSet_OverconstraintListener* overconstraintListener() { return myOverconstraintListener; }
+
+  /// Returns true if the current operation is not reentrant and the current state of the
+  /// application is not in launch operation mode
+  /// \return boolean value
+  bool isSketchNeutralPointActivated() const;
 
   /// Performs functionality on closing document
   virtual void closeDocument();
@@ -221,6 +225,11 @@ public:
   /// Set the object with the object results are customized
   /// \param theFeature a feature
   void setCustomized(const FeaturePtr& theFeature);
+
+  /// Return true if the custom presentation is activated
+  /// \param theFlag a flag of level of customization, which means that only part of sub-elements
+  /// \return boolean value
+  virtual bool isCustomPrsActivated(const ModuleBase_CustomizeFlag& theFlag) const;
 
   /// Activate custom presentation for the object
   /// \param theFeature a feature instance
@@ -297,10 +306,6 @@ public:
   /// Returns true if the event is processed. It gives the reentrance manager to process the enter.
   /// \param thePreviousAttributeID an index of the previous active attribute
   virtual bool processEnter(const std::string& thePreviousAttributeID);
-
-  /// Performs some GUI actions after an operation transaction is opened
-  /// Default realization is empty
-  virtual void beforeOperationStarted(ModuleBase_Operation* theOperation);
 
   /// Performs some GUI actions before an operation transaction is stopped
   /// Default realization is empty
@@ -380,11 +385,13 @@ protected:
   /// \param isToConnect a boolean value whether connect or disconnect
   virtual void connectToPropertyPanel(ModuleBase_ModelWidget* theWidget, const bool isToConnect);
 
-  /// Realizes some functionality by an operation start
-  /// Displays all sketcher sub-Objects, hides sketcher result, appends selection filters
-  /// Activate the operation presentation
-  /// \param theOperation a started operation
-  virtual void operationStartedInternal(ModuleBase_Operation* theOperation);
+  /// Updates reentrant manager state or sketcher operations for the started operation
+  /// \param theOperation the started operation
+  void updateSketcherOnStart(ModuleBase_Operation* theOperation);
+
+  /// Updates presetnations of results and arguments by operation start
+  /// \param theOperation the started operation
+  void updatePresentationsOnStart(ModuleBase_Operation* theOperation);
 
  private slots:
    void onTreeViewDoubleClick(const QModelIndex&);
@@ -401,6 +408,7 @@ protected:
   void setDefaultConstraintShown();
 
 private:
+  bool myIsOperationIsLaunched; /// state of application between launch and stop operation
   SelectMgr_ListOfFilter mySelectionFilters;
 
   PartSet_SketcherMgr* mySketchMgr;

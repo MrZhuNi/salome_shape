@@ -8,9 +8,9 @@
 
 #include "GeomAlgoAPI_SketchBuilder.h"
 
+#include <GeomAPI_Edge.h>
 #include <GeomAPI_Dir.h>
 #include <GeomAPI_Face.h>
-#include <GeomAPI_PlanarEdges.h>
 #include <GeomAPI_Pln.h>
 #include <GeomAPI_Pnt.h>
 
@@ -29,14 +29,13 @@
 #include <BRepGProp.hxx>
 #include <BRepTools.hxx>
 #include <BRepTopAdaptor_FClass2d.hxx>
-#include <Geom_Curve.hxx>
 #include <Geom2d_Curve.hxx>
+#include <Handle_Geom2d_Curve.hxx>
 #include <BRepLib_CheckCurveOnSurface.hxx>
 #include <BRep_Tool.hxx>
 #include <Geom_Plane.hxx>
 #include <GeomLib_IsPlanarSurface.hxx>
 #include <GeomLib_Tool.hxx>
-#include <GeomProjLib.hxx>
 #include <gp_Pln.hxx>
 #include <GProp_GProps.hxx>
 #include <IntAna_IntConicQuad.hxx>
@@ -52,6 +51,11 @@
 #include <TopoDS_Vertex.hxx>
 #include <TopoDS.hxx>
 #include <TopExp_Explorer.hxx>
+#include <TopTools_ListIteratorOfListOfShape.hxx>
+
+#include <BOPAlgo_Builder.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
+#include <TopoDS_Edge.hxx>
 
 //==================================================================================================
 double GeomAlgoAPI_ShapeTools::volume(const std::shared_ptr<GeomAPI_Shape> theShape)
@@ -225,7 +229,9 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(const std::
 
   if(theCombinedShapes.size() == 1 && theFreeShapes.size() == 0) {
     aResult = theCombinedShapes.front();
-  } else if (theCombinedShapes.size() > 1 || (theCombinedShapes.size() >= 1 && theFreeShapes.size() >= 1)) {
+  } else if(theCombinedShapes.size() == 0 && theFreeShapes.size() == 1) {
+    aResult = theFreeShapes.front();
+  } else {
     TopoDS_Compound aResultComp;
     TopoDS_Builder aBuilder;
     aBuilder.MakeCompound(aResultComp);
@@ -318,27 +324,39 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::groupSharedTopology(const
     aGroups.Append(aGroupedShapes);
   }
 
-  TopoDS_Compound aCompound;
-  BRep_Builder aBuilder;
-  aBuilder.MakeCompound(aCompound);
-  ListOfShape aCompSolids, aFreeSolids;
-  for(NCollection_Vector<NCollection_List<TopoDS_Shape>>::Iterator anIt(aGroups); anIt.More(); anIt.Next()) {
-    NCollection_List<TopoDS_Shape> aGroup = anIt.Value();
+  if(aGroups.Size() == 1) {
+    NCollection_List<TopoDS_Shape> aGroup = aGroups.First();
     GeomShapePtr aGeomShape(new GeomAPI_Shape());
-    if(aGroup.Size() == 1) {
-      aGeomShape->setImpl(new TopoDS_Shape(aGroup.First()));
-    } else {
-      aGeomShape->setImpl(new TopoDS_Shape(makeCompound(anIt.Value())));
-      aGeomShape = GeomAlgoAPI_ShapeTools::combineShapes(aGeomShape,
-                                                         GeomAPI_Shape::COMPSOLID,
-                                                         aCompSolids,
-                                                         aFreeSolids);
+    aGeomShape->setImpl(new TopoDS_Shape(makeCompound(aGroup)));
+    ListOfShape aCompSolids, aFreeSolids;
+    aGeomShape = GeomAlgoAPI_ShapeTools::combineShapes(aGeomShape,
+                                                        GeomAPI_Shape::COMPSOLID,
+                                                        aCompSolids,
+                                                        aFreeSolids);
+    aResult = aGeomShape;
+  } else {
+    TopoDS_Compound aCompound;
+    BRep_Builder aBuilder;
+    aBuilder.MakeCompound(aCompound);
+    ListOfShape aCompSolids, aFreeSolids;
+    for(NCollection_Vector<NCollection_List<TopoDS_Shape>>::Iterator anIt(aGroups); anIt.More(); anIt.Next()) {
+      NCollection_List<TopoDS_Shape> aGroup = anIt.Value();
+      GeomShapePtr aGeomShape(new GeomAPI_Shape());
+      if(aGroup.Size() == 1) {
+        aGeomShape->setImpl(new TopoDS_Shape(aGroup.First()));
+      } else {
+        aGeomShape->setImpl(new TopoDS_Shape(makeCompound(aGroup)));
+        aGeomShape = GeomAlgoAPI_ShapeTools::combineShapes(aGeomShape,
+                                                           GeomAPI_Shape::COMPSOLID,
+                                                           aCompSolids,
+                                                           aFreeSolids);
+      }
+      aBuilder.Add(aCompound, aGeomShape->impl<TopoDS_Shape>());
     }
-    aBuilder.Add(aCompound, aGeomShape->impl<TopoDS_Shape>());
-  }
 
-  if(!aCompound.IsNull()) {
-    aResult->setImpl(new TopoDS_Shape(aCompound));
+    if(!aCompound.IsNull()) {
+      aResult->setImpl(new TopoDS_Shape(aCompound));
+    }
   }
 
   return aResult;
@@ -401,33 +419,33 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::faceToInfinitePlane(const
 }
 
 //==================================================================================================
-std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::fitPlaneToBox(const std::shared_ptr<GeomAPI_Shape> thePlane,
-                                                                     const std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints)
+std::shared_ptr<GeomAPI_Face> GeomAlgoAPI_ShapeTools::fitPlaneToBox(const std::shared_ptr<GeomAPI_Shape> thePlane,
+                                                                    const std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints)
 {
-  std::shared_ptr<GeomAPI_Shape> aResultShape;
+  std::shared_ptr<GeomAPI_Face> aResultFace;
 
   if(!thePlane.get()) {
-    return aResultShape;
+    return aResultFace;
   }
 
   const TopoDS_Shape& aShape = thePlane->impl<TopoDS_Shape>();
   if(aShape.ShapeType() != TopAbs_FACE) {
-    return aResultShape;
+    return aResultFace;
   }
 
   TopoDS_Face aFace = TopoDS::Face(aShape);
   Handle(Geom_Surface) aSurf = BRep_Tool::Surface(aFace);
   if(aSurf.IsNull()) {
-    return aResultShape;
+    return aResultFace;
   }
 
   GeomLib_IsPlanarSurface isPlanar(aSurf);
   if(!isPlanar.IsPlanar()) {
-    return aResultShape;
+    return aResultFace;
   }
 
   if(thePoints.size() != 8) {
-    return aResultShape;
+    return aResultFace;
   }
 
   const gp_Pln& aFacePln = isPlanar.Plan();
@@ -447,10 +465,10 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::fitPlaneToBox(const std::
     if(aPntV < VMin) VMin = aPntV;
     if(aPntV > VMax) VMax = aPntV;
   }
-  aResultShape.reset(new GeomAPI_Shape);
-  aResultShape->setImpl(new TopoDS_Shape(BRepLib_MakeFace(aFacePln, UMin, UMax, VMin, VMax).Face()));
+  aResultFace.reset(new GeomAPI_Face());
+  aResultFace->setImpl(new TopoDS_Face(BRepLib_MakeFace(aFacePln, UMin, UMax, VMin, VMax).Face()));
 
-  return aResultShape;
+  return aResultFace;
 }
 
 //==================================================================================================
@@ -650,4 +668,49 @@ bool GeomAlgoAPI_ShapeTools::isParallel(const std::shared_ptr<GeomAPI_Edge> theE
 
   BRepExtrema_ExtCF anExt(anEdge, aFace);
   return anExt.IsParallel() == Standard_True;
+}
+
+//==================================================================================================
+void GeomAlgoAPI_ShapeTools::splitShape(const std::shared_ptr<GeomAPI_Shape>& theBaseShape,
+                                        const std::set<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
+                                        std::set<std::shared_ptr<GeomAPI_Shape> >& theShapes)
+{
+  // General Fuse to split edge by vertices
+  BOPAlgo_Builder aBOP;
+  TopoDS_Edge aBaseEdge = theBaseShape->impl<TopoDS_Edge>();
+  // Rebuild closed edge to place vertex to one of split points.
+  // This will prevent edge to be split on seam vertex.
+  if (BRep_Tool::IsClosed(aBaseEdge))
+  {
+    Standard_Real aFirst, aLast;
+    Handle(Geom_Curve) aCurve = BRep_Tool::Curve(aBaseEdge, aFirst, aLast);
+
+    std::set<std::shared_ptr<GeomAPI_Pnt> >::const_iterator aPIt = thePoints.begin();
+    gp_Pnt aPoint((*aPIt)->x(), (*aPIt)->y(), (*aPIt)->z());
+
+    TopAbs_Orientation anOrientation = aBaseEdge.Orientation();
+    aBaseEdge = BRepBuilderAPI_MakeEdge(aCurve, aPoint, aPoint).Edge();
+    aBaseEdge.Orientation(anOrientation);
+  }
+  aBOP.AddArgument(aBaseEdge);
+
+  std::set<std::shared_ptr<GeomAPI_Pnt> >::const_iterator aPtIt = thePoints.begin();
+  for (; aPtIt != thePoints.end(); ++aPtIt) {
+    std::shared_ptr<GeomAPI_Pnt> aPnt = *aPtIt;
+    TopoDS_Vertex aV = BRepBuilderAPI_MakeVertex(gp_Pnt(aPnt->x(), aPnt->y(), aPnt->z()));
+    aBOP.AddArgument(aV);
+  }
+
+  aBOP.Perform();
+  if (aBOP.ErrorStatus())
+    return;
+  
+  // Collect splits
+  const TopTools_ListOfShape& aSplits = aBOP.Modified(aBaseEdge);
+  TopTools_ListIteratorOfListOfShape anIt(aSplits);
+  for (; anIt.More(); anIt.Next()) {
+    std::shared_ptr<GeomAPI_Shape> anEdge(new GeomAPI_Shape);
+    anEdge->setImpl(new TopoDS_Shape(anIt.Value()));
+    theShapes.insert(anEdge);
+  }
 }

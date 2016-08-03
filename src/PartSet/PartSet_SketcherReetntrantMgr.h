@@ -16,6 +16,8 @@ class ModuleBase_Operation;
 class ModuleBase_ModelWidget;
 class ModuleBase_IViewWindow;
 
+class ModelAPI_CompositeFeature;
+
 class QMouseEvent;
 
 class XGUI_Workshop;
@@ -150,11 +152,17 @@ private:
   /// This is type for Circle and Arc features
   /// \param theSourceFeature a source feature
   /// \param theNewFeature a new feature
+  /// \param theSketch an active sketch
+  /// \param isTemporary is used to do not create additional features(e.g. coicidence for line)
   /// \return true is something is copied
   static bool copyReetntrantAttributes(const FeaturePtr& theSourceFeature,
-                                       const FeaturePtr& theNewFeature);
+                                      const FeaturePtr& theNewFeature,
+                                      const std::shared_ptr<ModelAPI_CompositeFeature>& theSketch,
+                                      const bool isTemporary = false);
 
-  static bool isTangentArc(ModuleBase_Operation* theOperation);
+  /// Checks whethe the feature of the given operation has kind an arc and the arc type is tangent
+  static bool isTangentArc(ModuleBase_Operation* theOperation,
+                           const std::shared_ptr<ModelAPI_CompositeFeature>& theSketch);
 
   /// Accept All action is enabled if an internal edit is started. It updates the state of the button
   void updateAcceptAllAction();
@@ -172,6 +180,7 @@ private:
   bool myIsFlagsBlocked; /// true when reset of flags should not be perfromed
   bool myIsInternalEditOperation; /// true when the 'internal' edit is started
 
+  FeaturePtr myPreviousFeature; /// feature of the previous operation, which is restarted
   FeaturePtr myInternalFeature;
   QWidget* myInternalWidget;
   ModuleBase_ModelWidget* myInternalActiveWidget;

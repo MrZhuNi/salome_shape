@@ -374,6 +374,37 @@ void GeomAPI_AISObject::getColor(int& theR, int& theG, int& theB)
   theB = (int)(aColor.Blue()*255.);
 }
 
+bool GeomAPI_AISObject::setDeflection(const double theDeflection)
+{
+  bool isModified = false;
+  Handle(AIS_InteractiveObject) anAIS = impl<Handle(AIS_InteractiveObject)>();
+  if (!anAIS.IsNull()) {
+    Handle(AIS_Shape) anAISShape = Handle(AIS_Shape)::DownCast(anAIS);
+    if (!anAISShape.IsNull()) {
+      Standard_Real aCoefficient, aPreviousCoefficient;
+      anAISShape->OwnDeviationCoefficient(aCoefficient, aPreviousCoefficient);
+      if (fabs(aCoefficient-theDeflection) > Precision::Confusion()) {
+        isModified = true;
+        anAISShape->SetOwnDeviationCoefficient(theDeflection);
+      }
+    }
+  }
+  return isModified;
+}
+
+double GeomAPI_AISObject::getDeflection() const
+{
+  double aDeflection = -1;
+
+  Handle(AIS_InteractiveObject) anAIS = impl<Handle(AIS_InteractiveObject)>();
+  if (!anAIS.IsNull()) {
+    Handle(Prs3d_Drawer) aDrawer = anAIS->Attributes();
+    aDeflection = aDrawer->DeviationCoefficient();
+  }
+  return aDeflection;
+}
+
+
 bool GeomAPI_AISObject::empty() const
 {
   Handle(AIS_InteractiveObject) anAIS = const_cast<GeomAPI_AISObject*>(this)

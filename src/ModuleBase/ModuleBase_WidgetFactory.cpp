@@ -25,11 +25,12 @@
 #include <ModuleBase_Tools.h>
 #include <ModuleBase_WidgetLineEdit.h>
 #include <ModuleBase_WidgetMultiSelector.h>
+#include <ModuleBase_WidgetConcealedObjects.h>
 #include <ModuleBase_WidgetLabel.h>
 #include <ModuleBase_WidgetToolbox.h>
 #include <ModuleBase_PageBase.h>
 #include <ModuleBase_PageGroupBox.h>
-#include <ModuleBase_WidgetCheckGroupBox.h>
+#include <ModuleBase_WidgetOptionalBox.h>
 #include <ModuleBase_PageWidget.h>
 #include <ModuleBase_WidgetExprEditor.h>
 #include <ModuleBase_WidgetCreatorFactory.h>
@@ -257,11 +258,9 @@ ModuleBase_PageBase* ModuleBase_WidgetFactory::createPageByType(const std::strin
     aPage->setTitle(aGroupName);
     aResult = aPage;
   }
-  else if (theType == WDG_CHECK_GROUP) {
-    QString aGroupName = qs(myWidgetApi->getProperty(CONTAINER_PAGE_NAME));
-    ModuleBase_WidgetCheckGroupBox* aPage = new ModuleBase_WidgetCheckGroupBox(theParent,
+  else if (theType == WDG_OPTIONALBOX) {
+    ModuleBase_WidgetOptionalBox* aPage = new ModuleBase_WidgetOptionalBox(theParent,
                                                                 myWidgetApi);
-    aPage->setTitle(aGroupName);
     aResult = aPage;
   }
   if (!aResult)
@@ -304,6 +303,8 @@ ModuleBase_ModelWidget* ModuleBase_WidgetFactory::createWidgetByType(const std::
     result = new ModuleBase_WidgetExprEditor( theParent, myWidgetApi, aPlaceHolder );
   } else if (theType == WDG_MULTISELECTOR) {
     result = new ModuleBase_WidgetMultiSelector(theParent, myWorkshop, myWidgetApi);
+  } else if (theType == WDG_CONCEALED_OBJECTS_VIEW) {
+    result = new ModuleBase_WidgetConcealedObjects(theParent, myWidgetApi);
   } else if (theType == WDG_TOOLBOX) {
     result = new ModuleBase_WidgetToolbox(theParent, myWidgetApi);
   } else if (theType == WDG_SWITCH) {

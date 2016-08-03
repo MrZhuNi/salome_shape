@@ -82,8 +82,7 @@ class MODULEBASE_EXPORT ModuleBase_IModule : public QObject
 
   /// Creates an operation and send it to loop
   /// \param theCmdId the operation name
-  /// \param isUpdatePropertyPanel if false, the property panel filling might be postponed
-  virtual void launchOperation(const QString& theCmdId, const bool isUpdatePropertyPanel = true);
+  virtual void launchOperation(const QString& theCmdId);
 
   /// Executes feature as a modal dialog box
   /// \param theCmdId the operation name
@@ -202,6 +201,11 @@ class MODULEBASE_EXPORT ModuleBase_IModule : public QObject
   /// \param theTypes a selection modes to be extended
   virtual void customSubShapesSelectionModes(QIntList& theTypes) {}
 
+  /// Return true if the custom presentation is activated
+  /// \param theFlag a flag of level of customization, which means that only part of sub-elements
+  /// \return boolean value
+  virtual bool isCustomPrsActivated(const ModuleBase_CustomizeFlag& theFlag) const { return false; };
+
   /// Activate custom presentation for the object. Default realization is empty.
   /// \param theFeature a feature instance
   /// \param theFlag a flag of level of customization, which means that only part of sub-elements
@@ -238,11 +242,6 @@ class MODULEBASE_EXPORT ModuleBase_IModule : public QObject
   /// Creates a new operation
   /// \param theCmdId the operation name
   virtual ModuleBase_Operation* createOperation(const std::string& theCmdId);
-
-  /// Sends the operation for launching
-  /// \param theOperation the operation
-  /// \param isUpdatePropertyPanel if false, the property panel filling might be postponed
-  virtual void sendOperation(ModuleBase_Operation* theOperation, const bool isUpdatePropertyPanel = true);
 
   /// Create specific for the module presentation
   /// \param theResult an object for presentation
@@ -291,10 +290,6 @@ class MODULEBASE_EXPORT ModuleBase_IModule : public QObject
   /// Returns true if the event is processed.
   /// \param thePreviousAttributeID an index of the previous active attribute
   virtual bool processEnter(const std::string& thePreviousAttributeID) { return false; };
-
-  /// Performs some GUI actions after an operation transaction is opened
-  /// Default realization is empty
-  virtual void beforeOperationStarted(ModuleBase_Operation* theOperation) {};
 
   /// Performs some GUI actions before an operation transaction is stopped
   /// Default realization is empty

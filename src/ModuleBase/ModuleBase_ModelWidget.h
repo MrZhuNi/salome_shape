@@ -40,6 +40,10 @@ Q_OBJECT
                      ModifiedInViewer, /// modification performed by viewer events
                      Reset }; /// the value is reset
 
+   enum EnableState { On,  /// the widget value is always enabled
+                      Off, /// the widget value is always disabled
+                      DefinedInPreferences }; /// the widget value enable state is defined in preferences
+
   /// Constructor
   /// \param theParent the parent object
   /// \param theData the widget configuration. The attribute of the model widget is obtained from
@@ -74,6 +78,11 @@ Q_OBJECT
   /// Returns true, if the obligatory value of the widget is not defined in the XML or has true value
   /// \return the boolean result
   bool isObligatory() const { return myIsObligatory; }
+
+  /// Returns true, if the widget value is enabled and might be modified manualy. It returns false if
+  /// the application preferences allow having disabled value and the internal state tells to disable
+  /// \return the boolean result
+  virtual bool isValueEnabled() const;
 
   /// Returns this parameter value in the xml file
   /// \return the boolean result
@@ -309,6 +318,9 @@ protected slots:
   /// Flag which shows whether current widget is obligatory
   /// The non-obligatory widgets should not accept the focus in the property panel
   bool myIsObligatory;
+
+  /// Flag about value of the control is enabled (can be modified)
+  EnableState myIsValueEnabled;
 
   /// The widget value state
   ValueState myState;

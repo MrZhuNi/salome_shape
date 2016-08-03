@@ -257,7 +257,8 @@ void PartSet_WidgetSketchLabel::updateByPlaneSelected(const ModuleBase_ViewerPrs
   }
   if (aGShape.get() != NULL) {
     // get plane parameters
-    std::shared_ptr<GeomAPI_Pln> aPlane = GeomAlgoAPI_FaceBuilder::plane(aGShape);
+    std::shared_ptr<GeomAPI_Face> aFace(new GeomAPI_Face(aGShape));
+    std::shared_ptr<GeomAPI_Pln> aPlane = GeomAlgoAPI_FaceBuilder::plane(aFace);
     std::shared_ptr<GeomAPI_Dir> aDir = aPlane->direction();
     gp_XYZ aXYZ = aDir->impl<gp_Dir>().XYZ();
     double aTwist = 0.0;
@@ -269,7 +270,7 @@ void PartSet_WidgetSketchLabel::updateByPlaneSelected(const ModuleBase_ViewerPrs
 
     // Rotate view if the sketcher plane is selected only from preview planes
     // Preview planes are created only if there is no any shape
-    bool aRotate = Config_PropManager::boolean("Sketch planes", "rotate_to_plane", "false");
+    bool aRotate = Config_PropManager::boolean(SKETCH_TAB_NAME, "rotate_to_plane", "false");
     if (aRotate) {
       myWorkshop->viewer()->setViewProjection(aXYZ.X(), aXYZ.Y(), aXYZ.Z(), aTwist);
       PartSet_Module* aModule = dynamic_cast<PartSet_Module*>(myWorkshop->module());
@@ -487,7 +488,8 @@ std::shared_ptr<GeomAPI_Dir> PartSet_WidgetSketchLabel::setSketchPlane(const Fea
 
 
   // get plane parameters
-  std::shared_ptr<GeomAPI_Pln> aPlane = GeomAlgoAPI_FaceBuilder::plane(aGShape);
+  std::shared_ptr<GeomAPI_Face> aFace(new GeomAPI_Face(aGShape));
+  std::shared_ptr<GeomAPI_Pln> aPlane = GeomAlgoAPI_FaceBuilder::plane(aFace);
   if (!aPlane.get())
     return std::shared_ptr<GeomAPI_Dir>();
 

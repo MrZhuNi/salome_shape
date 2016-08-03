@@ -68,9 +68,10 @@ assert (math.fabs(aResVolume - aRefVolume) < 10 ** -5)
 #Check the naming by selecting a face and making a plane out of it
 aPlaneTop = aPart.addFeature("Plane")
 assert(aPlaneTop.getKind() == "Plane")
-aPlaneTop.string("CreationMethod").setValue("PlaneByFaceAndDistance")
-aSelectionAttr = aPlaneTop.selection("planeFace")
+aPlaneTop.string("creation_method").setValue("by_other_plane")
+aSelectionAttr = aPlaneTop.selection("plane")
 aSelectionAttr.selectSubShape("face", "Box_1_1/Top_1")
+aPlaneTop.string("by_other_plane_option").setValue("by_distance_from_other")
 aPlaneTop.real("distance").setValue(0.4)
 aPlaneTop.execute()
 
@@ -97,11 +98,19 @@ aPoint1 = aPart.addFeature("Point")
 aPoint2 = aPart.addFeature("Point")
 assert(aPoint1.getKind() == "Point")
 assert(aPoint2.getKind() == "Point")
+<<<<<<< HEAD
 aPoint1.string("creation_method").setValue("by_xyz")
 aPoint1.real("x").setValue(2.0)
 aPoint1.real("y").setValue(2.0)
 aPoint1.real("z").setValue(2.0)
 aPoint2.string("creation_method").setValue("by_xyz")
+=======
+# aPoint1.string("creation_method").setValue("by_xyz")
+aPoint1.real("x").setValue(2.0)
+aPoint1.real("y").setValue(2.0)
+aPoint1.real("z").setValue(2.0)
+# aPoint2.string("creation_method").setValue("by_xyz")
+>>>>>>> master
 aPoint2.real("x").setValue(2.5)
 aPoint2.real("y").setValue(2.5)
 aPoint2.real("z").setValue(2.5)
@@ -128,9 +137,16 @@ assert (math.fabs(aResVolume2 - aRefVolume2) < 10 ** -5)
 #Check the naming by selecting a face and making a plane out of it
 aPlaneRight = aPart.addFeature("Plane")
 assert(aPlaneRight.getKind() == "Plane")
+<<<<<<< HEAD
 aPlaneRight.string("CreationMethod").setValue("PlaneByFaceAndDistance")
 aSelectionAttr = aPlaneRight.selection("planeFace")
 aSelectionAttr.selectSubShape("face", "Box_2_1/Right_1")
+=======
+aPlaneRight.string("creation_method").setValue("by_other_plane")
+aSelectionAttr = aPlaneRight.selection("plane")
+aSelectionAttr.selectSubShape("face", "Box_2_1/Right_1")
+aPlaneRight.string("by_other_plane_option").setValue("by_distance_from_other")
+>>>>>>> master
 aPlaneRight.real("distance").setValue(0.5)
 aPlaneRight.execute()
 

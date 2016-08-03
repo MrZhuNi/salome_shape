@@ -4,6 +4,7 @@
 #include "ConstructionPlugin_Point.h"
 #include "ConstructionPlugin_Axis.h"
 #include "ConstructionPlugin_Plane.h"
+#include "ConstructionPlugin_Validators.h"
 
 #include <Config_PropManager.h>
 
@@ -17,6 +18,21 @@ static ConstructionPlugin_Plugin* MY_CONSTRUCTION_INSTANCE = new ConstructionPlu
 
 ConstructionPlugin_Plugin::ConstructionPlugin_Plugin()
 {
+  SessionPtr aMgr = ModelAPI_Session::get();
+  ModelAPI_ValidatorsFactory* aFactory = aMgr->validators();
+  aFactory->registerValidator("ConstructionPlugin_ValidatorPointLines",
+                              new ConstructionPlugin_ValidatorPointLines());
+  aFactory->registerValidator("ConstructionPlugin_ValidatorPointLineAndPlaneNotParallel",
+                              new ConstructionPlugin_ValidatorPointLineAndPlaneNotParallel());
+  aFactory->registerValidator("ConstructionPlugin_ValidatorPlaneThreePoints",
+                              new ConstructionPlugin_ValidatorPlaneThreePoints());
+  aFactory->registerValidator("ConstructionPlugin_ValidatorPlaneLinePoint",
+                              new ConstructionPlugin_ValidatorPlaneLinePoint());
+  aFactory->registerValidator("ConstructionPlugin_ValidatorPlaneTwoParallelPlanes",
+                              new ConstructionPlugin_ValidatorPlaneTwoParallelPlanes());
+  aFactory->registerValidator("ConstructionPlugin_ValidatorAxisTwoNotParallelPlanes",
+                              new ConstructionPlugin_ValidatorAxisTwoNotParallelPlanes());
+
   // register this plugin
   ModelAPI_Session::get()->registerPlugin(this);
 

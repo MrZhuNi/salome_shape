@@ -56,15 +56,16 @@ bool isAttributeNode(xmlNodePtr theNode)
     return false;
   // it's parent is "feature" or "source" or page ("case" or "box")
   if(!hasParent(theNode, NODE_FEATURE, NODE_SOURCE, 
-                         WDG_GROUP, WDG_CHECK_GROUP,
+                         WDG_GROUP, WDG_OPTIONALBOX,
                          WDG_TOOLBOX_BOX, WDG_SWITCH_CASE, NULL))
     return false;
 
   //it should not be a "source" or a "validator" node
   bool isLogical = isNode(theNode, NODE_SOURCE, NODE_VALIDATOR, NODE_SELFILTER, NULL);
-  bool isPagedContainer = isNode(theNode, WDG_TOOLBOX, WDG_TOOLBOX_BOX,
-                                          WDG_GROUP, WDG_CHECK_GROUP,
-                                          WDG_SWITCH, WDG_SWITCH_CASE,  NULL);
+  // here must be only widgets not connected to attributes
+  bool isPagedContainer = isNode(theNode, WDG_TOOLBOX_BOX,
+                                          WDG_GROUP,
+                                          WDG_SWITCH_CASE,  NULL);
   return !isLogical && !isPagedContainer;
 }
 
@@ -73,7 +74,7 @@ bool isWidgetNode(xmlNodePtr theNode)
   if(!isElementNode(theNode))
     return false;
   // it's parent is "feature" or "source" or a page ("box", "case")
-  if(!hasParent(theNode, NODE_FEATURE, NODE_SOURCE, WDG_GROUP,
+  if(!hasParent(theNode, NODE_FEATURE, NODE_SOURCE, WDG_GROUP, WDG_OPTIONALBOX,
                          WDG_TOOLBOX_BOX, WDG_SWITCH_CASE, NULL))
     return false;
 
@@ -87,7 +88,7 @@ bool isCaseNode(xmlNodePtr theNode)
   if(!isElementNode(theNode))
     return false;
 
-  return isNode(theNode, WDG_SWITCH_CASE, WDG_TOOLBOX_BOX, NULL);
+  return isNode(theNode, WDG_OPTIONALBOX, WDG_SWITCH_CASE, WDG_TOOLBOX_BOX, NULL);
 }
 
 bool hasChild(xmlNodePtr theNode)
@@ -143,24 +144,24 @@ bool hasParent(xmlNodePtr theNode, const char* theNodeName, ...)
   return false;
 }
 
-bool hasParentRecursive(xmlNodePtr theNode, const std::vector<const char*>& theNodeNames)
+xmlNodePtr hasParentRecursive(xmlNodePtr theNode, const std::vector<const char*>& theNodeNames)
 {
   if (!hasParent(theNode)) {
-    return false; // have no parents at all
+    return 0; // have no parents at all
   }
   xmlNodePtr aNode = theNode->parent;
   const xmlChar* aName = aNode->name;
   if (!aName || !isElementNode(aNode)) {
-    return false;
+    return 0;
   }
   for (size_t anIndex = 0; anIndex < theNodeNames.size(); ++anIndex) {
     if (!xmlStrcmp(aName, (const xmlChar *) theNodeNames[anIndex]))
-      return true;
+      return aNode;
   }
   return hasParentRecursive(aNode, theNodeNames);
 }
 
-bool hasParentRecursive(xmlNodePtr theNode, const char* theNodeName, ...)
+xmlNodePtr hasParentRecursive(xmlNodePtr theNode, const char* theNodeName, ...)
 {
   std::vector<const char*> aNodeNames;
   va_list args;  // define argument list variable

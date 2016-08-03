@@ -32,6 +32,7 @@ const static char* WDG_BOOLVALUE = "boolvalue";
 const static char* WDG_STRINGVALUE = "stringvalue";
 const static char* WDG_MULTISELECTOR = "multi_selector";
 const static char* WDG_SHAPE_SELECTOR = "shape_selector";
+const static char* WDG_CONCEALED_OBJECTS_VIEW = "concealed_objects_view";
 const static char* WDG_CHOICE = "choice";
 const static char* WDG_DOUBLEVALUE_EDITOR = "doublevalue_editor";
 const static char* WDG_FILE_SELECTOR= "file_selector";
@@ -41,7 +42,7 @@ const static char* WDG_ACTION = "action";
 
 // Containers
 const static char* WDG_GROUP = "groupbox";
-const static char* WDG_CHECK_GROUP = "check_groupbox";
+const static char* WDG_OPTIONALBOX = "optionalbox";
 const static char* WDG_TOOLBOX = "toolbox";
 const static char* WDG_TOOLBOX_BOX = "box";
 const static char* WDG_SWITCH = "switch";
@@ -88,6 +89,10 @@ const static char* DOUBLE_WDG_MAX = "max";
 const static char* DOUBLE_WDG_STEP = "step";
 const static char* DOUBLE_WDG_DEFAULT_COMPUTED = "computed";
 const static char* DOUBLE_WDG_ACCEPT_EXPRESSIONS = "accept_expressions";
+const static char* DOUBLE_WDG_ENABLE_VALUE = "enable_value";
+
+const static char* DOUBLE_WDG_ENABLE_VALUE_BY_PREFERENCES = "enable_by_preferences";
+
 // WDG_TOOLBOX/WDG_SWITCH properties
 const static char* CONTAINER_PAGE_NAME = "title";
 const static char* CONTAINER_PAGE_ICON = "icon";

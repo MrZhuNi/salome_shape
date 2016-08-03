@@ -17,6 +17,8 @@
 #include <ModelAPI_Events.h>
 #include <ModelAPI_Validator.h>
 
+#include <ModelGeomAlgo_Point2D.h>
+
 #include <Events_Loop.h>
 
 #include <SketcherPrs_Tools.h>
@@ -397,29 +399,15 @@ std::shared_ptr<GeomAPI_Pln> PartSet_Tools::sketchPlane(CompositeFeaturePtr theS
 {
   std::shared_ptr<GeomAPI_Pln> aPlane;
 
-  std::shared_ptr<ModelAPI_Data> aData = theSketch->data();
-  if (aData) {
-    std::shared_ptr<GeomDataAPI_Point> anOrigin = std::dynamic_pointer_cast<GeomDataAPI_Point>(
-        aData->attribute(SketchPlugin_Sketch::ORIGIN_ID()));
-    std::shared_ptr<GeomDataAPI_Dir> aNormal = std::dynamic_pointer_cast<GeomDataAPI_Dir>(
-        aData->attribute(SketchPlugin_Sketch::NORM_ID()));
-    if (aNormal.get() && aNormal->isInitialized() &&
-        anOrigin.get() && anOrigin->isInitialized()) {
-      double adX = aNormal->x();
-      double adY = aNormal->y();
-      double adZ = aNormal->z();
+  std::shared_ptr<GeomDataAPI_Point> anOrigin = std::dynamic_pointer_cast<GeomDataAPI_Point>(
+      theSketch->data()->attribute(SketchPlugin_Sketch::ORIGIN_ID()));
+  std::shared_ptr<GeomDataAPI_Dir> aNormal = std::dynamic_pointer_cast<GeomDataAPI_Dir>(
+      theSketch->data()->attribute(SketchPlugin_Sketch::NORM_ID()));
 
-      if ( (adX != 0) || (adY != 0) || (adZ != 0) ) { // Plane is valid
-        double aX = anOrigin->x();
-        double aY = anOrigin->y();
-        double aZ = anOrigin->z();
-        gp_Pln aPln(gp_Pnt(aX, aY, aZ), gp_Dir(adX, adY, adZ));
-        double aA, aB, aC, aD;
-        aPln.Coefficients(aA, aB, aC, aD);
-        aPlane = std::shared_ptr<GeomAPI_Pln>(new GeomAPI_Pln(aA, aB, aC, aD));
-      }
-    }
-  }
+  if (aNormal.get() && aNormal->isInitialized() &&
+      anOrigin.get() && anOrigin->isInitialized())
+    aPlane = std::shared_ptr<GeomAPI_Pln>(new GeomAPI_Pln(anOrigin->pnt(), aNormal->dir()));
+
   return aPlane;
 }
 
@@ -754,26 +742,9 @@ GeomShapePtr PartSet_Tools::findShapeBy2DPoint(const AttributePtr& theAttribute,
 std::shared_ptr<GeomAPI_Pnt2d> PartSet_Tools::getPoint(std::shared_ptr<ModelAPI_Feature>& theFeature,
                                                        const std::string& theAttribute)
 {
-  std::shared_ptr<GeomDataAPI_Point2D> aPointAttr;
-
-  if (!theFeature->data())
-    return std::shared_ptr<GeomAPI_Pnt2d>();
-
-  FeaturePtr aFeature;
-  std::shared_ptr<ModelAPI_AttributeRefAttr> anAttr = std::dynamic_pointer_cast<
-      ModelAPI_AttributeRefAttr>(theFeature->data()->attribute(theAttribute));
-  if (!anAttr)
-    return std::shared_ptr<GeomAPI_Pnt2d>();
-
-  aFeature = ModelAPI_Feature::feature(anAttr->object());
-
-  if (aFeature && aFeature->getKind() == SketchPlugin_Point::ID())
-    aPointAttr = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-        aFeature->data()->attribute(SketchPlugin_Point::COORD_ID()));
-
-  else if (anAttr->attr()) {
-    aPointAttr = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(anAttr->attr());
-  }
+  std::shared_ptr<GeomDataAPI_Point2D> aPointAttr = ModelGeomAlgo_Point2D::getPointOfRefAttr(
+                                          theFeature.get(), theAttribute, SketchPlugin_Point::ID(),
+                                          SketchPlugin_Point::COORD_ID());
   if (aPointAttr.get() != NULL)
     return aPointAttr->pnt();
   return std::shared_ptr<GeomAPI_Pnt2d>();

@@ -4,6 +4,7 @@
 
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Document.h>
+#include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeSelection.h>
@@ -89,7 +90,7 @@ FeaturePtr InitializationPlugin_Plugin::createPlane(DocumentPtr theDoc, double t
                                                     double theZ)
 {
   FeaturePtr aPlane = theDoc->addFeature("Plane");
-  aPlane->string("CreationMethod")->setValue("PlaneByGeneralEquation");
+  aPlane->string("creation_method")->setValue("by_general_equation");
   aPlane->real("A")->setValue(theX);
   aPlane->real("B")->setValue(theY);
   aPlane->real("C")->setValue(theZ);
@@ -119,6 +120,7 @@ FeaturePtr InitializationPlugin_Plugin::createPoint(DocumentPtr theDoc, const st
                                                     double theX, double theY, double theZ)
 {
   std::shared_ptr<ModelAPI_Feature> aPoint = theDoc->addFeature("Point");
+  //aPoint->string("creation_method")->setValue("by_xyz");
   aPoint->real("x")->setValue(theX);
   aPoint->real("y")->setValue(theY);
   aPoint->real("z")->setValue(theZ);
