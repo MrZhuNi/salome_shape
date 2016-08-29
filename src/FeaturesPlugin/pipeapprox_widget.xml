@@ -1,0 +1,74 @@
+<!-- Copyright -->
+
+<source>
+  <toolbox id="CreationMethod">
+    <box id="simple" title="Simple pipeApprox by objects and path" icon="">
+      <multi_selector id="profile"
+                      label="Select the profile"
+                      icon=":icons/sketch.png"
+                      tooltip="Select the profile"
+                      type_choice="faces">
+        <validator id="FeaturesPlugin_ValidatorBaseForGeneration" parameters="face"/>
+      </multi_selector>
+      <shape_selector id="path_object"
+                      label="Select a path"
+                      icon=""
+                      tooltip="Select edges for a path"
+                      shape_types="edge wire">
+        <validator id="FeaturesPlugin_ValidatorPipePath"/>
+      </shape_selector>
+  </box>
+    <box id="with law" title="" icon="">
+      <shape_selector id="law_reference"
+          label="Select a reference line"
+          icon=""
+          tooltip=""
+          shape_types="edge">
+        <validator id="GeomValidators_ShapeType" parameters="line"/>
+      </shape_selector>
+      <shape_selector id="law_definition"
+                label="Select a definition curve"
+                icon=""
+                tooltip=""
+                shape_types="edge">
+        <validator id="GeomValidators_ShapeType" parameters="edge"/>
+      </shape_selector>
+      <multi_selector id="profile"
+                      label="Select the profile"
+                      icon=":icons/sketch.png"
+                      tooltip="Select the profile"
+                      type_choice="faces">
+        <validator id="FeaturesPlugin_ValidatorBaseForGeneration" parameters="face"/>
+      </multi_selector>
+      <shape_selector id="path_object"
+                label="Select a path"
+                icon=""
+                tooltip="Select edges for a path"
+                shape_types="edge">
+        <validator id="FeaturesPlugin_ValidatorPipePath"/>
+      </shape_selector>
+  </box>
+    <box id="binormal" title="Pipe by objects, path and Bi-Normal" icon="">
+      <shape_selector id="binormal"
+                      label="Bi-Normal:"
+                      tooltip="Select an edge for Bi-Normal"
+                      shape_types="edge">
+        <validator id="GeomValidators_ShapeType" parameters="line"/>
+      </shape_selector>
+      <multi_selector id="profile"
+                      label="Select the profile"
+                      icon=":icons/sketch.png"
+                      tooltip="Select the profile"
+                      type_choice="faces">
+        <validator id="FeaturesPlugin_ValidatorBaseForGeneration" parameters="face"/>
+      </multi_selector>
+      <shape_selector id="path_object"
+                      label="Select a path"
+                      icon=""
+                      tooltip="Select edges for a path"
+                      shape_types="edge wire">
+        <validator id="FeaturesPlugin_ValidatorPipePath"/>
+      </shape_selector>
+    </box>
+  </toolbox>
+</source>

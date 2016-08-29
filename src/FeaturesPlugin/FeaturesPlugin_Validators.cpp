@@ -782,3 +782,49 @@ bool FeaturesPlugin_ValidatorUnionArguments::isNotObligatory(std::string theFeat
 {
   return false;
 }
+
+//==================================================================================================
+bool FeaturesPlugin_ValidatorParameterLaw::isValid(const AttributePtr& theAttribute,
+                                                        const std::list<std::string>& theArguments,
+                                                        Events_InfoMessage& theError) const
+{
+	//SEEMS THIS DOES NOTHING SPECIAL!!
+  bool isLawValid = true;
+  //if(theArguments.empty()) {
+  //  theError = "Error: Validator parameters is empty.";
+  //  return false;
+  //}
+  std::string anAttributeType = theAttribute->attributeType();
+  std::string anAttirbuteID = theAttribute->id();
+  if (anAttributeType == ModelAPI_AttributeSelectionList::typeId()) {
+    AttributeSelectionListPtr aSelectionListAttr = 
+                      std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(theAttribute);
+    // all context objects should be sketch entities
+    for (int i = 0, aSize = aSelectionListAttr->size(); i < aSize ; i++) {
+      AttributeSelectionPtr aSelectAttr = aSelectionListAttr->value(i);
+      ObjectPtr anObject = aSelectAttr->context();
+      if (!anObject.get())
+        isLawValid = false;
+      else {
+        FeaturePtr aFeature = ModelAPI_Feature::feature(anObject);
+        isLawValid = true;
+      }
+    }
+  }
+  if (anAttributeType == ModelAPI_AttributeSelection::typeId()) {
+    AttributeSelectionPtr aSelectAttr = 
+                      std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(theAttribute);
+    ObjectPtr anObject = aSelectAttr->context();
+    // a context of the selection attribute is a feature result. It can be a case when the result
+    // of the feature is null, e.g. the feature is modified and has not been executed yet.
+    // The validator returns an invalid result here. The case is an extrusion built on a sketch
+    // feature. A new sketch element creation leads to an empty result.
+    if (!anObject.get())
+      isLawValid = false;
+    else {
+      FeaturePtr aFeature = ModelAPI_Feature::feature(anObject);
+	  isLawValid = true;
+	}
+  }
+  return isLawValid;
+}

@@ -21,6 +21,10 @@
 #include <FeaturesPlugin_ValidatorTransform.h>
 #include <FeaturesPlugin_Validators.h>
 
+#include <FeaturesPlugin_PipeApprox.h>
+#include <FeaturesPlugin_PipeApproxLaw.h>
+#include <FeaturesPlugin_ParameterLaw.h>
+
 #include <ModelAPI_Session.h>
 
 #include <string>
@@ -60,6 +64,8 @@ FeaturesPlugin_Plugin::FeaturesPlugin_Plugin()
                               new FeaturesPlugin_ValidatorUnionSelection);
   aFactory->registerValidator("FeaturesPlugin_ValidatorUnionArguments",
                               new FeaturesPlugin_ValidatorUnionArguments);
+  aFactory->registerValidator("FeaturesPlugin_ValidatorParameterLaw",
+	                          new FeaturesPlugin_ValidatorParameterLaw);
 
   // register this plugin
   ModelAPI_Session::get()->registerPlugin(this);
@@ -99,6 +105,12 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(string theFeatureID)
     return FeaturePtr(new FeaturesPlugin_RemoveSubShapes);
   } else if (theFeatureID == FeaturesPlugin_Union::ID()) {
     return FeaturePtr(new FeaturesPlugin_Union);
+  } else if (theFeatureID == FeaturesPlugin_ParameterLaw::ID()) {
+    return FeaturePtr(new FeaturesPlugin_ParameterLaw);
+  }else if (theFeatureID == FeaturesPlugin_PipeApproxLaw::ID()) {
+    return FeaturePtr(new FeaturesPlugin_PipeApproxLaw);
+  }else if (theFeatureID == FeaturesPlugin_PipeApprox::ID()) {
+    return FeaturePtr(new FeaturesPlugin_PipeApprox);
   }
 
   // feature of such kind is not found

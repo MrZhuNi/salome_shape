@@ -41,6 +41,8 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_ShapeBuilder.h
     GeomAlgoAPI_XAOExport.h
     GeomAlgoAPI_XAOImport.h
+    GeomAlgoAPI_PipeApprox.h
+    GeomAlgoAPI_ParameterLaw.h
 )
 
 SET(PROJECT_SOURCES
@@ -78,6 +80,8 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_ShapeBuilder.cpp
     GeomAlgoAPI_XAOExport.cpp
     GeomAlgoAPI_XAOImport.cpp
+    GeomAlgoAPI_PipeApprox.cpp
+    GeomAlgoAPI_ParameterLaw.cpp
 )
 
 SET(PROJECT_LIBRARIES

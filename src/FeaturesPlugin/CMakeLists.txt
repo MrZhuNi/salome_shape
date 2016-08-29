@@ -28,6 +28,10 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_ValidatorTransform.h
     FeaturesPlugin_Validators.h
     FeaturesPlugin_RemoveSubShapes.h
+    FeaturesPlugin_PipeApprox.h
+    FeaturesPlugin_PipeApproxLaw.h
+    FeaturesPlugin_ParameterLaw.h
+    FeaturesPlugin_Validators.h
 )
 
 SET(PROJECT_SOURCES
@@ -54,6 +58,10 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_ValidatorTransform.cpp
     FeaturesPlugin_Validators.cpp
     FeaturesPlugin_RemoveSubShapes.cpp
+    FeaturesPlugin_PipeApprox.cpp
+    FeaturesPlugin_PipeApproxLaw.cpp
+    FeaturesPlugin_ParameterLaw.cpp
+    FeaturesPlugin_Validators.cpp
 )
 
 SET(XML_RESOURCES
@@ -74,6 +82,9 @@ SET(XML_RESOURCES
   pipe_widget.xml
   remove_subshapes_widget.xml
   union_widget.xml
+  pipeapprox_widget.xml
+  pipeapproxlaw_widget.xml
+  parameterlaw_widget.xml
 )
 
 SET(TEXT_RESOURCES

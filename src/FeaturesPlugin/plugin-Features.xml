@@ -29,6 +29,17 @@
         <source path="pipe_widget.xml"/>
       </feature>
     </group>
+	<group id="Parametric Pipe">
+      <feature id="PipeApprox" title="PipeApprox" tooltip="Create a Pipe by approx" icon="icons/Features/pipe.png">
+        <source path="pipeapprox_widget.xml"/>
+      </feature>
+      <feature id="ParameterLaw" title="ParameterLaw" tooltip="Create a ParameterLaw" icon="">
+        <source path="parameterlaw_widget.xml"/>
+      </feature>
+      <feature id="PipeApproxLaw" title="PipeApproxLaw" tooltip="Create a Pipe by approx with law" icon="icons/Features/pipe_locations_32x32.png">
+        <source path="pipeapproxlaw_widget.xml"/>
+      </feature>
+    </group>
     <group id="Boolean">
       <feature id="Boolean" title="Boolean" tooltip="Perform boolean operations with solids" icon="icons/Features/cut.png"
                auto_preview="false">

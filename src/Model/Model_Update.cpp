@@ -400,7 +400,20 @@ bool Model_Update::processFeature(FeaturePtr theFeature)
         "Feature '%1' is updated in infinitive loop").arg(theFeature->data()->name()).send();
       return false;
     }
-    myProcessed[theFeature] = aCount + 1;
+	//TEST FOR SWEEP (EdMei)
+	if(theFeature->getKind() == "PipeApproxLaw" || theFeature->getKind() == "PipeApprox")
+	{
+		std::map<std::shared_ptr<ModelAPI_Feature>, int >::iterator it;
+		for(it = myProcessed.begin(); it != myProcessed.end(); it++)
+		{
+			it->second = 0;
+		}
+	}
+	else
+	{
+		myProcessed[theFeature] = aCount + 1;
+	}
+	//END TEST FOR SWEEP (EdMei)
   }
 
   // check this feature is not yet checked or processed

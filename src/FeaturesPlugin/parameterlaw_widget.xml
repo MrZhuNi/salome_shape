@@ -1,0 +1,28 @@
+﻿<source>
+  <toolbox id="CreationMethod">
+    <box id="parameter law" title="" icon="">
+      <stringvalue id="variable" label="Name" icon=":pictures/expression.png" placeholder="Please input the parameter name">
+        <!--validator id="Parameters_VariableValidator"/-->
+      </stringvalue>
+      <shape_selector id="law_reference"
+          label="Select a reference line"
+          icon=""
+          tooltip="By convention, create a line from Left to Right"
+          shape_types="edge">
+        <validator id="GeomValidators_ShapeType" parameters="line"/>
+      </shape_selector>
+      <shape_selector id="law_definition"
+                label="Select a definition curve"
+                icon=""
+                tooltip=""
+                shape_types="edge">
+        <validator id="GeomValidators_ShapeType" parameters="edge"/>
+      </shape_selector>
+      <boolvalue id="reverse_direction"
+          label="Reverse"
+          default="false"
+          tooltip="Reverse path direction"/>
+    
+  </box>
+  </toolbox>
+</source>

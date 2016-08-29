@@ -1,0 +1,90 @@
+<source>
+  <toolbox id="CreationMethod">
+    <box id="simple" title="" icon="icons/Features/pipe_locations_32x32.png">
+      <multi_selector id="profile"
+                      label="Select the profile"
+                      icon=":icons/sketch.png"
+                      tooltip="Select the profile"
+                      type_choice="faces">
+        <validator id="FeaturesPlugin_ValidatorBaseForGeneration" parameters="face"/>
+      </multi_selector>
+      <!-- shape_selector id="path_object"
+                      label="Path object:"
+                      tooltip="Select an edge or wire for path"
+                      shape_types="edge">
+        <validator id="GeomValidators_ShapeType" parameters="edge"/>
+      </shape_selector> -->
+      <shape_selector id="path_object"
+                label="Select a path"
+                icon=""
+                tooltip="Select edges for a path"
+                shape_types="edge wire">
+        <validator id="FeaturesPlugin_ValidatorPipePath"/>
+      </shape_selector>
+      <multi_selector id="Parameter_laws"
+                label="Select the laws"
+                icon=":icons/sketch.png"
+                tooltip="Select the laws"
+                type_choice="Objects">
+        <validator id="FeaturesPlugin_ValidatorParameterLaw"/>
+      </multi_selector>
+      <integervalue
+          id="nb_sect"
+          label="Number of sections for approx"
+          default="50"
+          min ="2"
+          icon=""
+          tooltip="Please input the number of sections for approx, by default 50">
+      </integervalue>
+      <boolvalue id="use_Frenet"
+          label="use frenet trihedron"
+          default="false"
+          tooltip="Use Frenet (by default try to minimize torsion)"/>
+      <boolvalue id="reverse_direction"
+                label="Reverse"
+                default="false"
+                tooltip="Reverse path direction"/>
+    </box>
+    <box id="with binormal" title="" icon="icons/Features/pipe_binormal_32x32.png">
+      <multi_selector id="profile"
+                      label="Select the profile"
+                      icon=":icons/sketch.png"
+                      tooltip="Select the profile"
+                      type_choice="faces">
+        <validator id="FeaturesPlugin_ValidatorBaseForGeneration" parameters="face"/>
+      </multi_selector>
+      <shape_selector id="path_object"
+                      label="Path object:"
+                      tooltip="Select an edge or wire for path"
+                      shape_types="edge wire">
+        <validator id="FeaturesPlugin_ValidatorPipePath"/>
+      </shape_selector>
+      <shape_selector id="binormal"
+                label="Bi-Normal:"
+                tooltip="Select an edge for Bi-Normal"
+                shape_types="edge">
+        <validator id="GeomValidators_ShapeType" parameters="line"/>
+      </shape_selector>
+      <multi_selector id="Parameter_laws"
+                label="Select the laws"
+                icon=":icons/sketch.png"
+                tooltip="Select the laws"
+                type_choice="Objects">
+        <validator id="FeaturesPlugin_ValidatorParameterLaw"/>
+      </multi_selector>
+      <integervalue
+          id="nb_sect"
+          label="Number of sections for approx"
+          default="50"
+          min ="2"
+          icon=""
+          tooltip="Please input the number of sections for approx, by default 50">
+      </integervalue>
+      <boolvalue id="reverse_direction"
+                label="Reverse"
+                default="false"
+                tooltip="Reverse path direction"/>
+    
+  </box>
+  </toolbox>
+</source>
