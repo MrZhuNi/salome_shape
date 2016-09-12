@@ -14,7 +14,8 @@
 
 #include <SketchPlugin_MultiRotation.h>
 
-#include "SketchAPI_SketchEntity.h"
+#include <ModelHighAPI_Interface.h>
+#include <ModelHighAPI_Macro.h>
 //--------------------------------------------------------------------------------------
 class ModelAPI_Object;
 class ModelHighAPI_Double;
@@ -25,7 +26,7 @@ class ModelHighAPI_RefAttr;
  * \ingroup CPPHighAPI
  * \brief Interface for Rotation feature
  */
-class SketchAPI_Rotation : public SketchAPI_SketchEntity
+class SketchAPI_Rotation : public ModelHighAPI_Interface
 {
 public:
   /// Constructor without values
@@ -53,6 +54,12 @@ public:
               rotatedObjects, SketchPlugin_MultiRotation::ENTITY_B(), ModelAPI_AttributeRefList, /** Rotated objects */
   )
 
+  /// List of rotated objects
+  SKETCHAPI_EXPORT
+  std::list<std::shared_ptr<ModelHighAPI_Interface> > rotated() const;
+
+  /// Dump wrapped feature
+  virtual void dump(ModelHighAPI_Dumper& theDumper) const;
 };
 
 //! Pointer on Rotation object

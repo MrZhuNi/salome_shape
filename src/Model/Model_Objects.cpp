@@ -663,6 +663,12 @@ void Model_Objects::synchronizeFeatures(
       aFeature = myFeatures.Find(aFeatureLabel);
       aKeptFeatures.insert(aFeature);
       if (anUpdatedMap.Contains(aFeatureLabel)) {
+        if (!theOpen) { // on abort/undo/redo reinitialize attributes is something is changed
+          std::list<std::shared_ptr<ModelAPI_Attribute> > anAttrs = aFeature->data()->attributes("");
+          std::list<std::shared_ptr<ModelAPI_Attribute> >::iterator anAttr = anAttrs.begin();
+          for(; anAttr != anAttrs.end(); anAttr++)
+            (*anAttr)->reinit();
+        }
         ModelAPI_EventCreator::get()->sendUpdated(aFeature, anUpdateEvent);
         if (aFeature->getKind() == "Parameter") { // if parameters are changed, update the results (issue 937)
           const std::list<std::shared_ptr<ModelAPI_Result> >& aResults = aFeature->results();
@@ -715,7 +721,8 @@ void Model_Objects::synchronizeFeatures(
       FeaturePtr aFeature = myFeatures.Find(aFeatureLabel);
       if (std::dynamic_pointer_cast<ModelAPI_CompositeFeature>(aFeature).get())
         aComposites.push_back(aFeature);
-      updateResults(aFeature);
+      else
+        updateResults(aFeature);
     }
   }
   std::list<FeaturePtr>::iterator aComposite = aComposites.begin();
@@ -1103,9 +1110,10 @@ ResultPtr Model_Objects::findByName(const std::string theName)
     FeaturePtr& aFeature = anObjIter.ChangeValue();
     if (!aFeature.get() || aFeature->isDisabled()) // may be on close
       continue;
-    const std::list<std::shared_ptr<ModelAPI_Result> >& aResults = aFeature->results();
-    std::list<std::shared_ptr<ModelAPI_Result> >::const_iterator aRIter = aResults.begin();
-    for (; aRIter != aResults.cend(); aRIter++) {
+    std::list<ResultPtr> allResults;
+    ModelAPI_Tools::allResults(aFeature, allResults);
+    std::list<ResultPtr>::iterator aRIter = allResults.begin();
+    for (; aRIter != allResults.cend(); aRIter++) {
       ResultPtr aRes = *aRIter;
       if (aRes.get() && aRes->data() && aRes->data()->isValid() && !aRes->isDisabled() &&
           aRes->data()->name() == theName) {

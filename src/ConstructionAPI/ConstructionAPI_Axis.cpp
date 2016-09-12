@@ -6,6 +6,7 @@
 
 #include "ConstructionAPI_Axis.h"
 
+#include <ModelHighAPI_Dumper.h>
 #include <ModelHighAPI_Tools.h>
 
 //==================================================================================================
@@ -86,6 +87,32 @@ ConstructionAPI_Axis::ConstructionAPI_Axis(const std::shared_ptr<ModelAPI_Featur
 {
   if(initialize()) {
     setByTwoPlanes(thePlane1, theOffset1, theReverseOffset1, thePlane2, theOffset2, theReverseOffset2);
+  }
+}
+
+//==================================================================================================
+ConstructionAPI_Axis::ConstructionAPI_Axis(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                                           const ModelHighAPI_Selection& thePlane1,
+                                           const ModelHighAPI_Selection& thePlane2,
+                                           const ModelHighAPI_Double& theOffset2,
+                                           const bool theReverseOffset2)
+: ModelHighAPI_Interface(theFeature)
+{
+  if(initialize()) {
+    setByTwoPlanes(thePlane1, thePlane2, theOffset2, theReverseOffset2);
+  }
+}
+
+//==================================================================================================
+ConstructionAPI_Axis::ConstructionAPI_Axis(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                                           const ModelHighAPI_Selection& thePlane1,
+                                           const ModelHighAPI_Double& theOffset1,
+                                           const bool theReverseOffset1,
+                                           const ModelHighAPI_Selection& thePlane2)
+: ModelHighAPI_Interface(theFeature)
+{
+  if(initialize()) {
+    setByTwoPlanes(thePlane1, theOffset1, theReverseOffset1, thePlane2);
   }
 }
 
@@ -197,13 +224,112 @@ void ConstructionAPI_Axis::setByTwoPlanes(const ModelHighAPI_Selection& thePlane
 }
 
 //==================================================================================================
+void ConstructionAPI_Axis::setByTwoPlanes(const ModelHighAPI_Selection& thePlane1,
+                                          const ModelHighAPI_Selection& thePlane2,
+                                          const ModelHighAPI_Double& theOffset2,
+                                          const bool theReverseOffset2)
+{
+  fillAttribute(ConstructionPlugin_Axis::CREATION_METHOD_BY_TWO_PLANES(), creationMethod());
+  fillAttribute(thePlane1, plane1());
+  fillAttribute("", useOffset1());
+  fillAttribute(thePlane2, plane2());
+  fillAttribute(ConstructionPlugin_Axis::USE_OFFSET2(), useOffset2());
+  fillAttribute(theOffset2, offset2());
+  fillAttribute(theReverseOffset2, reverseOffset2());
+
+  execute();
+}
+
+//==================================================================================================
+void ConstructionAPI_Axis::setByTwoPlanes(const ModelHighAPI_Selection& thePlane1,
+                                          const ModelHighAPI_Double& theOffset1,
+                                          const bool theReverseOffset1,
+                                          const ModelHighAPI_Selection& thePlane2)
+{
+  fillAttribute(ConstructionPlugin_Axis::CREATION_METHOD_BY_TWO_PLANES(), creationMethod());
+  fillAttribute(thePlane1, plane1());
+  fillAttribute(ConstructionPlugin_Axis::USE_OFFSET1(), useOffset1());
+  fillAttribute(theOffset1, offset1());
+  fillAttribute(theReverseOffset1, reverseOffset1());
+  fillAttribute(thePlane2, plane2());
+  fillAttribute("", useOffset2());
+
+  execute();
+}
+
+//==================================================================================================
+void ConstructionAPI_Axis::dump(ModelHighAPI_Dumper& theDumper) const
+{
+  FeaturePtr aBase = feature();
+  const std::string& aDocName = theDumper.name(aBase->document());
+
+  theDumper << aBase << " = model.addAxis(" << aDocName;
+
+  std::string aCreationMethod = aBase->string(ConstructionPlugin_Axis::METHOD())->value();
+
+  if(aCreationMethod == ConstructionPlugin_Axis::CREATION_METHOD_BY_DIMENSIONS()) {
+    AttributeDoublePtr anAttrDX = aBase->real(ConstructionPlugin_Axis::DX());
+    AttributeDoublePtr anAttrDY = aBase->real(ConstructionPlugin_Axis::DY());
+    AttributeDoublePtr anAttrDZ = aBase->real(ConstructionPlugin_Axis::DZ());
+
+    theDumper << ", " << anAttrDX << ", " << anAttrDY << ", " << anAttrDZ;
+  } else if(aCreationMethod == ConstructionPlugin_Axis::CREATION_METHOD_BY_TWO_POINTS()) {
+    AttributeSelectionPtr anAttrFirstPnt = aBase->selection(ConstructionPlugin_Axis::POINT_FIRST());
+    AttributeSelectionPtr anAttrSecondPnt = aBase->selection(ConstructionPlugin_Axis::POINT_SECOND());
+
+    theDumper << ", " << anAttrFirstPnt << ", " << anAttrSecondPnt;
+  } else if(aCreationMethod == ConstructionPlugin_Axis::CREATION_METHOD_BY_LINE()) {
+    AttributeSelectionPtr anAttrLine = aBase->selection(ConstructionPlugin_Axis::LINE());
+
+    theDumper << ", " << anAttrLine;
+  } else if(aCreationMethod == ConstructionPlugin_Axis::CREATION_METHOD_BY_CYLINDRICAL_FACE()) {
+    AttributeSelectionPtr anAttrFace = aBase->selection(ConstructionPlugin_Axis::CYLINDRICAL_FACE());
+
+    theDumper << ", " << anAttrFace;
+  } else if(aCreationMethod == ConstructionPlugin_Axis::CREATION_METHOD_BY_PLANE_AND_POINT()) {
+    AttributeSelectionPtr anAttrPlane = aBase->selection(ConstructionPlugin_Axis::PLANE());
+    AttributeSelectionPtr anAttrPoint = aBase->selection(ConstructionPlugin_Axis::POINT());
+
+    theDumper << ", " << anAttrPlane << ", " << anAttrPoint;
+  } else if(aCreationMethod == ConstructionPlugin_Axis::CREATION_METHOD_BY_TWO_PLANES()) {
+    AttributeSelectionPtr anAttrPlane1 = aBase->selection(ConstructionPlugin_Axis::PLANE1());
+    AttributeSelectionPtr anAttrPlane2 = aBase->selection(ConstructionPlugin_Axis::PLANE2());
+
+    theDumper << ", " << anAttrPlane1;
+    if(aBase->string(ConstructionPlugin_Axis::USE_OFFSET1())->isInitialized()
+      && !aBase->string(ConstructionPlugin_Axis::USE_OFFSET1())->value().empty()) {
+      AttributeDoublePtr anAttrOffset1 = aBase->real(ConstructionPlugin_Axis::OFFSET1());
+      AttributeBooleanPtr anAttrReverseOffset1 = aBase->boolean(ConstructionPlugin_Axis::REVERSE_OFFSET1());
+      theDumper << ", " << anAttrOffset1 << ", " << anAttrReverseOffset1;
+    }
+
+    theDumper << ", " << anAttrPlane2;
+    if(aBase->string(ConstructionPlugin_Axis::USE_OFFSET2())->isInitialized()
+      && !aBase->string(ConstructionPlugin_Axis::USE_OFFSET2())->value().empty()) {
+      AttributeDoublePtr anAttrOffset2 = aBase->real(ConstructionPlugin_Axis::OFFSET2());
+      AttributeBooleanPtr anAttrReverseOffset2 = aBase->boolean(ConstructionPlugin_Axis::REVERSE_OFFSET2());
+      theDumper << ", " << anAttrOffset2 << ", " << anAttrReverseOffset2;
+    }
+  } else if(aCreationMethod == ConstructionPlugin_Axis::CREATION_METHOD_BY_POINT_AND_DIRECTION()) {
+    AttributeSelectionPtr anAttrFirstPnt = aBase->selection(ConstructionPlugin_Axis::POINT_FIRST());
+    AttributeDoublePtr anAttrX = aBase->real(ConstructionPlugin_Axis::X_DIRECTION());
+    AttributeDoublePtr anAttrY = aBase->real(ConstructionPlugin_Axis::Y_DIRECTION());
+    AttributeDoublePtr anAttrZ = aBase->real(ConstructionPlugin_Axis::Z_DIRECTION());
+
+    theDumper << ", " << anAttrFirstPnt << ", " << anAttrX << ", " << anAttrY << ", " << anAttrZ;
+  }
+
+  theDumper << ")" << std::endl;
+}
+
+//==================================================================================================
 AxisPtr addAxis(const std::shared_ptr<ModelAPI_Document>& thePart,
-                const ModelHighAPI_Selection& thePoint1,
-                const ModelHighAPI_Selection& thePoint2)
+                const ModelHighAPI_Selection& theObject1,
+                const ModelHighAPI_Selection& theObject2)
 {
   // TODO(spo): check that thePart is not empty
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(ConstructionAPI_Axis::ID());
-  return AxisPtr(new ConstructionAPI_Axis(aFeature, thePoint1, thePoint2));
+  return AxisPtr(new ConstructionAPI_Axis(aFeature, theObject1, theObject2));
 }
 
 //==================================================================================================
@@ -251,4 +377,30 @@ AxisPtr addAxis(const std::shared_ptr<ModelAPI_Document>& thePart,
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(ConstructionAPI_Axis::ID());
   return AxisPtr(new ConstructionAPI_Axis(aFeature, thePlane1, theOffset1, theReverseOffset1,
                                                     thePlane2, theOffset2, theReverseOffset2));
+}
+
+//==================================================================================================
+AxisPtr addAxis(const std::shared_ptr<ModelAPI_Document>& thePart,
+                const ModelHighAPI_Selection& thePlane1,
+                const ModelHighAPI_Selection& thePlane2,
+                const ModelHighAPI_Double& theOffset2,
+                const bool theReverseOffset2)
+{
+  // TODO(spo): check that thePart is not empty
+  std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(ConstructionAPI_Axis::ID());
+  return AxisPtr(new ConstructionAPI_Axis(aFeature, thePlane1,
+                                                    thePlane2, theOffset2, theReverseOffset2));
+}
+
+//==================================================================================================
+AxisPtr addAxis(const std::shared_ptr<ModelAPI_Document>& thePart,
+                const ModelHighAPI_Selection& thePlane1,
+                const ModelHighAPI_Double& theOffset1,
+                const bool theReverseOffset1,
+                const ModelHighAPI_Selection& thePlane2)
+{
+  // TODO(spo): check that thePart is not empty
+  std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(ConstructionAPI_Axis::ID());
+  return AxisPtr(new ConstructionAPI_Axis(aFeature, thePlane1, theOffset1, theReverseOffset1,
+                                                    thePlane2));
 }

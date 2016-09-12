@@ -10,15 +10,20 @@
 #include <ModelAPI_Result.h>
 #include <ModelAPI_AttributeReference.h>
 #include <ModelAPI_AttributeRefList.h>
+#include <ModelAPI_Session.h>
+#include <ModelAPI_Validator.h>
+#include <ModelAPI_Tools.h>
 
 #include <Config_WidgetAPI.h>
 
 #include <QGridLayout>
-#include <QCheckBox>
 
 #include <QWidget>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <QToolButton>
+
+const int DEFAULT_NAME_COLUMN_WIDTH = 200;
 
 ModuleBase_WidgetConcealedObjects::ModuleBase_WidgetConcealedObjects(QWidget* theParent,
                                                      const Config_WidgetAPI* theData)
@@ -49,7 +54,7 @@ bool ModuleBase_WidgetConcealedObjects::storeValueCustom()
   anAttributeList->clear();
   int aSize1 = anAttributeList->size(false);
   for (int i = 0, aSize = myView->rowCount(); i < aSize; i++) {
-    QCheckBox* aButton = dynamic_cast<QCheckBox*>(myView->cellWidget(i, 0));
+    QToolButton* aButton = dynamic_cast<QToolButton*>(myView->cellWidget(i, 0));;
     if (aButton->isChecked())
       anAttributeList->append(myConcealedResults[i]);
   }
@@ -71,21 +76,16 @@ bool ModuleBase_WidgetConcealedObjects::restoreValueCustom()
     myConcealedResults.clear();
     myBaseFeature = aBaseFeature;
     if (myBaseFeature.get()) {
-      std::list<std::pair<std::string, std::list<std::shared_ptr<ModelAPI_Object> > > > aRefs;
-      myBaseFeature->data()->referencesToObjects(aRefs);
-      std::list<std::pair<std::string, std::list<ObjectPtr> > >::const_iterator
-                                                      anIt = aRefs.begin(), aLast = aRefs.end();
+      std::list<std::shared_ptr<ModelAPI_Result> > aResults;
+      ModelAPI_Tools::getConcealedResults(myBaseFeature, aResults);
+      std::list<std::shared_ptr<ModelAPI_Result> >::const_iterator anIt = aResults.begin(),
+                                                                   aLast = aResults.end();
       for (; anIt != aLast; anIt++) {
-        std::list<ObjectPtr> anObjects = (*anIt).second;
-        std::list<ObjectPtr>::const_iterator anOIt = anObjects.begin(), anOLast = anObjects.end();
-        for (; anOIt != anOLast; anOIt++) {
-          ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(*anOIt);
-          if (aResult->isConcealed()) {
-            int aRowId = myView->rowCount();
-            addViewRow(aResult);
-            myConcealedResults[aRowId] = aResult;
-          }
-        }
+        ResultPtr aResult = *anIt;
+
+        int aRowId = myView->rowCount();
+        addViewRow(aResult);
+        myConcealedResults[aRowId] = aResult;
       }
     }
   }
@@ -95,11 +95,12 @@ bool ModuleBase_WidgetConcealedObjects::restoreValueCustom()
   int aSize = anAttributeList->size();
   for (int i = 0, aSize = myView->rowCount(); i < aSize; i++) {
     ResultPtr aResult = myConcealedResults[i];
-    QCheckBox* aButton = dynamic_cast<QCheckBox*>(myView->cellWidget(i, 0));
+    QToolButton* aButton = dynamic_cast<QToolButton*>(myView->cellWidget(i, 0));
     bool isChecked = anAttributeList->isInList(aResult);
 
     bool aBlocked = aButton->blockSignals(true);
     aButton->setChecked(isChecked);
+    this->updateItemIcon(aButton);
     aButton->blockSignals(aBlocked);
   }
   return true;
@@ -117,15 +118,31 @@ void ModuleBase_WidgetConcealedObjects::addViewRow(const std::shared_ptr<ModelAP
   int anId = myView->rowCount();
   myView->setRowCount(anId+1);
 
-  QCheckBox* aVisibilityBox = new QCheckBox(this);
-  connect(aVisibilityBox, SIGNAL(toggled(bool)), this, SLOT(onItemToggled(bool)));
-  aVisibilityBox->setChecked(false);
-  myView->setCellWidget(anId, 0, aVisibilityBox);
+  QToolButton* aVisibilityBtn = new QToolButton(this);
+  connect(aVisibilityBtn, SIGNAL(toggled(bool)), this, SLOT(onItemToggled(bool)));
+  aVisibilityBtn->setCheckable(true);
+  aVisibilityBtn->setChecked(false);
+  updateItemIcon(aVisibilityBtn);
+
+  myView->setCellWidget(anId, 0, aVisibilityBtn);
   myView->setItem(anId, 1, new QTableWidgetItem(theResult->data()->name().c_str()));
+
+  if (anId == 1) {
+    myView->setColumnWidth(0, myView->verticalHeader()->defaultSectionSize());
+    myView->setColumnWidth(1, DEFAULT_NAME_COLUMN_WIDTH);
+  }
 }
 
 void ModuleBase_WidgetConcealedObjects::onItemToggled(bool theState)
 {
   emit valuesChanged();
   updateObject(myFeature);
+}
+
+void ModuleBase_WidgetConcealedObjects::updateItemIcon(QToolButton* theButton)
+{
+  bool isChecked = theButton->isChecked();
+  theButton->setIcon(isChecked ? QIcon(":icons/concealed_on.png")
+                               : QIcon(":icons/concealed_off.png"));
+  theButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }

@@ -17,7 +17,7 @@
 class ModelHighAPI_RefAttr;
 class ModelHighAPI_Selection;
 
-/// \class FeaturesAPI_Boolean
+/// \class SketchAPI_Arc
 /// \ingroup CPPHighAPI
 /// \brief Interface for Arc feature.
 class SketchAPI_Arc: public SketchAPI_SketchEntity
@@ -150,6 +150,10 @@ public:
   /// Set angle.
   SKETCHAPI_EXPORT
   void setAngle(double theAngle);
+
+  /// Dump wrapped feature
+  SKETCHAPI_EXPORT
+  virtual void dump(ModelHighAPI_Dumper& theDumper) const;
 };
 
 /// Pointer on Arc object.

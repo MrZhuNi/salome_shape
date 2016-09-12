@@ -34,8 +34,6 @@ SketcherPrs_Radius::SketcherPrs_Radius(ModelAPI_Feature* theConstraint,
   myValue(1, false, "")
 {
   SetDimensionAspect(SketcherPrs_Tools::createDimensionAspect());
-  SetSelToleranceForText2d(SketcherPrs_Tools::getDefaultTextHeight());
-
   myStyleListener = new SketcherPrs_DimensionStyleListener();
 }
 
@@ -172,5 +170,6 @@ void SketcherPrs_Radius::ComputeSelection(const Handle(SelectMgr_Selection)& aSe
     return; 
   }
   }
+  SetSelToleranceForText2d(SketcherPrs_Tools::getTextHeight());
   AIS_RadiusDimension::ComputeSelection(aSelection, aMode);
 }

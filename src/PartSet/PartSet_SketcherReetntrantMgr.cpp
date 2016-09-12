@@ -21,17 +21,20 @@
 #include <ModuleBase_WidgetFactory.h>
 #include <ModuleBase_OperationDescription.h>
 #include "ModuleBase_ToolBox.h"
+#include "ModuleBase_ISelection.h"
 
 #include <SketchPlugin_Feature.h>
 #include <SketchPlugin_Line.h>
 #include <SketchPlugin_Arc.h>
 #include <SketchPlugin_Circle.h>
+#include <SketchPlugin_Point.h>
 
 #include <XGUI_Workshop.h>
 #include <XGUI_ModuleConnector.h>
 #include <XGUI_OperationMgr.h>
 #include <XGUI_PropertyPanel.h>
 #include <XGUI_ErrorMgr.h>
+#include <XGUI_SelectionMgr.h>
 
 #include <QToolButton>
 
@@ -85,7 +88,6 @@ void PartSet_SketcherReetntrantMgr::updateInternalEditActiveState()
       if (!anError.isEmpty()) {
         aFOperation->setEditOperation(false);
         //workshop()->operationMgr()->updateApplyOfOperations();
-        beforeStopInternalEdit();
         myIsInternalEditOperation = false;
         updateAcceptAllAction();
       }
@@ -145,13 +147,22 @@ bool PartSet_SketcherReetntrantMgr::processMouseMoved(ModuleBase_IViewWindow* th
 
       FeaturePtr aCurrentFeature = aFOperation->feature();
       bool isLineFeature = false, isArcFeature = false;
-      if (aCurrentFeature->getKind() == SketchPlugin_Line::ID())
-        isLineFeature = anActiveWidget->attributeID() == SketchPlugin_Line::START_ID();
-      else if (isTangentArc(aFOperation, module()->sketchMgr()->activeSketch()))
-        isArcFeature = anActiveWidget->attributeID() == SketchPlugin_Arc::TANGENT_POINT_ID();
-
+      std::string anAttributeOnStart;
+      if (aCurrentFeature->getKind() == SketchPlugin_Line::ID()) {
+        anAttributeOnStart = SketchPlugin_Line::START_ID();
+        isLineFeature = anActiveWidget->attributeID() == anAttributeOnStart;
+      }
+      else if (isTangentArc(aFOperation, module()->sketchMgr()->activeSketch())) {
+        anAttributeOnStart = SketchPlugin_Arc::TANGENT_POINT_ID();
+        isArcFeature = anActiveWidget->attributeID() == anAttributeOnStart;
+      }
       bool aCanBeActivatedByMove = isLineFeature || isArcFeature;
       if (aCanBeActivatedByMove) {
+        /// before restarting of operation we need to clear selection, as it may take part in
+        /// new feature creation, e.g. tangent arc. But it is not necessary as it was processed
+        /// by mouse release when the operation was restarted.
+        workshop()->selector()->clearSelection();
+
         myPreviousFeature = aFOperation->feature();
         restartOperation();
         myPreviousFeature = FeaturePtr();
@@ -159,7 +170,10 @@ bool PartSet_SketcherReetntrantMgr::processMouseMoved(ModuleBase_IViewWindow* th
         anActiveWidget = module()->activeWidget();
         aCurrentFeature = anActiveWidget->feature();
         aProcessed = true;
-        aPanel->activateNextWidget(anActiveWidget);
+        if (anActiveWidget->attributeID() == anAttributeOnStart) {
+          // it was not deactivated by preselection processing
+          aPanel->activateNextWidget(anActiveWidget);
+        }
       } else {
         // processing mouse move in active widget of restarted operation
         ModuleBase_ModelWidget* anActiveWidget = module()->activeWidget();
@@ -202,6 +216,13 @@ bool PartSet_SketcherReetntrantMgr::processMouseReleased(ModuleBase_IViewWindow*
       ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
                                                            (myWorkshop->currentOperation());
       myPreviousFeature = aFOperation->feature();
+
+      /// selection should be obtained from workshop before ask if the operation can be started as
+      /// the canStartOperation method performs commit/abort of previous operation. Sometimes commit/abort
+      /// may cause selection clear(Sketch operation) as a result it will be lost and is not used for preselection.
+      ModuleBase_ISelection* aSelection = myWorkshop->selection();
+      QList<ModuleBase_ViewerPrsPtr> aPreSelected = aSelection->getSelected(ModuleBase_ISelection::AllControls);
+
       restartOperation();
       myPreviousFeature = FeaturePtr();
       aProcessed = true;
@@ -212,7 +233,11 @@ bool PartSet_SketcherReetntrantMgr::processMouseReleased(ModuleBase_IViewWindow*
       PartSet_WidgetPoint2D* aPoint2DWdg = dynamic_cast<PartSet_WidgetPoint2D*>(module()->activeWidget());
       ModuleBase_ModelWidget* aFirstWidget = aPanel->findFirstAcceptingValueWidget();
       if (aPoint2DWdg && aPoint2DWdg == aFirstWidget) {
+        if (!aPreSelected.empty())
+          aPoint2DWdg->setPreSelection(aPreSelected.front());
         aPoint2DWdg->mouseReleased(theWnd, theEvent);
+        if (!aPreSelected.empty())
+          aPoint2DWdg->setPreSelection(ModuleBase_ViewerPrsPtr());
       }
       // unblock viewer update
       ModuleBase_Tools::blockUpdateViewer(false);
@@ -258,8 +283,7 @@ void PartSet_SketcherReetntrantMgr::onNoMoreWidgets(const std::string& thePrevio
   if (!myWorkshop->module()->getFeatureError(aFOperation->feature()).isEmpty())
     return;
 
-  if (aFOperation && PartSet_SketcherMgr::isNestedSketchOperation(aFOperation,
-                                                    module()->sketchMgr()->activeSketch())) {
+  if (aFOperation && module()->sketchMgr()->isNestedSketchOperation(aFOperation)) {
     bool isStarted = false;
     if (!module()->sketchMgr()->sketchSolverError()) {
       if (myRestartingMode != RM_Forbided) {
@@ -350,8 +374,7 @@ bool PartSet_SketcherReetntrantMgr::isActiveMgr() const
 
   bool anActive = PartSet_SketcherMgr::isSketchOperation(aCurrentOperation);
   if (!anActive) {
-    anActive = PartSet_SketcherMgr::isNestedSketchOperation(aCurrentOperation,
-                                                    module()->sketchMgr()->activeSketch());
+    anActive = module()->sketchMgr()->isNestedSketchOperation(aCurrentOperation);
     if (anActive) { // the manager is not active when the current operation is a usual Edit
       ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
                                                        (myWorkshop->currentOperation());
@@ -374,8 +397,7 @@ bool PartSet_SketcherReetntrantMgr::startInternalEdit(const std::string& thePrev
   ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
                                                      (myWorkshop->currentOperation());
 
-  if (aFOperation && PartSet_SketcherMgr::isNestedSketchOperation(aFOperation,
-                                                module()->sketchMgr()->activeSketch())) {
+  if (aFOperation && module()->sketchMgr()->isNestedSketchOperation(aFOperation)) {
     aFOperation->setEditOperation(true/*, false*/);
     createInternalFeature();
 
@@ -454,8 +476,6 @@ void PartSet_SketcherReetntrantMgr::restartOperation()
     if (aFOperation) {
       myNoMoreWidgetsAttribute = "";
       myIsFlagsBlocked = true;
-      FeaturePtr aPrevFeature = aFOperation->feature();
-      aFOperation->commit();
       module()->launchOperation(aFOperation->id());
       myIsFlagsBlocked = false;
       resetFlags();
@@ -476,8 +496,7 @@ void PartSet_SketcherReetntrantMgr::createInternalFeature()
   ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
                                                      (myWorkshop->currentOperation());
 
-  if (aFOperation && PartSet_SketcherMgr::isNestedSketchOperation(aFOperation,
-                                                          module()->sketchMgr()->activeSketch())) {
+  if (aFOperation && module()->sketchMgr()->isNestedSketchOperation(aFOperation)) {
     FeaturePtr anOperationFeature = aFOperation->feature();
 
     CompositeFeaturePtr aSketch = module()->sketchMgr()->activeSketch();
@@ -547,7 +566,8 @@ bool PartSet_SketcherReetntrantMgr::copyReetntrantAttributes(const FeaturePtr& t
                                                              const bool isTemporary)
 {
   bool aChanged = false;
-  if (!theSourceFeature.get())
+  if (!theSourceFeature.get() || !theSourceFeature->data().get() ||
+      !theSourceFeature->data()->isValid())
     return aChanged;
 
   std::string aFeatureKind = theSourceFeature->getKind();
@@ -608,12 +628,12 @@ bool PartSet_SketcherReetntrantMgr::copyReetntrantAttributes(const FeaturePtr& t
 }
 
 bool PartSet_SketcherReetntrantMgr::isTangentArc(ModuleBase_Operation* theOperation,
-                                                 const CompositeFeaturePtr& theSketch)
+                                                 const CompositeFeaturePtr& /*theSketch*/) const
 {
   bool aTangentArc = false;
   ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
                                                                         (theOperation);
-  if (aFOperation && PartSet_SketcherMgr::isNestedSketchOperation(aFOperation, theSketch)) {
+  if (aFOperation && module()->sketchMgr()->isNestedSketchOperation(aFOperation)) {
     FeaturePtr aFeature = aFOperation->feature();
     if (aFeature.get() && aFeature->getKind() == SketchPlugin_Arc::ID()) {
       AttributeStringPtr aTypeAttr = aFeature->data()->string(SketchPlugin_Arc::ARC_TYPE());

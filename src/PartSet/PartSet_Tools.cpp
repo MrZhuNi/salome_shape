@@ -386,7 +386,7 @@ void PartSet_Tools::setConstraints(CompositeFeaturePtr theSketch, FeaturePtr the
   std::list<std::shared_ptr<ModelAPI_Attribute> > anAttiributes;
   for (; anIt != aLast; anIt++) {
     FeaturePtr aFeature = std::dynamic_pointer_cast<ModelAPI_Feature>(*anIt);
-    if (!aFeature.get() || theFeature == aFeature)
+    if (!aFeature.get() || (theFeature == aFeature) || (aFeaturePoint->owner() == aFeature))
       continue;
     std::shared_ptr<GeomDataAPI_Point2D> aFPoint = PartSet_Tools::findFirstEqualPoint(aFeature,
                                                                                 aClickedPoint);
@@ -539,6 +539,8 @@ ResultPtr PartSet_Tools::createFixedObjectByExternal(const TopoDS_Shape& theShap
           FeaturePtr aFix = theSketch->addFeature(SketchPlugin_ConstraintRigid::ID());
           aFix->data()->refattr(SketchPlugin_Constraint::ENTITY_A())->
             setObject(aMyFeature->lastResult());
+          // we need to flush created signal in order to fixed constraint is processed by solver
+          Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_CREATED));
         //}
         return aMyFeature->lastResult();
       }
@@ -597,6 +599,8 @@ ResultPtr PartSet_Tools::createFixedObjectByExternal(const TopoDS_Shape& theShap
           FeaturePtr aFix = theSketch->addFeature(SketchPlugin_ConstraintRigid::ID());
           aFix->data()->refattr(SketchPlugin_Constraint::ENTITY_A())->
             setObject(aMyFeature->lastResult());
+          // we need to flush created signal in order to fixed constraint is processed by solver
+          Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_CREATED));
         //}
         return aMyFeature->lastResult();
       }
@@ -917,6 +921,8 @@ AttributePtr PartSet_Tools::findAttributeBy2dPoint(ObjectPtr theObj,
         for (; anIt != aLast && !anAttribute; anIt++) {
           std::shared_ptr<GeomDataAPI_Point2D> aCurPoint = 
             std::dynamic_pointer_cast<GeomDataAPI_Point2D>(*anIt);
+          if (!aCurPoint->isInitialized())
+            continue;
 
           std::shared_ptr<GeomAPI_Pnt> aPnt = convertTo3D(aCurPoint->x(), aCurPoint->y(), theSketch);
           if (aPnt && (aPnt->distance(aValue) < Precision::Confusion())) {

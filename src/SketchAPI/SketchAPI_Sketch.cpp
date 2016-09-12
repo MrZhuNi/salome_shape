@@ -22,13 +22,17 @@
 #include <SketchPlugin_ConstraintPerpendicular.h>
 #include <SketchPlugin_ConstraintRadius.h>
 #include <SketchPlugin_ConstraintRigid.h>
+#include <SketchPlugin_ConstraintSplit.h>
 #include <SketchPlugin_ConstraintTangent.h>
 #include <SketchPlugin_ConstraintVertical.h>
+#include <SketcherPrs_Tools.h>
 //--------------------------------------------------------------------------------------
 #include <ModelAPI_CompositeFeature.h>
 #include <ModelAPI_ResultConstruction.h>
+#include <ModelHighAPI_Dumper.h>
 #include <ModelHighAPI_RefAttr.h>
 #include <ModelHighAPI_Selection.h>
+#include <ModelHighAPI_Services.h>
 #include <ModelHighAPI_Tools.h>
 //--------------------------------------------------------------------------------------
 #include "SketchAPI_Arc.h"
@@ -69,6 +73,16 @@ SketchAPI_Sketch::SketchAPI_Sketch(
   }
 }
 
+SketchAPI_Sketch::SketchAPI_Sketch(
+    const std::shared_ptr<ModelAPI_Feature> & theFeature,
+    std::shared_ptr<ModelAPI_Object> thePlaneObject)
+: ModelHighAPI_Interface(theFeature)
+{
+  if (initialize()) {
+    setExternal(thePlaneObject);
+  }
+}
+
 SketchAPI_Sketch::~SketchAPI_Sketch()
 {
 
@@ -97,13 +111,20 @@ void SketchAPI_Sketch::setExternal(const ModelHighAPI_Selection & theExternal)
   execute();
 }
 
+void SketchAPI_Sketch::setExternal(std::shared_ptr<ModelAPI_Object> thePlaneObject)
+{
+  ResultPtr aRes = std::dynamic_pointer_cast<ModelAPI_Result>(thePlaneObject);
+  ModelHighAPI_Selection aSel(aRes);
+  setExternal(aSel);
+}
+
 //--------------------------------------------------------------------------------------
 void SketchAPI_Sketch::setValue(
-    const std::shared_ptr<ModelAPI_Feature> & theConstraint,
+    const std::shared_ptr<ModelHighAPI_Interface> & theConstraint,
     const ModelHighAPI_Double & theValue)
 {
   // TODO(spo): check somehow that the feature is a constraint or eliminate crash if the feature have no real attribute VALUE
-  fillAttribute(theValue, theConstraint->real(SketchPlugin_Constraint::VALUE()));
+  fillAttribute(theValue, theConstraint->feature()->real(SketchPlugin_Constraint::VALUE()));
 
 //  theConstraint->execute();
 }
@@ -153,6 +174,14 @@ SketchPtr addSketch(const std::shared_ptr<ModelAPI_Document> & thePart,
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(SketchAPI_Sketch::ID());
   return SketchPtr(new SketchAPI_Sketch(aFeature, ModelHighAPI_Selection("FACE", theExternalName)));
 }
+
+SketchPtr addSketch(const std::shared_ptr<ModelAPI_Document> & thePart,
+                    std::shared_ptr<ModelAPI_Object> thePlaneObject)
+{
+  std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(SketchAPI_Sketch::ID());
+  return SketchPtr(new SketchAPI_Sketch(aFeature, thePlaneObject));
+}
+
 
 //--------------------------------------------------------------------------------------
 std::shared_ptr<SketchAPI_Point> SketchAPI_Sketch::addPoint(
@@ -208,16 +237,12 @@ std::shared_ptr<SketchAPI_Line> SketchAPI_Sketch::addLine(
 std::shared_ptr<SketchAPI_Line> SketchAPI_Sketch::addLine(const ModelHighAPI_Selection & theExternal)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature = compositeFeature()->addFeature(SketchPlugin_Line::ID());
-  LinePtr aLine(new SketchAPI_Line(aFeature, theExternal));
-  setFixed(InterfacePtr(aLine));
-  return aLine;
+  return LinePtr(new SketchAPI_Line(aFeature, theExternal));
 }
 std::shared_ptr<SketchAPI_Line> SketchAPI_Sketch::addLine(const std::string & theExternalName)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature = compositeFeature()->addFeature(SketchPlugin_Line::ID());
-  LinePtr aLine(new SketchAPI_Line(aFeature, theExternalName));
-  setFixed(InterfacePtr(aLine));
-  return aLine;
+  return LinePtr(new SketchAPI_Line(aFeature, theExternalName));
 }
 
 //--------------------------------------------------------------------------------------
@@ -358,6 +383,13 @@ std::shared_ptr<SketchAPI_Projection> SketchAPI_Sketch::addProjection(
   return ProjectionPtr(new SketchAPI_Projection(aFeature, theExternalFeature));
 }
 
+std::shared_ptr<SketchAPI_Projection> SketchAPI_Sketch::addProjection(
+    const std::string & theExternalName)
+{
+  std::shared_ptr<ModelAPI_Feature> aFeature = compositeFeature()->addFeature(SketchPlugin_Projection::ID());
+  return ProjectionPtr(new SketchAPI_Projection(aFeature, theExternalName));
+}
+
 //--------------------------------------------------------------------------------------
 std::shared_ptr<SketchAPI_Mirror> SketchAPI_Sketch::addMirror(
     const ModelHighAPI_RefAttr & theMirrorLine,
@@ -392,22 +424,70 @@ std::shared_ptr<SketchAPI_Rotation> SketchAPI_Sketch::addRotation(
 }
 
 //--------------------------------------------------------------------------------------
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setAngle(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::addSplit(const ModelHighAPI_Reference& theFeature,
+                                                             const ModelHighAPI_RefAttr& thePoint1,
+                                                             const ModelHighAPI_RefAttr& thePoint2)
+{
+  std::shared_ptr<ModelAPI_Feature> aFeature = compositeFeature()->addFeature(SketchPlugin_ConstraintSplit::ID());
+  fillAttribute(theFeature, aFeature->reference(SketchPlugin_Constraint::VALUE()));
+  fillAttribute(thePoint1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
+  fillAttribute(thePoint2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
+  //aFeature->execute();
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
+}
+
+//--------------------------------------------------------------------------------------
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setAngle(
     const ModelHighAPI_RefAttr & theLine1,
     const ModelHighAPI_RefAttr & theLine2,
     const ModelHighAPI_Double & theValue)
 {
-  // TODO(spo): is support of angle type necessary?
   std::shared_ptr<ModelAPI_Feature> aFeature =
       compositeFeature()->addFeature(SketchPlugin_ConstraintAngle::ID());
+  fillAttribute(SketcherPrs_Tools::ANGLE_DIRECT,
+      aFeature->integer(SketchPlugin_ConstraintAngle::TYPE_ID()));
   fillAttribute(theLine1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theLine2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   fillAttribute(theValue, aFeature->real(SketchPlugin_Constraint::VALUE()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setCoincident(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setAngleComplementary(
+    const ModelHighAPI_RefAttr & theLine1,
+    const ModelHighAPI_RefAttr & theLine2,
+    const ModelHighAPI_Double & theValue)
+{
+  std::shared_ptr<ModelAPI_Feature> aFeature =
+      compositeFeature()->addFeature(SketchPlugin_ConstraintAngle::ID());
+  fillAttribute(SketcherPrs_Tools::ANGLE_COMPLEMENTARY,
+      aFeature->integer(SketchPlugin_ConstraintAngle::TYPE_ID()));
+  fillAttribute(theValue, aFeature->real(SketchPlugin_ConstraintAngle::ANGLE_VALUE_ID()));
+  fillAttribute(theLine1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
+  fillAttribute(theLine2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
+//  fillAttribute(theValue, aFeature->real(SketchPlugin_Constraint::VALUE()));
+  aFeature->execute();
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
+}
+
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setAngleBackward(
+    const ModelHighAPI_RefAttr & theLine1,
+    const ModelHighAPI_RefAttr & theLine2,
+    const ModelHighAPI_Double & theValue)
+{
+  std::shared_ptr<ModelAPI_Feature> aFeature =
+      compositeFeature()->addFeature(SketchPlugin_ConstraintAngle::ID());
+  fillAttribute(SketcherPrs_Tools::ANGLE_BACKWARD,
+      aFeature->integer(SketchPlugin_ConstraintAngle::TYPE_ID()));
+  fillAttribute(theValue, aFeature->real(SketchPlugin_ConstraintAngle::ANGLE_VALUE_ID()));
+  fillAttribute(theLine1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
+  fillAttribute(theLine2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
+//  fillAttribute(theValue, aFeature->real(SketchPlugin_Constraint::VALUE()));
+  aFeature->execute();
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
+}
+
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setCoincident(
     const ModelHighAPI_RefAttr & thePoint1,
     const ModelHighAPI_RefAttr & thePoint2)
 {
@@ -416,10 +496,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setCoincident(
   fillAttribute(thePoint1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(thePoint2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setCollinear(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setCollinear(
     const ModelHighAPI_RefAttr & theLine1,
     const ModelHighAPI_RefAttr & theLine2)
 {
@@ -428,10 +508,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setCollinear(
   fillAttribute(theLine1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theLine2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setDistance(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setDistance(
     const ModelHighAPI_RefAttr & thePoint,
     const ModelHighAPI_RefAttr & thePointOrLine,
     const ModelHighAPI_Double & theValue)
@@ -442,10 +522,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setDistance(
   fillAttribute(thePointOrLine, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   fillAttribute(theValue, aFeature->real(SketchPlugin_Constraint::VALUE()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setEqual(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setEqual(
     const ModelHighAPI_RefAttr & theObject1,
     const ModelHighAPI_RefAttr & theObject2)
 {
@@ -454,10 +534,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setEqual(
   fillAttribute(theObject1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theObject2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setFillet(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setFillet(
     const std::list<ModelHighAPI_RefAttr> & thePoints,
     const ModelHighAPI_Double & theRadius)
 {
@@ -466,30 +546,30 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setFillet(
   fillAttribute(thePoints, aFeature->data()->refattrlist(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theRadius, aFeature->real(SketchPlugin_Constraint::VALUE()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setFixed(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setFixed(
     const ModelHighAPI_RefAttr & theObject)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature =
       compositeFeature()->addFeature(SketchPlugin_ConstraintRigid::ID());
   fillAttribute(theObject, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setHorizontal(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setHorizontal(
     const ModelHighAPI_RefAttr & theLine)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature =
       compositeFeature()->addFeature(SketchPlugin_ConstraintHorizontal::ID());
   fillAttribute(theLine, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setLength(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setLength(
     const ModelHighAPI_RefAttr & theLine,
     const ModelHighAPI_Double & theValue)
 {
@@ -498,10 +578,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setLength(
   fillAttribute(theLine, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theValue, aFeature->real(SketchPlugin_Constraint::VALUE()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setMiddlePoint(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setMiddlePoint(
     const ModelHighAPI_RefAttr & thePoint,
     const ModelHighAPI_RefAttr & theLine)
 {
@@ -510,10 +590,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setMiddlePoint(
   fillAttribute(thePoint, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theLine, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setParallel(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setParallel(
     const ModelHighAPI_RefAttr & theLine1,
     const ModelHighAPI_RefAttr & theLine2)
 {
@@ -522,10 +602,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setParallel(
   fillAttribute(theLine1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theLine2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setPerpendicular(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setPerpendicular(
     const ModelHighAPI_RefAttr & theLine1,
     const ModelHighAPI_RefAttr & theLine2)
 {
@@ -534,10 +614,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setPerpendicular(
   fillAttribute(theLine1, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theLine2, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setRadius(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setRadius(
     const ModelHighAPI_RefAttr & theCircleOrArc,
     const ModelHighAPI_Double & theValue)
 {
@@ -546,10 +626,10 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setRadius(
   fillAttribute(theCircleOrArc, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theValue, aFeature->real(SketchPlugin_Constraint::VALUE()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setTangent(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setTangent(
     const ModelHighAPI_RefAttr & theLine,
     const ModelHighAPI_RefAttr & theCircle)
 {
@@ -558,17 +638,74 @@ std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setTangent(
   fillAttribute(theLine, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   fillAttribute(theCircle, aFeature->refattr(SketchPlugin_Constraint::ENTITY_B()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
-std::shared_ptr<ModelAPI_Feature> SketchAPI_Sketch::setVertical(
+std::shared_ptr<ModelHighAPI_Interface> SketchAPI_Sketch::setVertical(
     const ModelHighAPI_RefAttr & theLine)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature =
       compositeFeature()->addFeature(SketchPlugin_ConstraintVertical::ID());
   fillAttribute(theLine, aFeature->refattr(SketchPlugin_Constraint::ENTITY_A()));
   aFeature->execute();
-  return aFeature;
+  return InterfacePtr(new ModelHighAPI_Interface(aFeature));
 }
 
 //--------------------------------------------------------------------------------------
+
+void SketchAPI_Sketch::dump(ModelHighAPI_Dumper& theDumper) const
+{
+  FeaturePtr aBase = feature();
+  const std::string& aDocName = theDumper.name(aBase->document());
+
+  AttributeSelectionPtr anExternal = aBase->selection(SketchPlugin_SketchEntity::EXTERNAL_ID());
+  if (anExternal->value()) {
+    theDumper << aBase << " = model.addSketch(" << aDocName << ", " << anExternal << ")" << std::endl;
+  } else {
+    // Sketch is base on a plane.
+    std::shared_ptr<GeomAPI_Pnt> anOrigin = std::dynamic_pointer_cast<GeomDataAPI_Point>(
+        aBase->attribute(SketchPlugin_Sketch::ORIGIN_ID()))->pnt();
+    std::shared_ptr<GeomAPI_Dir> aNormal = std::dynamic_pointer_cast<GeomDataAPI_Dir>(
+        aBase->attribute(SketchPlugin_Sketch::NORM_ID()))->dir();
+    std::shared_ptr<GeomAPI_Dir> aDirX = std::dynamic_pointer_cast<GeomDataAPI_Dir>(
+        aBase->attribute(SketchPlugin_Sketch::DIRX_ID()))->dir();
+
+    // Check the plane is coordinate plane
+    std::string aPlaneName = defaultPlane(anOrigin, aNormal, aDirX);
+    if (anExternal->context()) { // checking for selected planes
+      if (!aPlaneName.empty()) {
+        // dump sketch based on coordinate plane
+        theDumper << aBase << " = model.addSketch(" << aDocName
+                  << ", model.standardPlane(\"" << aPlaneName << "\"))" << std::endl;
+      } else { // some other plane
+        theDumper << aBase << " = model.addSketch(" << aDocName << ", " << anExternal<< ")" << std::endl;
+      }
+    } else {
+      if (aPlaneName.empty()) {
+        // needs import additional module
+        theDumper.importModule("GeomAPI");
+        // dump plane parameters
+        const std::string& aSketchName = theDumper.name(aBase);
+        std::string anOriginName = aSketchName + "_origin";
+        std::string aNormalName  = aSketchName + "_norm";
+        std::string aDirXName    = aSketchName + "_dirx";
+        // use "\n" instead of std::endl to avoid automatic dumping sketch here
+        // and then dumplicate dumping it in the next line
+        theDumper << anOriginName << " = " << anOrigin << "\n"
+                  << aNormalName  << " = " << aNormal  << "\n"
+                  << aDirXName    << " = " << aDirX    << "\n";
+        // dump sketch based on arbitrary plane
+        theDumper << aBase << " = model.addSketch(" << aDocName << ", GeomAPI_Ax3("
+                  << anOriginName << ", " << aDirXName << ", " << aNormalName << "))" << std::endl;
+      } else {
+        // dump sketch based on coordinate plane
+        theDumper << aBase << " = model.addSketch(" << aDocName
+                  << ", model.defaultPlane(\"" << aPlaneName << "\"))" << std::endl;
+      }
+    }
+  }
+
+  // dump sketch's subfeatures
+  CompositeFeaturePtr aCompFeat = std::dynamic_pointer_cast<ModelAPI_CompositeFeature>(aBase);
+  theDumper.processSubs(aCompFeat, true);
+}

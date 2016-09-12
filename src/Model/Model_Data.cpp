@@ -112,6 +112,10 @@ void Model_Data::setName(const std::string& theName)
   }
   if (mySendAttributeUpdated && isModified)
     ModelAPI_ObjectRenamedMessage::send(myObject, anOldName, theName, this);
+  if (isModified && myObject && myObject->document()) {
+    std::dynamic_pointer_cast<Model_Document>(myObject->document())->
+      changeNamingName(anOldName, theName);
+  }
 }
 
 AttributePtr Model_Data::addAttribute(const std::string& theID, const std::string theAttrType)
@@ -122,18 +126,9 @@ AttributePtr Model_Data::addAttribute(const std::string& theID, const std::strin
   if (theAttrType == ModelAPI_AttributeDocRef::typeId()) {
     anAttr = new Model_AttributeDocRef(anAttrLab);
   } else if (theAttrType == Model_AttributeInteger::typeId()) {
-    Model_AttributeInteger* anAttribute = new Model_AttributeInteger();
-    // Expression should use the same label to support backward compatibility
-    TDF_Label anExpressionLab = anAttrLab;
-    anAttribute->myExpression.reset(new Model_ExpressionInteger(anExpressionLab));
-    anAttribute->myIsInitialized = anAttribute->myExpression->isInitialized();
-    anAttr = anAttribute;
+    anAttr = new Model_AttributeInteger(anAttrLab);
   } else if (theAttrType == ModelAPI_AttributeDouble::typeId()) {
-    Model_AttributeDouble* anAttribute = new Model_AttributeDouble();
-    TDF_Label anExpressionLab = anAttrLab.FindChild(1);
-    anAttribute->myExpression.reset(new Model_ExpressionDouble(anExpressionLab));
-    anAttribute->myIsInitialized = anAttribute->myExpression->isInitialized();
-    anAttr = anAttribute;
+    anAttr = new Model_AttributeDouble(anAttrLab);
   } else if (theAttrType == Model_AttributeBoolean::typeId()) {
     anAttr = new Model_AttributeBoolean(anAttrLab);
   } else if (theAttrType == Model_AttributeString::typeId()) {
@@ -638,15 +633,10 @@ void Model_Data::copyTo(std::shared_ptr<ModelAPI_Data> theTarget)
 {
   TDF_Label aTargetRoot = std::dynamic_pointer_cast<Model_Data>(theTarget)->label();
   copyAttrs(myLab, aTargetRoot);
-  // make initialized the initialized attributes
-  std::map<std::string, std::shared_ptr<ModelAPI_Attribute> >::iterator aMyIter = myAttrs.begin();
-  for(; aMyIter != myAttrs.end(); aMyIter++) {
-    if (aMyIter->second->isInitialized()) {
-      AttributePtr aTargetAttr = theTarget->attribute(aMyIter->first);
-      if (aTargetAttr)
-        aTargetAttr->setInitialized();
-    }
-  }
+  // reinitialize Model_Attributes by TDF_Attributes set
+  std::shared_ptr<Model_Data> aTData = std::dynamic_pointer_cast<Model_Data>(theTarget);
+  aTData->myAttrs.clear();
+  theTarget->owner()->initAttributes(); // reinit feature attributes
 }
 
 bool Model_Data::isInHistory()

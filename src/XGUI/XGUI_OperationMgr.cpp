@@ -27,6 +27,7 @@
 
 #include <XGUI_PropertyPanel.h>
 #include <QToolButton>
+#include <QLineEdit>
 
 #include <QMessageBox>
 #include <QApplication>
@@ -129,9 +130,12 @@ bool XGUI_OperationMgr::hasOperation(const QString& theId) const
 
 ModuleBase_Operation* XGUI_OperationMgr::findOperation(const QString& theId) const
 {
-  foreach(ModuleBase_Operation* aOp, myOperations) {
-    if (aOp->id() == theId)
-      return aOp;
+  QList<ModuleBase_Operation*>::const_iterator anIt = myOperations.end();
+  while (anIt != myOperations.begin()) {
+    --anIt;
+    ModuleBase_Operation* anOperation = *anIt;
+    if (anOperation->id() == theId)
+      return anOperation;
   }
   return 0;
 }
@@ -662,6 +666,12 @@ bool XGUI_OperationMgr::onProcessEnter(QObject* theObject)
   return isAccepted;
 }
 
+bool editorControl(QObject* theObject)
+{
+  QLineEdit* aLineEdit = dynamic_cast<QLineEdit*>(theObject);
+  return aLineEdit;
+}
+
 bool XGUI_OperationMgr::onProcessDelete(QObject* theObject)
 {
   bool isAccepted = false;
@@ -705,6 +715,11 @@ bool XGUI_OperationMgr::onProcessDelete(QObject* theObject)
       // property panel child object is processed to process delete performed on Apply button of PP
       isToDeleteObject = true;
     }
+    else if (editorControl(theObject)) {
+      isToDeleteObject = false; /// Line Edit of Rename operation in ObjectBrowser
+      isAccepted = true;
+    }
+
     if (isToDeleteObject) {
       aWorkshop->deleteObjects();
       isAccepted = true;

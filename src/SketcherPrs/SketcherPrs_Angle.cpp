@@ -50,7 +50,6 @@ SketcherPrs_Angle::SketcherPrs_Angle(ModelAPI_Feature* theConstraint,
   myAspect->ArrowAspect()->SetLength(SketcherPrs_Tools::getArrowSize());
   
   SetDimensionAspect(myAspect);
-  SetSelToleranceForText2d(SketcherPrs_Tools::getDefaultTextHeight());
 
   myStyleListener = new SketcherPrs_DimensionStyleListener();
 }
@@ -240,6 +239,7 @@ void SketcherPrs_Angle::ComputeSelection(const Handle(SelectMgr_Selection)& aSel
     return; 
   }
   }
+  SetSelToleranceForText2d(SketcherPrs_Tools::getTextHeight());
   AIS_AngleDimension::ComputeSelection(aSelection, aMode);
 }
 

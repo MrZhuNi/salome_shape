@@ -49,6 +49,7 @@ SET(PROJECT_HEADERS
   ModuleBase_WidgetEditor.h
   ModuleBase_WidgetExprEditor.h
   ModuleBase_WidgetFactory.h
+  ModuleBase_WidgetFeatureSelector.h
   ModuleBase_WidgetFileSelector.h
   ModuleBase_WidgetIntValue.h
   ModuleBase_WidgetLabel.h
@@ -109,6 +110,7 @@ SET(PROJECT_SOURCES
   ModuleBase_WidgetEditor.cpp
   ModuleBase_WidgetExprEditor.cpp
   ModuleBase_WidgetFactory.cpp
+  ModuleBase_WidgetFeatureSelector.cpp
   ModuleBase_WidgetFileSelector.cpp
   ModuleBase_WidgetIntValue.cpp
   ModuleBase_WidgetLabel.cpp
@@ -131,6 +133,7 @@ SET(PROJECT_LIBRARIES
 	Config
 	Events
 	ModelAPI
+	ModelGeomAlgo
 	GeomAPI
 	GeomDataAPI
 	GeomAlgoAPI
@@ -158,6 +161,7 @@ INCLUDE_DIRECTORIES(
     ${PROJECT_SOURCE_DIR}/src/Config
     ${PROJECT_SOURCE_DIR}/src/Events
     ${PROJECT_SOURCE_DIR}/src/ModelAPI
+    ${PROJECT_SOURCE_DIR}/src/ModelGeomAlgo
     ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
     ${PROJECT_SOURCE_DIR}/src/GeomAPI
     ${PROJECT_SOURCE_DIR}/src/GeomAlgoAPI

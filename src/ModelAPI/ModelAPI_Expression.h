@@ -53,13 +53,22 @@ class ModelAPI_Expression
   /// Returns the used parameters
   MODELAPI_EXPORT virtual std::set<std::string> usedParameters() const = 0;
 
+  /// Returns True if the given string can be defined as a name of an expression variable
+  MODELAPI_EXPORT static bool isVariable(const std::string& theString);
+
  protected:
   /// Objects are created for features automatically
   MODELAPI_EXPORT ModelAPI_Expression();
+  /// Reinitializes the internal state of the attribute (may be needed on undo/redo, abort, etc)
+  MODELAPI_EXPORT virtual void reinit() = 0;
 
   bool myIsInitialized; ///< is some value assigned to this attribute
 
   friend class Model_Data;
+  friend class Model_AttributeDouble;
+  friend class Model_AttributeInteger;
+  friend class GeomData_Point;
+  friend class GeomData_Point2D;
 };
 
 

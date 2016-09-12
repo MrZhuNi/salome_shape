@@ -20,6 +20,15 @@ GeomData_Point2D::GeomData_Point2D()
   myIsInitialized = false;
 }
 
+void GeomData_Point2D::reinit()
+{
+  myIsInitialized = true;
+  for (int aComponent = 0; aComponent < NUM_COMPONENTS; ++aComponent) {
+    myExpression[aComponent]->reinit();
+    myIsInitialized = myIsInitialized && myExpression[aComponent]->isInitialized();
+  }
+}
+
 void GeomData_Point2D::setCalculatedValue(const double theX, const double theY)
 {
   if (!myIsInitialized || x() != theX || y() != theY) {
@@ -59,6 +68,8 @@ std::shared_ptr<GeomAPI_Pnt2d> GeomData_Point2D::pnt()
 void GeomData_Point2D::setText(const std::string& theX,
                                const std::string& theY)
 {
+  if (!myIsInitialized && theX.empty() && theY.empty())
+    return; // empty strings are not good initializers
   if (!myIsInitialized || textX() != theX || textY() != theY) {
     myExpression[0]->setText(theX);
     myExpression[1]->setText(theY);

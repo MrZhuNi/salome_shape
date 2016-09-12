@@ -46,6 +46,8 @@ void ConstructionPlugin_Plane::initAttributes()
 {
   data()->addAttribute(ConstructionPlugin_Plane::CREATION_METHOD(), ModelAPI_AttributeString::typeId());
 
+  data()->addAttribute(PLANE(), ModelAPI_AttributeSelection::typeId());
+  data()->addAttribute(DISTANCE(), ModelAPI_AttributeDouble::typeId());
   // By general equation.
   data()->addAttribute(A(), ModelAPI_AttributeDouble::typeId());
   data()->addAttribute(B(), ModelAPI_AttributeDouble::typeId());
@@ -68,8 +70,6 @@ void ConstructionPlugin_Plane::initAttributes()
 
   // By other plane.
   data()->addAttribute(CREATION_METHOD_BY_OTHER_PLANE_OPTION(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(PLANE(), ModelAPI_AttributeSelection::typeId());
-  data()->addAttribute(DISTANCE(), ModelAPI_AttributeDouble::typeId());
   data()->addAttribute(REVERSE(), ModelAPI_AttributeBoolean::typeId());
   data()->addAttribute(COINCIDENT_POINT(), ModelAPI_AttributeSelection::typeId());
   data()->addAttribute(AXIS(), ModelAPI_AttributeSelection::typeId());
@@ -86,7 +86,7 @@ void ConstructionPlugin_Plane::execute()
   GeomShapePtr aShape;
 
   std::string aCreationMethod = string(CREATION_METHOD())->value();
-  if(aCreationMethod == CREATION_METHOD_BY_GENERAL_EQUATION()) {
+  if(aCreationMethod == CREATION_METHOD_BY_GENERAL_EQUATION() || aCreationMethod == "PlaneByGeneralEquation") {
     aShape = createByGeneralEquation();
   } else if(aCreationMethod == CREATION_METHOD_BY_THREE_POINTS()) {
     aShape = createByThreePoints();
@@ -103,6 +103,9 @@ void ConstructionPlugin_Plane::execute()
     }
   } else if(aCreationMethod == CREATION_METHOD_BY_TWO_PARALLEL_PLANES()) {
     aShape = createByTwoParallelPlanes();
+  } else {
+    setError("Error: Plane creation method \"" + aCreationMethod + "\" not supported.");
+    return;
   }
 
   if(!aShape.get()) {
@@ -262,7 +265,7 @@ std::shared_ptr<GeomAPI_Shape> ConstructionPlugin_Plane::createByDistanceFromOth
 
     std::shared_ptr<GeomAPI_Face> aFace(new GeomAPI_Face(aShape));
 
-    std::shared_ptr<GeomAPI_Pln> aPln = GeomAlgoAPI_FaceBuilder::plane(aFace);
+    std::shared_ptr<GeomAPI_Pln> aPln = aFace->getPlane();
     std::shared_ptr<GeomAPI_Pnt> aOrig = aPln->location();
     std::shared_ptr<GeomAPI_Dir> aDir = aPln->direction();
 

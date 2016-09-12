@@ -91,7 +91,7 @@ void SketchPlugin_Sketch::execute()
         aFeature->setSketch(this);
       // do not include the external edges into the result
       if (aFeature->data()->attribute(SketchPlugin_SketchEntity::EXTERNAL_ID())) {
-        if (aFeature->data()->selection(SketchPlugin_SketchEntity::EXTERNAL_ID())->value())
+        if (aFeature->data()->selection(SketchPlugin_SketchEntity::EXTERNAL_ID())->context())
           continue;
       }
       // do not include the construction entities in the result
@@ -217,7 +217,7 @@ void SketchPlugin_Sketch::attributeChanged(const std::string& theID) {
     if (aSelection) { // update arguments due to the selection value
       // update the sketch plane
       std::shared_ptr<GeomAPI_Face> aFace(new GeomAPI_Face(aSelection));
-      std::shared_ptr<GeomAPI_Pln> aPlane = GeomAlgoAPI_FaceBuilder::plane(aFace);
+      std::shared_ptr<GeomAPI_Pln> aPlane = aFace->getPlane();
       if (aPlane) {
         double anA, aB, aC, aD;
         aPlane->coefficients(anA, aB, aC, aD);

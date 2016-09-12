@@ -59,12 +59,6 @@ MODELAPI_EXPORT bool findVariable(FeaturePtr theSearcher, const std::string& the
   const DocumentPtr& theDocument = DocumentPtr());
 
 /*!
- * Returns the values of the next random color. The values are in range [0, 255]
- * \param theValues a container of component of RGB value: red, green, blue
- */
-MODELAPI_EXPORT void findRandomColor(std::vector<int>& theValues);
-
-/*!
  * Searches for Part result that contains the reference to the given document.
  * The result must be presented in the tree.
  * \param theMain document that contains the searched feature
@@ -155,6 +149,13 @@ MODELAPI_EXPORT void findAllReferences(const std::set<FeaturePtr>& theFeatures,
 MODELAPI_EXPORT void findRefsToFeatures(const std::set<FeaturePtr>& aFeatures,
                                         const std::map<FeaturePtr, std::set<FeaturePtr> >& aReferences,
                                         std::set<FeaturePtr>& aFeaturesRefsTo);
+
+/*! Finds referenced of the feature to objects and collects concealed results.
+* \param theFeatures a model feature
+* \param theResults container for concealed results. It has no duplications
+*/
+MODELAPI_EXPORT void getConcealedResults(const FeaturePtr& theFeature,
+                                         std::list<std::shared_ptr<ModelAPI_Result> >& theResults);
 }
 
 #endif

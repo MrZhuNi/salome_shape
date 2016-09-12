@@ -71,9 +71,19 @@ bool Model_Update::addModified(FeaturePtr theFeature, FeaturePtr theReason) {
   if (!theFeature->data()->isValid())
     return false; // delete an extrusion created on the sketch
 
-  if (theFeature->isPersistentResult()) {
-    if (!std::dynamic_pointer_cast<Model_Document>((theFeature)->document())->executeFeatures())
+  bool isNotExecuted = theFeature->isPersistentResult() &&
+    !std::dynamic_pointer_cast<Model_Document>((theFeature)->document())->executeFeatures();
+  if (isNotExecuted) {
+    if (!theReason.get()) // no reason => no construction reason
       return false;
+    if (myNotPersistentRefs.find(theFeature) == myNotPersistentRefs.end()) {
+      myNotPersistentRefs[theFeature].insert(theReason);
+    } else {
+      std::set<std::shared_ptr<ModelAPI_Feature> > aNewSet;
+      aNewSet.insert(theReason);
+      myNotPersistentRefs[theFeature] = aNewSet;
+    }
+    return false;
   }
 
   // update arguments for "apply button" state change
@@ -94,6 +104,14 @@ bool Model_Update::addModified(FeaturePtr theFeature, FeaturePtr theReason) {
     theFeature->data()->execState(ModelAPI_StateDone);
     static ModelAPI_ValidatorsFactory* aFactory = ModelAPI_Session::get()->validators();
     aFactory->validate(theFeature); // need to be validated to update the "Apply" state if not previewed
+
+    // to redisplay split's arguments presentation, even result is not computed
+    if (!theFeature->isPreviewNeeded()) {
+      static Events_Loop* aLoop = Events_Loop::loop();
+      static const Events_ID kRedisplayEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
+      ModelAPI_EventCreator::get()->sendUpdated(theFeature, kRedisplayEvent);
+      aLoop->flush(kRedisplayEvent);
+    }
 
     if (!myIsPreviewBlocked)
       return true;
@@ -119,7 +137,7 @@ bool Model_Update::addModified(FeaturePtr theFeature, FeaturePtr theReason) {
       if (theReason.get())
         aNewSet.insert(theReason);
     }
-    myModified[theFeature] = aNewSet;
+      myModified[theFeature] = aNewSet;
 #ifdef DEB_UPDATE
     if (theReason.get())
       std::cout<<"*** Add modified "<<theFeature->name()<<" reason "<<theReason->name()<<std::endl;
@@ -185,6 +203,7 @@ void Model_Update::processEvent(const std::shared_ptr<Events_Message>& theMessag
   static const Events_ID kPreviewBlockedEvent = aLoop->eventByName(EVENT_PREVIEW_BLOCKED);
   static const Events_ID kPreviewRequestedEvent = aLoop->eventByName(EVENT_PREVIEW_REQUESTED);
   static const Events_ID kReorderEvent = aLoop->eventByName(EVENT_ORDER_UPDATED);
+  static const Events_ID kRedisplayEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
 
 #ifdef DEB_UPDATE
   std::cout<<"****** Event "<<theMessage->eventID().eventText()<<std::endl;
@@ -212,8 +231,13 @@ void Model_Update::processEvent(const std::shared_ptr<Events_Message>& theMessag
     const std::set<ObjectPtr>& anObjs = aMsg->objects();
     std::set<ObjectPtr>::const_iterator anObjIter = anObjs.cbegin();
     for(; anObjIter != anObjs.cend(); anObjIter++) {
-      if (std::dynamic_pointer_cast<Model_Document>((*anObjIter)->document())->executeFeatures())
-        ModelAPI_EventCreator::get()->sendUpdated(*anObjIter, kUpdatedEvent);
+      if (std::dynamic_pointer_cast<Model_Document>((*anObjIter)->document())->executeFeatures()) {
+        if ((*anObjIter)->groupName() == ModelAPI_Feature::group()) { // results creation means enabling, not update
+          ModelAPI_EventCreator::get()->sendUpdated(*anObjIter, kUpdatedEvent);
+        } else {
+          ModelAPI_EventCreator::get()->sendUpdated(*anObjIter, kRedisplayEvent);
+        }
+      }
     }
     return;
   }
@@ -296,7 +320,7 @@ void Model_Update::processEvent(const std::shared_ptr<Events_Message>& theMessag
     // the redisplay signal should be flushed in order to erase the feature presentation in the viewer
     // if should be done after removeFeature() of document,
     // by this reason, upper processFeatures() do not perform this flush
-    Events_Loop::loop()->flush(Events_Loop::loop()->eventByName(EVENT_OBJECT_TO_REDISPLAY));
+    Events_Loop::loop()->flush(kRedisplayEvent);
 
     // in the end of transaction everything is updated, so clear the old objects
     myIsParamUpdated = false;
@@ -304,7 +328,8 @@ void Model_Update::processEvent(const std::shared_ptr<Events_Message>& theMessag
   } else if (theMessage->eventID() == kReorderEvent) {
     std::shared_ptr<ModelAPI_OrderUpdatedMessage> aMsg = 
       std::dynamic_pointer_cast<ModelAPI_OrderUpdatedMessage>(theMessage);
-    addModified(aMsg->reordered(), aMsg->reordered()); // to update all attributes
+    if (aMsg->reordered().get())
+      addModified(aMsg->reordered(), aMsg->reordered()); // to update all attributes
   }
 }
 
@@ -498,6 +523,8 @@ bool Model_Update::processFeature(FeaturePtr theFeature)
   // add this feature to the processed right now to be able remove it from this list on
   // update signal during this feature execution
   myModified.erase(theFeature);
+  if (myNotPersistentRefs.find(theFeature) != myNotPersistentRefs.end())
+    myNotPersistentRefs.erase(theFeature);
   if (theFeature->data()->execState() == ModelAPI_StateMustBeUpdated)
     theFeature->data()->execState(ModelAPI_StateDone);
 
@@ -721,18 +748,33 @@ bool Model_Update::isReason(std::shared_ptr<ModelAPI_Feature>& theFeature,
 {
   std::map<std::shared_ptr<ModelAPI_Feature>, std::set<std::shared_ptr<ModelAPI_Feature> > >
     ::iterator aReasonsIt = myModified.find(theFeature);
-  if (aReasonsIt == myModified.end())
-    return false; // this case only for not-previewed items update state, nothing is changed in args for it
-  if (aReasonsIt->second.find(theFeature) != aReasonsIt->second.end())
-    return true; // any is reason if it contains itself
-  FeaturePtr aReasFeat = std::dynamic_pointer_cast<ModelAPI_Feature>(theReason);
-  if (!aReasFeat.get()) { // try to get feature of this result
-    ResultPtr aReasRes = std::dynamic_pointer_cast<ModelAPI_Result>(theReason);
-    if (aReasRes.get())
-      aReasFeat = theReason->document()->feature(aReasRes);
+  if (aReasonsIt != myModified.end()) {
+    if (aReasonsIt->second.find(theFeature) != aReasonsIt->second.end())
+      return true; // any is reason if it contains itself
+    FeaturePtr aReasFeat = std::dynamic_pointer_cast<ModelAPI_Feature>(theReason);
+    if (!aReasFeat.get()) { // try to get feature of this result
+      ResultPtr aReasRes = std::dynamic_pointer_cast<ModelAPI_Result>(theReason);
+      if (aReasRes.get())
+        aReasFeat = theReason->document()->feature(aReasRes);
+    }
+    if (aReasonsIt->second.find(aReasFeat) != aReasonsIt->second.end())
+      return true;
   }
-  return aReasonsIt->second.find(aReasFeat) != aReasonsIt->second.end();
+  // another try: postponed modification by not-persistences
+  std::map<std::shared_ptr<ModelAPI_Feature>, std::set<std::shared_ptr<ModelAPI_Feature> > >
+    ::iterator aNotPersist = myNotPersistentRefs.find(theFeature);
+  if (aNotPersist != myNotPersistentRefs.end()) {
+    FeaturePtr aReasFeat = std::dynamic_pointer_cast<ModelAPI_Feature>(theReason);
+    if (!aReasFeat.get()) { // try to get feature of this result
+      ResultPtr aReasRes = std::dynamic_pointer_cast<ModelAPI_Result>(theReason);
+      if (aReasRes.get())
+        aReasFeat = theReason->document()->feature(aReasRes);
+    }
+    if (aNotPersist->second.find(aReasFeat) != aNotPersist->second.end())
+      return true;
+  }
 
+  return false; // this case only for not-previewed items update state, nothing is changed in args for it
 }
 
 void Model_Update::executeFeature(FeaturePtr theFeature)

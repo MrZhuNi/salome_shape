@@ -6,12 +6,16 @@
 
 //--------------------------------------------------------------------------------------
 #include "SketchAPI_Translation.h"
+#include <SketchAPI_SketchEntity.h>
 //--------------------------------------------------------------------------------------
+#include <ModelHighAPI_Dumper.h>
 #include <ModelHighAPI_Tools.h>
+
+#include <SketchPlugin_SketchEntity.h>
 //--------------------------------------------------------------------------------------
 SketchAPI_Translation::SketchAPI_Translation(
     const std::shared_ptr<ModelAPI_Feature> & theFeature)
-: SketchAPI_SketchEntity(theFeature)
+: ModelHighAPI_Interface(theFeature)
 {
   initialize();
 }
@@ -23,17 +27,16 @@ SketchAPI_Translation::SketchAPI_Translation(
     const ModelHighAPI_RefAttr & thePoint2,
     const ModelHighAPI_Integer & theNumberOfObjects,
     bool theFullValue)
-: SketchAPI_SketchEntity(theFeature)
+: ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
     fillAttribute(theObjects, translationList());
     fillAttribute(thePoint1, startPoint());
     fillAttribute(thePoint2, endPoint());
     fillAttribute(theNumberOfObjects, numberOfObjects());
-    if (theFullValue)
-      fillAttribute("SingleValue", valueType());
+    fillAttribute(theFullValue ? "FullValue" : "SingleValue", valueType());
 
-    execute();
+    execute(true);
   }
 }
 
@@ -42,4 +45,48 @@ SketchAPI_Translation::~SketchAPI_Translation()
 
 }
 
+std::list<std::shared_ptr<ModelHighAPI_Interface> > SketchAPI_Translation::translated() const
+{
+  std::list<ObjectPtr> aList = translatedObjects()->list();
+  // remove all initial features
+  std::list<FeaturePtr> anIntermediate;
+  std::list<ObjectPtr>::const_iterator anIt = aList.begin();
+  for (; anIt != aList.end(); ++anIt) {
+    FeaturePtr aFeature = ModelAPI_Feature::feature(*anIt);
+    AttributeBooleanPtr isCopy = aFeature->boolean(SketchPlugin_SketchEntity::COPY_ID());
+    if (isCopy.get() && isCopy->value())
+      anIntermediate.push_back(aFeature);
+  }
+  return SketchAPI_SketchEntity::wrap(anIntermediate);
+}
+
 //--------------------------------------------------------------------------------------
+
+void SketchAPI_Translation::dump(ModelHighAPI_Dumper& theDumper) const
+{
+  FeaturePtr aBase = feature();
+  const std::string& aSketchName = theDumper.parentName(aBase);
+
+  AttributeRefListPtr aTransObjects = translationList();
+  AttributeRefAttrPtr aStart = startPoint();
+  AttributeRefAttrPtr aEnd   = endPoint();
+  AttributeIntegerPtr aNbCopies = numberOfObjects();
+  bool isFullValue = valueType()->value() != "SingleValue";
+
+  theDumper << aBase << " = " << aSketchName << ".addTranslation("
+            << aTransObjects << ", " << aStart << ", " << aEnd << ", " << aNbCopies;
+  if (isFullValue)
+    theDumper << ", " << isFullValue;
+  theDumper << ")" << std::endl;
+
+  // Dump variables for a list of translated features
+  theDumper << "[";
+  std::list<std::shared_ptr<ModelHighAPI_Interface> > aList = translated();
+  std::list<std::shared_ptr<ModelHighAPI_Interface> >::const_iterator anIt = aList.begin();
+  for (; anIt != aList.end(); ++anIt) {
+    if (anIt != aList.begin())
+      theDumper << ", ";
+    theDumper << theDumper.name((*anIt)->feature(), false);
+  }
+  theDumper << "] = " << theDumper.name(aBase) << ".translated()" << std::endl;
+}

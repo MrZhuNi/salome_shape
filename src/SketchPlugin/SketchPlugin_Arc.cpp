@@ -41,7 +41,7 @@
 
 const double tolerance = 1e-7;
 const double paramTolerance = 1.e-4;
-const double PI =3.141592653589793238463;
+const double PI = 3.141592653589793238463;
 
 namespace {
   static const std::string& POINT_ID(int theIndex)
@@ -68,7 +68,7 @@ SketchPlugin_Arc::SketchPlugin_Arc()
   myXEndBefore = 0;
   myYEndBefore = 0;
 
-  myParamBefore = 0;
+  myParamBefore = PI * 2.0;
 }
 
 void SketchPlugin_Arc::initDerivedClassAttributes()
@@ -145,20 +145,8 @@ void SketchPlugin_Arc::execute()
     AttributeBooleanPtr isInversed =
         std::dynamic_pointer_cast<ModelAPI_AttributeBoolean>(attribute(INVERSED_ID()));
 
-    std::shared_ptr<GeomAPI_Dir> anXDir(new GeomAPI_Dir(aStartPoint->xyz()->decreased(aCenter->xyz())));
-    std::shared_ptr<GeomAPI_Ax2> anAx2(new GeomAPI_Ax2(aCenter, aNormal, anXDir));
-    std::shared_ptr<GeomAPI_Circ> aCirc(new GeomAPI_Circ(anAx2, aCenter->distance(aStartPoint)));
-    double aParameterNew = 0.0;
-    if(aCirc->parameter(aEndPoint, paramTolerance, aParameterNew)) {
-      if(0 <= myParamBefore && myParamBefore <= PI / 2.0
-        && PI * 1.5 <= aParameterNew && aParameterNew <= PI * 2.0) {
-          isInversed->setValue(true);
-      } else if(PI * 1.5 <= myParamBefore && myParamBefore <= PI * 2.0
-        && 0 <= aParameterNew && aParameterNew <= PI / 2.0) {
-          isInversed->setValue(false);
-      }
-    }
-    myParamBefore = aParameterNew;
+    // compute end parameter
+    aCircleForArc->parameter(anEndAttr->pnt(), paramTolerance, myParamBefore);
 
     std::shared_ptr<GeomAPI_Shape> aCircleShape;
     if(!isInversed->value()) {
@@ -208,26 +196,30 @@ AISObjectPtr SketchPlugin_Arc::getAISObject(AISObjectPtr thePrevious)
             std::shared_ptr<GeomAPI_Pnt> aStartPoint(aSketch->to3D(aStartAttr->x(), aStartAttr->y()));
             std::shared_ptr<GeomAPI_Pnt> aEndPoint = aStartPoint;
             if (aTypeAttr && aTypeAttr->isInitialized() &&
-                aTypeAttr->value() == ARC_TYPE_THREE_POINTS() && aEndAttr->isInitialized() &&
-                aEndAttr->pnt()->distance(aStartAttr->pnt()) > tolerance) {
-              aEndPoint = aSketch->to3D(aEndAttr->x(), aEndAttr->y());
-              std::shared_ptr<GeomDataAPI_Point2D> aPassedAttr = 
-                std::dynamic_pointer_cast<GeomDataAPI_Point2D>(data()->attribute(PASSED_POINT_ID()));
-              if (!aPassedAttr->isInitialized()) { // calculate the appropriate center for the presentation
-                // check that center is bad for the current start and end and must be recomputed
-                std::shared_ptr<GeomAPI_Circ2d> aCircleForArc(new GeomAPI_Circ2d(
-                  aCenterAttr->pnt(), aStartAttr->pnt()));
-                std::shared_ptr<GeomAPI_Pnt2d> aProjection = aCircleForArc->project(aEndAttr->pnt());
-                if (!aProjection.get() || aEndAttr->pnt()->distance(aProjection) > tolerance) {
-                  std::shared_ptr<GeomAPI_XY> aDir = 
-                    aEndAttr->pnt()->xy()->decreased(aStartAttr->pnt()->xy())->multiplied(0.5);
-                  double x = aDir->x();
-                  double y = aDir->y();
-                  aDir->setX(x - y);
-                  aDir->setY(y + x);
-                  std::shared_ptr<GeomAPI_XY> aCenterXY = aStartAttr->pnt()->xy()->added(aDir);
-                  aCenter = aSketch->to3D(aCenterXY->x(), aCenterXY->y());
+                aTypeAttr->value() == ARC_TYPE_THREE_POINTS()) {
+              if (aEndAttr->isInitialized() && // 
+                  aEndAttr->pnt()->distance(aStartAttr->pnt()) > tolerance) {
+                aEndPoint = aSketch->to3D(aEndAttr->x(), aEndAttr->y());
+                std::shared_ptr<GeomDataAPI_Point2D> aPassedAttr = 
+                  std::dynamic_pointer_cast<GeomDataAPI_Point2D>(data()->attribute(PASSED_POINT_ID()));
+                if (!aPassedAttr->isInitialized()) { // calculate the appropriate center for the presentation
+                  // check that center is bad for the current start and end and must be recomputed
+                  std::shared_ptr<GeomAPI_Circ2d> aCircleForArc(new GeomAPI_Circ2d(
+                    aCenterAttr->pnt(), aStartAttr->pnt()));
+                  std::shared_ptr<GeomAPI_Pnt2d> aProjection = aCircleForArc->project(aEndAttr->pnt());
+                  if (!aProjection.get() || aEndAttr->pnt()->distance(aProjection) > tolerance) {
+                    std::shared_ptr<GeomAPI_XY> aDir = 
+                      aEndAttr->pnt()->xy()->decreased(aStartAttr->pnt()->xy())->multiplied(0.5);
+                    double x = aDir->x();
+                    double y = aDir->y();
+                    aDir->setX(x - y);
+                    aDir->setY(y + x);
+                    std::shared_ptr<GeomAPI_XY> aCenterXY = aStartAttr->pnt()->xy()->added(aDir);
+                    aCenter = aSketch->to3D(aCenterXY->x(), aCenterXY->y());
+                  }
                 }
+              } else { // issue #1695: don't display circle if initialized only start point
+                return AISObjectPtr();
               }
             }
             AttributeBooleanPtr isInversed =
@@ -252,6 +244,9 @@ AISObjectPtr SketchPlugin_Arc::getAISObject(AISObjectPtr thePrevious)
         if (!anAIS)
           anAIS = AISObjectPtr(new GeomAPI_AISObject);
         anAIS->createShape(aCompound);
+        double aDeflection = Config_PropManager::real("Visualization", "construction_deflection",
+                                             ModelAPI_ResultConstruction::DEFAULT_DEFLECTION());
+        anAIS->setDeflection(aDeflection);
         anAIS->setWidth(3);
         return anAIS;
       }
@@ -272,21 +267,25 @@ void SketchPlugin_Arc::move(double theDeltaX, double theDeltaY)
   myEndUpdate = true;
   std::shared_ptr<GeomDataAPI_Point2D> aPoint2 = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
       aData->attribute(SketchPlugin_Arc::START_ID()));
-  aPoint2->move(theDeltaX, theDeltaY);
+  if (aPoint2->isInitialized())
+    aPoint2->move(theDeltaX, theDeltaY);
 
   std::shared_ptr<GeomDataAPI_Point2D> aPoint3 = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
       aData->attribute(SketchPlugin_Arc::END_ID()));
-  aPoint3->move(theDeltaX, theDeltaY);
+  if (aPoint3->isInitialized())
+    aPoint3->move(theDeltaX, theDeltaY);
   myStartUpdate = false;
   myEndUpdate = false;
 
   std::shared_ptr<GeomDataAPI_Point2D> aPoint1 = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
       aData->attribute(SketchPlugin_Arc::CENTER_ID()));
-  aPoint1->move(theDeltaX, theDeltaY);
+  if (aPoint1->isInitialized())
+    aPoint1->move(theDeltaX, theDeltaY);
 
   std::shared_ptr<GeomDataAPI_Point2D> aPassedPoint =
       std::dynamic_pointer_cast<GeomDataAPI_Point2D>(aData->attribute(PASSED_POINT_ID()));
-  aPassedPoint->move(theDeltaX, theDeltaY);
+  if (aPassedPoint->isInitialized())
+    aPassedPoint->move(theDeltaX, theDeltaY);
   aData->blockSendAttributeUpdated(false);
 }
 
@@ -338,6 +337,12 @@ void SketchPlugin_Arc::attributeChanged(const std::string& theID)
   // the second condition for unability to move external segments anywhere
   if (theID == EXTERNAL_ID() || isFixed()) {
     std::shared_ptr<GeomAPI_Shape> aSelection = data()->selection(EXTERNAL_ID())->value();
+    if (!aSelection) {
+      // empty shape in selection shows that the shape is equal to context
+      ResultPtr anExtRes = selection(EXTERNAL_ID())->context();
+      if (anExtRes)
+        aSelection = anExtRes->shape();
+    }
     // update arguments due to the selection value
     if (aSelection && !aSelection->isNull() && aSelection->isEdge()) {
       std::shared_ptr<GeomAPI_Edge> anEdge( new GeomAPI_Edge(aSelection));
@@ -351,6 +356,8 @@ void SketchPlugin_Arc::attributeChanged(const std::string& theID)
         double aStartAngle, aEndAngle;
         anEdge->getRange(aStartAngle, aEndAngle);
         data()->real(ANGLE_ID())->setValue(aEndAngle - aStartAngle);
+        myParamBefore = aEndAngle;
+        adjustPeriod(myParamBefore);
       }
     }
     return;
@@ -486,13 +493,26 @@ void SketchPlugin_Arc::attributeChanged(const std::string& theID)
       double aNewAngle = aPassedParam >= aStartParam && aPassedParam <= aEndParam ?
         ((aEndParam - aStartParam) * 180.0 / PI) :
         ((aEndParam - aStartParam - 2.0 * PI) * 180.0 / PI);
-      if (fabs(aNewAngle - anAngleAttr->value()) > tolerance)
+      if (!anAngleAttr->isInitialized() || fabs(aNewAngle - anAngleAttr->value()) > tolerance)
         anAngleAttr->setValue(aNewAngle);
     } else {
       double aNewAngle = (aEndParam - aStartParam) * 180.0 / PI;
-      if (fabs(aNewAngle - anAngleAttr->value()) > tolerance)
+      if (!anAngleAttr->isInitialized() || fabs(aNewAngle - anAngleAttr->value()) > tolerance)
         anAngleAttr->setValue(aNewAngle);
     }
+
+    // calculate arc aperture and change the Inversed flag if needed
+    AttributeBooleanPtr isInversed =
+        std::dynamic_pointer_cast<ModelAPI_AttributeBoolean>(attribute(INVERSED_ID()));
+    double aParameterNew = aEndParam - aStartParam;
+    if (0 <= myParamBefore && myParamBefore <= PI / 2.0 &&
+        PI * 1.5 <= aParameterNew && aParameterNew <= PI * 2.0)
+      isInversed->setValue(true);
+    else if (PI * 1.5 <= myParamBefore && myParamBefore <= PI * 2.0 &&
+             0 <= aParameterNew && aParameterNew <= PI / 2.0)
+      isInversed->setValue(false);
+    myParamBefore = aParameterNew;
+
     // do not need to inform that other parameters were changed in this basis mode: these arguments
     // change is enough
     data()->blockSendAttributeUpdated(false, false);

@@ -165,9 +165,8 @@ PartSet_Module::PartSet_Module(ModuleBase_IWorkshop* theWshop)
                           "Multi selector item color in operation", Config_Prop::Color,
                           PartSet_CustomPrs::OPERATION_HIGHLIGHT_COLOR());
 
-
-  Config_PropManager::registerProp(SKETCH_TAB_NAME, "disable_input_fields", "Disable input fields",
-                          Config_Prop::Boolean, "true");
+  //Config_PropManager::registerProp(SKETCH_TAB_NAME, "disable_input_fields", "Disable input fields",
+  //                        Config_Prop::Boolean, "true");
 }
 
 PartSet_Module::~PartSet_Module()
@@ -259,7 +258,7 @@ void PartSet_Module::connectToPropertyPanel(ModuleBase_ModelWidget* theWidget, c
 
 void PartSet_Module::operationCommitted(ModuleBase_Operation* theOperation) 
 {
-  if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation, sketchMgr()->activeSketch())) {
+  if (sketchMgr()->isNestedSketchOperation(theOperation)) {
     mySketchMgr->commitNestedSketch(theOperation);
   }
 
@@ -369,8 +368,7 @@ void PartSet_Module::updateSketcherOnStart(ModuleBase_Operation* theOperation)
   if (PartSet_SketcherMgr::isSketchOperation(theOperation)) {
     mySketchMgr->startSketch(theOperation);
   }
-  else if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation,
-                                                        sketchMgr()->activeSketch())) {
+  else if (sketchMgr()->isNestedSketchOperation(theOperation)) {
     mySketchMgr->startNestedSketch(theOperation);
   }
 }
@@ -401,7 +399,7 @@ void PartSet_Module::operationStopped(ModuleBase_Operation* theOperation)
   bool isModifiedResults = myCustomPrs->deactivate(ModuleBase_IModule::CustomizeResults, false);
   bool isModified = isModifiedArgs || isModifiedResults;
 
-  if (PartSet_SketcherMgr::isNestedSketchOperation(theOperation, sketchMgr()->activeSketch())) {
+  if (sketchMgr()->isNestedSketchOperation(theOperation)) {
     mySketchMgr->stopNestedSketch(theOperation);
   }
   else if (PartSet_SketcherMgr::isSketchOperation(theOperation))
@@ -490,8 +488,7 @@ bool PartSet_Module::canActivateSelection(const ObjectPtr& theObject) const
 
   ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
   bool isSketchOp = PartSet_SketcherMgr::isSketchOperation(anOperation),
-       isNestedOp = PartSet_SketcherMgr::isNestedSketchOperation(anOperation,
-                                                                 sketchMgr()->activeSketch());
+       isNestedOp = sketchMgr()->isNestedSketchOperation(anOperation);
   if (isSketchOp || isNestedOp) {
     // in active sketch operation it is possible to activate operation object in selection
     // in the edit operation, e.g. points of the line can be moved when the line is edited
@@ -771,8 +768,7 @@ bool PartSet_Module::deleteObjects()
   // 1. check whether the delete should be processed in the module
   ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
   bool isSketchOp = PartSet_SketcherMgr::isSketchOperation(anOperation),
-       isNestedOp = PartSet_SketcherMgr::isNestedSketchOperation(anOperation,
-                                                                 sketchMgr()->activeSketch());
+       isNestedOp = sketchMgr()->isNestedSketchOperation(anOperation);
   if (isSketchOp || isNestedOp) {
     isProcessed = true;
     // 2. find selected presentations
@@ -839,7 +835,7 @@ void PartSet_Module::onFeatureTriggered()
   if (aCmd->isCheckable() && aCmd->isChecked()) {
     // 1. check whether the delete should be processed in the module
     ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
-    bool isNestedOp = PartSet_SketcherMgr::isNestedCreateOperation(anOperation);
+    bool isNestedOp = myModule->sketchMgr()->isNestedCreateOperation(anOperation);
     if (isNestedOp) {
       // in case if in the viewer nothing is displayed, the create operation should not be
       // comitted even if all values of the feature are initialized
@@ -1328,8 +1324,7 @@ GeomShapePtr PartSet_Module::findShape(const AttributePtr& theAttribute)
   GeomShapePtr aGeomShape;
 
   ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
-  if (anOperation && PartSet_SketcherMgr::isNestedSketchOperation(anOperation,
-                                                                  sketchMgr()->activeSketch())) {
+  if (anOperation && sketchMgr()->isNestedSketchOperation(anOperation)) {
     aGeomShape = PartSet_Tools::findShapeBy2DPoint(theAttribute, myWorkshop);
   }
   return aGeomShape;

@@ -171,14 +171,18 @@ void SketchPlugin_Circle::move(double theDeltaX, double theDeltaY)
 
   std::shared_ptr<GeomDataAPI_Point2D> aPoint = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
       aData->attribute(CENTER_ID()));
-  aPoint->move(theDeltaX, theDeltaY);
+  if (aPoint->isInitialized())
+    aPoint->move(theDeltaX, theDeltaY);
 
   aPoint = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(aData->attribute(FIRST_POINT_ID()));
-  aPoint->move(theDeltaX, theDeltaY);
+  if (aPoint->isInitialized())
+    aPoint->move(theDeltaX, theDeltaY);
   aPoint = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(aData->attribute(SECOND_POINT_ID()));
-  aPoint->move(theDeltaX, theDeltaY);
+  if (aPoint->isInitialized())
+    aPoint->move(theDeltaX, theDeltaY);
   aPoint = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(aData->attribute(THIRD_POINT_ID()));
-  aPoint->move(theDeltaX, theDeltaY);
+  if (aPoint->isInitialized())
+    aPoint->move(theDeltaX, theDeltaY);
 }
 
 bool SketchPlugin_Circle::isFixed() {
@@ -189,6 +193,12 @@ void SketchPlugin_Circle::attributeChanged(const std::string& theID) {
   // the second condition for unability to move external segments anywhere
   if (theID == EXTERNAL_ID() || isFixed()) {
     std::shared_ptr<GeomAPI_Shape> aSelection = data()->selection(EXTERNAL_ID())->value();
+    if (!aSelection) {
+      // empty shape in selection shows that the shape is equal to context
+      ResultPtr anExtRes = selection(EXTERNAL_ID())->context();
+      if (anExtRes)
+        aSelection = anExtRes->shape();
+    }
     // update arguments due to the selection value
     if (aSelection && !aSelection->isNull() && aSelection->isEdge()) {
       std::shared_ptr<GeomAPI_Edge> anEdge( new GeomAPI_Edge(aSelection));
@@ -275,7 +285,11 @@ void SketchPlugin_Circle::adjustThreePoints()
       std::dynamic_pointer_cast<GeomDataAPI_Point2D>(attribute(THIRD_POINT_ID()));
   double aRadius = aRadiusAttr->value();
 
-  if (fabs(aFirstPnt->pnt()->distance(aCenterAttr->pnt()) - aRadius) > tolerance ||
+  bool isInitialized = aFirstPnt->isInitialized() &&
+      aSecondPnt->isInitialized() && aThirdPnt->isInitialized();
+
+  if (!isInitialized ||
+      fabs(aFirstPnt->pnt()->distance(aCenterAttr->pnt()) - aRadius) > tolerance ||
       fabs(aSecondPnt->pnt()->distance(aCenterAttr->pnt()) - aRadius) > tolerance ||
       fabs(aThirdPnt->pnt()->distance(aCenterAttr->pnt()) - aRadius) > tolerance) {
     aFirstPnt->setValue(aCenterAttr->x() + aRadius, aCenterAttr->y());

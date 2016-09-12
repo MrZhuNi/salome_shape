@@ -8,6 +8,9 @@
 #include "SketchSolver_Error.h"
 
 #include <Events_Loop.h>
+
+#include <GeomDataAPI_Point2D.h>
+
 #include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_AttributeRefList.h>
 #include <ModelAPI_Data.h>
@@ -279,7 +282,7 @@ bool SketchSolver_Manager::changeWorkplane(CompositeFeaturePtr theSketch)
     }
     myGroups.push_back(aNewGroup);
   }
-  return aResult;
+  return aResult || isUpdated;
 }
 
 // ============================================================================
@@ -377,9 +380,31 @@ bool SketchSolver_Manager::moveEntity(std::shared_ptr<SketchPlugin_Feature> theF
   if (!isMoved && theFeature->getKind() == SketchPlugin_Arc::ID()) {
     // Workaround to move arc.
     // If the arc has not been constrained, we will push it into empty group and apply movement.
+    bool hasEmptyGroup = false;
     for (aGroupIt = myGroups.begin(); aGroupIt != myGroups.end(); aGroupIt++)
-      if ((*aGroupIt)->isEmpty())
+      if ((*aGroupIt)->isEmpty()) {
         isMoved = (*aGroupIt)->moveFeature(theFeature) || isMoved;
+        hasEmptyGroup = true;
+      }
+    // There is no empty group, create it explicitly
+    if (!hasEmptyGroup) {
+      // find sketch containing the arc
+      CompositeFeaturePtr aWP;
+      const std::set<AttributePtr>& aRefs = theFeature->data()->refsToMe();
+      std::set<AttributePtr>::const_iterator aRefIt = aRefs.begin();
+      for (; aRefIt != aRefs.end(); ++aRefIt) {
+        FeaturePtr anOwner = ModelAPI_Feature::feature((*aRefIt)->owner());
+        if (anOwner && anOwner->getKind() == SketchPlugin_Sketch::ID()) {
+          aWP = std::dynamic_pointer_cast<ModelAPI_CompositeFeature>(anOwner);
+          break;
+        }
+      }
+      if (aWP) {
+        SketchSolver_Group* aGroup = new SketchSolver_Group(aWP);
+        isMoved = aGroup->moveFeature(theFeature) || isMoved;
+        myGroups.push_back(aGroup);
+      }
+    }
   }
   return isMoved;
 }
@@ -592,6 +617,7 @@ void SketchSolver_Manager::degreesOfFreedom()
       continue;
 
     std::set<AttributePtr> aCoincidentPoints;
+    std::set<AttributePtr> aFixedPoints;
     std::map<AttributePtr, std::set<FeaturePtr> > aPointOnLine;
     std::list<std::set<AttributePtr> > aPointsInMultiConstraints;
     int aDoF = 0;
@@ -627,10 +653,13 @@ void SketchSolver_Manager::degreesOfFreedom()
           }
         }
         if (aCoincPoint[0] && aCoincPoint[1]) {
+          bool isDoFDecreased = false;
           // point-point coincidence
           if (aCoincidentPoints.find(aCoincPoint[0]) == aCoincidentPoints.end() ||
-              aCoincidentPoints.find(aCoincPoint[1]) == aCoincidentPoints.end())
+              aCoincidentPoints.find(aCoincPoint[1]) == aCoincidentPoints.end()) {
             aDoF -= 2;
+            isDoFDecreased = true;
+          }
           // check the coincident point is used in "multi" constraints
           std::list<std::set<AttributePtr> >::const_iterator
               aPtIt = aPointsInMultiConstraints.begin();
@@ -642,6 +671,15 @@ void SketchSolver_Manager::degreesOfFreedom()
             if (isFound[0] && isFound[1])
               break;
           }
+          // check both points are fixed => not need to decrease DoF
+          bool isFixed[2] = { aFixedPoints.find(aCoincPoint[0]) != aFixedPoints.end(),
+                              aFixedPoints.find(aCoincPoint[1]) != aFixedPoints.end() };
+          if (isFixed[0] && isFixed[1] && isDoFDecreased)
+            aDoF += 2; // revert decrease of DoF
+          else if (isFixed[0] && !isFixed[1])
+            aFixedPoints.insert(aCoincPoint[1]);
+          else if (!isFixed[0] && isFixed[1])
+            aFixedPoints.insert(aCoincPoint[0]);
         } else {
           aDoF -= 1;
           if (aCoincPoint[0] && aCoincLine) {
@@ -689,13 +727,50 @@ void SketchSolver_Manager::degreesOfFreedom()
         AttributeRefAttrPtr aRefAttr = std::dynamic_pointer_cast<ModelAPI_AttributeRefAttr>(
             aFeature->attribute(SketchPlugin_Constraint::ENTITY_A()));
         assert(aRefAttr);
-        if (!aRefAttr->isObject())
+        std::set<AttributePtr> aPoints;
+        if (!aRefAttr->isObject()) {
           aDoF -= 2; // attribute is a point
-        else {
+          aPoints.insert(aRefAttr->attr());
+        } else {
           FeaturePtr anAttr = ModelAPI_Feature::feature(aRefAttr->object());
-          if (anAttr)
+          if (anAttr) {
             aDoF -= aDoFDelta[anAttr->getKind()];
+            std::list<AttributePtr> aPtAttrs = anAttr->data()->attributes(GeomDataAPI_Point2D::typeId());
+            aPoints.insert(aPtAttrs.begin(), aPtAttrs.end());
+          }
         }
+
+        // Check whether feature's points are already coincident with fixed points.
+        // In this case we need to revert decrease of DoF for these points.
+        // If the coordinates of fixed points are different, it will be processed by solver.
+        for (int k = 0; k < i; ++k) {
+          FeaturePtr aFeature = aSketch->subFeature(k);
+          if (aFeature->getKind() != SketchPlugin_ConstraintCoincidence::ID())
+            continue;
+          AttributePtr aCoincPoint[2] = {AttributePtr(), AttributePtr()};
+          for (int j = 0; j < 2; ++j) {
+            AttributeRefAttrPtr aRefAttr = std::dynamic_pointer_cast<ModelAPI_AttributeRefAttr>(
+                aFeature->attribute(SketchPlugin_Constraint::ATTRIBUTE(j)));
+            if (!aRefAttr)
+              continue;
+            if (!aRefAttr->isObject())
+              aCoincPoint[j] = aRefAttr->attr();
+            else {
+              FeaturePtr anAttr = ModelAPI_Feature::feature(aRefAttr->object());
+              if (anAttr && anAttr->getKind() == SketchPlugin_Point::ID())
+                aCoincPoint[j] = anAttr->attribute(SketchPlugin_Point::COORD_ID());
+            }
+          }
+          if (aCoincPoint[0] && aCoincPoint[1]) {
+            if ((aFixedPoints.find(aCoincPoint[0]) != aFixedPoints.end() &&
+                 aPoints.find(aCoincPoint[1]) != aPoints.end()) ||
+                (aFixedPoints.find(aCoincPoint[1]) != aFixedPoints.end() &&
+                 aPoints.find(aCoincPoint[0]) != aPoints.end()))
+              aDoF += 2; // point already fixed
+          }
+        }
+        // store fixed points
+        aFixedPoints.insert(aPoints.begin(), aPoints.end());
       }
       else if (aFeature->getKind() == SketchPlugin_ConstraintMirror::ID() ||
                aFeature->getKind() == SketchPlugin_MultiRotation::ID() ||

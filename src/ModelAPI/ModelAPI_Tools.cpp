@@ -12,6 +12,7 @@
 #include <ModelAPI_ResultParameter.h>
 #include <ModelAPI_ResultPart.h>
 #include <ModelAPI_AttributeDocRef.h>
+#include <ModelAPI_Validator.h>
 #include <list>
 #include <map>
 #include <iostream>
@@ -199,101 +200,6 @@ bool findVariable(FeaturePtr theSearcher, const std::string& theName, double& ou
       return true;
   }
   return false;
-}
-
-static std::map<int, std::vector<int> > myColorMap;
-
-void appendValues(std::vector<int>& theRGB, const int theRed, const int theGreen, const int theBlue)
-{
-  theRGB.push_back(theRed);
-  theRGB.push_back(theGreen);
-  theRGB.push_back(theBlue);
-}
-
-bool containsValues(std::map<int, std::vector<int> >& theColorMap, std::vector<int>& theValues)
-{
-  std::map<int, std::vector<int> >::const_iterator anIt = theColorMap.begin(), aLast = theColorMap.end();
-  bool isFound = false;
-  for (; anIt != aLast && !isFound; anIt++) {
-    std::vector<int> aValues = anIt->second;
-    isFound = aValues[0] == theValues[0] &&
-              aValues[1] == theValues[1] &&
-              aValues[2] == theValues[2];
-  }
-  return isFound;
-}
-
-std::vector<int> HSVtoRGB(int theH, int theS, int theV)
-{
-  std::vector<int> aRGB;
-  if (theH < 0 || theH > 360 ||
-      theS < 0 || theS > 100 ||
-      theV < 0 || theV > 100)
-    return aRGB;
-
-  int aHi = (int)theH/60;
-
-  double aV = theV;
-  double aVmin = (100 - theS)*theV/100;
-
-  double anA = (theV - aVmin)* (theH % 60) / 60;
-
-  double aVinc = aVmin + anA;
-  double aVdec = theV - anA;
-
-  double aPercentToValue = 255./100;
-  int aV_int    = (int)(aV*aPercentToValue);
-  int aVinc_int = (int)(aVinc*aPercentToValue);
-  int aVmin_int = (int)(aVmin*aPercentToValue);
-  int aVdec_int = (int)(aVdec*aPercentToValue);
-
-  switch(aHi) {
-    case 0: appendValues(aRGB, aV_int,    aVinc_int, aVmin_int); break;
-    case 1: appendValues(aRGB, aVdec_int, aV_int,    aVmin_int); break;
-    case 2: appendValues(aRGB, aVmin_int, aV_int,    aVinc_int); break;
-    case 3: appendValues(aRGB, aVmin_int, aVdec_int, aV_int); break;
-    case 4: appendValues(aRGB, aVinc_int, aVmin_int, aV_int); break;
-    case 5: appendValues(aRGB, aV_int,    aVmin_int, aVdec_int); break;
-    default: break;
-  }
-  return aRGB;
-}
-
-
-void fillColorMap()
-{
-  if (!myColorMap.empty())
-    return;
-
-  int i = 0;
-  for (int s = 100; s > 0; s = s - 50)
-  {
-    for (int v = 100; v >= 40; v = v - 20)
-    {
-      for (int h = 0; h < 359 ; h = h + 60)
-      {
-        std::vector<int> aColor = HSVtoRGB(h, s, v);
-        if (containsValues(myColorMap, aColor))
-          continue;
-        myColorMap[i] = aColor;
-        i++;
-      }
-    }
-  }
-}
-
-void findRandomColor(std::vector<int>& theValues)
-{
-  theValues.clear();
-  if (myColorMap.empty()) {
-    fillColorMap();
-  }
-
-  size_t aSize = myColorMap.size();
-  int anIndex = rand() % aSize;
-  if (myColorMap.find(anIndex) != myColorMap.end()) {
-    theValues = myColorMap.at(anIndex);
-  }
 }
 
 ResultPtr findPartResult(const DocumentPtr& theMain, const DocumentPtr& theSub)
@@ -646,6 +552,33 @@ void findRefsToFeatures(const std::set<FeaturePtr>& theFeatures,
       if (theFeatures.find(aRefFeature) == theFeatures.end() && // it is not selected
           theFeaturesRefsTo.find(aRefFeature) == theFeaturesRefsTo.end()) // it is not added
         theFeaturesRefsTo.insert(aRefFeature);
+    }
+  }
+}
+
+void getConcealedResults(const FeaturePtr& theFeature,
+                         std::list<std::shared_ptr<ModelAPI_Result> >& theResults)
+{
+  SessionPtr aSession = ModelAPI_Session::get();
+
+  std::list<std::pair<std::string, std::list<std::shared_ptr<ModelAPI_Object> > > > aRefs;
+  theFeature->data()->referencesToObjects(aRefs);
+  std::list<std::pair<std::string, std::list<ObjectPtr> > >::const_iterator
+                                                  anIt = aRefs.begin(), aLast = aRefs.end();
+  std::set<ResultPtr> alreadyThere; // to avoid duplications
+  for (; anIt != aLast; anIt++) {
+    if (!aSession->validators()->isConcealed(theFeature->getKind(), anIt->first))
+      continue; // use only concealed attributes
+    std::list<ObjectPtr> anObjects = (*anIt).second;
+    std::list<ObjectPtr>::const_iterator anOIt = anObjects.begin(), anOLast = anObjects.end();
+    for (; anOIt != anOLast; anOIt++) {
+      ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(*anOIt);
+      if (aResult && aResult->isConcealed()) {
+        if (alreadyThere.find(aResult) == alreadyThere.end()) // issue 1712, avoid duplicates
+          alreadyThere.insert(aResult);
+        else continue;
+        theResults.push_back(aResult);
+      }
     }
   }
 }

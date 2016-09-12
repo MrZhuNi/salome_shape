@@ -30,14 +30,19 @@ class ModelHighAPI_Selection
 {
 public:
   enum VariantType {
+    VT_Empty,
     VT_ResultSubShapePair,
     VT_TypeSubShapeNamePair
   };
 
 public:
+  /// Default constructor with empty selection.
+  MODELHIGHAPI_EXPORT
+  ModelHighAPI_Selection();
+
   /// Constructor for result and sub-shape
   MODELHIGHAPI_EXPORT
-  ModelHighAPI_Selection(const std::shared_ptr<ModelAPI_Result>& theContext = std::shared_ptr<ModelAPI_Result>(),
+  ModelHighAPI_Selection(const std::shared_ptr<ModelAPI_Result>& theContext,
                          const std::shared_ptr<GeomAPI_Shape>& theSubShape = std::shared_ptr<GeomAPI_Shape>());
   /// Constructor for sub-shape by the textual Name
   MODELHIGHAPI_EXPORT
@@ -66,6 +71,22 @@ public:
   /// \return pair of sub-shape type and name.
   MODELHIGHAPI_EXPORT
   virtual TypeSubShapeNamePair typeSubShapeNamePair() const;
+
+  /// \return shape type.
+  MODELHIGHAPI_EXPORT
+  virtual std::string shapeType() const;
+
+  /// Shortcut for result()->data()->setName()
+  MODELHIGHAPI_EXPORT
+  void setName(const std::string& theName);
+
+  /// Change result's color
+  MODELHIGHAPI_EXPORT
+  void setColor(int theRed, int theGreen, int theBlue);
+
+  /// Change result's deflection
+  MODELHIGHAPI_EXPORT
+  void setDeflection(double theValue);
 
 private:
   VariantType myVariantType;

@@ -32,6 +32,7 @@
 #include <SketchPlugin_ConstraintPerpendicular.h>
 #include <SketchPlugin_ConstraintRadius.h>
 #include <SketchPlugin_ConstraintRigid.h>
+#include <SketchPlugin_ConstraintSplit.h>
 #include <SketchPlugin_ConstraintTangent.h>
 #include <SketchPlugin_ConstraintVertical.h>
 #include <SketchPlugin_MultiRotation.h>
@@ -219,7 +220,7 @@ static void updateMultiConstraints(ConstraintConstraintMap& theConstraints, Feat
          aType == CONSTRAINT_MULTI_TRANSLATION)
         && aCIt->second->isUsed(theFeature))
       std::dynamic_pointer_cast<SketchSolver_ConstraintMulti>(aCIt->second)->update(true);
-    else if ((aType == CONSTRAINT_TANGENT_CIRCLE_LINE ||
+    else if ((aType == CONSTRAINT_TANGENT_CIRCLE_LINE || aType == CONSTRAINT_TANGENT_ARC_ARC ||
               aType == CONSTRAINT_SYMMETRIC || aType == CONSTRAINT_ANGLE)
              && aCIt->second->isUsed(theFeature))
       aCIt->second->update();
@@ -391,7 +392,7 @@ bool SketchSolver_Group::resolveConstraints()
       myStorage->refresh();
       updateMultiConstraints(myConstraints);
       if (myStorage->isNeedToResolve()) // multi-constraints updated some parameters, need to store them
-        myStorage->refresh();
+        resolveConstraints();
 
       if (myPrevResult != STATUS_OK || myPrevResult == STATUS_UNKNOWN) {
         getWorkplane()->string(SketchPlugin_Sketch::SOLVER_ERROR())->setValue("");
@@ -406,13 +407,11 @@ bool SketchSolver_Group::resolveConstraints()
       if (!myConstraints.empty()) {
         // the error message should be changed before sending the message
         getWorkplane()->string(SketchPlugin_Sketch::SOLVER_ERROR())->setValue(SketchSolver_Error::CONSTRAINTS());
-        if (myPrevResult != aResult || myPrevResult == STATUS_UNKNOWN) {
+        if (myPrevResult != aResult || myPrevResult == STATUS_UNKNOWN || myPrevResult == STATUS_FAILED) {
           // Obtain list of conflicting constraints
           std::set<ObjectPtr> aConflicting = myStorage->getConflictingConstraints(mySketchSolver);
 
-          if (myConflictingConstraints.empty())
-            sendMessage(EVENT_SOLVER_FAILED, aConflicting);
-          else {
+          if (!myConflictingConstraints.empty()) {
             std::set<ObjectPtr>::iterator anIt = aConflicting.begin();
             for (; anIt != aConflicting.end(); ++anIt)
               myConflictingConstraints.erase(*anIt);
@@ -422,6 +421,8 @@ bool SketchSolver_Group::resolveConstraints()
             }
           }
           myConflictingConstraints = aConflicting;
+          if (!myConflictingConstraints.empty())
+            sendMessage(EVENT_SOLVER_FAILED, myConflictingConstraints);
           myPrevResult = aResult;
         }
       }
@@ -429,14 +430,15 @@ bool SketchSolver_Group::resolveConstraints()
 
     aResolved = true;
   } else if (!isGroupEmpty) {
-    // Check there are constraints Fixed. If they exist, update parameters by stored values
+    // Check if the group contains only constraints Fixed, update parameters by stored values
+    aResolved = true;
     ConstraintConstraintMap::iterator aCIt = myConstraints.begin();
     for (; aCIt != myConstraints.end(); ++aCIt)
-      if (aCIt->first->getKind() == SketchPlugin_ConstraintRigid::ID()) {
-        aResolved = true;
+      if (aCIt->first->getKind() != SketchPlugin_ConstraintRigid::ID()) {
+        aResolved = false;
         break;
       }
-    if (aCIt != myConstraints.end())
+    if (aCIt == myConstraints.end())
       myStorage->refresh();
   }
   removeTemporaryConstraints();
@@ -620,6 +622,12 @@ void SketchSolver_Group::removeConstraint(ConstraintPtr theConstraint)
     }
   if (aCIter != myConstraints.end())
     myConstraints.erase(aCIter);
+  // empty group => clear storage
+  if (myConstraints.empty()) {
+    myStorage = StoragePtr();
+    mySketchSolver = SolverPtr();
+    updateWorkplane();
+  }
 }
 
 // ============================================================================
@@ -687,7 +695,7 @@ static double featureToVal(FeaturePtr theFeature)
       anID == SketchPlugin_ConstraintMirror::ID())
     return 6.0;
   if (anID == SketchPlugin_ConstraintRigid::ID())
-    return 7.0;
+    return 0.5;
   if (anID == SketchPlugin_MultiRotation::ID() ||
       anID == SketchPlugin_MultiTranslation::ID())
     return 8.0;
@@ -709,14 +717,15 @@ std::list<FeaturePtr> SketchSolver_Group::selectApplicableFeatures(const std::se
   std::set<ObjectPtr>::const_iterator anObjIter = theObjects.begin();
   for (; anObjIter != theObjects.end(); ++anObjIter) {
     // Operate sketch itself and SketchPlugin features only.
-    // Also, the Fillet need to be skipped, because there are several separated constraints composing it.
+    // Also, the Fillet and Split need to be skipped, because there are several separated constraints composing it.
     FeaturePtr aFeature = std::dynamic_pointer_cast<ModelAPI_Feature>(*anObjIter);
     if (!aFeature)
       continue;
     std::shared_ptr<SketchPlugin_Feature> aSketchFeature = 
         std::dynamic_pointer_cast<SketchPlugin_Feature>(aFeature);
     if ((aFeature->getKind() != SketchPlugin_Sketch::ID() && !aSketchFeature) ||
-        aFeature->getKind() == SketchPlugin_ConstraintFillet::ID())
+        aFeature->getKind() == SketchPlugin_ConstraintFillet::ID() ||
+        aFeature->getKind() == SketchPlugin_ConstraintSplit::ID())
       continue;
 
     // Find the place where to insert a feature

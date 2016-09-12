@@ -93,13 +93,26 @@ bool SketchPlugin_ConstraintLength::compute(const std::string& theAttributeId)
 
   std::shared_ptr<GeomAPI_Lin2d> aLine = 
     std::shared_ptr<GeomAPI_Lin2d>(new GeomAPI_Lin2d(aStartPoint->pnt(), anEndPoint->pnt()));
-  if (fabs(aFlyOutAttr->x()) < tolerance && fabs(aFlyOutAttr->y()) < tolerance) {
+  if (!aFlyOutAttr->isInitialized() || 
+      (fabs(aFlyOutAttr->x()) < tolerance && fabs(aFlyOutAttr->y()) < tolerance)) {
     double aDist = aPoint1->distance(aPoint2)/5.;
     std::shared_ptr<GeomAPI_Pnt2d> aFPnt = aLine->shiftedLocation(aDist);
     aFlyOutAttr->setValue(aFPnt);
   }
 
   return true;
+}
+
+bool SketchPlugin_ConstraintLength::computeLenghtValue(double& theValue)
+{
+  bool aResult = false;
+  std::shared_ptr<GeomAPI_Pnt> aPoint1, aPoint2;
+  std::shared_ptr<GeomDataAPI_Point2D> aStartPoint, anEndPoint;
+  if (getPoints(aPoint1, aPoint2, aStartPoint, anEndPoint)) {
+    theValue = aPoint1->distance(aPoint2);
+    aResult = true;
+  }
+  return aResult;
 }
 
 bool SketchPlugin_ConstraintLength::getPoints(
@@ -174,12 +187,9 @@ void SketchPlugin_ConstraintLength::attributeChanged(const std::string& theID) {
     std::shared_ptr<ModelAPI_AttributeDouble> aValueAttr = std::dynamic_pointer_cast<
       ModelAPI_AttributeDouble>(attribute(SketchPlugin_Constraint::VALUE()));
     if (!aValueAttr->isInitialized()) { // only if it is not initialized, try to compute the current value
-      std::shared_ptr<GeomAPI_Pnt> aPoint1, aPoint2;
-      std::shared_ptr<GeomDataAPI_Point2D> aStartPoint, anEndPoint;
-      if (getPoints(aPoint1, aPoint2, aStartPoint, anEndPoint)) {
-        double aLength = aPoint1->distance(aPoint2);
+      double aLength;
+      if (computeLenghtValue(aLength))
         aValueAttr->setValue(aLength);
-      }
     }
   } else if (theID == SketchPlugin_Constraint::FLYOUT_VALUE_PNT() && !myFlyoutUpdate) {
     myFlyoutUpdate = true;

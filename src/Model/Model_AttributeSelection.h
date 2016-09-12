@@ -75,7 +75,8 @@ public:
 protected:
   /// Objects are created for features automatically
   MODEL_EXPORT Model_AttributeSelection(TDF_Label& theLabel);
-    /// Performs the selection for the body result (TNaming Selection)
+
+  /// Performs the selection for the body result (TNaming Selection)
 
   /// Performs the selection for the body result (TNaming selection)
   virtual void selectBody(
@@ -103,6 +104,9 @@ protected:
 
   /// Sets the ID of the attribute in Data (called from Data): here it is used for myRef ID setting
   MODEL_EXPORT virtual void setID(const std::string theID);
+
+  /// Returns the name by context. Adds the part name if the context is located in other document
+  std::string contextName(const ResultPtr& theContext) const;
 
   friend class Model_Data;
   friend class Model_AttributeSelectionList;

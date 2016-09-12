@@ -22,7 +22,6 @@
 
 #include <TNaming_Tool.hxx>
 #include <TNaming_NamedShape.hxx>
-#include <TNaming_Iterator.hxx>
 #include <TDataStd_Name.hxx>
 #include <TopoDS_Compound.hxx>
 #include <BRep_Builder.hxx>
@@ -150,39 +149,41 @@ bool Model_ResultPart::setDisabled(std::shared_ptr<ModelAPI_Result> theThis,
 std::shared_ptr<GeomAPI_Shape> Model_ResultPart::shape()
 {
   std::shared_ptr<GeomAPI_Shape> aResult(new GeomAPI_Shape);
-  if (myTrsf.get()) { // get shape of the base result and apply the transformation
-    ResultPtr anOrigResult = baseRef();
-    std::shared_ptr<GeomAPI_Shape> anOrigShape = anOrigResult->shape();
-    if (anOrigShape.get()) {
-      TopoDS_Shape aShape = anOrigShape->impl<TopoDS_Shape>();
-      if (!aShape.IsNull()) {
-        aShape.Move(*(myTrsf.get()));
-        aResult->setImpl(new TopoDS_Shape(aShape));
-      }
-    }
-    return aResult;
-  }
   if (myShape.IsNull()) { // shape is not produced yet, create it
-    DocumentPtr aDoc = Model_ResultPart::partDoc();
-    if (aDoc.get() && aDoc->isOpened()) {
-      const std::string& aBodyGroup = ModelAPI_ResultBody::group();
-      TopoDS_Compound aResultComp;
-      BRep_Builder aBuilder;
-      aBuilder.MakeCompound(aResultComp);
-      int aNumSubs = 0;
-      for(int a = aDoc->size(aBodyGroup) - 1; a >= 0; a--) {
-        ResultPtr aBody = std::dynamic_pointer_cast<ModelAPI_Result>(aDoc->object(aBodyGroup, a));
-        // "object" method filters out disabled and concealed anyway, so don't check
-        if (aBody.get() && aBody->shape().get()) {
-          TopoDS_Shape aShape = *(aBody->shape()->implPtr<TopoDS_Shape>());
-          if (!aShape.IsNull()) {
-            aBuilder.Add(aResultComp, aShape);
-            aNumSubs++;
-          }
+    if (myTrsf.get()) { // get shape of the base result and apply the transformation
+      ResultPtr anOrigResult = baseRef();
+      std::shared_ptr<GeomAPI_Shape> anOrigShape = anOrigResult->shape();
+      if (anOrigShape.get()) {
+        TopoDS_Shape aShape = anOrigShape->impl<TopoDS_Shape>();
+        if (!aShape.IsNull()) {
+          aShape.Move(*(myTrsf.get()));
+          myShape = aShape;
+          aResult->setImpl(new TopoDS_Shape(aShape));
         }
       }
-      if (aNumSubs) {
-        myShape = aResultComp;
+      return aResult;
+    } else {
+      DocumentPtr aDoc = Model_ResultPart::partDoc();
+      if (aDoc.get() && aDoc->isOpened()) {
+        const std::string& aBodyGroup = ModelAPI_ResultBody::group();
+        TopoDS_Compound aResultComp;
+        BRep_Builder aBuilder;
+        aBuilder.MakeCompound(aResultComp);
+        int aNumSubs = 0;
+        for(int a = aDoc->size(aBodyGroup) - 1; a >= 0; a--) {
+          ResultPtr aBody = std::dynamic_pointer_cast<ModelAPI_Result>(aDoc->object(aBodyGroup, a));
+          // "object" method filters out disabled and concealed anyway, so don't check
+          if (aBody.get() && aBody->shape().get()) {
+            TopoDS_Shape aShape = *(aBody->shape()->implPtr<TopoDS_Shape>());
+            if (!aShape.IsNull()) {
+              aBuilder.Add(aResultComp, aShape);
+              aNumSubs++;
+            }
+          }
+        }
+        if (aNumSubs) {
+          myShape = aResultComp;
+        }
       }
     }
   }
@@ -282,6 +283,15 @@ bool Model_ResultPart::updateInPart(const int theIndex)
   return false; // something is wrong
 }
 
+gp_Trsf Model_ResultPart::sumTrsf() {
+  gp_Trsf aResult;
+  if (myTrsf) {
+    aResult = *myTrsf;
+    aResult = aResult * baseRef()->sumTrsf();
+  }
+  return aResult;
+}
+
 std::shared_ptr<GeomAPI_Shape> Model_ResultPart::shapeInPart(
   const std::string& theName, const std::string& theType, int& theIndex)
 {
@@ -304,6 +314,11 @@ std::shared_ptr<GeomAPI_Shape> Model_ResultPart::shapeInPart(
   aSelAttr->append(theName, theType);
   theIndex = aSelAttr->size();
   aResult = aSelAttr->value(theIndex - 1)->value();
+  if (myTrsf.get() && aResult.get() && !aResult->isNull()) {
+    gp_Trsf aSumTrsf = sumTrsf();
+    TopoDS_Shape anOrigMoved = aResult->impl<TopoDS_Shape>().Moved(aSumTrsf);
+    aResult->setImpl(new TopoDS_Shape(anOrigMoved));
+  }
   return aResult;
 }
 
@@ -316,6 +331,11 @@ std::shared_ptr<GeomAPI_Shape> Model_ResultPart::selectionValue(const int theInd
 
   AttributeSelectionListPtr aSelAttr = aDoc->selectionInPartFeature();
   aResult = aSelAttr->value(theIndex - 1)->value();
+  if (myTrsf.get() && aResult.get() && !aResult->isNull()) {
+    gp_Trsf aSumTrsf = sumTrsf();
+    TopoDS_Shape anOrigMoved = aResult->impl<TopoDS_Shape>().Moved(aSumTrsf);
+    aResult->setImpl(new TopoDS_Shape(anOrigMoved));
+  }
   return aResult;
 }
 

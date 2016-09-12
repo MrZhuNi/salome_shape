@@ -14,7 +14,7 @@
 
 class ModelHighAPI_Selection;
 
-/// \class FeaturesAPI_Boolean
+/// \class SketchAPI_Circle
 /// \ingroup CPPHighAPI
 /// \brief Interface for Circle feature.
 class SketchAPI_Circle: public SketchAPI_SketchEntity
@@ -137,6 +137,10 @@ public:
   /// Set third point.
   SKETCHAPI_EXPORT
   void setThirdPoint(const std::shared_ptr<GeomAPI_Pnt2d>& thePoint);
+
+  /// Dump wrapped feature
+  SKETCHAPI_EXPORT
+  virtual void dump(ModelHighAPI_Dumper& theDumper) const;
 };
 
 /// Pointer on Circle object.

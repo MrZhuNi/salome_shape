@@ -856,7 +856,7 @@ ConstraintWrapperPtr createConstraintMiddlePoint(
   aConstrList.push_back(GCSConstraintPtr(new GCS::ConstraintPointOnLine(*aPoint, *aLine)));
   double aDist = lineLength(*aLine);
   std::shared_ptr<PlaneGCSSolver_ParameterWrapper> aDistance =
-      std::dynamic_pointer_cast<PlaneGCSSolver_ParameterWrapper>(createParameter(theGroupID, aDist));
+      std::dynamic_pointer_cast<PlaneGCSSolver_ParameterWrapper>(createParameter(theGroupID, aDist * 0.5));
   aConstrList.push_back(GCSConstraintPtr(
       new GCS::ConstraintP2PDistance(*aPoint, aLine->p1, aDistance->parameter())));
   aConstrList.push_back(GCSConstraintPtr(
@@ -1204,5 +1204,30 @@ void adjustMirror(ConstraintWrapperPtr theConstraint)
 
   if (aPoints.size() == 2)
     makeMirrorPoints(aPoints[0], aPoints[1], aMirrorLine);
+
+  // update scales of constraints
+  std::shared_ptr<PlaneGCSSolver_ConstraintWrapper> aGCSConstraint = 
+      std::dynamic_pointer_cast<PlaneGCSSolver_ConstraintWrapper>(theConstraint);
+  std::list<GCSConstraintPtr>::const_iterator aCIt = aGCSConstraint->constraints().begin();
+  for (; aCIt != aGCSConstraint->constraints().end(); ++aCIt)
+    (*aCIt)->rescale();
+}
+
+bool PlaneGCSSolver_Builder::isArcArcTangencyInternal(
+    EntityWrapperPtr theArc1, EntityWrapperPtr theArc2) const
+{
+  std::shared_ptr<GCS::Circle> aCirc1 = std::dynamic_pointer_cast<GCS::Circle>(
+      GCS_ENTITY_WRAPPER(theArc1)->entity());
+  std::shared_ptr<GCS::Circle> aCirc2 = std::dynamic_pointer_cast<GCS::Circle>(
+      GCS_ENTITY_WRAPPER(theArc2)->entity());
+
+  if (!aCirc1 || !aCirc2)
+    return false;
+
+  double aDX = *(aCirc1->center.x) - *(aCirc2->center.x);
+  double aDY = *(aCirc1->center.y) - *(aCirc2->center.y);
+  double aDist = sqrt(aDX * aDX + aDY * aDY);
+
+  return (aDist < *(aCirc1->rad) || aDist < *(aCirc2->rad));
 }
 

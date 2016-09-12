@@ -29,9 +29,6 @@ void FeaturesPlugin_Recover::initAttributes()
   data()->addAttribute(PERSISTENT(), ModelAPI_AttributeBoolean::typeId());
 
   myPersistent = boolean(PERSISTENT())->value();
-  // temporary modification for empty list
-  // ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), RECOVERED_ENTITIES());
-
   synchronizeRegistered();
 }
 
@@ -49,7 +46,7 @@ void FeaturesPlugin_Recover::synchronizeRegistered()
 {
   FeaturePtr aBase = baseFeature();
   bool aNewPersistent = boolean(PERSISTENT())->value();
-  if (aNewPersistent != myPersistent)
+  if (aNewPersistent != myPersistent || myCurrentBase != aBase)
     clearRegistered();
 
   std::set<ObjectPtr> aRecoveredInList;
@@ -62,9 +59,11 @@ void FeaturesPlugin_Recover::synchronizeRegistered()
       if (myRegistered.find(anObj) == myRegistered.end()) {
         // not found, so register a new
         ResultPtr aRes = std::dynamic_pointer_cast<ModelAPI_Result>(anObj);
-        ModelAPI_Session::get()->validators()->registerUnconcealment(
-          aRes, aNewPersistent ? FeaturePtr() : aBase);
-        myRegistered.insert(anObj);
+        if (aRes.get()) { // this may be on first update after "open"
+          ModelAPI_Session::get()->validators()->registerUnconcealment(
+            aRes, aNewPersistent ? FeaturePtr() : aBase);
+          myRegistered.insert(anObj);
+        }
       }
     }
   }

@@ -137,11 +137,6 @@ bool PartSet_WidgetPoint2D::isValidSelectionCustom(const ModuleBase_ViewerPrsPtr
   /// the selection is not possible if the current feature has no presentation for the current
   /// attribute not in AIS not in results. If so, no object in current feature where make
   /// coincidence, so selection is not necessary
-  std::shared_ptr<ModelAPI_Data> aData = myFeature->data();
-  std::shared_ptr<GeomDataAPI_Point2D> aPointAttr = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-      aData->attribute(attributeID()));
-  std::shared_ptr<GeomAPI_Pnt2d> aPoint = aPointAttr->pnt();
-
   bool aFoundPoint = false;
   GeomShapePtr anAISShape;
   GeomPresentablePtr aPrs = std::dynamic_pointer_cast<GeomAPI_IPresentable>(myFeature);
@@ -157,6 +152,10 @@ bool PartSet_WidgetPoint2D::isValidSelectionCustom(const ModuleBase_ViewerPrsPtr
     return true;
 
   /// analysis of AIS
+  std::shared_ptr<ModelAPI_Data> aData = myFeature->data();
+  std::shared_ptr<GeomDataAPI_Point2D> aPointAttr = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+      aData->attribute(attributeID()));
+  std::shared_ptr<GeomAPI_Pnt2d> aPoint = aPointAttr->pnt();
   if (anAISShape.get())
     aFoundPoint = shapeContainsPoint(anAISShape, aPoint, mySketch);
 
@@ -275,8 +274,8 @@ bool PartSet_WidgetPoint2D::restoreValueCustom()
   std::shared_ptr<ModelAPI_Data> aData = myFeature->data();
   std::shared_ptr<GeomDataAPI_Point2D> aPoint = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
       aData->attribute(attributeID()));
-  QString aTextX = QString::fromStdString(aPoint->textX());
-  QString aTextY = QString::fromStdString(aPoint->textY());
+  QString aTextX = QString::fromStdString(aPoint->isInitialized() ? aPoint->textX() : "0");
+  QString aTextY = QString::fromStdString(aPoint->isInitialized() ? aPoint->textY() : "0");
 
   bool isDouble = false;
   double aVal = 0;
@@ -451,6 +450,9 @@ void PartSet_WidgetPoint2D::mouseReleased(ModuleBase_IViewWindow* theWindow, QMo
 
   QList<ModuleBase_ViewerPrsPtr> aList = aSelection->getSelected(ModuleBase_ISelection::Viewer);
   ModuleBase_ViewerPrsPtr aFirstValue = aList.size() > 0 ? aList.first() : ModuleBase_ViewerPrsPtr();
+  if (!aFirstValue.get() && myPreSelected.get()) {
+    aFirstValue = myPreSelected;
+  }
   // if we have selection and use it
   if (aFirstValue.get() && isValidSelectionCustom(aFirstValue)) {
     GeomShapePtr aGeomShape = aFirstValue->shape();
@@ -586,6 +588,10 @@ void PartSet_WidgetPoint2D::mouseReleased(ModuleBase_IViewWindow* theWindow, QMo
   }
 }
 
+void PartSet_WidgetPoint2D::setPreSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& thePreSelected)
+{
+  myPreSelected = thePreSelected;
+}
 
 void PartSet_WidgetPoint2D::mouseMoved(ModuleBase_IViewWindow* theWindow, QMouseEvent* theEvent)
 {

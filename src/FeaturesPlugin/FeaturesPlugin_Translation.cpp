@@ -27,8 +27,6 @@ void FeaturesPlugin_Translation::initAttributes()
   AttributeSelectionListPtr aSelection = 
     std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(data()->addAttribute(
     FeaturesPlugin_Translation::OBJECTS_LIST_ID(), ModelAPI_AttributeSelectionList::typeId()));
-  // revolution works with faces always
-  aSelection->setSelectionType("SOLID");
 
   data()->addAttribute(FeaturesPlugin_Translation::AXIS_OBJECT_ID(), ModelAPI_AttributeSelection::typeId());
   data()->addAttribute(FeaturesPlugin_Translation::DISTANCE_ID(), ModelAPI_AttributeDouble::typeId());
@@ -87,7 +85,7 @@ void FeaturesPlugin_Translation::execute()
       ResultPartPtr anOrigin = std::dynamic_pointer_cast<ModelAPI_ResultPart>(*aContext);
       ResultPartPtr aResultPart = document()->copyPart(anOrigin, data(), aResultIndex);
       aResultPart->setTrsf(*aContext, aTrsf);
-      setResult(aResultPart);
+      setResult(aResultPart, aResultIndex);
     } else {
       GeomAlgoAPI_Translation aTranslationAlgo(aBaseShape, anAxis, aDistance);
 

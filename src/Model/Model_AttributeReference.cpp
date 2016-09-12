@@ -79,12 +79,14 @@ ObjectPtr Model_AttributeReference::value()
       }
     }
   } else { // internal ref
-    std::shared_ptr<Model_Document> aDoc = std::dynamic_pointer_cast<Model_Document>(
-        owner()->document());
-    if (aDoc) {
-      TDF_Label aRefLab = myRef->Get();
-      if (!aRefLab.IsNull()) {  // it may happen with old document, issue #285
-        return aDoc->objects()->object(aRefLab);
+    if (owner().get()) {
+      std::shared_ptr<Model_Document> aDoc = std::dynamic_pointer_cast<Model_Document>(
+          owner()->document());
+      if (aDoc) {
+        TDF_Label aRefLab = myRef->Get();
+        if (!aRefLab.IsNull()) {  // it may happen with old document, issue #285
+          return aDoc->objects()->object(aRefLab);
+        }
       }
     }
   }
@@ -102,9 +104,15 @@ bool Model_AttributeReference::isInitialized()
 
 Model_AttributeReference::Model_AttributeReference(TDF_Label& theLabel)
 {
-  myIsInitialized = theLabel.FindAttribute(TDF_Reference::GetID(), myRef) == Standard_True;
+  myLab = theLabel;
+  reinit();
+}
+
+void Model_AttributeReference::reinit()
+{
+  myIsInitialized = myLab.FindAttribute(TDF_Reference::GetID(), myRef) == Standard_True;
   if (!myIsInitialized) {
-    myRef = TDF_Reference::Set(theLabel, theLabel);  // not initialized references to itself
+    myRef = TDF_Reference::Set(myLab, myLab);  // not initialized references to itself
   } else {
     if (owner()) {
       std::shared_ptr<Model_Document> aDoc =
@@ -117,8 +125,8 @@ void Model_AttributeReference::setObject(const std::shared_ptr<ModelAPI_Object>&
 {
   if (owner() != theObject) {
     ModelAPI_AttributeReference::setObject(theObject);
-    std::shared_ptr<Model_Document> aDoc =
-      std::dynamic_pointer_cast<Model_Document>(owner()->document());
+    //std::shared_ptr<Model_Document> aDoc =
+    //  std::dynamic_pointer_cast<Model_Document>(owner()->document());
   }
 }
 

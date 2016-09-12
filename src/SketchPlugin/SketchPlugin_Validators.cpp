@@ -863,7 +863,7 @@ bool SketchPlugin_SplitValidator::isValid(const AttributePtr& theAttribute,
         aData->attribute(SketchPlugin_Sketch::NORM_ID()));
     std::shared_ptr<GeomAPI_Dir> aDirY(new GeomAPI_Dir(aNorm->dir()->cross(aX->dir())));
     
-    std::set<std::shared_ptr<GeomAPI_Pnt> > aPoints;
+    std::list<std::shared_ptr<GeomAPI_Pnt> > aPoints;
     std::map<std::shared_ptr<GeomDataAPI_Point2D>, std::shared_ptr<GeomAPI_Pnt> > aPointToAttributes;
     ModelGeomAlgo_Point2D::getPointsInsideShape(anAttrShape, aRefAttributes, aC->pnt(),
                                                 aX->dir(), aDirY, aPoints, aPointToAttributes);
@@ -891,13 +891,16 @@ bool SketchPlugin_ProjectionValidator::isValid(const AttributePtr& theAttribute,
   AttributeSelectionPtr aFeatureAttr =
       std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(theAttribute);
   std::shared_ptr<GeomAPI_Edge> anEdge;
-  if(aFeatureAttr && aFeatureAttr->value() && aFeatureAttr->value()->isEdge()) {
-    anEdge = std::shared_ptr<GeomAPI_Edge>(new GeomAPI_Edge(aFeatureAttr->value()));
-  } else if(aFeatureAttr->context() && aFeatureAttr->context()->shape() &&
-            aFeatureAttr->context()->shape()->isEdge()) {
-    anEdge = std::shared_ptr<GeomAPI_Edge>(new GeomAPI_Edge(aFeatureAttr->context()->shape()));
+  if (aFeatureAttr.get()) {
+    GeomShapePtr aVal = aFeatureAttr->value();
+    ResultPtr aRes = aFeatureAttr->context();
+    if(aFeatureAttr->value() && aFeatureAttr->value()->isEdge()) {
+      anEdge = std::shared_ptr<GeomAPI_Edge>(new GeomAPI_Edge(aFeatureAttr->value()));
+    } else if(aFeatureAttr->context() && aFeatureAttr->context()->shape() &&
+              aFeatureAttr->context()->shape()->isEdge()) {
+      anEdge = std::shared_ptr<GeomAPI_Edge>(new GeomAPI_Edge(aFeatureAttr->context()->shape()));
+    }
   }
-
   if (!anEdge) {
     theError = "The attribute %1 should be an edge";
     theError.arg(theAttribute->id());
@@ -931,8 +934,11 @@ bool SketchPlugin_ProjectionValidator::isValid(const AttributePtr& theAttribute,
     std::shared_ptr<GeomAPI_Pnt> aLineLoc = aLine->location();
     double aDot = aNormal->dot(aLineDir);
     double aDist = aLineLoc->xyz()->decreased(anOrigin->xyz())->dot(aNormal->xyz());
-    return (fabs(aDot) >= tolerance && fabs(aDot) < 1.0 - tolerance) ||
+    bool aValid = (fabs(aDot) >= tolerance && fabs(aDot) < 1.0 - tolerance) ||
            (fabs(aDot) < tolerance && fabs(aDist) > tolerance);
+    if (!aValid)
+      theError = "Error: Edge is already in the sketch plane.";
+    return aValid;
   }
   else if (anEdge->isCircle() || anEdge->isArc()) {
     std::shared_ptr<GeomAPI_Circ> aCircle = anEdge->circle();
@@ -940,8 +946,13 @@ bool SketchPlugin_ProjectionValidator::isValid(const AttributePtr& theAttribute,
     std::shared_ptr<GeomAPI_Pnt> aCircCenter = aCircle->center();
     double aDot = fabs(aNormal->dot(aCircNormal));
     double aDist = aCircCenter->xyz()->decreased(anOrigin->xyz())->dot(aNormal->xyz());
-    return fabs(aDot - 1.0) < tolerance * tolerance && fabs(aDist) > tolerance;
+    bool aValid = fabs(aDot - 1.0) < tolerance * tolerance && fabs(aDist) > tolerance;
+    if (!aValid)
+      theError.arg(anEdge->isCircle() ? "Error: Cirlce is already in the sketch plane."
+                                      : "Error: Arc is already in the sketch plane.");
+    return aValid;
   }
 
+  theError = "Error: Selected object is not line, circle or arc.";
   return false;
 }
