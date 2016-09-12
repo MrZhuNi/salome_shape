@@ -9,6 +9,7 @@
 #include <Config_WidgetAPI.h>
 #include <Config_Keywords.h>
 #include <ModuleBase_Tools.h>
+#include <ModuleBase_IconFactory.h>
 
 #include <ModelAPI_AttributeString.h>
 
@@ -21,10 +22,17 @@ ModuleBase_WidgetLabel::ModuleBase_WidgetLabel(QWidget* theParent,
 : ModuleBase_ModelWidget(theParent, theData)
 {
   QString aText = QString::fromStdString(theData->getProperty("title"));
-  myLabel = new QLabel(aText, theParent);
+  QString aLabelIcon = QString::fromStdString(theData->getProperty("icon"));
+  
+  myLabel = new QLabel(aText, theParent);  
+  if (!aLabelIcon.isEmpty()) {
+    myLabel->setPixmap(ModuleBase_IconFactory::loadPixmap(aLabelIcon));
+    myLabel->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+  } else {
+    myLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  }
   myLabel->setWordWrap(true);
   myLabel->setIndent(5);
-  myLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   myLabel->setContentsMargins(0,0,0,4);
 
   QVBoxLayout* aLayout = new QVBoxLayout(this);
