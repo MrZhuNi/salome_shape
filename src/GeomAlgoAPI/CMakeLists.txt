@@ -45,8 +45,6 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_XAOExport.h
     GeomAlgoAPI_XAOImport.h
     GeomAlgoAPI_Copy.h
-    GeomAlgoAPI_ChangeOrientation.h
-    GeomAlgoAPI_DivideEdge.h
 )
 
 SET(PROJECT_SOURCES
@@ -88,8 +86,6 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_XAOExport.cpp
     GeomAlgoAPI_XAOImport.cpp
     GeomAlgoAPI_Copy.cpp
-    GeomAlgoAPI_ChangeOrientation.cpp
-    GeomAlgoAPI_DivideEdge.cpp
 )
 
 SET(PROJECT_LIBRARIES
