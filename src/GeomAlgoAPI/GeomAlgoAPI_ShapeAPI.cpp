@@ -6,7 +6,6 @@
 
 #include "GeomAlgoAPI_ShapeAPI.h"
 #include <GeomAlgoAPI_Box.h>
-#include <GeomAlgoAPI_BoxPoints.h>
 
 #include <GeomAPI_Pnt.h>
 #include <GeomAPI_Edge.h>
@@ -18,7 +17,7 @@ namespace GeomAlgoAPI_ShapeAPI
 {
   //=========================================================================================================
   std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeAPI::makeBox(const double theDx, const double theDy, 
-                                                                const double theDz) throw (GeomAlgoAPI_Exception)
+                                                               const double theDz) throw (GeomAlgoAPI_Exception)
   {
     GeomAlgoAPI_Box aBoxAlgo(theDx,theDy,theDz);
     
@@ -39,9 +38,9 @@ namespace GeomAlgoAPI_ShapeAPI
   
   //=========================================================================================================
   std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeAPI::makeBox(std::shared_ptr<GeomAPI_Pnt> theFirstPoint,
-                                                                std::shared_ptr<GeomAPI_Pnt> theSecondPoint) throw (GeomAlgoAPI_Exception)
+                                                               std::shared_ptr<GeomAPI_Pnt> theSecondPoint) throw (GeomAlgoAPI_Exception)
   {
-    GeomAlgoAPI_BoxPoints aBoxAlgo(theFirstPoint, theSecondPoint);
+    GeomAlgoAPI_Box aBoxAlgo(theFirstPoint, theSecondPoint);
     
     if (!aBoxAlgo.check()) {
       throw GeomAlgoAPI_Exception(aBoxAlgo.getError());

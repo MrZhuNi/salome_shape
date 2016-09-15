@@ -20,19 +20,40 @@ GeomAlgoAPI_Box::GeomAlgoAPI_Box(const double theDx, const double theDy, const d
   myDx = theDx;
   myDy = theDy;
   myDz = theDz;
+  myMethodType = MethodType::BOX_DIM;
+}
+
+//=================================================================================================
+GeomAlgoAPI_Box::GeomAlgoAPI_Box(std::shared_ptr<GeomAPI_Pnt> theFirstPoint,
+                                 std::shared_ptr<GeomAPI_Pnt> theSecondPoint)
+:GeomAlgoAPI_Box()
+{
+  myFirstPoint = theFirstPoint;
+  mySecondPoint = theSecondPoint;
+  myMethodType = MethodType::BOX_POINTS;
 }
 
 //=================================================================================================
 bool GeomAlgoAPI_Box::check()
 {
-  if (myDx < Precision::Confusion()) {
-    myError = "Box builder with dimensions  :: Dx is null.";
-    return false;
-  } else if (myDy < Precision::Confusion()) {
-    myError = "Box builder with dimensions  :: Dy is null.";
-    return false;
-  } else if (myDz < Precision::Confusion()) {
-    myError = "Box builder with dimensions  :: Dz is null.";
+  if (myMethodType == MethodType::BOX_DIM) {
+    if (myDx < Precision::Confusion()) {
+      myError = "Box builder with dimensions :: Dx is null.";
+      return false;
+    } else if (myDy < Precision::Confusion()) {
+      myError = "Box builder with dimensions :: Dy is null.";
+      return false;
+    } else if (myDz < Precision::Confusion()) {
+      myError = "Box builder with dimensions :: Dz is null.";
+      return false;
+    }
+  } else if (myMethodType == MethodType::BOX_POINTS) {
+    if (myFirstPoint->distance(mySecondPoint) < Precision::Confusion()) {
+      myError = "Box builder with points :: the distance between the two points is null.";
+      return false;
+    }
+  } else {
+    myError = "Box builder :: Method not implemented.";
     return false;
   }
   return true;
@@ -40,6 +61,19 @@ bool GeomAlgoAPI_Box::check()
 
 //=================================================================================================
 void GeomAlgoAPI_Box::build()
+{
+  if (myMethodType == MethodType::BOX_DIM) {
+    buildWithDimensions();
+  } else if (myMethodType == MethodType::BOX_POINTS) {
+    buildWithPoints();
+  } else {
+    myError = "Box builder :: Method not implemented.";
+    return;
+  }
+}
+
+//=================================================================================================
+void GeomAlgoAPI_Box::buildWithDimensions()
 {
   myCreatedFaces.clear();
   
@@ -61,6 +95,42 @@ void GeomAlgoAPI_Box::build()
   // Test on the shapes
   if (!aShape.get() || aShape->isNull()) {
     myError = "Box builder with dimensions  :: resulting shape is null.";
+    return;
+  }
+  
+  setImpl(aBoxMaker);
+  
+  setDone(true);
+}
+
+
+//=================================================================================================
+void GeomAlgoAPI_Box::buildWithPoints()
+{
+  myCreatedFaces.clear();
+  
+  const gp_Pnt& aFirstPoint = myFirstPoint->impl<gp_Pnt>();
+  const gp_Pnt& aSecondPoint = mySecondPoint->impl<gp_Pnt>();
+
+  // Construct the box
+  BRepPrimAPI_MakeBox *aBoxMaker = new  BRepPrimAPI_MakeBox(aFirstPoint, aSecondPoint);
+  aBoxMaker->Build();
+  
+  // Test the algorithm
+  if(!aBoxMaker->IsDone()) {
+    myError = "Box builder with two points  :: algorithm failed.";
+    return;
+  }
+    
+  TopoDS_Shape aResult = aBoxMaker->Shape();
+  
+  std::shared_ptr<GeomAPI_Shape> aShape(new GeomAPI_Shape());
+  aShape->setImpl(new TopoDS_Shape(aResult));
+  setShape(aShape);
+  
+  // Tests on the shape
+  if (!aShape.get() || aShape->isNull()) {
+    myError = "Box builder with two points  :: resulting shape is null.";
     return;
   }
   
