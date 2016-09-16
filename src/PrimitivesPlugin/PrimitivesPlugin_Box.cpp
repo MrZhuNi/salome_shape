@@ -68,11 +68,11 @@ void PrimitivesPlugin_Box::createBoxByDimensions()
 
   // Check if the creation of the box
   if(!aBoxAlgo->isDone()) {
-    setError(aBoxAlgo->getError());
+    setError(aBoxAlgo->getError(), false);
     return;
   }
   if(!aBoxAlgo->checkValid("Box builder with dimensions")) {
-    setError(aBoxAlgo->getError());
+    setError(aBoxAlgo->getError(), false);
     return;
   }
   
