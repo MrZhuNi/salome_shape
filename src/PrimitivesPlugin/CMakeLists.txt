@@ -10,16 +10,19 @@ SET(PROJECT_HEADERS
     PrimitivesPlugin.h
     PrimitivesPlugin_Plugin.h
     PrimitivesPlugin_Box.h
+    PrimitivesPlugin_Sphere.h
 )
 
 SET(PROJECT_SOURCES
     PrimitivesPlugin_Plugin.cpp
     PrimitivesPlugin_Box.cpp
+    PrimitivesPlugin_Sphere.cpp
 )
 
 SET(XML_RESOURCES
   plugin-Primitives.xml
   box_widget.xml
+  sphere_widget.xml
 )
 
 INCLUDE_DIRECTORIES(
@@ -44,7 +47,7 @@ INSTALL(TARGETS PrimitivesPlugin DESTINATION ${SHAPER_INSTALL_PLUGIN_FILES})
 INSTALL(FILES ${XML_RESOURCES} DESTINATION ${SHAPER_INSTALL_XML_RESOURCES})
 INSTALL(DIRECTORY icons/ DESTINATION ${SHAPER_INSTALL_XML_RESOURCES}/icons/Primitives)
 
-ADD_UNIT_TESTS(UnitTestBox.py
-               APIDirectTestBox.py
+ADD_UNIT_TESTS(TestBox.py
+               TestSphere.py
 )
 

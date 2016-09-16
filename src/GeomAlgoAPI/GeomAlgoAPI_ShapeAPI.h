@@ -35,6 +35,18 @@ public:
   /// \return a shape
   static std::shared_ptr<GeomAPI_Shape> makeBox(std::shared_ptr<GeomAPI_Pnt> theFirstPoint,
                                                 std::shared_ptr<GeomAPI_Pnt> theSecondPoint) throw (GeomAlgoAPI_Exception);
+  
+  /// Creates a sphere centered around the origin using a radius.
+  /// \param theRadius Radius of the sphere
+  /// \return a shape
+  static std::shared_ptr<GeomAPI_Shape> makeSphere(const double theRadius) throw (GeomAlgoAPI_Exception);
+                                                
+  /// Creates a sphere using a center and a radius.
+  /// \param theCenterPoint Center of the sphere
+  /// \param theRadius Radius of the sphere
+  /// \return a shape
+  static std::shared_ptr<GeomAPI_Shape> makeSphere(std::shared_ptr<GeomAPI_Pnt> theCenterPoint,
+                                                   const double theRadius) throw (GeomAlgoAPI_Exception);
 };
 }
 #endif

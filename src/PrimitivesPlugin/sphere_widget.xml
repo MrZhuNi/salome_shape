@@ -1,0 +1,23 @@
+<!-- Copyright (C) 2015-2016 CEA/DEN, EDF R&D -->
+
+<source>
+  <shape_selector
+      id="center"
+      label="center"
+      default=""
+      shape_types="vertex"
+      icon="icons/Primitives/point.png"
+      tooltip="Select a center">
+    <validator id="GeomValidators_ConstructionComposite"/>
+    <validator id="GeomValidators_ShapeType" parameters="vertex"/>
+  </shape_selector>
+  <doublevalue
+      id="radius"
+      label="radius"
+      step="1."
+      default="10."
+      min="0."
+      icon="icons/Primitives/radius.png"
+      tooltip="Enter a radius">
+  </doublevalue>
+</source>

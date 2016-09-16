@@ -44,6 +44,7 @@
   #include "GeomAlgoAPI_Exception.h"
   #include "GeomAlgoAPI_ShapeAPI.h"
   #include "GeomAlgoAPI_Box.h"
+  #include "GeomAlgoAPI_Sphere.h"
   #include "GeomAlgoAPI_Copy.h"
 
   #include <memory>

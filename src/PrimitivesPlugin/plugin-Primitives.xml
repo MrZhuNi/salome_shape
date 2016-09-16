@@ -8,6 +8,9 @@
       <feature id="Box" title="Box" tooltip="Create a box" icon="icons/Primitives/box.png">
         <source path="box_widget.xml"/>
       </feature>
+      <feature id="Sphere" title="Sphere" tooltip="Create a Sphere" icon="icons/Primitives/sphere.png">
+        <source path="sphere_widget.xml"/>
+      </feature>
     </group>
   </workbench>
 </plugin>
