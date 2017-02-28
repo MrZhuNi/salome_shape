@@ -38,6 +38,7 @@ SET(PROJECT_HEADERS
     SketchPlugin_Sketch.h
     SketchPlugin_SketchEntity.h
     SketchPlugin_Tools.h
+    SketchPlugin_Trim.h
     SketchPlugin_Validators.h
 )
 
@@ -75,6 +76,7 @@ SET(PROJECT_SOURCES
     SketchPlugin_Sketch.cpp
     SketchPlugin_SketchEntity.cpp
     SketchPlugin_Tools.cpp
+    SketchPlugin_Trim.cpp
     SketchPlugin_Validators.cpp
 )
 

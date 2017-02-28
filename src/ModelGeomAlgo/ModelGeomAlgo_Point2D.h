@@ -57,6 +57,18 @@ namespace ModelGeomAlgo_Point2D {
                                   const std::string& theObjectFeatureAttribute = "",
                                   const bool isSkipFeatureAttributes = true);
 
+  /// Find points of intersection between the shape of the feature and all features in the sketch
+  /// \param theBaseFeature a feature: line, arc or circle that will be intersected
+  /// \param theFeatures a container of features to intersect with the base feature
+  /// \param thePoints a container of 3D points belong to the shape
+  /// \param theObjectToPoint a container of object to point
+  MODELGEOMALGO_EXPORT void getPointsIntersectedShape(
+                              const std::shared_ptr<ModelAPI_Feature>& theBaseFeature,
+                              const std::list<std::shared_ptr<ModelAPI_Feature> >& theFeatures,
+                              std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
+                              std::map<std::shared_ptr<ModelAPI_Object>,
+                                           std::shared_ptr<GeomAPI_Pnt> >& theObjectToPoint);
+
   /// Removes attributes which points are out of the base shape
   /// \param theBaseShape a shape of check
   /// \param theAttributes a container of point 2D attributes
@@ -64,6 +76,7 @@ namespace ModelGeomAlgo_Point2D {
   /// \param theDirX plane X direction to generate 3D point by 2D attribute point
   /// \param theDirY plane X direction to generate 3D point by 2D attribute point
   /// \param thePoints a container of 3D points belong to the shape
+  /// \param theAttributeToPoint a container of attribute to point
   MODELGEOMALGO_EXPORT void getPointsInsideShape(
                               const std::shared_ptr<GeomAPI_Shape> theBaseShape,
                               const std::set<std::shared_ptr<GeomDataAPI_Point2D> >& theAttributes,

@@ -915,7 +915,7 @@ bool SketchPlugin_SplitValidator::isValid(const AttributePtr& theAttribute,
       aKind == SketchPlugin_Arc::ID() ||
       aKind == SketchPlugin_Circle::ID()) {
 
-    std::set<GeomShapePtr> anEdgeShapes;
+    std::set<ResultPtr> anEdgeShapes;
     ModelAPI_Tools::shapesOfType(anAttrFeature, GeomAPI_Shape::EDGE, anEdgeShapes);
     if (anEdgeShapes.empty() || anEdgeShapes.size() > 1 /*there case has not existed yet*/)
       return aValid;
@@ -926,7 +926,7 @@ bool SketchPlugin_SplitValidator::isValid(const AttributePtr& theAttribute,
                         SketchPlugin_ConstraintCoincidence::ID(),
                         aRefAttributes, SketchPlugin_Point::ID(), SketchPlugin_Point::COORD_ID());
 
-    GeomShapePtr anAttrShape = *anEdgeShapes.begin();
+    GeomShapePtr anAttrShape = (*anEdgeShapes.begin())->shape();
     std::shared_ptr<SketchPlugin_Feature> aSFeature =
                                  std::dynamic_pointer_cast<SketchPlugin_Feature>(anAttrFeature);
     SketchPlugin_Sketch* aSketch = aSFeature->sketch();
@@ -946,6 +946,19 @@ bool SketchPlugin_SplitValidator::isValid(const AttributePtr& theAttribute,
     ModelGeomAlgo_Point2D::getPointsInsideShape(anAttrShape, aRefAttributes, aC->pnt(),
                                                 aX->dir(), aDirY, aPoints, aPointToAttributes);
 
+    if (theArguments.size() > 0) { // use graphic intersection
+      // intersection points
+      //std::shared_ptr<ModelAPI_CompositeFeature> aCompositeFeature(aSketch);
+      std::map<std::shared_ptr<ModelAPI_Object>, std::shared_ptr<GeomAPI_Pnt> > aPointToObjects;
+      std::list<FeaturePtr> aFeatures;
+      for (int i = 0; i < aSketch->numberOfSubs(); i++) {
+        FeaturePtr aFeature = aSketch->subFeature(i);
+        if (aFeature.get())
+          aFeatures.push_back(aFeature);
+      }
+      ModelGeomAlgo_Point2D::getPointsIntersectedShape(aSFeature, aFeatures, aPoints,
+                                                       aPointToObjects);
+    }
     int aCoincidentToFeature = (int)aPoints.size();
     if (aKind == SketchPlugin_Circle::ID())
       aValid = aCoincidentToFeature >= 2;

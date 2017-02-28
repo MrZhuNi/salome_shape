@@ -9,6 +9,8 @@
 #include <ModelAPI_Feature.h>
 #include <ModelAPI_Result.h>
 #include <ModelAPI_AttributeRefAttr.h>
+#include <ModelAPI_CompositeFeature.h>
+#include <ModelAPI_Tools.h>
 
 #include <GeomAlgoAPI_ShapeTools.h>
 #include <GeomDataAPI_Point2D.h>
@@ -115,6 +117,64 @@ namespace ModelGeomAlgo_Point2D {
         ResultPtr aResult = *aRIter;
         getPointsOfReference(aResult, theReferenceFeatureKind, theAttributes, theObjectFeatureKind,
                              theObjectFeatureAttribute);
+      }
+    }
+  }
+
+  void getPointsIntersectedShape(const std::shared_ptr<ModelAPI_Feature>& theBaseFeature,
+                                 const std::list<std::shared_ptr<ModelAPI_Feature> >& theFeatures,
+                                 std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
+                                 std::map<std::shared_ptr<ModelAPI_Object>,
+                                               std::shared_ptr<GeomAPI_Pnt> >& theObjectToPoint)
+  {
+    GeomShapePtr aFeatureShape;
+    {
+      std::set<ResultPtr> anEdgeShapes;
+      ModelAPI_Tools::shapesOfType(theBaseFeature, GeomAPI_Shape::EDGE, anEdgeShapes);
+      if (anEdgeShapes.empty())
+        return;
+      aFeatureShape = (*anEdgeShapes.begin())->shape();
+    }
+
+    std::list<std::shared_ptr<ModelAPI_Feature> >::const_iterator anIt = theFeatures.begin(),
+                                                                  aLast = theFeatures.end();
+    for (; anIt != aLast; anIt++) {
+      FeaturePtr aFeature = *anIt;
+      if (aFeature.get() == theBaseFeature.get())
+        continue;
+      if (aFeature.get()) {
+        std::set<ResultPtr> anEdgeShapes;
+        ModelAPI_Tools::shapesOfType(aFeature, GeomAPI_Shape::EDGE, anEdgeShapes);
+        if (anEdgeShapes.empty())
+          continue;
+        ResultPtr aResult = *anEdgeShapes.begin();
+        GeomShapePtr aShape = aResult->shape();
+
+        GeomShapePtr aShapeOfIntersection = aFeatureShape->intersect(aShape);
+        if (!aShapeOfIntersection.get())
+          continue;
+        switch (aShapeOfIntersection->shapeType()) {
+          case GeomAPI_Shape::VERTEX: {
+            std::shared_ptr<GeomAPI_Vertex> aVertex =
+              std::shared_ptr<GeomAPI_Vertex>(new GeomAPI_Vertex(aShapeOfIntersection));
+            std::shared_ptr<GeomAPI_Pnt> aPnt = aVertex->point();
+            thePoints.push_back(aPnt);
+            theObjectToPoint[aResult] = aPnt;
+          }
+          break;
+          case GeomAPI_Shape::EDGE: {
+            /*std::shared_ptr<GeomAPI_Edge> anEdge =
+              std::shared_ptr<GeomAPI_Edge>(new GeomAPI_Vertex(aShapeOfIntersection));
+            std::shared_ptr<GeomAPI_Pnt> aPnt = aVertex->point();
+            thePoints.push_back(aPnt);
+            theObjectToPoint[aResult] = aPnt;*/
+          }
+          break;
+          case GeomAPI_Shape::COMPOUND: {
+          }
+          break;
+          default: break;
+        }
       }
     }
   }

@@ -45,6 +45,7 @@ PartSet_WidgetSubShapeSelector::PartSet_WidgetSubShapeSelector(QWidget* theParen
                                                          const Config_WidgetAPI* theData)
 : ModuleBase_WidgetShapeSelector(theParent, theWorkshop, theData)
 {
+  myUseGraphicIntersection = theData->getBooleanAttribute("use_graphic_intersection", false);
   myCurrentSubShape = std::shared_ptr<ModuleBase_ViewerPrs>(new ModuleBase_ViewerPrs());
 }
 
@@ -163,7 +164,7 @@ bool PartSet_WidgetSubShapeSelector::setSelection(
       std::shared_ptr<GeomAPI_Pnt> aLastPnt = anEdge->lastPoint();
 
       std::shared_ptr<GeomDataAPI_Point2D> aFirstPointAttr, aLastPointAttr;
-      /// find the points in feature attributes
+      /// find the points in base feature attributes
       FeaturePtr aBaseFeature = ModelAPI_Feature::feature(aBaseObject);
       std::list<AttributePtr> a2DPointAttributes = aBaseFeature->data()->attributes(
                                                         GeomDataAPI_Point2D::typeId());
@@ -195,7 +196,27 @@ bool PartSet_WidgetSubShapeSelector::setSelection(
         if (aFirstPointAttr.get() && aLastPointAttr.get())
           break;
       }
-      if (!aFirstPointAttr.get() || !aLastPointAttr)
+
+      /// find the points in objects that intersect the base feature
+      ObjectPtr aFirstPointObject, aLastPointObject;
+      if (myUseGraphicIntersection && (!aFirstPointAttr.get() || !aLastPointAttr.get())) {
+        PntToObjectsMap aRefObjects = myCashedObjects[aBaseObject];
+        PntToObjectsMap::const_iterator
+          anObjectIt = aRefObjects.begin(), anObjectLast = aRefObjects.end();
+        for (; anObjectIt != anObjectLast; anObjectIt++) {
+          std::shared_ptr<ModelAPI_Object> anObject = anObjectIt->first;
+          std::shared_ptr<GeomAPI_Pnt> aPoint = aRIt->second;
+          if (!aFirstPointAttr.get() && !aFirstPointObject.get() && aFirstPnt->isEqual(aPoint))
+            aFirstPointObject = anObject;
+          if (!aLastPointAttr.get() && !aLastPointObject.get() && aLastPnt->isEqual(aPoint))
+            aLastPointObject = anObject;
+          if (aFirstPointAttr.get() && aLastPointAttr.get())
+            break;
+        }
+      }
+
+      if ((!aFirstPointAttr.get() && !aFirstPointObject.get()) ||
+          (!aLastPointAttr.get() && !aLastPointObject.get()))
         return false;
 
       FeaturePtr aFeature = feature();
@@ -203,8 +224,16 @@ bool PartSet_WidgetSubShapeSelector::setSelection(
                                           aFeature->attribute(SketchPlugin_Constraint::ENTITY_A()));
       AttributeRefAttrPtr aBPointAttr = std::dynamic_pointer_cast<ModelAPI_AttributeRefAttr>(
                                           aFeature->attribute(SketchPlugin_Constraint::ENTITY_B()));
-      anAPointAttr->setAttr(aFirstPointAttr);
-      aBPointAttr->setAttr(aLastPointAttr);
+      if (aFirstPointAttr.get())
+        anAPointAttr->setAttr(aFirstPointAttr);
+      else
+        anAPointAttr->setObject(aFirstPointObject);
+
+      if (aFirstPointAttr.get())
+        aBPointAttr->setAttr(aLastPointAttr);
+      else
+        aBPointAttr->setObject(aLastPointObject);
+
       aResult = true;
     }
   }
@@ -225,16 +254,20 @@ void PartSet_WidgetSubShapeSelector::fillObjectShapes(const ObjectPtr& theObject
 {
   std::set<std::shared_ptr<GeomAPI_Shape> > aShapes;
   std::map<std::shared_ptr<GeomDataAPI_Point2D>, std::shared_ptr<GeomAPI_Pnt> > aPointToAttributes;
+  std::map<std::shared_ptr<ModelAPI_Object>, std::shared_ptr<GeomAPI_Pnt> > aPointToObjects;
+
   std::set<std::shared_ptr<GeomDataAPI_Point2D> > aRefAttributes;
   // current feature
   FeaturePtr aFeature = ModelAPI_Feature::feature(theObject);
-  std::set<GeomShapePtr> anEdgeShapes;
+  std::set<ResultPtr> anEdgeShapes;
   // edges on feature
   ModelAPI_Tools::shapesOfType(aFeature, GeomAPI_Shape::EDGE, anEdgeShapes);
   if (!anEdgeShapes.empty()) {
-    GeomShapePtr aFeatureShape = *anEdgeShapes.begin();
+    GeomShapePtr aFeatureShape = (*anEdgeShapes.begin())->shape();
 
     // coincidences to the feature
+    std::list<std::shared_ptr<GeomAPI_Pnt> > aPoints;
+
     ModelGeomAlgo_Point2D::getPointsOfReference(aFeature, SketchPlugin_ConstraintCoincidence::ID(),
                          aRefAttributes, SketchPlugin_Point::ID(), SketchPlugin_Point::COORD_ID());
     // layed on feature coincidences to divide it on several shapes
@@ -247,13 +280,25 @@ void PartSet_WidgetSubShapeSelector::fillObjectShapes(const ObjectPtr& theObject
     std::shared_ptr<GeomDataAPI_Dir> aNorm = std::dynamic_pointer_cast<GeomDataAPI_Dir>(
         aData->attribute(SketchPlugin_Sketch::NORM_ID()));
     std::shared_ptr<GeomAPI_Dir> aY(new GeomAPI_Dir(aNorm->dir()->cross(aX->dir())));
-    std::list<std::shared_ptr<GeomAPI_Pnt> > aPoints;
     ModelGeomAlgo_Point2D::getPointsInsideShape(aFeatureShape, aRefAttributes, aC->pnt(),
                                                 aX->dir(), aY, aPoints, aPointToAttributes);
 
+    // intersection points
+    if (myUseGraphicIntersection) {
+      std::list<FeaturePtr> aFeatures;
+      for (int i = 0; i < aSketch->numberOfSubs(); i++) {
+        FeaturePtr aFeature = aSketch->subFeature(i);
+        if (aFeature.get())
+          aFeatures.push_back(aFeature);
+      }
+      ModelGeomAlgo_Point2D::getPointsIntersectedShape(aFeature, aFeatures, aPoints,
+                                                       aPointToObjects);
+    }
     GeomAlgoAPI_ShapeTools::splitShape(aFeatureShape, aPoints, aShapes);
   }
   myCashedShapes[theObject] = aShapes;
   myCashedReferences[theObject] = aPointToAttributes;
+  if (myUseGraphicIntersection)
+    myCashedObjects[theObject] = aPointToObjects;
 }
 
