@@ -1,98 +1,185 @@
 // Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 
-// File:        PartSet_WidgetSubShapeSelector.cpp
-// Created:     21 Jul 2016
+// File:        PartSet_WidgetFeaturePointSelector.cpp
+// Created:     28 Feb 2017
 // Author:      Natalia ERMOLAEVA
 
-#include "PartSet_WidgetSubShapeSelector.h"
-#include "PartSet_Tools.h"
+#include <Config_WidgetAPI.h>
+
+#include <Events_Loop.h>
+
+#include <GeomDataAPI_Point2D.h>
+#include <GeomDataAPI_Point.h>
+#include <GeomAPI_Edge.h>
+#include <GeomAPI_Pnt2d.h>
+#include <GeomAlgoAPI_ShapeTools.h>
 
 #include <ModuleBase_ISelection.h>
 #include <ModuleBase_ViewerPrs.h>
 
+#include <ModelAPI_Events.h>
 #include <ModelAPI_Feature.h>
 #include <ModelAPI_Tools.h>
-#include <GeomDataAPI_Point2D.h>
 
-#include <GeomDataAPI_Point.h>
-#include <GeomAPI_Edge.h>
-#include <GeomAPI_Pnt2d.h>
-
-#include <GeomAlgoAPI_ShapeTools.h>
+#include <ModuleBase_IViewWindow.h>
+#include <ModuleBase_IWorkshop.h>
+#include <ModuleBase_IModule.h>
 #include <ModelGeomAlgo_Point2D.h>
 
-#include <ModelGeomAlgo_Point2D.h>
+#include "PartSet_WidgetFeaturePointSelector.h"
+#include "PartSet_Tools.h"
 
 #include <SketchPlugin_ConstraintCoincidence.h>
 #include <SketchPlugin_Constraint.h>
 #include <SketchPlugin_Point.h>
 #include <SketchPlugin_Trim.h>
 
-#include <ModuleBase_IViewWindow.h>
-#include <ModuleBase_IWorkshop.h>
-#include <ModuleBase_IModule.h>
-
-#include <Config_WidgetAPI.h>
-
 #include <XGUI_Tools.h>
 #include <XGUI_Workshop.h>
 #include <XGUI_Displayer.h>
+#include <XGUI_ViewerProxy.h>
 
 #include <QWidget>
 #include <QMouseEvent>
 
-PartSet_WidgetSubShapeSelector::PartSet_WidgetSubShapeSelector(QWidget* theParent,
+#define HIGHLIGHT_STAYS_PROBLEM
+#ifdef HIGHLIGHT_STAYS_PROBLEM
+#include <Quantity_Color.hxx>
+#define SKETCH_ENTITY_COLOR "225,0,0"
+#endif
+
+PartSet_WidgetFeaturePointSelector::PartSet_WidgetFeaturePointSelector(QWidget* theParent,
                                                          ModuleBase_IWorkshop* theWorkshop,
                                                          const Config_WidgetAPI* theData)
 : ModuleBase_WidgetShapeSelector(theParent, theWorkshop, theData)
 {
   myUseGraphicIntersection = theData->getBooleanAttribute("use_graphic_intersection", false);
-  myCurrentSubShape = std::shared_ptr<ModuleBase_ViewerPrs>(new ModuleBase_ViewerPrs());
+  //myCurrentSubShape = std::shared_ptr<ModuleBase_ViewerPrs>(new ModuleBase_ViewerPrs());
 }
 
-PartSet_WidgetSubShapeSelector::~PartSet_WidgetSubShapeSelector()
+PartSet_WidgetFeaturePointSelector::~PartSet_WidgetFeaturePointSelector()
 {
-  myCashedShapes.clear();
+  //myCashedShapes.clear();
 }
 
 //********************************************************************
-void PartSet_WidgetSubShapeSelector::activateCustom()
+bool PartSet_WidgetFeaturePointSelector::isValidSelection(
+                                        const std::shared_ptr<ModuleBase_ViewerPrs>& theValue)
+{
+  return true;
+}
+
+//********************************************************************
+void PartSet_WidgetFeaturePointSelector::activateCustom()
 {
   ModuleBase_WidgetShapeSelector::activateCustom();
 
   myWorkshop->module()->activateCustomPrs(myFeature,
                             ModuleBase_IModule::CustomizeHighlightedObjects, true);
+
+  Handle(AIS_InteractiveContext) aContext =
+                          XGUI_Tools::workshop(myWorkshop)->viewer()->AISContext();
+
+  std::vector<int> aColors;
+  aColors = Config_PropManager::color("Visualization", "sketch_entity_color",
+                                     SKETCH_ENTITY_COLOR);
+  Quantity_Color aColor(aColors[0] / 255., aColors[1] / 255., aColors[2] / 255., Quantity_TOC_RGB);
+
+#ifdef HIGHLIGHT_STAYS_PROBLEM
+  Handle(Graphic3d_HighlightStyle) aHStyle = aContext->HighlightStyle();
+  myHighlightColor = aHStyle->Color();
+  aHStyle->SetColor(aColor);
+  aContext->SetHighlightStyle(aHStyle);
+
+  Handle(Graphic3d_HighlightStyle) aSStyle = aContext->SelectionStyle();
+  mySelectionColor = aSStyle->Color();
+  aSStyle->SetColor(aColor);
+  aContext->SetSelectionStyle(aSStyle);
+#endif
 }
 
 //********************************************************************
-void PartSet_WidgetSubShapeSelector::deactivate()
+void PartSet_WidgetFeaturePointSelector::deactivate()
 {
   ModuleBase_WidgetShapeSelector::deactivate();
 
-  myWorkshop->module()->deactivateCustomPrs(ModuleBase_IModule::CustomizeHighlightedObjects, true);
+  Handle(AIS_InteractiveContext) aContext =
+                          XGUI_Tools::workshop(myWorkshop)->viewer()->AISContext();
+
+#ifdef HIGHLIGHT_STAYS_PROBLEM
+  Handle(Graphic3d_HighlightStyle) aHStyle = aContext->HighlightStyle();
+  aHStyle->SetColor(myHighlightColor);
+  aContext->SetHighlightStyle(aHStyle);
+
+  Handle(Graphic3d_HighlightStyle) aSStyle = aContext->SelectionStyle();
+  aSStyle->SetColor(mySelectionColor);
+  aContext->SetSelectionStyle(aSStyle);
+#endif
+  //myWorkshop->module()->deactivateCustomPrs(ModuleBase_IModule::CustomizeHighlightedObjects, true);
 }
 
 //********************************************************************
-void PartSet_WidgetSubShapeSelector::mouseMoved(ModuleBase_IViewWindow* theWindow,
-                                                QMouseEvent* theEvent)
+void PartSet_WidgetFeaturePointSelector::mouseMoved(ModuleBase_IViewWindow* theWindow,
+                                                    QMouseEvent* theEvent)
 {
   ModuleBase_ISelection* aSelect = myWorkshop->selection();
   QList<ModuleBase_ViewerPrsPtr> aHighlighted = aSelect->getHighlighted();
 
   if (!aHighlighted.empty()) {
     ModuleBase_ViewerPrsPtr aPrs = aHighlighted.first();
-    if (aPrs.get() && aPrs->object().get()) {
-      ObjectPtr anObject = aPrs->object();
-      if (myCashedShapes.find(anObject) == myCashedShapes.end())
-        fillObjectShapes(anObject);
-      const std::set<GeomShapePtr>& aShapes = myCashedShapes[anObject];
-      if (!aShapes.empty()) {
-        gp_Pnt aPnt = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWindow->v3dView());
-        double aX, anY;
-        Handle(V3d_View) aView = theWindow->v3dView();
-        PartSet_Tools::convertTo2D(aPnt, mySketch, aView, aX, anY);
-        std::shared_ptr<GeomAPI_Pnt> aPoint = PartSet_Tools::convertTo3D(aX, anY, mySketch);
+    fillFeature(aPrs, theWindow, theEvent);
+  }
+}
 
+//********************************************************************
+void PartSet_WidgetFeaturePointSelector::mouseReleased(ModuleBase_IViewWindow* theWindow,
+                                                       QMouseEvent* theEvent)
+{
+  // the contex menu release by the right button should not be processed by this widget
+  if (theEvent->button() != Qt::LeftButton)
+    return;
+
+  emit focusOutWidget(this);
+}
+
+//********************************************************************
+bool PartSet_WidgetFeaturePointSelector::fillFeature(
+                            const std::shared_ptr<ModuleBase_ViewerPrs>& theSelectedPrs,
+                            ModuleBase_IViewWindow* theWindow,
+                            QMouseEvent* theEvent)
+{
+  bool aFilled = false;
+  if (theSelectedPrs.get() && theSelectedPrs->object().get()) {
+    ObjectPtr anObject = theSelectedPrs->object();
+    //if (myCashedShapes.find(anObject) == myCashedShapes.end())
+    //  fillObjectShapes(anObject);
+    //const std::set<GeomShapePtr>& aShapes = myCashedShapes[anObject];
+    //if (!aShapes.empty()) {
+    gp_Pnt aPnt = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWindow->v3dView());
+    double aX, anY;
+    Handle(V3d_View) aView = theWindow->v3dView();
+    PartSet_Tools::convertTo2D(aPnt, mySketch, aView, aX, anY);
+    //std::shared_ptr<GeomAPI_Pnt> aPoint = PartSet_Tools::convertTo3D(aX, anY, mySketch);
+
+    std::shared_ptr<ModelAPI_AttributeReference> aRef =
+                            std::dynamic_pointer_cast<ModelAPI_AttributeReference>(
+                            feature()->data()->attribute(SketchPlugin_Trim::BASE_OBJECT()));
+    aRef->setValue(anObject);
+
+    std::shared_ptr<GeomDataAPI_Point2D> anAttributePoint =
+                    std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+                    feature()->data()->attribute(SketchPlugin_Trim::ENTITY_POINT()));
+    //std::shared_ptr<GeomAPI_Pnt2d> aPoint2D = anAttributePoint->pnt();
+    anAttributePoint->setValue(aX, anY);
+    // redisplay AIS presentation in viewer
+#ifndef HIGHLIGHT_STAYS_PROBLEM
+    // an attempt to clear highlighted item in the viewer: but of OCCT
+    XGUI_Tools::workshop(myWorkshop)->displayer()->clearSelected(true);
+#endif
+    updateObject(feature());
+    aFilled = true;
+
+    /*
         std::set<GeomShapePtr>::const_iterator anIt = aShapes.begin(), aLast = aShapes.end();
         for (; anIt != aLast; anIt++) {
           GeomShapePtr aBaseShape = *anIt;
@@ -114,17 +201,18 @@ void PartSet_WidgetSubShapeSelector::mouseMoved(ModuleBase_IViewWindow* theWindo
                                        ModuleBase_IModule::CustomizeHighlightedObjects, true);
             }
             else
-              XGUI_Tools::workshop(myWorkshop)->displayer()->updateViewer();;
+              XGUI_Tools::workshop(myWorkshop)->displayer()->updateViewer();
             break;
           }
-        }
-      }
-    }
+        }*/
+      //}
+    //}
   }
+  return aFilled;
 }
 
 //********************************************************************
-void PartSet_WidgetSubShapeSelector::getGeomSelection(const ModuleBase_ViewerPrsPtr& thePrs,
+/*void PartSet_WidgetFeaturePointSelector::getGeomSelection(const ModuleBase_ViewerPrsPtr& thePrs,
                                                       ObjectPtr& theObject,
                                                       GeomShapePtr& theShape)
 {
@@ -132,21 +220,24 @@ void PartSet_WidgetSubShapeSelector::getGeomSelection(const ModuleBase_ViewerPrs
   theObject = aSelection->getResult(thePrs);
   if (!theObject.get() && myCurrentSubShape->object())
     theObject = myCurrentSubShape->object();
-}
+}*/
 
 //********************************************************************
-QList<ModuleBase_ViewerPrsPtr> PartSet_WidgetSubShapeSelector::getAttributeSelection() const
+QList<ModuleBase_ViewerPrsPtr> PartSet_WidgetFeaturePointSelector::getAttributeSelection() const
 {
   return QList<ModuleBase_ViewerPrsPtr>();
 }
 
 
 //********************************************************************
-bool PartSet_WidgetSubShapeSelector::setSelection(
+bool PartSet_WidgetFeaturePointSelector::setSelection(
                                           QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues,
                                           const bool theToValidate)
 {
-  ObjectPtr aBaseObject = myCurrentSubShape->object();
+  return false;
+  //return !theValues.empty();
+
+  /*ObjectPtr aBaseObject = myCurrentSubShape->object();
   GeomShapePtr aBaseShape = myCurrentSubShape->shape();
   bool aResult = aBaseObject.get() && aBaseShape.get();
   // firstly set the selection to the attribute
@@ -239,7 +330,7 @@ bool PartSet_WidgetSubShapeSelector::setSelection(
       else
         aBPointAttr->setObject(aLastPointObject);
 
-      /*if (myUseGraphicIntersection) {
+      if (myUseGraphicIntersection) {
         // fill geometrical points
         AttributePtr anAPointAttr = aFeature->attribute(SketchPlugin_Trim::ENTITY_A_POINT());
         AttributePtr aBPointAttr = aFeature->attribute(SketchPlugin_Trim::ENTITY_B_POINT());
@@ -254,24 +345,41 @@ bool PartSet_WidgetSubShapeSelector::setSelection(
                                 std::dynamic_pointer_cast<GeomDataAPI_Point2D>(aBPointAttr);
           aBPoint->setValue(aLastPnt->to2D(aPlane));
         }
-      }*/
+      }
       aResult = true;
     }
   }
+  return aResult;*/
+  return false;
+}
 
-  return aResult;
+void PartSet_WidgetFeaturePointSelector::setPreSelection(
+                                  const std::shared_ptr<ModuleBase_ViewerPrs>& thePreSelected,
+                                  ModuleBase_IViewWindow* theWnd,
+                                  QMouseEvent* theEvent)
+{
+  if (fillFeature(thePreSelected, theWnd, theEvent))
+    mouseReleased(theWnd, theEvent);
 }
 
 //********************************************************************
-void PartSet_WidgetSubShapeSelector::getHighlighted(
+/*bool PartSet_WidgetFeaturePointSelector::isValidSelectionCustom(
+                                         const std::shared_ptr<ModuleBase_ViewerPrs>& thePrs)
+{
+   // as we are modfying the attribute in move, we should not check validity here, by highlight
+  return false;
+}*/
+
+//********************************************************************
+/*void PartSet_WidgetFeaturePointSelector::getHighlighted(
                            QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues)
 {
   if (myCurrentSubShape.get() && myCurrentSubShape->object().get())
     theValues.append(myCurrentSubShape);
-}
+}*/
 
 //********************************************************************
-void PartSet_WidgetSubShapeSelector::fillObjectShapes(const ObjectPtr& theObject)
+/*void PartSet_WidgetFeaturePointSelector::fillObjectShapes(const ObjectPtr& theObject)
 {
   std::set<std::shared_ptr<GeomAPI_Shape> > aShapes;
   std::map<std::shared_ptr<GeomDataAPI_Point2D>, std::shared_ptr<GeomAPI_Pnt> > aPointToAttributes;
@@ -302,11 +410,11 @@ void PartSet_WidgetSubShapeSelector::fillObjectShapes(const ObjectPtr& theObject
     std::shared_ptr<GeomDataAPI_Dir> aNorm = std::dynamic_pointer_cast<GeomDataAPI_Dir>(
         aData->attribute(SketchPlugin_Sketch::NORM_ID()));
     std::shared_ptr<GeomAPI_Dir> aY(new GeomAPI_Dir(aNorm->dir()->cross(aX->dir())));
-    ModelGeomAlgo_Point2D::getPointsInsideShape_p(aFeatureShape, aRefAttributes, aC->pnt(),
+    ModelGeomAlgo_Point2D::getPointsInsideShape(aFeatureShape, aRefAttributes, aC->pnt(),
                                                 aX->dir(), aY, aPoints, aPointToAttributes);
 
     // intersection points
-    /*if (myUseGraphicIntersection) {
+    if (myUseGraphicIntersection) {
       std::list<FeaturePtr> aFeatures;
       for (int i = 0; i < aSketch->numberOfSubs(); i++) {
         FeaturePtr aFeature = aSketch->subFeature(i);
@@ -315,12 +423,12 @@ void PartSet_WidgetSubShapeSelector::fillObjectShapes(const ObjectPtr& theObject
       }
       ModelGeomAlgo_Point2D::getPointsIntersectedShape(aFeature, aFeatures, aPoints,
                                                        aPointToObjects);
-    }*/
-    GeomAlgoAPI_ShapeTools::splitShape_p(aFeatureShape, aPoints, aShapes);
+    }
+    GeomAlgoAPI_ShapeTools::splitShape(aFeatureShape, aPoints, aShapes);
   }
   myCashedShapes[theObject] = aShapes;
   myCashedReferences[theObject] = aPointToAttributes;
   if (myUseGraphicIntersection)
     myCashedObjects[theObject] = aPointToObjects;
 }
-
+*/
