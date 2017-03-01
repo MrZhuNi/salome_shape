@@ -158,7 +158,7 @@
       <feature id="SketchTrim" title="Trim"
                tooltip="Trim selected segment arc or circle on intersection points nearest to the graphic selection"
                icon="icons/Sketch/trim.png">
-        <sketch_sub_shape_selector
+        <sketch_feature_point_selector
             id="ConstraintValue"
             label="Split feature"
             tooltip="Select feature for split"
@@ -166,7 +166,7 @@
             use_external="false"
             use_graphic_intersection="true">
           <validator id="SketchPlugin_SplitValidator" parameters="use_graphic_intersection"/>
-        </sketch_sub_shape_selector>
+        </sketch_feature_point_selector>
         <validator id="PartSet_SplitSelection"/>
       </feature>
     </group>

@@ -12,6 +12,8 @@
 #include <ModelAPI_CompositeFeature.h>
 #include <ModelAPI_Tools.h>
 
+#include <GeomAPI_ShapeIterator.h>
+
 #include <GeomAlgoAPI_ShapeTools.h>
 #include <GeomDataAPI_Point2D.h>
 
@@ -121,11 +123,59 @@ namespace ModelGeomAlgo_Point2D {
     }
   }
 
+  void appendPoint(const std::shared_ptr<GeomAPI_Pnt>& thePoint,
+                   const std::shared_ptr<ModelAPI_Result>& theResult,
+                   std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
+                   std::map<std::shared_ptr<GeomAPI_Pnt>,
+                                std::list< std::shared_ptr<ModelAPI_Object> > >& theObjectToPoint)
+  {
+    std::list< std::shared_ptr<ModelAPI_Object> > anObjects;
+    if (theObjectToPoint.find(thePoint) != theObjectToPoint.end())
+      anObjects = theObjectToPoint[thePoint];
+    thePoints.push_back(thePoint);
+    anObjects.push_back(theResult);
+    theObjectToPoint[thePoint].push_back(theResult);
+  }
+
+  void appendShapePoints(GeomShapePtr& theShape,
+                         const std::shared_ptr<ModelAPI_Result>& theResult,
+                         std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
+                         std::map<std::shared_ptr<GeomAPI_Pnt>,
+                              std::list< std::shared_ptr<ModelAPI_Object> > >& theObjectToPoint)
+  {
+    if (!theShape.get())
+      return;
+
+    switch (theShape->shapeType()) {
+      case GeomAPI_Shape::VERTEX: {
+        std::shared_ptr<GeomAPI_Vertex> aVertex =
+          std::shared_ptr<GeomAPI_Vertex>(new GeomAPI_Vertex(theShape));
+        std::shared_ptr<GeomAPI_Pnt> aPnt = aVertex->point();
+        appendPoint(aPnt, theResult, thePoints, theObjectToPoint);
+      }
+      break;
+      case GeomAPI_Shape::EDGE: {
+        std::shared_ptr<GeomAPI_Edge> anEdge =
+          std::shared_ptr<GeomAPI_Edge>(new GeomAPI_Edge(theShape));
+        appendPoint(anEdge->firstPoint(), theResult, thePoints, theObjectToPoint);
+        appendPoint(anEdge->lastPoint(), theResult, thePoints, theObjectToPoint);
+      }
+      break;
+      case GeomAPI_Shape::COMPOUND: {
+        for(GeomAPI_ShapeIterator anIt(theShape); anIt.more(); anIt.next()) {
+          appendShapePoints(anIt.current(), theResult, thePoints, theObjectToPoint);
+        }
+      }
+      break;
+      default: break;
+    }
+  }
+
   void getPointsIntersectedShape(const std::shared_ptr<ModelAPI_Feature>& theBaseFeature,
-                                 const std::list<std::shared_ptr<ModelAPI_Feature> >& theFeatures,
-                                 std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
-                                 std::map<std::shared_ptr<ModelAPI_Object>,
-                                               std::shared_ptr<GeomAPI_Pnt> >& theObjectToPoint)
+                        const std::list<std::shared_ptr<ModelAPI_Feature> >& theFeatures,
+                        std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
+                        std::map<std::shared_ptr<GeomAPI_Pnt>,
+                                std::list< std::shared_ptr<ModelAPI_Object> > >& theObjectToPoint)
   {
     GeomShapePtr aFeatureShape;
     {
@@ -151,30 +201,7 @@ namespace ModelGeomAlgo_Point2D {
         GeomShapePtr aShape = aResult->shape();
 
         GeomShapePtr aShapeOfIntersection = aFeatureShape->intersect(aShape);
-        if (!aShapeOfIntersection.get())
-          continue;
-        switch (aShapeOfIntersection->shapeType()) {
-          case GeomAPI_Shape::VERTEX: {
-            std::shared_ptr<GeomAPI_Vertex> aVertex =
-              std::shared_ptr<GeomAPI_Vertex>(new GeomAPI_Vertex(aShapeOfIntersection));
-            std::shared_ptr<GeomAPI_Pnt> aPnt = aVertex->point();
-            thePoints.push_back(aPnt);
-            theObjectToPoint[aResult] = aPnt;
-          }
-          break;
-          case GeomAPI_Shape::EDGE: {
-            /*std::shared_ptr<GeomAPI_Edge> anEdge =
-              std::shared_ptr<GeomAPI_Edge>(new GeomAPI_Vertex(aShapeOfIntersection));
-            std::shared_ptr<GeomAPI_Pnt> aPnt = aVertex->point();
-            thePoints.push_back(aPnt);
-            theObjectToPoint[aResult] = aPnt;*/
-          }
-          break;
-          case GeomAPI_Shape::COMPOUND: {
-          }
-          break;
-          default: break;
-        }
+        appendShapePoints(aShapeOfIntersection, aResult, thePoints, theObjectToPoint);
       }
     }
   }

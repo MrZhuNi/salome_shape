@@ -63,11 +63,11 @@ namespace ModelGeomAlgo_Point2D {
   /// \param thePoints a container of 3D points belong to the shape
   /// \param theObjectToPoint a container of object to point
   MODELGEOMALGO_EXPORT void getPointsIntersectedShape(
-                              const std::shared_ptr<ModelAPI_Feature>& theBaseFeature,
-                              const std::list<std::shared_ptr<ModelAPI_Feature> >& theFeatures,
-                              std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
-                              std::map<std::shared_ptr<ModelAPI_Object>,
-                                           std::shared_ptr<GeomAPI_Pnt> >& theObjectToPoint);
+                  const std::shared_ptr<ModelAPI_Feature>& theBaseFeature,
+                  const std::list<std::shared_ptr<ModelAPI_Feature> >& theFeatures,
+                  std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
+                  std::map<std::shared_ptr<GeomAPI_Pnt>,
+                            std::list< std::shared_ptr<ModelAPI_Object> > >& theObjectToPoint);
 
   /// Removes attributes which points are out of the base shape
   /// \param theBaseShape a shape of check

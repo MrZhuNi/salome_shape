@@ -949,7 +949,8 @@ bool SketchPlugin_SplitValidator::isValid(const AttributePtr& theAttribute,
     if (theArguments.size() > 0) { // use graphic intersection
       // intersection points
       //std::shared_ptr<ModelAPI_CompositeFeature> aCompositeFeature(aSketch);
-      std::map<std::shared_ptr<ModelAPI_Object>, std::shared_ptr<GeomAPI_Pnt> > aPointToObjects;
+       std::map<std::shared_ptr<GeomAPI_Pnt>,
+                              std::list< std::shared_ptr<ModelAPI_Object> > > aPointToObjects;
       std::list<FeaturePtr> aFeatures;
       for (int i = 0; i < aSketch->numberOfSubs(); i++) {
         FeaturePtr aFeature = aSketch->subFeature(i);

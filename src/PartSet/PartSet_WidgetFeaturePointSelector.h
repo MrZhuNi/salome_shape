@@ -1,19 +1,20 @@
 // Copyright (C) 2014-20xx CEA/DEN, EDF R&D
 
-// File:        PartSet_WidgetSubShapeSelector.h
-// Created:     21 Jul 2016
+// File:        PartSet_WidgetFeaturePointSelector.h
+// Created:     28 Feb 2017
 // Author:      Natalia ERMOLAEVA
 
 
-#ifndef PartSet_WidgetSubShapeSelector_H
-#define PartSet_WidgetSubShapeSelector_H
+#ifndef PartSet_WidgetFeaturePointSelector_H
+#define PartSet_WidgetFeaturePointSelector_H
+
+#include <ModelAPI_CompositeFeature.h>
+#include <ModuleBase_WidgetShapeSelector.h>
 
 #include "PartSet.h"
 #include "PartSet_MouseProcessor.h"
 
-#include <ModuleBase_WidgetShapeSelector.h>
-
-#include <ModelAPI_CompositeFeature.h>
+#include <Quantity_Color.hxx>
 
 #include <QObject>
 
@@ -33,12 +34,12 @@ class QMouseEvent;
 
 /**
 * \ingroup Modules
-* Customosation of PartSet_WidgetSubShapeSelector in order to visualize sub-shape 
+* Customosation of PartSet_WidgetFeaturePointSelector in order to visualize sub-shape
 * by mouse move over shape in the viewer. Split of the object is performed by
 * coincident points to the object. Segment between nearest coincidence is highlighted
 */
-class PARTSET_EXPORT PartSet_WidgetSubShapeSelector: public ModuleBase_WidgetShapeSelector,
-                                                     public PartSet_MouseProcessor
+class PARTSET_EXPORT PartSet_WidgetFeaturePointSelector: public ModuleBase_WidgetShapeSelector,
+                                                         public PartSet_MouseProcessor
 {
 Q_OBJECT
  public:
@@ -46,10 +47,18 @@ Q_OBJECT
   /// \param theParent the parent object
   /// \param theWorkshop instance of workshop interface
   /// \param theData the widget configuation. The attribute of the model widget is obtained from
-  PartSet_WidgetSubShapeSelector(QWidget* theParent, ModuleBase_IWorkshop* theWorkshop,
+  PartSet_WidgetFeaturePointSelector(QWidget* theParent, ModuleBase_IWorkshop* theWorkshop,
                                  const Config_WidgetAPI* theData);
 
-  virtual ~PartSet_WidgetSubShapeSelector();
+  virtual ~PartSet_WidgetFeaturePointSelector();
+
+  /// Checks all widget validator if the owner is valid. Firstly it checks custom widget validating,
+  /// next, the attribute's validating. It trying on the give selection to current attribute by
+  /// setting the value inside and calling validators. After this, the previous attribute value is
+  /// restored.The valid/invalid value is cashed.
+  /// \param theValue a selected presentation in the view
+  /// \return a boolean value
+  virtual bool isValidSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& theValue);
 
   /// Set sketcher
   /// \param theSketch a sketcher object
@@ -66,9 +75,14 @@ Q_OBJECT
   /// \param theEvent a mouse event
   virtual void mouseMoved(ModuleBase_IViewWindow* theWindow, QMouseEvent* theEvent);
 
+  /// Processing the mouse release event in the viewer
+  /// \param theWindow a view window
+  /// \param theEvent a mouse event
+  virtual void mouseReleased(ModuleBase_IViewWindow* theWindow, QMouseEvent* theEvent);
+
   /// Returns values which should be highlighted when the whidget is active
   /// \param theValues a list of presentations
-  virtual void getHighlighted(QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues);
+  //virtual void getHighlighted(QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues);
 
   /// Set the given wrapped value to the current widget
   /// This value should be processed in the widget according to the needs
@@ -79,6 +93,11 @@ Q_OBJECT
   virtual bool setSelection(QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues,
                             const bool theToValidate);
 
+  /// Fill preselection used in mouseReleased
+  //virtual void setPreSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& thePreSelected);
+  virtual void setPreSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& thePreSelected,
+                               ModuleBase_IViewWindow* theWnd,
+                               QMouseEvent* theEvent);
 protected:
   /// Checks the widget validity. By default, it returns true.
   /// \param thePrs a selected presentation in the view
@@ -92,15 +111,15 @@ protected:
   //virtual void getGeomSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& thePrs,
   //                              ObjectPtr& theObject,
   //                              GeomShapePtr& theShape);
-  void fillObjectShapes(const ObjectPtr& theObject);
+  //void fillObjectShapes(const ObjectPtr& theObject);
 
   /// Return an object and geom shape by the viewer presentation
   /// \param thePrs a selection
   /// \param theObject an output object
   /// \param theShape a shape of the selection
-  virtual void getGeomSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& thePrs,
-                                ObjectPtr& theObject,
-                                GeomShapePtr& theShape);
+  //virtual void getGeomSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& thePrs,
+  //                              ObjectPtr& theObject,
+  //                              GeomShapePtr& theShape);
 
   /// Return the attribute values wrapped in a list of viewer presentations
   /// \return a list of viewer presentations, which contains an attribute result and
@@ -112,20 +131,25 @@ protected:
   virtual void activateCustom();
 
 protected:
-  std::shared_ptr<ModuleBase_ViewerPrs> myCurrentSubShape;
-  std::map<ObjectPtr, std::set<GeomShapePtr> > myCashedShapes;
+  bool fillFeature(const std::shared_ptr<ModuleBase_ViewerPrs>& theSelectedPrs,
+                   ModuleBase_IViewWindow* theWnd,
+                   QMouseEvent* theEvent);
+  //std::shared_ptr<ModuleBase_ViewerPrs> myCurrentSubShape;
+  //std::map<ObjectPtr, std::set<GeomShapePtr> > myCashedShapes;
 
-  typedef std::map<std::shared_ptr<GeomDataAPI_Point2D>,
-                   std::shared_ptr<GeomAPI_Pnt> > PntToAttributesMap;
-  std::map<ObjectPtr, PntToAttributesMap> myCashedReferences;
+  //typedef std::map<std::shared_ptr<GeomDataAPI_Point2D>,
+  //                 std::shared_ptr<GeomAPI_Pnt> > PntToAttributesMap;
+  //std::map<ObjectPtr, PntToAttributesMap> myCashedReferences;
 
-  typedef std::map<std::shared_ptr<GeomAPI_Pnt>,
-             std::list< std::shared_ptr<ModelAPI_Object> > > PntToObjectsMap;
-  std::map<ObjectPtr, PntToObjectsMap> myCashedObjects;
+  //typedef std::map<std::shared_ptr<GeomAPI_Pnt>,
+  //           std::list< std::shared_ptr<ModelAPI_Object> > > PntToObjectsMap;
+  //std::map<ObjectPtr, PntToObjectsMap> myCashedObjects;
 
   /// Pointer to a sketch
   CompositeFeaturePtr mySketch;
   bool myUseGraphicIntersection;
+  Quantity_Color myHighlightColor;
+  Quantity_Color mySelectionColor;
 };
 
 #endif
