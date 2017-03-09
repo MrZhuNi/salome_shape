@@ -718,7 +718,6 @@ void GeomAlgoAPI_ShapeTools::splitShape(const std::shared_ptr<GeomAPI_Shape>& th
   }
   aBOP.AddArgument(aBaseEdge);
 
-  //std::list<std::shared_ptr<GeomAPI_Pnt> >::const_iterator aPtIt = thePoints.begin();
   PointToRefsMap::const_iterator aPIt = thePointsInfo.begin();
   for (; aPIt != thePointsInfo.end(); ++aPIt) {
     std::shared_ptr<GeomAPI_Pnt> aPnt = aPIt->first;

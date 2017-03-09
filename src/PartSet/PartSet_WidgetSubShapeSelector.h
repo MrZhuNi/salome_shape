@@ -119,13 +119,8 @@ protected:
                    std::shared_ptr<GeomAPI_Pnt> > PntToAttributesMap;
   std::map<ObjectPtr, PntToAttributesMap> myCashedReferences;
 
-  typedef std::map<std::shared_ptr<GeomAPI_Pnt>,
-             std::list< std::shared_ptr<ModelAPI_Object> > > PntToObjectsMap;
-  std::map<ObjectPtr, PntToObjectsMap> myCashedObjects;
-
   /// Pointer to a sketch
   CompositeFeaturePtr mySketch;
-  bool myUseGraphicIntersection;
 };
 
 #endif

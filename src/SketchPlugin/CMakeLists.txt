@@ -146,7 +146,6 @@ ADD_UNIT_TESTS(TestSketchPointLine.py
                TestHighload.py
                TestSnowflake.py
                TestArcBehavior.py
-               Test1924.py
                TestRemoveSketch.py
                Test1061.py
                Test1673.py

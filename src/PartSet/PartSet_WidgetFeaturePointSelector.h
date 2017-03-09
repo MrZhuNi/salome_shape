@@ -18,9 +18,6 @@
 
 #include <QObject>
 
-#include <set>
-#include <map>
-
 class ModuleBase_IWorkshop;
 class Config_WidgetAPI;
 class ModuleBase_IViewWindow;
@@ -99,28 +96,6 @@ Q_OBJECT
                                ModuleBase_IViewWindow* theWnd,
                                QMouseEvent* theEvent);
 protected:
-  /// Checks the widget validity. By default, it returns true.
-  /// \param thePrs a selected presentation in the view
-  /// \return a boolean value
-  //virtual bool isValidSelectionCustom(const std::shared_ptr<ModuleBase_ViewerPrs>& thePrs);
-
-  /// Return an object and geom shape by the viewer presentation
-  /// \param thePrs a selection
-  /// \param theObject an output object
-  /// \param theShape a shape of the selection
-  //virtual void getGeomSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& thePrs,
-  //                              ObjectPtr& theObject,
-  //                              GeomShapePtr& theShape);
-  //void fillObjectShapes(const ObjectPtr& theObject);
-
-  /// Return an object and geom shape by the viewer presentation
-  /// \param thePrs a selection
-  /// \param theObject an output object
-  /// \param theShape a shape of the selection
-  //virtual void getGeomSelection(const std::shared_ptr<ModuleBase_ViewerPrs>& thePrs,
-  //                              ObjectPtr& theObject,
-  //                              GeomShapePtr& theShape);
-
   /// Return the attribute values wrapped in a list of viewer presentations
   /// \return a list of viewer presentations, which contains an attribute result and
   /// a shape. If the attribute do not uses the shape, it is empty
@@ -134,20 +109,9 @@ protected:
   bool fillFeature(const std::shared_ptr<ModuleBase_ViewerPrs>& theSelectedPrs,
                    ModuleBase_IViewWindow* theWnd,
                    QMouseEvent* theEvent);
-  //std::shared_ptr<ModuleBase_ViewerPrs> myCurrentSubShape;
-  //std::map<ObjectPtr, std::set<GeomShapePtr> > myCashedShapes;
-
-  //typedef std::map<std::shared_ptr<GeomDataAPI_Point2D>,
-  //                 std::shared_ptr<GeomAPI_Pnt> > PntToAttributesMap;
-  //std::map<ObjectPtr, PntToAttributesMap> myCashedReferences;
-
-  //typedef std::map<std::shared_ptr<GeomAPI_Pnt>,
-  //           std::list< std::shared_ptr<ModelAPI_Object> > > PntToObjectsMap;
-  //std::map<ObjectPtr, PntToObjectsMap> myCashedObjects;
 
   /// Pointer to a sketch
   CompositeFeaturePtr mySketch;
-  bool myUseGraphicIntersection;
   Quantity_Color myHighlightColor;
   Quantity_Color mySelectionColor;
 };
