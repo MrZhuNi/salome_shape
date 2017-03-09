@@ -302,11 +302,11 @@ void PartSet_WidgetSubShapeSelector::fillObjectShapes(const ObjectPtr& theObject
     std::shared_ptr<GeomDataAPI_Dir> aNorm = std::dynamic_pointer_cast<GeomDataAPI_Dir>(
         aData->attribute(SketchPlugin_Sketch::NORM_ID()));
     std::shared_ptr<GeomAPI_Dir> aY(new GeomAPI_Dir(aNorm->dir()->cross(aX->dir())));
-    ModelGeomAlgo_Point2D::getPointsInsideShape(aFeatureShape, aRefAttributes, aC->pnt(),
+    ModelGeomAlgo_Point2D::getPointsInsideShape_p(aFeatureShape, aRefAttributes, aC->pnt(),
                                                 aX->dir(), aY, aPoints, aPointToAttributes);
 
     // intersection points
-    if (myUseGraphicIntersection) {
+    /*if (myUseGraphicIntersection) {
       std::list<FeaturePtr> aFeatures;
       for (int i = 0; i < aSketch->numberOfSubs(); i++) {
         FeaturePtr aFeature = aSketch->subFeature(i);
@@ -315,8 +315,8 @@ void PartSet_WidgetSubShapeSelector::fillObjectShapes(const ObjectPtr& theObject
       }
       ModelGeomAlgo_Point2D::getPointsIntersectedShape(aFeature, aFeatures, aPoints,
                                                        aPointToObjects);
-    }
-    GeomAlgoAPI_ShapeTools::splitShape(aFeatureShape, aPoints, aShapes);
+    }*/
+    GeomAlgoAPI_ShapeTools::splitShape_p(aFeatureShape, aPoints, aShapes);
   }
   myCashedShapes[theObject] = aShapes;
   myCashedReferences[theObject] = aPointToAttributes;

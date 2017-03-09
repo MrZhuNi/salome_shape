@@ -940,27 +940,20 @@ bool SketchPlugin_SplitValidator::isValid(const AttributePtr& theAttribute,
         aData->attribute(SketchPlugin_Sketch::NORM_ID()));
     std::shared_ptr<GeomAPI_Dir> aDirY(new GeomAPI_Dir(aNorm->dir()->cross(aX->dir())));
 
-    std::list<std::shared_ptr<GeomAPI_Pnt> > aPoints;
-    std::map<std::shared_ptr<GeomDataAPI_Point2D>, std::shared_ptr<GeomAPI_Pnt> >
-      aPointToAttributes;
-    ModelGeomAlgo_Point2D::getPointsInsideShape(anAttrShape, aRefAttributes, aC->pnt(),
-                                                aX->dir(), aDirY, aPoints, aPointToAttributes);
+    typedef std::map<std::shared_ptr<GeomAPI_Pnt>,
+                     std::pair<std::list<std::shared_ptr<GeomDataAPI_Point2D> >,
+                               std::list<std::shared_ptr<ModelAPI_Object> > > > PointToRefsMap;
+    PointToRefsMap aPointsInfo;
 
-    if (theArguments.size() > 0) { // use graphic intersection
-      // intersection points
-      //std::shared_ptr<ModelAPI_CompositeFeature> aCompositeFeature(aSketch);
-       std::map<std::shared_ptr<GeomAPI_Pnt>,
-                              std::list< std::shared_ptr<ModelAPI_Object> > > aPointToObjects;
-      std::list<FeaturePtr> aFeatures;
-      for (int i = 0; i < aSketch->numberOfSubs(); i++) {
-        FeaturePtr aFeature = aSketch->subFeature(i);
-        if (aFeature.get())
-          aFeatures.push_back(aFeature);
-      }
-      ModelGeomAlgo_Point2D::getPointsIntersectedShape(aSFeature, aFeatures, aPoints,
-                                                       aPointToObjects);
-    }
-    int aCoincidentToFeature = (int)aPoints.size();
+    //std::list<std::shared_ptr<GeomAPI_Pnt> > aPoints;
+    //std::map<std::shared_ptr<GeomDataAPI_Point2D>, std::shared_ptr<GeomAPI_Pnt> >
+    //  aPointToAttributes;
+    //std::map<std::shared_ptr<GeomAPI_Pnt>,
+    //                       std::list< std::shared_ptr<GeomDataAPI_Point2D> > > aPointToAttributes;
+    ModelGeomAlgo_Point2D::getPointsInsideShape(anAttrShape, aRefAttributes, aC->pnt(),
+                                                aX->dir(), aDirY, aPointsInfo);//aPoints, aPointToAttributes);
+
+    int aCoincidentToFeature = (int)aPointsInfo.size();//aPoints.size();
     if (aKind == SketchPlugin_Circle::ID())
       aValid = aCoincidentToFeature >= 2;
     else

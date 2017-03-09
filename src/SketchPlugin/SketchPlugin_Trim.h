@@ -47,7 +47,7 @@ typedef std::pair<std::string, std::shared_ptr<GeomDataAPI_Point2D> > IdToPointP
  *  SketchPlugin_Constraint::ENTITY_A() and SketchPlugin_Constraint::ENTITY_B() for the points of split;
  *
  */
-class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
+class SketchPlugin_Trim : public SketchPlugin_Feature, public GeomAPI_IPresentable
 {
  public:
   /// Split constraint kind
@@ -61,6 +61,13 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
   {
     static std::string MY_KIND = SketchPlugin_Trim::ID();
     return MY_KIND;
+  }
+
+  /// The value parameter for the constraint
+  inline static const std::string& BASE_OBJECT()
+  {
+    static const std::string MY_CONSTRAINT_BASE_OBJECT("BaseObject");
+    return MY_CONSTRAINT_BASE_OBJECT;
   }
 
   /// Start 2D point of the split segment
@@ -90,6 +97,10 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
   /// This is necessary to perform execute only by apply the feature
   SKETCHPLUGIN_EXPORT virtual bool isPreviewNeeded() const { return false; }
 
+  /// Called on change of any argument-attribute of this object
+  /// \param theID identifier of changed attribute
+  SKETCHPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
+
   /// \brief Use plugin manager for features creation
   SketchPlugin_Trim();
 
@@ -101,16 +112,19 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
   /// Returns the AIS preview
   SKETCHPLUGIN_EXPORT virtual AISObjectPtr getAISObject(AISObjectPtr thePrevious);
 
-//private:
-//  /// Returns geom point attribute of the feature bounds. It processes line or arc.
-//  /// For circle feature, the result attributes are null
-//  /// \param theFeature a source feature
-//  /// \param theStartPointAttr an out attribute to start point
-//  /// \param theStartPointAttr an out attribute to end point
-//  void getFeaturePoints(const FeaturePtr& theFeature,
-//                        std::shared_ptr<GeomDataAPI_Point2D>& theStartPointAttr,
-//                        std::shared_ptr<GeomDataAPI_Point2D>& theEndPointAttr);
-//
+  /// Moves the feature : Empty
+  SKETCHPLUGIN_EXPORT virtual void move(const double theDeltaX, const double theDeltaY) {};
+
+private:
+  /// Returns geom point attribute of the feature bounds. It processes line or arc.
+  /// For circle feature, the result attributes are null
+  /// \param theFeature a source feature
+  /// \param theStartPointAttr an out attribute to start point
+  /// \param theStartPointAttr an out attribute to end point
+  void getFeaturePoints(const FeaturePtr& theFeature,
+                        std::shared_ptr<GeomDataAPI_Point2D>& theStartPointAttr,
+                        std::shared_ptr<GeomDataAPI_Point2D>& theEndPointAttr);
+
 //  FeaturePtr createCoincidenceConstraint(const AttributePtr& theFirstAttribute,
 //                                         const AttributePtr& theSecondAttribute);
 //
@@ -118,31 +132,31 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
 //  /// \param theAttribute an attribute
 //  /// \param geom point 2D or NULL
 //  std::shared_ptr<GeomDataAPI_Point2D> getPointOfRefAttr(const AttributePtr& theAttribute);
-//
-//  /// Obtains those constraints of the feature that should be modified. output maps contain
-//  /// point of coincidence and attribute id to be modified after split
-//  /// \param theFeaturesToDelete [out] constrains that will be deleted after split
-//  /// \param theFeaturesToUpdate [out] constrains that will be updated after split
-//  /// \param theTangentFeatures  [out] tangent feature to be connected to new feature
-//  /// \param theCoincidenceToFeature [out] coincidence to feature to be connected to new feature
-//  /// \param theCoincidenceToPoint [out] coincidence to point be connected to new feature
-//  void getConstraints(std::set<std::shared_ptr<ModelAPI_Feature>>& theFeaturesToDelete,
-//              std::set<std::shared_ptr<ModelAPI_Feature>>& theFeaturesToUpdate,
-//              std::map<std::shared_ptr<ModelAPI_Feature>, IdToPointPair>& theTangentFeatures,
-//              std::map<std::shared_ptr<ModelAPI_Feature>, IdToPointPair>& theCoincidenceToFeature/*,
-//              std::map<std::shared_ptr<ModelAPI_Feature>, IdToPointPair>& theCoincidenceToPoint*/);
-//
-//  /// Obtains references to feature point attributes and to feature,
-//  /// e.g. for feature line: 1st container is
-//  ///             <1st line point, list<entity_a in distance, entity_b in parallel> >
-//  ///             <2nd line point, list<> >
-//  ///      for feature circle 2nd container is <entity_a in Radius, entity_b in equal, ...>
-//  /// \param theFeature an investigated feature
-//  /// \param theRefs a container of list of referenced attributes
-//  void getRefAttributes(const FeaturePtr& theFeature,
-//                        std::map<AttributePtr, std::list<AttributePtr> >& theRefs,
-//                        std::list<AttributePtr>& theRefsToFeature);
-//
+
+  /// Obtains those constraints of the feature that should be modified. output maps contain
+  /// point of coincidence and attribute id to be modified after split
+  /// \param theFeaturesToDelete [out] constrains that will be deleted after split
+  /// \param theFeaturesToUpdate [out] constrains that will be updated after split
+  /// \param theTangentFeatures  [out] tangent feature to be connected to new feature
+  /// \param theCoincidenceToFeature [out] coincidence to feature to be connected to new feature
+  /// \param theCoincidenceToPoint [out] coincidence to point be connected to new feature
+  void getConstraints(std::set<std::shared_ptr<ModelAPI_Feature>>& theFeaturesToDelete,
+              std::set<std::shared_ptr<ModelAPI_Feature>>& theFeaturesToUpdate);//,
+              //std::map<std::shared_ptr<ModelAPI_Feature>, IdToPointPair>& theTangentFeatures,
+              //std::map<std::shared_ptr<ModelAPI_Feature>, IdToPointPair>& theCoincidenceToFeature/*,
+              //std::map<std::shared_ptr<ModelAPI_Feature>, IdToPointPair>& theCoincidenceToPoint*/);
+
+  /// Obtains references to feature point attributes and to feature,
+  /// e.g. for feature line: 1st container is
+  ///             <1st line point, list<entity_a in distance, entity_b in parallel> >
+  ///             <2nd line point, list<> >
+  ///      for feature circle 2nd container is <entity_a in Radius, entity_b in equal, ...>
+  /// \param theFeature an investigated feature
+  /// \param theRefs a container of list of referenced attributes
+  void getRefAttributes(const FeaturePtr& theFeature,
+                        std::map<AttributePtr, std::list<AttributePtr> >& theRefs,
+                        std::list<AttributePtr>& theRefsToFeature);
+
 //  /// Move coincidence constraint from feature to point if it is found
 //  /// \param theCoincidenceToFeature coincidence to feature to be connected to new feature
 //  /// \param theFurtherCoincidences a list of points where coincidences will be build
@@ -161,22 +175,21 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
 //  void updateTangentConstraintsToFeature(
 //              const std::map<std::shared_ptr<ModelAPI_Feature>, IdToPointPair>& theTangentFeatures,
 //              const std::set<std::shared_ptr<GeomDataAPI_Point2D> >& theFurtherCoincidences);
-//
-//
-//  /// Move constraints from base feature to given feature
-//  /// \param theFeature a base feature
-//  /// \param theRefsToFeature list of attributes referenced to base feature
-//  void updateRefFeatureConstraints(const std::shared_ptr<ModelAPI_Result>& theFeatureBaseResult,
-//                                   const std::list<AttributePtr>& theRefsToFeature);
-//
-//  /// Move constraints from attribute of base feature to attribute after modification
-//  /// \param theBaseRefAttributes container of references to the attributes of base feature
-//  /// \param theModifiedAttributes container of attributes placed instead of base attributes
-//  /// at the same place
-//  void updateRefAttConstraints(
-//               const std::map<AttributePtr, std::list<AttributePtr> >& theBaseRefAttributes,
-//               const std::set<std::pair<AttributePtr, AttributePtr> >& theModifiedAttributes);
-//
+
+  /// Move constraints from base feature to given feature
+  /// \param theFeature a base feature
+  /// \param theRefsToFeature list of attributes referenced to base feature
+  void updateRefFeatureConstraints(const std::shared_ptr<ModelAPI_Result>& theFeatureBaseResult,
+                                   const std::list<AttributePtr>& theRefsToFeature);
+
+  /// Move constraints from attribute of base feature to attribute after modification
+  /// \param theBaseRefAttributes container of references to the attributes of base feature
+  /// \param theModifiedAttributes container of attributes placed instead of base attributes
+  /// at the same place
+  void updateRefAttConstraints(
+               const std::map<AttributePtr, std::list<AttributePtr> >& theBaseRefAttributes,
+               const std::set<std::pair<AttributePtr, AttributePtr> >& theModifiedAttributes);
+
 //  /// Make the base object is splitted by the point attributes
 //  /// \param theSplitFeature a result split feature
 //  /// \param theBeforeFeature a feature between start point and the 1st point of split feature
@@ -204,20 +217,22 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
 //                std::set<std::shared_ptr<GeomDataAPI_Point2D> >& thePoints,
 //                std::set<std::shared_ptr<ModelAPI_Feature>>& theCreatedFeatures,
 //                std::set<std::pair<AttributePtr, AttributePtr>>& theModifiedAttributes);
-//
-//  /// Make the base object is splitted by the point attributes
-//  /// \param theSplitFeature a result split feature
-//  /// \param theBeforeFeature a feature between start point and the 1st point of split feature
-//  /// \param theAfterFeature a feature between last point of split feature and the end point
-//  /// \param thePoints a list of points where coincidences will be build
-//  /// \param theCreatedFeatures a container of created features
-//  void splitCircle(std::shared_ptr<ModelAPI_Feature>& theSplitFeature,
-//                   std::shared_ptr<ModelAPI_Feature>& theBeforeFeature,
-//                   std::shared_ptr<ModelAPI_Feature>& theAfterFeature,
-//                   std::set<std::shared_ptr<GeomDataAPI_Point2D> >& thePoints,
-//                   std::set<std::shared_ptr<ModelAPI_Feature>>& theCreatedFeatures,
-//                   std::set<std::pair<AttributePtr, AttributePtr>>& theModifiedAttributes);
-//
+
+  /// Make the base object is splitted by the point attributes
+  /// \param theSplitFeature a result split feature
+  /// \param theBeforeFeature a feature between start point and the 1st point of split feature
+  /// \param theAfterFeature a feature between last point of split feature and the end point
+  /// \param thePoints a list of points where coincidences will be build
+  /// \param theCreatedFeatures a container of created features
+  void trimCircle(const std::shared_ptr<GeomAPI_Pnt2d>& theStartShapePoint,
+                  const std::shared_ptr<GeomAPI_Pnt2d>& theLastShapePoint,
+                  /*std::shared_ptr<ModelAPI_Feature>& theSplitFeature,
+                  std::shared_ptr<ModelAPI_Feature>& theBeforeFeature,
+                  std::shared_ptr<ModelAPI_Feature>& theAfterFeature,*/
+                  std::set<std::shared_ptr<GeomDataAPI_Point2D> >& thePoints,
+                  std::set<std::shared_ptr<ModelAPI_Feature>>& theCreatedFeatures,
+                  std::set<std::pair<AttributePtr, AttributePtr>>& theModifiedAttributes);
+
 //  /// Correct the first and the second point to provide condition that the first is closer to
 //  /// the start point and the second point - to the last end of current segment. To rearrange
 //  /// them if this condition is not satisfied.
@@ -225,11 +240,11 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
 //  /// \param theEndPointAttr an end point of a segment
 //  /// \param theFirstPointAttr a start point of a segment
 //  /// \param theSecondPointAttr an end point of a segment
-//  void arrangePointsOnLine(const std::shared_ptr<GeomDataAPI_Point2D>& theStartPointAttr,
-//                           const std::shared_ptr<GeomDataAPI_Point2D>& theEndPointAttr,
-//                           std::shared_ptr<GeomDataAPI_Point2D>& theFirstPointAttr,
-//                           std::shared_ptr<GeomDataAPI_Point2D>& theSecondPointAttr) const;
-//
+  void arrangePointsOnLine(const std::shared_ptr<GeomDataAPI_Point2D>& theStartPointAttr,
+                           const std::shared_ptr<GeomDataAPI_Point2D>& theEndPointAttr,
+                           std::shared_ptr<GeomDataAPI_Point2D>& theFirstPointAttr,
+                           std::shared_ptr<GeomDataAPI_Point2D>& theSecondPointAttr) const;
+
 //  /// Correct the first and the second point to provide condition that the first is closer to
 //  /// the start point and the second point - to the last end of current segment. To rearrange
 //  /// them if this condition is not satisfied.
@@ -243,13 +258,19 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
 //                          const std::shared_ptr<GeomDataAPI_Point2D>& theEndPointAttr,
 //                          std::shared_ptr<GeomDataAPI_Point2D>& theFirstPointAttr,
 //                          std::shared_ptr<GeomDataAPI_Point2D>& theSecondPointAttr) const;
-//
-//  /// Fill attribute by value of another attribute. It processes only Point 2D attributes.
-//  /// \param theModifiedAttribute an attribute of GeomDataAPI_Point2D on feature to be modified
-//  /// \param theSourceAttribute an attribute of GeomDataAPI_Point2D to obtain data
-//  void fillAttribute(const AttributePtr& theModifiedAttribute,
-//                     const AttributePtr& theSourceAttribute);
-//
+
+  /// Fill attribute by value of another attribute. It processes only Point 2D attributes.
+  /// \param theModifiedAttribute an attribute of GeomDataAPI_Point2D on feature to be modified
+  /// \param theSourceAttribute an attribute of GeomDataAPI_Point2D to obtain data
+  void fillAttribute(const AttributePtr& theModifiedAttribute,
+                     const AttributePtr& theSourceAttribute);
+
+  /// Fill attribute by value of another attribute. It processes only Point 2D attributes.
+  /// \param theModifiedAttribute an attribute of GeomDataAPI_Point2D on feature to be modified
+  /// \param thePoint a point value
+  void fillPointAttribute(const AttributePtr& theModifiedAttribute,
+                          const std::shared_ptr<GeomAPI_Pnt2d>& thePoint);
+
 //  /// Creates a line feature filled by center of base feature and given points
 //  /// \param theBaseFeature another arc feature
 //  /// \param theFirstAttribute an attribute with coordinates for the start point
@@ -258,22 +279,30 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
 //                               const AttributePtr& theFirstPointAttr,
 //                               const AttributePtr& theSecondPointAttr);
 //
-//  /// Creates an arc feature filled by center of base feature and given points
-//  /// \param theBaseFeature another arc feature
-//  /// \param theFirstAttribute an attribute with coordinates for the start point
-//  /// \param theSecondAttribute an attribute with coordinates for the end point
-//  FeaturePtr createArcFeature(const FeaturePtr& theBaseFeature,
-//                              const AttributePtr& theFirstPointAttr,
-//                              const AttributePtr& theSecondPointAttr);
-//
-//  /// Add feature coincidence constraint between given attributes
-//  /// \param theConstraintId a constraint index
-//  /// \param theFirstAttribute an attribute of further coincidence
-//  /// \param theSecondAttribute an attribute of further coincidence
-//  std::shared_ptr<ModelAPI_Feature> createConstraint(const std::string& theConstraintId,
-//                        const std::shared_ptr<ModelAPI_Attribute>& theFirstAttribute,
-//                        const std::shared_ptr<ModelAPI_Attribute>& theSecondAttribute);
-//
+  /// Creates an arc feature filled by center of base feature and given points
+  /// \param theBaseFeature another arc feature
+  /// \param theFirstAttribute an attribute with coordinates for the start point
+  /// \param theSecondAttribute an attribute with coordinates for the end point
+  FeaturePtr createArcFeature(const FeaturePtr& theBaseFeature,
+                              const std::shared_ptr<GeomAPI_Pnt2d>& theFirstPoint,
+                              const std::shared_ptr<GeomAPI_Pnt2d>& theSecondPoint);
+
+  /// Add feature coincidence constraint between given attributes
+  /// \param theConstraintId a constraint index
+  /// \param theFirstAttribute an attribute of further coincidence
+  /// \param theSecondAttribute an attribute of further coincidence
+  std::shared_ptr<ModelAPI_Feature> createConstraint(const std::string& theConstraintId,
+                        const std::shared_ptr<ModelAPI_Attribute>& theFirstAttribute,
+                        const std::shared_ptr<ModelAPI_Attribute>& theSecondAttribute);
+
+  /// Add feature coincidence constraint between given attributes
+  /// \param theConstraintId a constraint index
+  /// \param theFirstAttribute an attribute of further coincidence
+  /// \param theSecondObject an object of further coincidence
+  std::shared_ptr<ModelAPI_Feature> createConstraint(const std::string& theConstraintId,
+                        const std::shared_ptr<ModelAPI_Attribute>& theFirstAttribute,
+                        const std::shared_ptr<ModelAPI_Object>& theSecondObject);
+
 //  /// Add feature coincidence constraint between given attributes
 //  /// \param theConstraintId a constraint index
 //  /// \param theFirstAttribute an attribute of further coincidence
@@ -286,12 +315,12 @@ class SketchPlugin_Trim : public SketchPlugin_ConstraintBase
 //  /// \param theFeaturesToUpdate a constraint index
 //  void updateFeaturesAfterSplit(const std::set<FeaturePtr>& theFeaturesToUpdate);
 //
-//  /// Result result of the feature to build constraint with. For arc, circle it is an edge result.
-//  /// \param theFeature a feature
-//  /// \return result object
-//  std::shared_ptr<ModelAPI_Result> getFeatureResult(
-//                                    const std::shared_ptr<ModelAPI_Feature>& theFeature);
-//
+  /// Result result of the feature to build constraint with. For arc, circle it is an edge result.
+  /// \param theFeature a feature
+  /// \return result object
+  std::shared_ptr<ModelAPI_Result> getFeatureResult(
+                                    const std::shared_ptr<ModelAPI_Feature>& theFeature);
+
 //  /// Returns attributes of the feature, used in edge build, for arc it is end and start points
 //  /// \param theFeature a feature
 //  /// \return container of attributes
@@ -311,17 +340,24 @@ private:
 
   void fillObjectShapes(const ObjectPtr& theObject);
 
+  void findShapePoints(std::shared_ptr<GeomAPI_Pnt>& aStartPoint,
+                       std::shared_ptr<GeomAPI_Pnt>& aLastPoint);
+
+  std::shared_ptr<GeomAPI_Pnt2d> convertPoint(const std::shared_ptr<GeomAPI_Pnt>& thePoint);
+
 private:
   //std::shared_ptr<ModuleBase_ViewerPrs> myCurrentSubShape;
   std::map<ObjectPtr, std::set<GeomShapePtr> > myCashedShapes;
 
-  typedef std::map<std::shared_ptr<GeomDataAPI_Point2D>,
-                   std::shared_ptr<GeomAPI_Pnt> > PntToAttributesMap;
-  std::map<ObjectPtr, PntToAttributesMap> myCashedReferences;
+  //typedef std::map<std::shared_ptr<GeomDataAPI_Point2D>,
+  //                 std::shared_ptr<GeomAPI_Pnt> > PntToAttributesMap;
+  //std::map<ObjectPtr, PntToAttributesMap> myCashedReferences;
 
   typedef std::map<std::shared_ptr<GeomAPI_Pnt>,
-             std::list< std::shared_ptr<ModelAPI_Object> > > PntToObjectsMap;
-  std::map<ObjectPtr, PntToObjectsMap> myCashedObjects;
+                   std::pair<std::list<std::shared_ptr<GeomDataAPI_Point2D> >,
+                             std::list<std::shared_ptr<ModelAPI_Object> > > > PointToRefsMap;
+
+  std::map<ObjectPtr, PointToRefsMap> myObjectToPoints;
 };
 
 #endif

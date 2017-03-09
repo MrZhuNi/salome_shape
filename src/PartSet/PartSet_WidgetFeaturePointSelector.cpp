@@ -163,7 +163,7 @@ bool PartSet_WidgetFeaturePointSelector::fillFeature(
 
     std::shared_ptr<ModelAPI_AttributeReference> aRef =
                             std::dynamic_pointer_cast<ModelAPI_AttributeReference>(
-                            feature()->data()->attribute(SketchPlugin_Constraint::VALUE()));
+                            feature()->data()->attribute(SketchPlugin_Trim::BASE_OBJECT()));
     aRef->setValue(anObject);
 
     std::shared_ptr<GeomDataAPI_Point2D> anAttributePoint =
@@ -176,10 +176,7 @@ bool PartSet_WidgetFeaturePointSelector::fillFeature(
     // an attempt to clear highlighted item in the viewer: but of OCCT
     XGUI_Tools::workshop(myWorkshop)->displayer()->clearSelected(true);
 #endif
-    static Events_ID anEvent = Events_Loop::eventByName(EVENT_OBJECT_MOVED);
-    ModelAPI_EventCreator::get()->sendUpdated(feature(), anEvent);
-    Events_Loop::loop()->flush(anEvent);
-
+    updateObject(feature());
     aFilled = true;
 
     /*

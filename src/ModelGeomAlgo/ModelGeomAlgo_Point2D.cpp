@@ -125,23 +125,21 @@ namespace ModelGeomAlgo_Point2D {
 
   void appendPoint(const std::shared_ptr<GeomAPI_Pnt>& thePoint,
                    const std::shared_ptr<ModelAPI_Result>& theResult,
-                   std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
-                   std::map<std::shared_ptr<GeomAPI_Pnt>,
-                                std::list< std::shared_ptr<ModelAPI_Object> > >& theObjectToPoint)
+                   PointToRefsMap& thePointToAttributeOrObject)
   {
-    std::list< std::shared_ptr<ModelAPI_Object> > anObjects;
-    if (theObjectToPoint.find(thePoint) != theObjectToPoint.end())
-      anObjects = theObjectToPoint[thePoint];
-    thePoints.push_back(thePoint);
-    anObjects.push_back(theResult);
-    theObjectToPoint[thePoint].push_back(theResult);
+    if (thePointToAttributeOrObject.find(thePoint) != thePointToAttributeOrObject.end())
+      thePointToAttributeOrObject.at(thePoint).second.push_back(theResult);
+    else {
+      std::list<std::shared_ptr<GeomDataAPI_Point2D> > anAttributes;
+      std::list<std::shared_ptr<ModelAPI_Object> > anObjects;
+      anObjects.push_back(theResult);
+      thePointToAttributeOrObject[thePoint] = std::make_pair(anAttributes, anObjects);
+    }
   }
 
   void appendShapePoints(GeomShapePtr& theShape,
                          const std::shared_ptr<ModelAPI_Result>& theResult,
-                         std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
-                         std::map<std::shared_ptr<GeomAPI_Pnt>,
-                              std::list< std::shared_ptr<ModelAPI_Object> > >& theObjectToPoint)
+                         PointToRefsMap& thePointToAttributeOrObject)
   {
     if (!theShape.get())
       return;
@@ -151,19 +149,19 @@ namespace ModelGeomAlgo_Point2D {
         std::shared_ptr<GeomAPI_Vertex> aVertex =
           std::shared_ptr<GeomAPI_Vertex>(new GeomAPI_Vertex(theShape));
         std::shared_ptr<GeomAPI_Pnt> aPnt = aVertex->point();
-        appendPoint(aPnt, theResult, thePoints, theObjectToPoint);
+        appendPoint(aPnt, theResult, thePointToAttributeOrObject);
       }
       break;
       case GeomAPI_Shape::EDGE: {
         std::shared_ptr<GeomAPI_Edge> anEdge =
           std::shared_ptr<GeomAPI_Edge>(new GeomAPI_Edge(theShape));
-        appendPoint(anEdge->firstPoint(), theResult, thePoints, theObjectToPoint);
-        appendPoint(anEdge->lastPoint(), theResult, thePoints, theObjectToPoint);
+        appendPoint(anEdge->firstPoint(), theResult, thePointToAttributeOrObject);
+        appendPoint(anEdge->lastPoint(), theResult, thePointToAttributeOrObject);
       }
       break;
       case GeomAPI_Shape::COMPOUND: {
         for(GeomAPI_ShapeIterator anIt(theShape); anIt.more(); anIt.next()) {
-          appendShapePoints(anIt.current(), theResult, thePoints, theObjectToPoint);
+          appendShapePoints(anIt.current(), theResult, thePointToAttributeOrObject);
         }
       }
       break;
@@ -173,9 +171,7 @@ namespace ModelGeomAlgo_Point2D {
 
   void getPointsIntersectedShape(const std::shared_ptr<ModelAPI_Feature>& theBaseFeature,
                         const std::list<std::shared_ptr<ModelAPI_Feature> >& theFeatures,
-                        std::list<std::shared_ptr<GeomAPI_Pnt> >& thePoints,
-                        std::map<std::shared_ptr<GeomAPI_Pnt>,
-                                std::list< std::shared_ptr<ModelAPI_Object> > >& theObjectToPoint)
+                        PointToRefsMap& thePointToAttributeOrObject)
   {
     GeomShapePtr aFeatureShape;
     {
@@ -201,12 +197,45 @@ namespace ModelGeomAlgo_Point2D {
         GeomShapePtr aShape = aResult->shape();
 
         GeomShapePtr aShapeOfIntersection = aFeatureShape->intersect(aShape);
-        appendShapePoints(aShapeOfIntersection, aResult, thePoints, theObjectToPoint);
+        appendShapePoints(aShapeOfIntersection, aResult, thePointToAttributeOrObject);
       }
     }
   }
 
   void getPointsInsideShape(const std::shared_ptr<GeomAPI_Shape> theBaseShape,
+                        const std::set<std::shared_ptr<GeomDataAPI_Point2D> >& theAttributes,
+                        const std::shared_ptr<GeomAPI_Pnt>& theOrigin,
+                        const std::shared_ptr<GeomAPI_Dir>& theDirX,
+                        const std::shared_ptr<GeomAPI_Dir>& theDirY,
+                        PointToRefsMap& thePointToAttributeOrObject)
+  {
+    std::set<std::shared_ptr<GeomDataAPI_Point2D> >::const_iterator anIt = theAttributes.begin(),
+                                                            aLast = theAttributes.end();
+    for (; anIt != aLast; anIt++) {
+      std::shared_ptr<GeomDataAPI_Point2D> anAttribute = *anIt;
+      std::shared_ptr<GeomAPI_Pnt2d> aPnt2d = anAttribute->pnt();
+      std::shared_ptr<GeomAPI_Pnt> aPoint = aPnt2d->to3D(theOrigin, theDirX, theDirY);
+      std::shared_ptr<GeomAPI_Pnt> aProjectedPoint;
+      if (isPointOnEdge(theBaseShape, aPoint, aProjectedPoint)) {
+        if (thePointToAttributeOrObject.find(aProjectedPoint) != thePointToAttributeOrObject.end())
+          thePointToAttributeOrObject.at(aProjectedPoint).first.push_back(anAttribute);
+        else {
+          //std::list< std::shared_ptr<GeomDataAPI_Point2D> > anAttributes;
+          //anAttributes.push_back(anAttribute);
+          //thePointToAttributeOrObject.insert(aProjectedPoint, anAttributes);
+
+          std::list<std::shared_ptr<GeomDataAPI_Point2D> > anAttributes;
+          std::list<std::shared_ptr<ModelAPI_Object> > anObjects;
+          anAttributes.push_back(anAttribute);
+          thePointToAttributeOrObject[aProjectedPoint] = std::make_pair(anAttributes, anObjects);
+        }
+        //thePoints.push_back(aProjectedPoint);
+        //theAttributeToPoint[anAttribute] = aProjectedPoint;
+      }
+    }
+  }
+
+  void getPointsInsideShape_p(const std::shared_ptr<GeomAPI_Shape> theBaseShape,
                             const std::set<std::shared_ptr<GeomDataAPI_Point2D> >& theAttributes,
                             const std::shared_ptr<GeomAPI_Pnt>& theOrigin,
                             const std::shared_ptr<GeomAPI_Dir>& theDirX,
