@@ -16,6 +16,7 @@
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_Tools.h>
 #include <ModelAPI_ResultBody.h>
+#include <ModelAPI_ResultCompSolid.h>
 #include <Events_Loop.h>
 #include <Events_InfoMessage.h>
 
@@ -221,7 +222,8 @@ bool Model_Document::load(const char* theDirName, const char* theFileName, Docum
     for(; aPartRes != aPartResults.end(); aPartRes++) {
       ResultPartPtr aPart = std::dynamic_pointer_cast<ModelAPI_ResultPart>(*aPartRes);
       if (aPart.get())
-        anApp->setLoadByDemand(aPart->data()->name());
+        anApp->setLoadByDemand(aPart->data()->name(),
+          aPart->data()->document(ModelAPI_ResultPart::DOC_REF())->docId());
     }
 
   } else { // open failed, but new documnet was created to work with it: inform the model
