@@ -600,6 +600,27 @@ bool XGUI_OperationMgr::onKeyReleased(QObject *theObject, QKeyEvent* theEvent)
   ModuleBase_Operation* anOperation = currentOperation();
   bool isAccepted = false;
   switch (theEvent->key()) {
+    case Qt::Key_Escape: {
+      ModuleBase_Operation* aOperation = currentOperation();
+      if (aOperation) {
+        onAbortOperation();
+        isAccepted = true;
+      }
+    }
+    break;
+    case Qt::Key_Tab:
+    case Qt::Key_Backtab:
+    {
+      ModuleBase_Operation* aOperation = currentOperation();
+      if (aOperation) {
+        ModuleBase_IPropertyPanel* aPanel = anOperation->propertyPanel();
+        if (aPanel) { // check for case when the operation is started but property panel is not filled
+          XGUI_PropertyPanel* aPP = dynamic_cast<XGUI_PropertyPanel*>(aPanel);
+          aPP->focusNextPrevChild_(theEvent->key() == Qt::Key_Tab);
+        }
+      }
+    }
+    break;
     case Qt::Key_Return:
     case Qt::Key_Enter: {
       isAccepted = onProcessEnter(theObject);

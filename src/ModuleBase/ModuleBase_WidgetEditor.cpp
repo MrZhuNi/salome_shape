@@ -98,7 +98,7 @@ bool ModuleBase_WidgetEditor::showPopupEditor(const bool theSendSignals)
   // in the property panel before the mouse leave event happens in the viewer. The module
   // ask an active widget and change the feature visualization if the widget is not the current one.
   if (theSendSignals)
-    emit focusInWidget(this);
+    emitFocusInWidget();
 
   // nds: it seems, that the envents processing is not necessary anymore
   // White while all events will be processed
