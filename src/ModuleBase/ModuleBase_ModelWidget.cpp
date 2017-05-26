@@ -428,10 +428,10 @@ bool ModuleBase_ModelWidget::eventFilter(QObject* theObject, QEvent *theEvent)
     bool isWinFocus = aFocusEvent->reason() == Qt::ActiveWindowFocusReason;
     #endif
     Qt::FocusReason aReason = aFocusEvent->reason();
-    bool aMouseOrKey = aReason == Qt::MouseFocusReason/* ||
-                        //aReason == Qt::TabFocusReason ||
-                        //aReason == Qt::BacktabFocusReason /*||
-                        aReason == Qt::OtherFocusReason*/; // to process widget->setFocus()
+    bool aMouseOrKey = aReason == Qt::MouseFocusReason ||
+                        /*aReason == Qt::TabFocusReason ||
+                        //aReason == Qt::BacktabFocusReason ||*/
+                        aReason == Qt::OtherFocusReason; // to process widget->setFocus()
     if (aMouseOrKey && getControls().contains(aWidget)) {
     //if (getControls().contains(aWidget)) {
       emitFocusInWidget();
