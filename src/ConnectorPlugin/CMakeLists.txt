@@ -3,6 +3,7 @@ INCLUDE(Common)
 SET(PYTHON_FILES
     ConnectorPlugin.py
     ConnectorPlugin_ExportFeature.py
+    ShapeUtilities.py
 )
 
 SET(XML_RESOURCES

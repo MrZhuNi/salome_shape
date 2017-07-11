@@ -1,3 +1,4 @@
+
 ## @package Plugins
 #  ExportFeature class definition
 #  Copyright (C) 2014-20xx CEA/DEN, EDF R&D
@@ -6,6 +7,7 @@ import EventsAPI
 import ModelAPI
 import GeomAPI
 import GeomAlgoAPI
+import ShapeUtilities
 
 import salome
 from salome.geom import geomBuilder
@@ -51,36 +53,20 @@ class ExportFeature(ModelAPI.ModelAPI_Feature):
 
     ## Exports all bodies
     def exportBodies(self):
-        global ShapeIndex
-        kResultBodyType = "Bodies"
-        aPartSize = self.Part.size(kResultBodyType)
-        if aPartSize == 0:
-            EventsAPI.Events_InfoMessage("ExportFeature","No results in the active document").send()
-            return
+        self.shape = ShapeUtilities.makeShape(self.Part)
 
-        anObjList = [self.Part.object(kResultBodyType, idx) for idx in xrange(aPartSize)]
-        aShapesList = GeomAlgoAPI.ShapeList()
-        aName = ""
-        for idx, anObject in enumerate(anObjList):
-            aResult = ModelAPI.modelAPI_Result(anObject)
-            aBodyResult = ModelAPI.modelAPI_ResultBody(aResult)
-            if not aBodyResult:
-                continue
-            aShape = aBodyResult.shape()
-            if aShape is not None and not aShape.isNull():
-              aShapesList.append(aShape)
-              if len(aShapesList) == 1:
-                aName = aBodyResult.data().name()
+        aName = self.shape.name
 
-        # issue 1045: create compound if there are more than one shape
-        if len(aShapesList) > 1:
-          self.shape = GeomAlgoAPI.GeomAlgoAPI_CompoundBuilder.compound(aShapesList)
-          aName = "ShaperResults"
-        elif len(aShapesList) == 1:
-          self.shape = aShapesList[0]
-
-        # so, only one shape is always in the result
+        # only one shape is always in the result
         aDump = self.shape.getShapeStream()
+
+        # guess the name of the dumped part objet
+        partName = "Part_%i"%self.Part.id()
+
+        # add the information that the stream comes from Shaper to make specific dump in GEOM
+        firstLine = "FromShaperExportToGeom;" + partName
+        aDump = firstLine + aDump
+
         # Load shape to SALOME Geom
         aBrep = self.geompy.RestoreShape(aDump)
 

@@ -25,3 +25,6 @@ from partset import *
 from primitives import *
 from gdml import *
 from tests import *
+
+# Other utilities
+from ShapeUtilities import makeShape
