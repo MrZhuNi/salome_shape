@@ -203,15 +203,16 @@ void Model_BodyBuilder::storeGenerated(const std::shared_ptr<GeomAPI_Shape>& the
 }
 
 void Model_BodyBuilder::storeModified(const std::shared_ptr<GeomAPI_Shape>& theOldShape,
-  const std::shared_ptr<GeomAPI_Shape>& theNewShape, const int theDecomposeSolidsTag)
+  const std::shared_ptr<GeomAPI_Shape>& theNewShape, const int theDecomposeSolidsTag,
+  const bool theClean)
 {
   std::shared_ptr<Model_Data> aData = std::dynamic_pointer_cast<Model_Data>(data());
   if (aData) {
-    TDF_Label& aShapeLab = aData->shapeLab();
     // clean builders
-    clean();
+    if (theClean)
+      clean();
     // store the new shape as primitive
-    TNaming_Builder aBuilder(aShapeLab);
+    TNaming_Builder* aBuilder = builder(0);
     if (!theOldShape || !theNewShape)
       return;  // bad shape
     TopoDS_Shape aShapeOld = theOldShape->impl<TopoDS_Shape>();
@@ -220,15 +221,15 @@ void Model_BodyBuilder::storeModified(const std::shared_ptr<GeomAPI_Shape>& theO
     TopoDS_Shape aShapeNew = theNewShape->impl<TopoDS_Shape>();
     if (aShapeNew.IsNull())
       return;  // null shape inside
-    aBuilder.Modify(aShapeOld, aShapeNew);
-    if(!aBuilder.NamedShape()->IsEmpty()) {
+    aBuilder->Modify(aShapeOld, aShapeNew);
+    if(!aBuilder->NamedShape()->IsEmpty()) {
       Handle(TDataStd_Name) anAttr;
-      if(aBuilder.NamedShape()->Label().FindAttribute(TDataStd_Name::GetID(),anAttr)) {
+      if(aBuilder->NamedShape()->Label().FindAttribute(TDataStd_Name::GetID(),anAttr)) {
         std::string aName (TCollection_AsciiString(anAttr->Get()).ToCString());
         if(!aName.empty()) {
           std::shared_ptr<Model_Document> aDoc =
             std::dynamic_pointer_cast<Model_Document>(document());
-          aDoc->addNamingName(aBuilder.NamedShape()->Label(), aName);
+          aDoc->addNamingName(aBuilder->NamedShape()->Label(), aName);
         }
       }
     }
@@ -275,7 +276,8 @@ TNaming_Builder* Model_BodyBuilder::builder(const int theTag)
   std::map<int, TNaming_Builder*>::iterator aFind = myBuilders.find(theTag);
   if (aFind == myBuilders.end()) {
     std::shared_ptr<Model_Data> aData = std::dynamic_pointer_cast<Model_Data>(data());
-    myBuilders[theTag] = new TNaming_Builder(aData->shapeLab().FindChild(theTag));
+    TDF_Label aLab = theTag == 0 ? aData->shapeLab() : aData->shapeLab().FindChild(theTag);
+    myBuilders[theTag] = new TNaming_Builder(aLab);
     aFind = myBuilders.find(theTag);
   }
   return aFind->second;

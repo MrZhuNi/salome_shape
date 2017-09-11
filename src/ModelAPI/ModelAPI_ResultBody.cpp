@@ -66,9 +66,9 @@ void ModelAPI_ResultBody::storeGenerated(const std::shared_ptr<GeomAPI_Shape>& t
 
 void ModelAPI_ResultBody::storeModified(const std::shared_ptr<GeomAPI_Shape>& theOldShape,
 	                          const std::shared_ptr<GeomAPI_Shape>& theNewShape,
-                            const int theDecomposeSolidsTag)
+                            const int theDecomposeSolidsTag, const bool theClean)
 {
-  myBuilder->storeModified(theOldShape, theNewShape, theDecomposeSolidsTag);
+  myBuilder->storeModified(theOldShape, theNewShape, theDecomposeSolidsTag, theClean);
   myConnect = ConnectionNotComputed;
 
   static Events_Loop* aLoop = Events_Loop::loop();

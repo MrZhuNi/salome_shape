@@ -59,9 +59,11 @@ void Model_ResultCompSolid::storeGenerated(const std::shared_ptr<GeomAPI_Shape>&
 }
 
 void Model_ResultCompSolid::storeModified(const std::shared_ptr<GeomAPI_Shape>& theOldShape,
-    const std::shared_ptr<GeomAPI_Shape>& theNewShape, const int theDecomposeSolidsTag)
+    const std::shared_ptr<GeomAPI_Shape>& theNewShape, const int theDecomposeSolidsTag,
+    const bool theClean)
 {
-  ModelAPI_ResultCompSolid::storeModified(theOldShape, theNewShape, theDecomposeSolidsTag);
+  ModelAPI_ResultCompSolid::storeModified(theOldShape, theNewShape, theDecomposeSolidsTag,
+    theClean);
   updateSubs(theNewShape);
 }
 

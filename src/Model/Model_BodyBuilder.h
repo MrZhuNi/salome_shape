@@ -55,7 +55,8 @@ public:
   ///          theNewShape is compound of solids, if zero it is not used
   MODEL_EXPORT virtual void storeModified(const std::shared_ptr<GeomAPI_Shape>& theOldShape,
 	                                        const std::shared_ptr<GeomAPI_Shape>& theNewShape,
-                                          const int theDecomposeSolidsTag = 0);
+                                          const int theDecomposeSolidsTag = 0,
+                                          const bool theClean = true);
 
   /// Stores the shape without naming support
   /// \param theShape shape to store

@@ -55,7 +55,8 @@ public:
 
   /// Stores the modified shape.  Creates sub-results for compsolid.
   MODEL_EXPORT virtual void storeModified(const std::shared_ptr<GeomAPI_Shape>& theOldShape,
-    const std::shared_ptr<GeomAPI_Shape>& theNewShape, const int theDecomposeSolidsTag = 0);
+    const std::shared_ptr<GeomAPI_Shape>& theNewShape, const int theDecomposeSolidsTag = 0,
+    const bool theClean = true);
 
   /// load and orient modified shapes for sub-objects
   MODEL_EXPORT virtual void loadAndOrientModifiedShapes (GeomAlgoAPI_MakeShape* theMS,

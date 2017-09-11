@@ -52,7 +52,8 @@ public:
   /// Stores the modified shape (called by the execution method).
   virtual void storeModified(const std::shared_ptr<GeomAPI_Shape>& theOldShape,
 	                          const std::shared_ptr<GeomAPI_Shape>& theNewShape,
-                            const int theDecomposeSolidsTag = 0) = 0;
+                            const int theDecomposeSolidsTag = 0,
+                            const bool theClean = true) = 0;
 
   /// Stores the shape without naming support
   virtual void storeWithoutNaming(const std::shared_ptr<GeomAPI_Shape>& theShape) = 0;

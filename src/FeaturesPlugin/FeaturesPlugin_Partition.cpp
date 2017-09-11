@@ -181,7 +181,23 @@ void FeaturesPlugin_Partition::storeResult(
   int aModTag = aSubTag + 10000;
   const std::string aModName = "Modified";
 
-  aResultBody->storeModified(aBaseShape, theResultShape, aSubTag);
+  // issue #2241 : make result of partition modified from all input objects (except planes)
+  bool aIsModifierStored = false;
+  for(ListOfShape::const_iterator anIt = theObjects.cbegin(); anIt != theObjects.cend(); ++anIt) {
+    GeomShapePtr anObjectShape = *anIt;
+    GeomShapePtr aCandidate =
+      findBase(anObjectShape, theResultShape, GeomAPI_Shape::VERTEX, theMakeShape);
+    if(!aCandidate.get()) {
+      aCandidate = findBase(anObjectShape, theResultShape, GeomAPI_Shape::EDGE, theMakeShape);
+    }
+    if (!aCandidate.get())
+      aCandidate = findBase(anObjectShape, theResultShape, GeomAPI_Shape::FACE, theMakeShape);
+
+    if(aCandidate.get()) {
+      aResultBody->storeModified(aCandidate, theResultShape, aSubTag, !aIsModifierStored);
+      aIsModifierStored = true;
+    }
+  }
 
   std::shared_ptr<GeomAPI_DataMapOfShapeShape> aMapOfSubShapes = theMakeShape->mapOfSubShapes();
   theObjects.insert(theObjects.end(), thePlanes.begin(), thePlanes.end());

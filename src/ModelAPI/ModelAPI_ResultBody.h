@@ -86,7 +86,8 @@ public:
 
   /// Stores the modified shape (called by the execution method).
   MODELAPI_EXPORT virtual void storeModified(const std::shared_ptr<GeomAPI_Shape>& theOldShape,
-    const std::shared_ptr<GeomAPI_Shape>& theNewShape, const int theDecomposeSolidsTag = 0);
+    const std::shared_ptr<GeomAPI_Shape>& theNewShape, const int theDecomposeSolidsTag = 0,
+    const bool theClean = true);
 
   /// Stores the shape without naming support
   MODELAPI_EXPORT virtual void storeWithoutNaming(
