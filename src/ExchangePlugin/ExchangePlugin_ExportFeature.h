@@ -105,9 +105,10 @@ public:
   /// Computes or recomputes the results
   EXCHANGEPLUGIN_EXPORT virtual void execute();
 
-  /// Reimplemented from ModelAPI_Feature::isMacro(). Returns false.
-  // Not a macro. Otherwise, the feature will be deleted after being executed
-  EXCHANGEPLUGIN_EXPORT virtual bool isMacro() const { return false; }
+  /// Reimplemented from ModelAPI_Feature::isMacro().
+  // Not always a macro. Otherwise, the feature will be deleted after being executed.
+  // It is needed for python dump of exportToXAO when it comes from exportToGEOM.
+  EXCHANGEPLUGIN_EXPORT virtual bool isMacro() const { return !_comes_from_export_to_geom; }
 
   /// Reimplemented from ModelAPI_Feature::isPreviewNeeded(). Returns false.
   EXCHANGEPLUGIN_EXPORT virtual bool isPreviewNeeded() const { return false; }
@@ -123,6 +124,9 @@ protected:
 
   /// Performs export to XAO file
   EXCHANGEPLUGIN_EXPORT void exportXAO(const std::string& theFileName);
+
+private:
+  bool _comes_from_export_to_geom = false;
 };
 
 #endif /* EXPORT_EXPORTFEATURE_H_ */

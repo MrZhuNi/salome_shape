@@ -225,6 +225,9 @@ void ExchangePlugin_ExportFeature::exportXAO(const std::string& theFileName)
   std::string anAuthor = string(ExchangePlugin_ExportFeature::XAO_AUTHOR_ID())->value();
   aXao.setAuthor(anAuthor);
 
+  if (anAuthor == "automatic_shaper_export_to_XAO")
+    _comes_from_export_to_geom = true;
+
   // make shape for export from all results
   std::list<GeomShapePtr> aShapes;
   std::list<ResultBodyPtr> aResults;
