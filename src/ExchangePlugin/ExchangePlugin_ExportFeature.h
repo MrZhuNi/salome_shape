@@ -126,7 +126,7 @@ protected:
   EXCHANGEPLUGIN_EXPORT void exportXAO(const std::string& theFileName);
 
 private:
-  bool _comes_from_export_to_geom = false;
+  bool _comes_from_export_to_geom;
 };
 
 #endif /* EXPORT_EXPORTFEATURE_H_ */

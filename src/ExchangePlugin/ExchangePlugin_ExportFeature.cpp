@@ -65,6 +65,7 @@
 
 ExchangePlugin_ExportFeature::ExchangePlugin_ExportFeature()
 {
+  _comes_from_export_to_geom = false;
 }
 
 ExchangePlugin_ExportFeature::~ExchangePlugin_ExportFeature()
