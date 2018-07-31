@@ -66,7 +66,7 @@ def testExport(theType, theFormat, theFile, theVolume, theDelta):
     aSession.startOperation("Export part")
     anExportFeature = aPart.addFeature("Export")
     anExportFeature.string("file_format").setValue(theFormat)
-    print "theFile=",theFile
+    print("theFile=",theFile)
     anExportFeature.string("file_path").setValue(theFile)
     anExportFeature.string("ExportType").setValue("Regular")
     aSelectionListAttr = anExportFeature.selectionList("selection_list")
