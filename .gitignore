@@ -35,4 +35,4 @@ test.*results/*
 err_*
 log_*
 env_config.sh
-
+.salomeport
