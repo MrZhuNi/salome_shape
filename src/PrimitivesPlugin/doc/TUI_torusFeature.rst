@@ -1,7 +1,7 @@
 
   .. _tui_create_torus:
 
-Create / Cone
+Create / Torus
 =============
 
 .. literalinclude:: examples/torus.py
