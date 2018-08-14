@@ -55,6 +55,6 @@ Example is shown below.
 	   :align: center
 		   
 .. centered::
-   Sphere created  
+   Cone created  
 
 **See Also** a sample TUI Script of a :ref:`tui_create_cone` operation.
