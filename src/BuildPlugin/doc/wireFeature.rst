@@ -27,6 +27,10 @@ Select one or several edges in viewer. For automatic selection of closed contour
 
 **Cancel** button cancels operation. 
 
+**TUI Command**:  *model.addWire(Part_doc, Shapes)*
+
+**Arguments**:   Part document + list of shapes.
+
 The result of the operation will be a wire created from selected shapes:
 
 .. image:: images/CreateWire.png

@@ -27,6 +27,10 @@ Select one or several faces in viewer. Selected faces have to define a closed vo
 
 **Cancel** button cancels operation. 
 
+**TUI Command**:  *model.addSolid(Part_doc, Shapes)*
+
+**Arguments**:   Part document + list of shapes.
+
 The result of the operation will be a solid created from selected shapes:
 
 .. image:: images/CreateSolid.png

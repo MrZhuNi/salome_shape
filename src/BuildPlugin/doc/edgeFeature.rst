@@ -27,7 +27,11 @@ Select one or several edges in viewer.
 
 **Cancel** button cancels operation. 
 
-The result of the operation will be set of vertices created from selected shapes:
+**TUI Command**:  *model.addEdge(Part_doc, Shapes)*
+
+**Arguments**:   Part document + list of shapes.
+
+The result of the operation will be set of edges created from selected shapes:
 
 .. image:: images/CreateEdge.png
   :align: center

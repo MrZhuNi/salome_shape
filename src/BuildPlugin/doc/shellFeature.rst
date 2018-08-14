@@ -27,6 +27,10 @@ Select one or several faces in viewer.
 
 **Cancel** button cancels operation. 
 
+**TUI Command**:  *model.addShell(Part_doc, Objects)*
+
+**Arguments**:   Part document + list of shapes.
+
 The result of the operation will be shell created from selected shapes:
 
 .. image:: images/CreateShell.png

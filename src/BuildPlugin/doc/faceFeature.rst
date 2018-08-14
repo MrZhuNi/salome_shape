@@ -27,6 +27,10 @@ Select one or several faces in viewer.
 
 **Cancel** button cancels operation. 
 
+**TUI Command**:  *model.addFace(Part_doc, Shapes)*
+
+**Arguments**:   Part document + list of shapes.
+
 The result of the operation will be set of faces created from selected shapes:
 
 .. image:: images/CreateFace.png

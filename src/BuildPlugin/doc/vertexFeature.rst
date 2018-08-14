@@ -27,6 +27,10 @@ Select one or several vertices in viewer.
 
 **Cancel** button cancels operation. 
 
+**TUI Command**:  *model.addVertex(Part_doc, Shapes)*
+
+**Arguments**:   Part document + list of shapes.
+
 The result of the operation will be set of vertices created from selected shapes:
 
 .. image:: images/CreateVertex.png
