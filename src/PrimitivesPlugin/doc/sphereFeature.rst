@@ -13,17 +13,17 @@ To create a Sphere in the active part:
 .. centered::
    **Sphere** button 
 
-The following input panel appears.
+The following property panel appears.
 
 .. image:: images/Sphere.png
   :align: center
 
 .. centered::
-   Sphere input panel
+   Sphere property panel
    
 The description of input fields is given below:
 
-- **Point** defines center of the sphere; 
+- selected **Point** defines center of the sphere; 
 - **Radius** defines the radius.
   
 **Apply** button creates sphere with defined parameters.
@@ -32,7 +32,7 @@ The description of input fields is given below:
 
 **TUI Command**: *model.addSphere(Part_doc, Point, Radius)*.
 
-**Arguments**:   Name + 1 Part + 1 vertex +1 value (radius).
+**Arguments**:  1 Part + 1 vertex +1 value (radius).
 
 The Result of operation will be a SOLID.
 

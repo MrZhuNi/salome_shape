@@ -37,11 +37,11 @@ The description of input fields for **By dimensions** tab is given below:
 
 **TUI Command**:  *model.addBox(Part_doc, DX, DY, DZ)*
   
-**Arguments**:   Name + Part + 3 values (dimensions at origin).
+**Arguments**:    1 Part + 3 values (dimensions at origin).
 
 The description of input fields for **By two points** tab is given below:
 
-- **Point 1** and **Point 2** define the opposite vertices of the box.
+- selected **Point 1** and **Point 2** define the opposite vertices of the box.
   
 
 **Apply** button creates box with defined parameters.
@@ -51,7 +51,7 @@ The description of input fields for **By two points** tab is given below:
 
 **TUI Command**:  *model.addBox(Part_doc, FirstPoint, SecondPoint)*
 
-**Arguments**:   Name + Part + 2 selected points (opposite vertices of the box)
+**Arguments**:   1 Part + 2 selected points (opposite vertices of the box)
 
 
 The Result of operation will be a SOLID. The edges of the box will be parallel to the coordinate axes.

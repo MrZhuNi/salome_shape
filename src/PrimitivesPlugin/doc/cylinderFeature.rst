@@ -31,10 +31,11 @@ and
 
 The description of input fields for **Cylinder** tab is given below:
 
-- **Point** defines center of the cylinder base;
-- **Vector** defines the axis of the cylinder;
-- **Radius**;
-- **Height**.
+- selected **Point** defines center of the cylinder base;
+- selected **Vector** defines the axis of the cylinder;
+- Dimensions:      
+   - **Radius**;
+   - **Height**.    
 
 Input fields for ***Portion of cylinder** tab includes in addition **Angle** to create a portion of cylinder.
 
@@ -47,7 +48,7 @@ Input fields for ***Portion of cylinder** tab includes in addition **Angle** to 
 * *model.addCylinder(Part_doc, Point, Axis, Radius, Height)*
 * *model.addCylinder(Part_doc, Point, Axis, Radius, Height,Angle)*
   
-**Arguments**:   Name + 1 Part + 1 vertex +1 vector +  2 or 3 values (dimensions: radius, height and angle).
+**Arguments**:   1 Part + 1 vertex +1 vector +  2 or 3 values (dimensions: radius, height and angle).
 
 The Result of operation will be a SOLID.
 
