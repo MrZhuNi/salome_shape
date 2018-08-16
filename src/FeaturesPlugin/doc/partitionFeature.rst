@@ -2,9 +2,41 @@
 Partition
 =========
 
+To a create boolean opration Partition in the active part:
+
+#. select in the Main Menu *Features - > Partition* item  or
+#. click **Partition** button in the toolbar
+
+.. image:: images/partition_btn.png
+   :align: center
+
+.. centered::
+   **Partition**  button 
+
+The following property panel will be opened:
 
 .. image:: images/Partition.png
   :align: center
 
 .. centered::
-  Partition definition
+   **Partition operation**
+
+Here it is necessary to select several objects.
+
+**Apply** button creates the partition shape.
+  
+**Cancel** button cancels operation.
+
+**TUI Command**:  *model.addPartition(Part_doc, objects)*
+
+**Arguments**:   Part + list of objects.
+
+The Result of the operation will be a shape which is a partition of selected objects:
+
+.. image:: images/CreatedPartition.png
+	   :align: center
+
+.. centered::
+   **Partition created**
+
+**See Also** a sample TUI Script of a :ref:`tui_create_partition` operation.
