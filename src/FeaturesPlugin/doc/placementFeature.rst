@@ -22,10 +22,15 @@ The following property panel will be opened:
    **Placement operation**
 
 In this property panel it is necessary:
-- Select objects which will be moved.
-- Select a face, edge or vertex as a start for moving
-- Select a face, edge or vertex as an end of moving
-- Define state of **Reverse** and **Centering** check boxes.
+
+-  Select objects which will be moved.
+
+-  Select a face, edge or vertex as a start for moving
+
+-  Select a face, edge or vertex as an end of moving
+
+-  Define state of **Reverse** and **Centering** check boxes.
+
 
 
 **Apply** button creates the placement.
