@@ -43,12 +43,6 @@ The description of input fields for **By two points** tab is given below:
 
 - selected **Point 1** and **Point 2** define the opposite vertices of the box.
   
-
-**Apply** button creates box with defined parameters.
-  
-**Cancel** button cancels operation.
-
-
 **TUI Command**:  *model.addBox(Part_doc, FirstPoint, SecondPoint)*
 
 **Arguments**:   1 Part + 2 selected points (opposite vertices of the box)

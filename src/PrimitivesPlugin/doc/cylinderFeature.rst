@@ -39,10 +39,6 @@ The description of input fields for **Cylinder** tab is given below:
 
 Input fields for ***Portion of cylinder** tab includes in addition **Angle** to create a portion of cylinder.
 
-**Apply** button creates cylinder with defined parameters.
-  
-**Cancel** button cancels operation.
-
 **TUI Commands**:
 
 * *model.addCylinder(Part_doc, Point, Axis, Radius, Height)*

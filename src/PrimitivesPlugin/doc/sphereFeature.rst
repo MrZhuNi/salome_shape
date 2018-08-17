@@ -26,10 +26,6 @@ The description of input fields is given below:
 - selected **Point** defines center of the sphere; 
 - **Radius** defines the radius.
   
-**Apply** button creates sphere with defined parameters.
-  
-**Cancel** button cancels operation.
-
 **TUI Command**: *model.addSphere(Part_doc, Point, Radius)*.
 
 **Arguments**:  1 Part + 1 vertex +1 value (radius).

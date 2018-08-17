@@ -30,10 +30,6 @@ The description of input fields is given below:
    - **Top radius**;  
    - **Height**.
   
-**Apply** button creates cone with defined parameters.
-  
-**Cancel** button cancels operation.
-
 **TUI Command**: *model.addCone(Part_doc, Point, Axis, Radius1, Radius2, Height)* 
 
 **Arguments**:  1 Part + 1 vertex + 1 vector + 3 values (Dimensions: base and top radii, heght).

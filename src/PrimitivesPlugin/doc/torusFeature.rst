@@ -29,10 +29,6 @@ The following property panel appears.
    - **Radius**;
    - **Ring radius**.
   
-**Apply** button creates torus with defined parameters.
-  
-**Cancel** button cancels operation.
-
 **TUI Command**: *model.addTorus(Part_doc, Point, Axis, Radius1, Radius2)*
 
 **Arguments**:  1 Part + 1 vertex + 1 vector + 2 values (Dimensions: first and second radii).
