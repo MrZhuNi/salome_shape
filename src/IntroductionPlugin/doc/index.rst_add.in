@@ -1,0 +1,56 @@
+The main window of the application consists of the following components:
+
+- :ref:`main_menu`
+
+.. _main_menu:
+
+Main menu 
+---------
+
+Main menu provides access to all commands of the application.
+
+
+Dock windows
+------------
+
+Standard dock windows are: 
+
+- :ref:`object_browser`
+- :ref:`inspection_panel`
+- :ref:`python console`
+- :ref:`property_panel`
+
+
+
+Dock windows can be placed in three dock areas:
+- left, 
+- right, 
+- bottom. 
+
+By default object browser window is placed at left area of the main window and Python console is placed as a one tab in main menu (see Figure 2) in order to make them more compact. 
+user can close any dock window. To open it again he can use a corresponded command from pop-up menu on static part of main menu
+.. _object_browser: 
+
+Object browser 
+^^^^^^^^^^^^^^
+
+.. _property_panel:
+
+Property panel
+^^^^^^^^^^^^^^
+
+By default Property Panel is hidden. It can be shown on operation start if XML description of this operation is not empty. By default the Property Panel is shown at left side. If Object Browser is shown at the same side then they will be tabbed 
+
+.. _inspection_panel: 
+
+Inspection panel 
+^^^^^^^^^^^^^^^^
+
+.. _python console:
+
+Python console
+^^^^^^^^^^^^^^
+
+
+It is supposed that the application only a one OCC viewer will support. It means that the application will be able to show only a one 3d space. This 3d space can be represented in several view windows. Each of view windows will represent its own point of view on the 3d scene. This point of view can be modified by user with help of viewer commands like panning, zooming, scaling and so on. 
+Architecture and functionality of viewer will be very similar to OCCViewer component from SALOME with modifications of view window look&feel. 
