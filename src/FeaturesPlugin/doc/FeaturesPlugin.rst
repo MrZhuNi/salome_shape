@@ -24,5 +24,6 @@ Features plug-in
    revolutionCutFeature.rst
    revolutionFeature.rst
    revolutionFuseFeature.rst
-   smashFeature.rst   
+   smashFeature.rst
+   transformationFeature.rst     
    unionFeature.rst
