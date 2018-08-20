@@ -7,7 +7,8 @@ Features plug-in
 .. toctree::
    :titlesonly:
    :maxdepth: 1
-   
+
+   angularCopyFeature.rst
    commonFeature.rst
    cutFeature.rst
    extrusionCutFeature.rst
@@ -16,14 +17,20 @@ Features plug-in
    fillFeature.rst
    filletFeature.rst
    fuseFeature.rst
-   intersectionFeature.rst  
+   intersectionFeature.rst
+   linearCopyFeature.rst
+   measurementFeature.rst
    partitionFeature.rst
-   pipeFeature.rst  
+   pipeFeature.rst
+   placementFeature.rst
    recoverFeature.rst
    removeSubShapesFeature.rst
    revolutionCutFeature.rst
    revolutionFeature.rst
    revolutionFuseFeature.rst
+   rotationFeature.rst
    smashFeature.rst
-   transformationFeature.rst     
+   symmetryFeature.rst
+   transformationFeature.rst
+   translationFeature.rst
    unionFeature.rst

@@ -2,7 +2,7 @@
 Fill
 ====
 
-To a create boolean opration Fill in the active part:
+To perform a boolean opration Fill in the active part:
 
 #. select in the Main Menu *Features - > Fill* item  or
 #. click **Fill** button in the toolbar
@@ -21,11 +21,9 @@ The following property panel will be opened:
 .. centered::
    **Fill operation**
 
-Here it is necessary to select main objects and tool objects.
-
-**Apply** button creates the fill shape.
-  
-**Cancel** button cancels operation.
+- **Main Objects** contains a list of objects selected in the Object Browser or in the Viewer, which will be cut and filled by tool objects.
+-  **Tool Objects** contains a list of objects selected in the Object Browser or in the Viewer, which will cut and filled the main objects.
+- **See preview** button shows a result of the operation.
 
 **TUI Command**:  *model.addFill(Part_doc, mainObjects, toolObjects)*
 

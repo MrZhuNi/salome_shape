@@ -1,8 +1,8 @@
 
-Cone
-====
+Cone segment
+============
 
-To create a Cone in the active part:
+To create a Cone segment in the active part:
 
 #. select in the Main Menu *GDML - > Cone segment* item  or
 #. click **Cone segment** button in the toolbar.
@@ -21,7 +21,15 @@ The following property panel will be opened:
 .. centered::
    **Cone property panel**
 
-**TUI Command**:  *model.addConeSegment(Part_doc, 7, 11, 5, 8, 12, 0 , 270)*
+The property panel contains image which explains meaning of input values:
+
+- **rmin1, rmax1** - minimal and maximal radiuses of a base of the cone.
+- **rmin2, rmax2** - minimal and maximal rediuses of a top of the cone.
+- **z** is a heighth of the cone.
+- **startphi** is a starting angle of the cone segment.
+- **deltaphi** is an angle to end of the cone segment.
+
+**TUI Command**:  *model.addConeSegment(Part_doc, rmin1, rmax1, rmin2, rmax2, z, startphi, deltaphi)*
   
 **Arguments**:    Part + Rmin of base + Rmax of base + Rmin of top + Rmax of top + height + start angle + end angle.
 

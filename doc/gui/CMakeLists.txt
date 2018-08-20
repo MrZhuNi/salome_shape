@@ -22,6 +22,12 @@ SET(input ${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in)
 
 SET(output ${CMAKE_CURRENT_BINARY_DIR}/conf.py)
 
+SET(DOC_FILES
+  Introduction.rst
+  )
+
+FILE( COPY ${DOC_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 CONFIGURE_FILE(${input} ${output})
 
 #sphinx-build -b html -c doc -D latex_paper_size=a4 -d doc/doctree /dn23/PPGP/vsv/SALOME730/SOURCES/PPGP_SRC/doc doc/html

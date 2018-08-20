@@ -21,7 +21,15 @@ The following property panel will be opened:
 .. centered::
    **Ellipsoid property panel**
 
-**TUI Command**:  *model.addEllipsoid(Part_doc, 10, 20, 40)*
+The property panel contains image which explains meaning of input values:
+
+- **ax** is a size of the ellipsoind along X axis.
+- **by** is a size of the ellipsoind along Y axis.
+- **cz** is a size of the ellipsoind along Z axis.
+- **zcut1** is a z coordinate of a lower cut plane.
+- **zcut2** is a z coordinate of a upper cut plane.
+
+**TUI Command**:  *model.addEllipsoid(Part_doc, ax, by, cz)*
   
 **Arguments**:    Part + ax + by + cz.
 

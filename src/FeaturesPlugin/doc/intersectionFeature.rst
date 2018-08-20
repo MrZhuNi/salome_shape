@@ -2,7 +2,7 @@
 Intersection
 ============
 
-To a create boolean opration Intersection in the active part:
+To perform a boolean opration Intersection in the active part:
 
 #. select in the Main Menu *Features - > Intersection* item  or
 #. click **Intersection** button in the toolbar
@@ -21,11 +21,7 @@ The following property panel will be opened:
 .. centered::
    **Intersection operation**
 
-Here it is necessary to select some objects.
-
-**Apply** button creates the intersection shape.
-  
-**Cancel** button cancels operation.
+**Base Objects** contains a list of objects selected in the Object Browser or in the Viewer, which will be intersected.
 
 **TUI Command**:  *model.addIntersection(Part_doc, Objects)*
 

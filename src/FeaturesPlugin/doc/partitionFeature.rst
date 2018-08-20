@@ -2,7 +2,7 @@
 Partition
 =========
 
-To a create boolean opration Partition in the active part:
+To perform a boolean opration Partition in the active part:
 
 #. select in the Main Menu *Features - > Partition* item  or
 #. click **Partition** button in the toolbar
@@ -21,11 +21,7 @@ The following property panel will be opened:
 .. centered::
    **Partition operation**
 
-Here it is necessary to select several objects.
-
-**Apply** button creates the partition shape.
-  
-**Cancel** button cancels operation.
+**Base Objects** contains a list of objects selected in the Object Browser or in the Viewer, which will be partitioned.
 
 **TUI Command**:  *model.addPartition(Part_doc, objects)*
 

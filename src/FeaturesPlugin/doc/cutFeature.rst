@@ -2,7 +2,7 @@
 Cut
 ===
 
-To a create boolean opration Cut in the active part:
+To perform a boolean opration Cut in the active part:
 
 #. select in the Main Menu *Features - > Cut* item  or
 #. click **Cut** button in the toolbar
@@ -21,11 +21,9 @@ The following property panel will be opened:
 .. centered::
   **Cut operation**
 
-Here it is necessary to select main objects and tool objects.
-
-**Apply** button creates the cut shape.
-  
-**Cancel** button cancels operation.
+- **Main Objects** contains a list of objects selected in the Object Browser or in the Viewer, which will be cut by tool objects.
+-  **Tool Objects** contains a list of objects selected in the Object Browser or in the Viewer, which will be cut main objects.
+- **See preview** button shows a  result of the operation.
 
 **TUI Command**:  *model.addCut(Part_doc, mainObjects, toolObjects)*
 
