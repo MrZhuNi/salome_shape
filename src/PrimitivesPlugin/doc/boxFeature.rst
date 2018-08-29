@@ -3,12 +3,14 @@
 Box
 ===
 
+The feature Box lets to create a solid of a box shape.
+
 To create a Box in the active part:
 
 #. select in the Main Menu *Primitives - > Box* item  or
-#. click **Box** button in the toolbar
+#. click **Box** button in the toolbar:
 
-.. image:: images/Box_button.png
+.. image:: images/box.png
    :align: center
 
 .. centered::
@@ -16,37 +18,43 @@ To create a Box in the active part:
 
 There are 2 algorithms for creation of a Box:
 
+.. image:: images/box_2pt_32x32.png
+   :align: left
+**By dimensions** creates a box by dimensions along X, Y, Z axis.
+
+.. image:: images/box_dxyz_32x32.png
+   :align: left
+**By two points** creates a box by two points of the box diagnal.
+
+
+
+By dimensions
+"""""""""""""
+
 .. image:: images/Box_dimensions.png
    :align: center
-	
-.. centered::
-   **By dimensions**
 
-and 
-
-.. image:: images/Box_2points.png
-	   :align: center
-		   
-.. centered::
-   **By two points**  
-
-
-The description of input fields for **By dimensions** tab is given below:
-
-- **DX**, **DY**, **DZ** specify box dimensions along the coordinate axes for box with vertex coinciding with coordinate origin.
+In this case it is necessary to specify **DX**, **DY**, **DZ** sizes of the box along corresponded coordinate axes. The box will be created starting from the origin.
 
 **TUI Command**:  *model.addBox(Part_doc, DX, DY, DZ)*
   
 **Arguments**:    1 Part + 3 values (dimensions at origin).
 
-The description of input fields for **By two points** tab is given below:
 
-- selected **Point 1** and **Point 2** define the opposite vertices of the box.
+By two points
+"""""""""""""
+
+.. image:: images/Box_2points.png
+	 :align: center
+
+In this case it is necessary to select **Point 1** and **Point 2** to define a diagonal points of the box.
   
 **TUI Command**:  *model.addBox(Part_doc, FirstPoint, SecondPoint)*
 
 **Arguments**:   1 Part + 2 selected points (opposite vertices of the box)
 
+Result
+""""""
 
 The Result of operation will be a SOLID. The edges of the box will be parallel to the coordinate axes.
 
