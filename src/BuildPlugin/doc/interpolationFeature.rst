@@ -2,6 +2,8 @@
 Interpolation
 =============
 
+The Interpolation feature creates curve (wire) using already existing vertices in other objects.
+
 To create interpolation in the active part:
 
 #. select in the Main Menu *Build - > Interpolation* item  or
@@ -42,6 +44,9 @@ Select one or several vertices or points in a viewer.
 - *model.addInterpolation(Part_doc, Points, StartEdge, EndEdge, IsClosed, IsReordered)*.
 
 **Arguments**:   Part document + list of points + start edge + end edge + is closed + is reordered.
+
+Result
+""""""
 
 The result of the operation will be a curve created from selected shapes:
 

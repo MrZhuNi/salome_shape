@@ -2,6 +2,8 @@
 Cone
 ====
 
+The feature Cone creates a cone solid.
+
 To create a Cone in the active part:
 
 #. select in the Main Menu *Primitives - > Cone* item  or
@@ -33,6 +35,9 @@ The description of input fields is given below:
 **TUI Command**: *model.addCone(Part_doc, Point, Axis, Radius1, Radius2, Height)* 
 
 **Arguments**:  1 Part + 1 vertex + 1 vector + 3 values (Dimensions: base and top radii, heght).
+
+Result
+""""""
 
 The Result of operation will be a SOLID.
 

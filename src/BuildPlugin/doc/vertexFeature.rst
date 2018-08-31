@@ -2,6 +2,8 @@
 Vertex
 ======
 
+The Vertex feature creates one or several vertices using already existing vertices in other objects.
+
 To create vertices in the active part:
 
 #. select in the Main Menu *Build - > Vertex* item  or
@@ -30,6 +32,9 @@ Select one or several vertices in viewer.
 **TUI Command**:  *model.addVertex(Part_doc, Shapes)*
 
 **Arguments**:   Part document + list of shapes.
+
+Result
+""""""
 
 The result of the operation will be set of vertices created from selected shapes:
 

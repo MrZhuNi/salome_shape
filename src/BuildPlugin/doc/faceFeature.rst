@@ -2,6 +2,8 @@
 Face
 ====
 
+The Face feature creates one or several faces using already existing faces in other objects.
+
 To create face in the active part:
 
 #. select in the Main Menu *Build - > Face* item  or
@@ -30,6 +32,9 @@ Select one or several faces in viewer.
 **TUI Command**:  *model.addFace(Part_doc, Shapes)*
 
 **Arguments**:   Part document + list of shapes.
+
+Result
+""""""
 
 The result of the operation will be set of faces created from selected shapes:
 

@@ -2,6 +2,8 @@
 Torus
 =====
 
+The feature Torus creates a torus solid.
+
 To create a Torus in the active part:
 
 #. select in the Main Menu *Primitives - > Torus* item  or
@@ -32,6 +34,9 @@ The following property panel appears.
 **TUI Command**: *model.addTorus(Part_doc, Point, Axis, Radius1, Radius2)*
 
 **Arguments**:  1 Part + 1 vertex + 1 vector + 2 values (Dimensions: first and second radii).
+
+Result
+""""""
 
 The Result of operation will be a SOLID.
 

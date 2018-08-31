@@ -3,7 +3,7 @@
 Box
 ===
 
-The feature Box lets to create a solid of a box shape.
+The feature Box creates a box solid.
 
 To create a Box in the active part:
 

@@ -2,6 +2,8 @@
 Shell
 =====
 
+The Shell feature creates a shell using already existing faces in other objects.
+
 To create shell in the active part:
 
 #. select in the Main Menu *Build - > Shell* item  or
@@ -30,6 +32,9 @@ Select one or several faces in viewer.
 **TUI Command**:  *model.addShell(Part_doc, Objects)*
 
 **Arguments**:   Part document + list of shapes.
+
+Result
+""""""
 
 The result of the operation will be shell created from selected shapes:
 

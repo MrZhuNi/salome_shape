@@ -2,6 +2,8 @@
 Solid
 =====
 
+The Solid feature creates a solid using already existing faces in other objects.
+
 To create solid in the active part:
 
 #. select in the Main Menu *Build - > Solid* item  or
@@ -30,6 +32,9 @@ Select one or several faces in viewer. Selected faces have to define a closed vo
 **TUI Command**:  *model.addSolid(Part_doc, Shapes)*
 
 **Arguments**:   Part document + list of shapes.
+
+Result
+""""""
 
 The result of the operation will be a solid created from selected shapes:
 

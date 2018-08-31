@@ -2,6 +2,8 @@
 Compound
 ========
 
+The Compound feature creates a compound using already existing shapes in other objects.
+
 To create compound in the active part:
 
 #. select in the Main Menu *Build - > Compound* item  or
@@ -30,6 +32,9 @@ Select one or several shapes in a viewer. Selected shapes can be of any type (ve
 **TUI Command**:  *model.addCompound(Part_doc, Shapes)*
 
 **Arguments**:   Part document + list of shapes.
+
+Result
+""""""
 
 The result of the operation will be a compound created from selected shapes:
 

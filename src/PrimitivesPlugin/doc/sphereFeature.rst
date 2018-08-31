@@ -2,6 +2,8 @@
 Sphere
 ======
 
+The feature Sphere creates a sphere solid.
+
 To create a Sphere in the active part:
 
 #. select in the Main Menu *Primitives - > Sphere* item  or
@@ -29,6 +31,9 @@ The description of input fields is given below:
 **TUI Command**: *model.addSphere(Part_doc, Point, Radius)*.
 
 **Arguments**:  1 Part + 1 vertex +1 value (radius).
+
+Result
+""""""
 
 The Result of operation will be a SOLID.
 

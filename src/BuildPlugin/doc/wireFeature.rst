@@ -2,6 +2,8 @@
 Wire
 ====
 
+The Wire feature creates a wire using already existing edges in other objects.
+
 To create wire in the active part:
 
 #. select in the Main Menu *Build - > Wire* item  or
@@ -30,6 +32,9 @@ Select one or several edges in viewer. For automatic selection of closed contour
 **TUI Command**:  *model.addWire(Part_doc, Shapes)*
 
 **Arguments**:   Part document + list of shapes.
+
+Result
+""""""
 
 The result of the operation will be a wire created from selected shapes:
 
