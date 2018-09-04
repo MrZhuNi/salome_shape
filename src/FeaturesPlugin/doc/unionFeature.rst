@@ -2,6 +2,8 @@
 Union
 =====
 
+The feature Union implements a boolean operation for creation of a uniono of selected objects.
+
 To a create boolean opration Union in the active part:
 
 #. select in the Main Menu *Features - > Union* item  or
@@ -30,6 +32,9 @@ Here it is necessary to select some objects.
 **TUI Command**:  *model.addUnion(Part_doc, objects)*
 
 **Arguments**:   Part + list of objects.
+
+Result
+""""""
 
 The Result of the operation will be a shape which is a union of selected objects:
 

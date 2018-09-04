@@ -2,6 +2,8 @@
 Ellipsoid
 =========
 
+The feature Ellipsoid creates a 3d ellipsoid or its part using GDML language.
+
 To create a Ellipsoid in the active part:
 
 #. select in the Main Menu *GDML - > Ellipsoid* item  or
@@ -32,6 +34,9 @@ The property panel contains image which explains meaning of input values:
 **TUI Command**:  *model.addEllipsoid(Part_doc, ax, by, cz)*
   
 **Arguments**:    Part + ax + by + cz.
+
+Result
+""""""
 
 The Result of the operation will be a SOLID.
 

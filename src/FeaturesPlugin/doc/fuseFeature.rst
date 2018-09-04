@@ -2,6 +2,8 @@
 Fuse
 ====
 
+The feature Fuse implements a boolean operation for fision of a set of main objects with a set of tool objects.
+
 To perform a boolean opration Fuse in the active part:
 
 #. select in the Main Menu *Features - > Fuse* item  or
@@ -28,6 +30,9 @@ The following property panel will be opened:
 **TUI Command**:  *model.addFuse(Part_doc, mainObjects, toolObjects)*
 
 **Arguments**:   Part + list of main objects + list of tool objects.
+
+Result
+""""""
 
 The Result of the operation will be a shape which is a fuse of tool objects with main objects:
 

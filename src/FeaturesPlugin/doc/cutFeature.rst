@@ -2,6 +2,8 @@
 Cut
 ===
 
+The feature Cut implements a boolean operation to cut tool objects from a main objects.
+
 To perform a boolean opration Cut in the active part:
 
 #. select in the Main Menu *Features - > Cut* item  or
@@ -28,6 +30,9 @@ The following property panel will be opened:
 **TUI Command**:  *model.addCut(Part_doc, mainObjects, toolObjects)*
 
 **Arguments**:   Part + list of main objects + list of tool objects.
+
+Result
+""""""
 
 The Result of the operation will be a shape which is a cut of tool objects from main objects:
 

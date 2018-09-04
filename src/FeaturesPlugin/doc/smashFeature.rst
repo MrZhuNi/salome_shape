@@ -2,6 +2,8 @@
 Smash
 =====
 
+The feature Smash implements a boolean operation for smashing a set of main objects by a set of tool objects.
+
 To a create boolean opration Smash in the active part:
 
 #. select in the Main Menu *Features - > Smash* item  or
@@ -30,6 +32,9 @@ Here it is necessary to select main objects and tool objects.
 **TUI Command**:  *model.addSmash(Part_doc, mainObjects, toolObjects)*
 
 **Arguments**:   Part + list of main objects + list of tool objects.
+
+Result
+""""""
 
 The Result of the operation will be a shape which is a smash of tool objects from main objects:
 

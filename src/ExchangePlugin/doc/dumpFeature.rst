@@ -2,6 +2,8 @@
 Dump
 ====
 
+The feature Dump allows to export a current study to a Python script wich dumps process of creation of the study as a sequence of Python commands.
+
 It is possible to dump current study state into a Python script. To dump a study:
 
 #. select in the Main Menu *Part - > Dump* item  or
@@ -34,5 +36,8 @@ In this panel it is necessary to enter a file name directly into input field or 
 **Cancel** button cancels operation.
 
 **TUI Command**: Is not supported.
+
+Result
+""""""
 
 The Result of the operation is a Python file.

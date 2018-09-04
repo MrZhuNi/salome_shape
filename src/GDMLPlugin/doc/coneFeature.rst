@@ -2,6 +2,8 @@
 Cone segment
 ============
 
+The feature Cone segment creates a cone or its segment using GDML language.
+
 To create a Cone segment in the active part:
 
 #. select in the Main Menu *GDML - > Cone segment* item  or
@@ -32,6 +34,9 @@ The property panel contains image which explains meaning of input values:
 **TUI Command**:  *model.addConeSegment(Part_doc, rmin1, rmax1, rmin2, rmax2, z, startphi, deltaphi)*
   
 **Arguments**:    Part + Rmin of base + Rmax of base + Rmin of top + Rmax of top + height + start angle + end angle.
+
+Result
+""""""
 
 The Result of the operation will be a SOLID.
 

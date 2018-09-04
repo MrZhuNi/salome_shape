@@ -2,6 +2,8 @@
 Partition
 =========
 
+The feature Partition implements a boolean operation for partitioning of a set of selected objects.
+
 To perform a boolean opration Partition in the active part:
 
 #. select in the Main Menu *Features - > Partition* item  or
@@ -26,6 +28,9 @@ The following property panel will be opened:
 **TUI Command**:  *model.addPartition(Part_doc, objects)*
 
 **Arguments**:   Part + list of objects.
+
+Result
+""""""
 
 The Result of the operation will be a shape which is a partition of selected objects:
 

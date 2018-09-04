@@ -2,6 +2,8 @@
 Common
 ======
 
+The feature Common implements a boolean operation for extraction of a common part from a set of selected shapes.
+
 To perform a boolean opration Common in the active part:
 
 #. select in the Main Menu *Features - > Common* item  or
@@ -28,6 +30,9 @@ The following property panel will be opened:
 **TUI Command**:  *model.addCommon(Part_doc, mainObjects, toolObjects)*
 
 **Arguments**:   Part + list of main objects + list of tool objects.
+
+Result
+""""""
 
 The Result of the operation will be a shape which is a common for all selected shapes:
 

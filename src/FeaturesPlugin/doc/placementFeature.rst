@@ -41,6 +41,9 @@ In this property panel it is necessary:
 
 **Arguments**:   Part + list of objects to move + start shape + end shape + is reverse flag + is centering flag.
 
+Result
+""""""
+
 The Result of the operation will be a new placement of selected objects:
 
 .. image:: images/CreatedPlacement.png

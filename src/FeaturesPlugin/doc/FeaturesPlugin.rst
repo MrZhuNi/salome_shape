@@ -4,6 +4,8 @@
 Features plug-in
 ================
 
+Features plug-in implements a set of common topological operations. It implements following features:
+
 .. toctree::
    :titlesonly:
    :maxdepth: 1

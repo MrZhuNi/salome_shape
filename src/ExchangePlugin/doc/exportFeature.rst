@@ -2,6 +2,8 @@
 Export
 ======
 
+The feature export allows to export objects from the current study to an external file.
+
 It is possible to export objects into files in following formats: BREP, STEP, IGES, XAO. To export objects to a file:
 
 #. select in the Main Menu *Part - > Export* item  or
@@ -38,6 +40,9 @@ Selection list in property panel should contain a list of exporting objects whic
 **TUI Command**: *model.exportToFile(Part_doc, FileNameString, ObjectsList)*
 
 **Arguments**: Part + file name string + list of objects.
+
+Result
+""""""
 
 The Result of operation is exported file. There are no any changes in object browser or viewer.
 

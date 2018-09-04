@@ -2,6 +2,8 @@
 Fill
 ====
 
+The feature Fill implements a boolean operation for filling of main objects by parts of tool objects.
+
 To perform a boolean opration Fill in the active part:
 
 #. select in the Main Menu *Features - > Fill* item  or
@@ -28,6 +30,9 @@ The following property panel will be opened:
 **TUI Command**:  *model.addFill(Part_doc, mainObjects, toolObjects)*
 
 **Arguments**:   Part + list of main objects + list of tool objects.
+
+Result
+""""""
 
 The Result of the operation will be a shape which is a fill of tool objects with main objects:
 
