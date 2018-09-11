@@ -37,8 +37,6 @@ Result
 
 Created line appears in the view.
 
-Example is shown below.
-
 .. image:: images/Line_res.png
 	   :align: center
 

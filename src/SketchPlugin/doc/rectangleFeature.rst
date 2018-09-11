@@ -40,8 +40,6 @@ Result
 
 Created rectangle appears in the view.
 
-Example is shown below.
-
 .. image:: images/Rectangle_res.png
 	   :align: center
 

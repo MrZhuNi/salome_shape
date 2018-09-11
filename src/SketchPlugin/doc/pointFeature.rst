@@ -37,8 +37,6 @@ Result
 
 Created point appears in the view.
 
-Example is shown below.
-
 .. image:: images/Point_res.png
 	   :align: center
 
