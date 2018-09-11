@@ -44,19 +44,57 @@ user can close any dock window. To open it again he can use a corresponded comma
 
 .. _object_browser: 
 
-Object browser 
+Object browser
 ^^^^^^^^^^^^^^
+
+
 
 .. _property_panel:
 
 Property panel
 ^^^^^^^^^^^^^^
 
-By default Property Panel is hidden, and it is shown on operation start.
+By default Property Panel is hidden.
 
-By default the Property Panel is shown at left side of the main window.
+The Property Panel is shown on operation start at left side of the main window by default.
 
-If Object Browser is shown at the same side then they will be tabbed
+If Object Browser is shown at the same side then they will be tabbed.
+
+Property panel consists of two parts:
+
+- controls container for input of parameters for the current operation;
+- buttons panel containing standard buttons:
+    
+  - **Ok/Apply** executes operation with defined parameters,
+  - **Cancel/Close** calls **Abort operation** dialog box to confirm  operation abort,
+  - **Help** calls User's guide opened on page describing the current operation.
+
+.. image:: button_ok.png
+   :align: center
+
+.. centered::
+   **OK**  button
+
+.. image:: button_cancel.png
+   :align: center
+
+.. centered::
+   **Cancel**  button
+
+.. image:: button_help.png
+   :align: center
+
+.. centered::
+   **Help**  button
+
+.. image:: abort_operation.png
+   :align: center
+
+.. centered::
+   **Abort operation** dialog box
+
+
+ **OK**  button is disabled if not all input parameters are defined or some errors are found. Error is shown as tooltip and in inspection panel.
 
 .. _inspection_panel: 
 
