@@ -8,10 +8,11 @@ Sketch plug-in
 Sketch plug-in includes features for creation of 2D shapes.
 
 The process of sketch creation is comprised of:
+
 - definition of sketch plane
 - creation of sketch objects from scratch
 - generation of sketch objects via operations on the existing operations
-- definition of constaints
+- definition of constraints
 
 Sketch could be created both in active part and a part set (if there is no active part).
 
@@ -26,7 +27,7 @@ To create a Sketch:
 .. centered::
    **Sketch**  button
 
-At first it is necessary to define a plane on which to create a sketch:
+First define a plane on which to create a sketch:
 
 .. image:: images/PlaneDefinition.png
    :align: center
@@ -54,8 +55,13 @@ After the plane for sketch is selected the following property panel will be open
 - **Show dimensional constraints** check box - turns on/off dimensional constraints displaying
 - **Show existing expressions** check box - turns on/off expressions displaying
 
-Now it is possible to create sketch objects, make sketch operations and constraints.
-To apply or cancel sketch creation it is possible to use apply and cancel buttons from the
+Now it is possible:
+
+- create :ref:`sketch objects <sketch_objects>`
+- create :ref:`constraints <sketch_constraints>`
+- perform :ref:`sketch operations <sketch_operations>`
+
+To apply or cancel sketch creation use apply and cancel buttons from the
 Sketch panel as well as equivalent buttons from Sketch toolbar.
 
 The Result of operation will be a COMPOUND. Result node in the object tree is located in
@@ -66,6 +72,8 @@ Name is assigned automatically: **Sketch_1**, **Sketch_2**, ... both for Feature
 **TUI Command**:  *Sketch_1 = model.addSketch(PartOrPartSet, plane)*
 
 **Arguments**:    Part or PartSet + plane.
+
+.. _sketch_objects:
 
 Sketch objects
 --------------
@@ -80,6 +88,8 @@ The plug-in includes following features for creation of 2D objects:
    rectangleFeature.rst
    circleFeature.rst
    arcFeature.rst
+
+.. _sketch_constraints:
 
 Constraints
 -----------
@@ -105,6 +115,8 @@ Constraints
    tangentFeature.rst
    verticalDistFeature.rst
    verticalFeature.rst
+
+.. _sketch_operations:
 
 Operations
 ----------

@@ -33,6 +33,10 @@ By center and passed point
 
 Click in the view once to set the center point, then move the mouse and click a second time to set the passed point.
 
+- When entering a center point by selecting either a point or a segment, a Coincident constraint is created.
+- When entering a passing point by selecting a point, a Coincident constraint is also created.
+- When entering a passing point by selecting a segment, a Tangent constraint is created.
+
 **TUI Command**:  *Sketch_1.addCircle(CenterX, CenterY, PassedX, PassedY)*
 
 **Arguments**:    4 values (coordinates of the center and the passed point).
@@ -46,6 +50,37 @@ By three points
 Click in the view once to set the first passed point, then move the mouse and click a second time to set the second passed point
 and finally move the mouse and click a third time to set the last passed point.
 
+- When entering a passing point by selecting a point, a Coincident constraint is created.
+- When entering a passing point by selecting a segment, a Tangent constraint is created.
+
 **TUI Command**:  *Sketch_1.addCircle(X1, Y1, X2, Y2, X3, Y3)*
 
 **Arguments**:    6 values (coordinates of three points).
+
+Property panel in edition context
+"""""""""""""""""""""""""""""""""
+
+The following property panel appears when the user selects an existing circle.
+
+.. image:: images/Circle_panel_edit.png
+   :align: center
+
+Note that the edition property panel doesn't show the creation algorithm used.
+
+The panel shows:
+
+- center coordinates and radius (read-only).
+- auxiliary flag (could be modified).
+
+Result
+""""""
+
+Created circle appears in the view.
+
+.. image:: images/Circle_res.png
+	   :align: center
+
+.. centered::
+   Circle created
+
+**See Also** a sample TUI Script of a :ref:`tui_create_circle` operation.
