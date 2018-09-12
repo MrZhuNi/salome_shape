@@ -10,10 +10,18 @@ Application desktop
 
 The main window of the application consists of the following components:
 
-- :ref:`main_menu`
-- :ref:`doc_windows`
-- :ref:`viewer` 
+- :ref:`main_menu`;
+- :ref:`doc_windows`;
+- :ref:`viewer`;
+- status bar.    
 
+.. image:: images/main_window.png
+   :align: center
+
+.. centered::
+   Main window of SHAPER module
+
+  
 .. _main_menu:
 
 Main menu 
@@ -21,6 +29,34 @@ Main menu
 
 Main menu provides access to all commands of the application.
 
+.. image:: images/main_menu.png
+   :align: center
+
+.. centered::
+   Main menu
+
+Main menu includes standard Salome items:
+
+- File;
+- Edit;
+- View;
+- Tools;   
+- Window;
+- Help;
+    
+and items specific for SHAPER module:
+
+- :ref:`partPlugin`;
+- :ref:`sketchPlugin`;
+- :ref:`constructionPlugin`;
+- :ref:`buildPlugin`;
+- :ref:`primitivesPlugin`;
+- :ref:`gdmlPlugin`;
+- :ref:`featuresPlugin`;  
+- :ref:`macrosPlugin`. 
+
+
+  
 .. _doc_windows:
 
 Dock windows
@@ -33,14 +69,19 @@ Standard dock windows are:
 - :ref:`python console`
 - :ref:`property_panel`
 
-
 Dock windows can be placed in three dock areas:
 - left, 
 - right, 
 - bottom.
 
-By default object browser window is placed at left area of the main window  and Python console is placed as at bottom area of the main menu. 
-user can close any dock window. To open it again he can use a corresponded command from pop-up menu on static part of main menu  
+By default object browser window is placed at the left  dock area, Inspection panel at the right  dock area and Python console at the bottom dock area of the main window and Property Panel is hidden.
+
+The Property Panel is shown on operation start at left dock area of the main window by default.
+
+If Object Browser is shown at the same side then they will be tabbed.
+
+Each dock window can be closed and opened again using a corresponding command from View - Windows pop-up menu on static part of main menu :ref:`main_menu`
+
 
 .. _object_browser: 
 
@@ -69,32 +110,32 @@ Property panel consists of two parts:
   - **Cancel/Close** calls **Abort operation** dialog box to confirm  operation abort,
   - **Help** calls User's guide opened on page describing the current operation.
 
-.. image:: button_ok.png
+.. image:: images/button_ok.png
    :align: center
 
 .. centered::
    **OK**  button
 
-.. image:: button_cancel.png
+.. image:: images/button_cancel.png
    :align: center
 
 .. centered::
    **Cancel**  button
 
-.. image:: button_help.png
+.. image:: images/button_help.png
    :align: center
 
 .. centered::
    **Help**  button
 
-.. image:: abort_operation.png
+.. image:: images/abort_operation.png
    :align: center
 
 .. centered::
    **Abort operation** dialog box
 
 
- **OK**  button is disabled if not all input parameters are defined or some errors are found. Error is shown as tooltip and in inspection panel.
+**OK**  button is disabled if not all input parameters are defined or some errors are found. Error is shown as tooltip and in status bar.
 
 .. _inspection_panel: 
 
