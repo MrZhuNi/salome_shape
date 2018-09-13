@@ -122,19 +122,19 @@ The plug-in includes the following constraints:
    distanceFeature.rst
    horizontalDistFeature.rst
    verticalDistFeature.rst
-   angleFeature.rst
-   coincedenceFeature.rst
-   collinearFeature.rst
-   equalFeature.rst
-   horizontalFeature.rst
    lengthFeature.rst
-   middleFeature.rst
+   angleFeature.rst
+   radiusFeature.rst
+   horizontalFeature.rst
+   verticalFeature.rst
+   fixedFeature.rst
    parallelFeature.rst
    perpendicularFeature.rst
-   radiusFeature.rst
-   rigidFeature.rst
    tangentFeature.rst
-   verticalFeature.rst
+   coincedentFeature.rst
+   middleFeature.rst
+   equalFeature.rst
+   collinearFeature.rst
 
 .. _sketch_operations:
 

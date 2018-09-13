@@ -2,7 +2,9 @@
 Distance constraint
 ===================
 
-Distance can be defined between two objects such as point, line, line or arc end point, center of circle or arc.
+Distance constraint fixes distance between two objects.
+
+The constraint can be defined between such objects as point, line, line or arc end point, center of circle or arc.
 
 To create Distance constraint in the active Sketch:
 
@@ -22,10 +24,10 @@ Property panel:
 
 Input fields:
 
-- **First object** - the first object
-- **Second object** - the second object
-- **Value** - distance between the objects, could be modified to set the desirable value
-- **Text location** - position of the distance value label relating to extension line (in the view)
+- **First object** is the first object selected in the view
+- **Second object** is the second object selected in the view
+- **Value** is a distance between the objects, could be modified to set the desirable value
+- **Text location** is a position of the distance value label relating to extension line (in the view)
    .. image:: images/location_left.png
       :align: left
    **Left** inserts text at the left of the distance extension line.
@@ -37,11 +39,11 @@ Input fields:
    .. image:: images/location_right.png
       :align: left
    **Right** inserts text to the right of the distance extension line.
-- **Keep orientation** - fixes the relative position between selected objects
+- **Keep orientation** fixes the relative position between selected objects
 
-When the both objects are selected distance value is displayed in the property panel and in the view.
+When both objects are selected distance value is displayed in the property panel and in the view.
 
-When creating the constraint and the both objects are selected the first time:
+When creating the constraint, after selection of two objects at the first time:
 
 - drag the distance presentation in the view to the desired position (by move mouse and click once)
 - set desirable distance value in the input field in the view and press **Enter** or just press **Enter** to keep the current distance

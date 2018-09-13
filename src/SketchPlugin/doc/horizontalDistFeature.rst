@@ -2,7 +2,7 @@
 Horizontal distance constraint
 ==============================
 
-Horizontal Distance constraint fixes distance between two objects along the horizontal axis.
+Horizontal Distance constraint fixes distance between two points along the horizontal axis.
 
 The constraint can be defined between two points such as point object, line or arc end point, center of circle or arc.
 
@@ -24,10 +24,10 @@ Property panel:
 
 Input fields:
 
-- **First object** - the first object
-- **Second object** - the second object
-- **Value** - distance between the objects, could be modified to set the desirable value
-- **Text location** - position of the distance value label relating to extension line (in the view)
+- **First point** is the first point selected in the view
+- **Second point** is the second point selected in the view
+- **Value** is a distance between the objects, could be modified to set the desirable value
+- **Text location** is a position of the distance value label relating to extension line (in the view)
    .. image:: images/location_left.png
       :align: left
    **Left** inserts text at the left of the distance extension line.
@@ -40,9 +40,9 @@ Input fields:
       :align: left
    **Right** inserts text to the right of the distance extension line.
 
-When the both objects are selected horizontal distance value is displayed in the property panel and in the view.
+When both objects are selected horizontal distance value is displayed in the property panel and in the view.
 
-When creating the constraint and the both objects are selected the first time:
+When creating the constraint, after selection of two objects at the first time:
 
 - drag the horizontal distance presentation in the view to the desired position (by move mouse and click once)
 - set desirable horizontal distance value in the input field in the view and press **Enter** or just press **Enter** to keep the current distance
