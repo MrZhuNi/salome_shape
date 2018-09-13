@@ -37,7 +37,7 @@ New study contains only Partset with 7 default constructions which cannot be del
 - three planes **YOZ**, **XOZ**, **XOY**  coinciding with coordinate planes.    
 
 Only  points, axis and plane (see  :ref:`constructionPlugin`) and sketches (see  :ref:`sketchPlugin`) can be added in Partset to be used in any part later.
-:ref:`parameters` created can be also used both in Partset and any Part.
+:ref:`parameters` created can be used both in Partset and any Part.
 
 If parameter name in Partset and  Part are identical then Part parameter has higher prority.
      
@@ -110,13 +110,15 @@ Standard dock windows are:
 - :ref:`python console`
 - :ref:`property_panel`
 
-Dock windows can be placed in three dock areas:
+Dock windows can be placed in three dock areas using drag-and -drop:
   
 - left, 
 - right, 
 - bottom.
 
-By default object browser window is placed at the left  dock area, Inspection panel at the right  dock area and Python console at the bottom dock area of the main window and Property Panel is hidden.
+By default object browser window is placed at the left dock area, Inspection panel at the right dock area and Python console at the bottom dock area of the main window.
+
+Property Panel is hidden.
 
 The Property Panel is shown on operation start at left dock area of the main window by default.
 
@@ -136,9 +138,20 @@ Each dock window can be closed using **Cross** window button and opened again us
 Object browser
 ^^^^^^^^^^^^^^
 
-Object browser contains all documents created in the active study shown in Tree View.
+Object browser contains all documents created in the current study. shown in Tree View.
 
-Partset includes the following branches:
+Each document includes standard branches where created objects are placed.
+
+Documents with branches are shown in Tree View.
+
+.. image:: images/object_browser.png
+   :align: center
+
+.. centered::
+   Object browser. Partset active
+
+
+Partset includes three branches:
 
 - Parameters;
 - Constructions;
@@ -157,8 +170,75 @@ New part contains only 3 empty branches:
  
 - Parameters;
 - Constructions;
-- Results; 
+- Results.
 
+Features are placed one after another in the active document with default names and their results are placed in the corresponding branch.
+
+Each feature, result, construction, group, field, parameter can be renamed using *Rename* pop-up menu command.
+
+.. image:: images/popup_menu_object_browser_feature.png
+   :align: center
+
+.. centered::
+   Feature pop-up menu
+
+.. image:: images/popup_menu_object_browser_result.png
+   :align: center
+
+.. centered::
+    Result pop-up menu
+
+.. image:: images/popup_menu_object_browser_construction.png
+   :align: center
+
+.. centered::
+   Construction pop-up menu
+
+Order of featurs can be changed using *Move to the end* pop-up menu command. Selected feature will be moved to the end of feture list.
+
+Folders can be used to arrange long Tree View for features.
+
+.. image:: images/object_browser_folder.png
+   :align: center
+
+.. centered::
+   Object browser with folder Dome. Part_1 active
+
+*Insert a folder before* pop-up menu command creates a new empty folder before the selected feature. Folder can be renamed.
+
+Features placed after/before the created folder can be moved into the folder using *Move into the previous folder* / *Move into the next folder* pop-up menu command.
+
+This allows to decrease length of feature list.
+
+Features can be removed from folder back using *Move out before the folder* / *Move out after the folder* pop-up menu command.
+
+*Clean history* pop-up menu command looks for features that do not participate in other features.
+
+**Clean history** dialog box shows list of unused features. After confirmation by click **Yes** button unused features are removed.
+
+.. image:: images/clean_history.png
+   :align: center
+
+.. centered::
+   **Clean history** dialog box
+
+
+*Select result* and *Select parent feature* pop-up menu commands help to navigate along Tree View.
+
+
+Feature together with its result can be deleted using *Delete* pop-up menu command.
+
+Note that all features using removed feature and their results will be removed simulteneously.
+
+**Delete feature** dialog box shows list of feature to be removed. After confirmation by click **Yes** button all these features are removed.
+
+
+.. image:: images/delete_feature.png
+   :align: center
+
+.. centered::
+   **Delete feature** dialog box
+   
 .. _property_panel:
 
 Property panel
@@ -211,10 +291,62 @@ Property panel consists of two parts:
 Inspection panel 
 ^^^^^^^^^^^^^^^^
 
+Inspection panel provides the list of types and quantities of all topological entities, composing the selected result, consruction  or feature.
+
+.. image:: images/inspection_panel.png
+   :align: center
+
+.. centered::
+   Inspection panel for default Box
+
+**Object** displays name of the selected result, consruction  or feature.
+
+**Type** characterizes the whole shape.
+   
+The information about Point, Axis or Edge  additionally shows coordinates of point / end points.
+
+.. image:: images/inspection_panel_line.png
+   :align: center
+
+.. centered::
+   Inspection panel for Axis
+   
+
+The information about  Plane, Face additionally shows coordinates of center point and direction of normal.
+
+.. image:: images/inspection_panel_line.png
+   :align: center
+
+.. centered::
+   Inspection panel for Face 
+
+ 
+
 .. _python console:
 
 Python console
 ^^^^^^^^^^^^^^
+
+Python console interpreters Python commands entered manually.
+
+In particular, it is possble to load python script:
+
+*execfile(r"/dn48/newgeom/data/example.py")*
+
+Pop-up menu allows:
+
+- Copy selected text to clipboard;
+- Paste text from clipboard to Python console ;
+- Clear Python console;
+- Dump commands from console into the specified file;
+- Start/Stop writing log into the specified file.    
+ 
+
+.. image:: images/python_console_popup.png
+   :align: center
+
+.. centered::
+   Pop-up menu of Python console
 
 .. _viewer:
 
@@ -222,8 +354,6 @@ Viewer
 ------
 
 The application supports one OCC 3D viewer and is able to show only one 3D space.
-
-Architecture and functionality of OCC 3D Viewer is provided in GUI module user's guide in chapter **OCC 3D Viewer**.
 
 This 3D space can be represented in several view windows. New view window can be created using **Clone view** button in viewer toolbar.
 
@@ -238,7 +368,9 @@ This point of view can be modified by user with help of viewer commands like **P
 .. centered::
    Two view windows
 
-  
+Description of OCC 3D Viewer architecture and functionality is provided in GUI module user's guide in chapter **OCC 3D Viewer**.
+
+
 .. _parameters:
 
 Parameters
