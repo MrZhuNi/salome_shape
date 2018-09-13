@@ -78,7 +78,7 @@ Name is assigned automatically: **Sketch_1**, **Sketch_2**, ... both for Feature
 Sketch objects
 --------------
 
-The plug-in includes following features for creation of 2D objects:
+The plug-in includes the following features for creation of 2D objects:
 
 .. toctree::
    :maxdepth: 1
@@ -94,13 +94,34 @@ The plug-in includes following features for creation of 2D objects:
 Constraints
 -----------
 
+Constraints are available and viewable during sketch creation or editing.
 
+The goal of constrains creation is to fix a sketch geometry, i.e. set degrees of freedom to zero.
+
+If all degrees of freedom are eliminated, the sketch is fixed and displayed with green color.
+
+.. image:: images/Sketch_fixed.png
+   :align: center
+
+.. centered::
+  Fixed Sketch
+
+If any degrees of freedom remain unsolved, the sketch is under-constrained and displayed with red color.
+
+.. image:: images/Sketch_underconstrained.png
+   :align: center
+
+.. centered::
+  Underconstrained Sketch
+
+The plug-in includes the following constraints:
 
 .. toctree::
    :maxdepth: 1
 
    distanceFeature.rst
    horizontalDistFeature.rst
+   verticalDistFeature.rst
    angleFeature.rst
    coincedenceFeature.rst
    collinearFeature.rst
@@ -113,7 +134,6 @@ Constraints
    radiusFeature.rst
    rigidFeature.rst
    tangentFeature.rst
-   verticalDistFeature.rst
    verticalFeature.rst
 
 .. _sketch_operations:
