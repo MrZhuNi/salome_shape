@@ -141,14 +141,16 @@ The plug-in includes the following constraints:
 Operations
 ----------
 
+The plug-in includes the following operations:
+
 .. toctree::
    :maxdepth: 1
 
    filletFeature.rst
    splitFeature.rst
    trimFeature.rst
+   projectionFeature.rst
    intersectionFeature.rst
    mirrorFeature.rst
-   projectionFeature.rst
-   rotationFeature.rst
    translationFeature.rst
+   rotationFeature.rst
