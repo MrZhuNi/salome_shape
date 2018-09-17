@@ -17,7 +17,7 @@ SHAPER module of SALOME is destined for:
 - viewing geometrical objects in the OCC viewer;
 - transformation of geometrical objects using various algorithms.
 
-It is possible to easily set :ref:`parameters` predefined to be used as arguments when objects are created.
+It is possible to easily set :ref:`parameter_usage` predefined to be used as arguments when objects are created.
 
 SHAPER module preferences are described in the SHAPER :ref:`preferences` section of SALOME Help.
 
@@ -37,9 +37,8 @@ New study contains only Partset with 7 default constructions which cannot be del
 - three planes **YOZ**, **XOZ**, **XOY**  coinciding with coordinate planes.    
 
 Only  points, axis and plane (see  :ref:`constructionPlugin`) and sketches (see  :ref:`sketchPlugin`) can be added in Partset to be used in any part later.
-:ref:`parameters` created can be used both in Partset and any Part.
+:ref:`parameter_usage` created can be used both in Partset and any Part.
 
-If parameter name in Partset and  Part are identical then Part parameter has higher prority.
      
 New Part can be created as described in :ref:`partPlugin`.
 
@@ -54,6 +53,7 @@ The main window of the application consists of the following components:
 - :ref:`main_menu`;
 - :ref:`doc_windows`;
 - :ref:`viewer`;
+- :ref:`toolbar`;    
 - status bar.    
 
 .. image:: images/main_window.png
@@ -87,16 +87,52 @@ Main menu includes standard Salome items:
     
 and items specific for SHAPER module:
 
-- :ref:`partPlugin`;
-- :ref:`sketchPlugin`;
-- :ref:`constructionPlugin`;
-- :ref:`buildPlugin`;
-- :ref:`primitivesPlugin`;
-- :ref:`gdmlPlugin`;
-- :ref:`featuresPlugin`;  
+- Part (see :ref:`partPlugin`);
+- Sketch (see :ref:`sketchPlugin`);
+- Construction (see :ref:`constructionPlugin`);
+- Build (see :ref:`buildPlugin`);
+- Primitives (see :ref:`primitivesPlugin`);
+- GDML (see :ref:`gdmlPlugin`);
+- Features (see :ref:`featuresPlugin`);  
 - Macros. 
 
+ .. _toolbar:  
 
+SHAPER toolbar
+--------------
+
+Application toolbar contains:
+
+- standard toolbar;
+- modukles toolbar;
+- SHAPER toolbar.
+
+.. image:: images/toolbar.png
+   :align: center
+
+.. centered::
+   Toolbars
+  
+SHAPER toolbar duplicates main menu and  provides access to all commands of the application.
+
+SHAPER toolbar is separated into sections:
+
+- Part;
+- Movement;
+- Measurement;
+- Sketch;
+- Construction;
+- Build;
+- Primitives;
+- GDML;
+- Features;
+- Boolean;
+- Collections;    
+- Fillet;  
+- Macros.  
+
+Visibility of SHAPER toolbar sections is managed using *View -> Toolbar* :ref:`main_menu` item or toolbar pop-up menu.
+   
   
 .. _doc_windows:
 
@@ -263,7 +299,7 @@ Property panel consists of two parts:
    :align: center
 
 .. centered::
-   **OK**  button
+   **OK/Apply**  button
 
 .. image:: images/button_cancel.png
    :align: center
@@ -284,7 +320,7 @@ Property panel consists of two parts:
    **Abort operation** dialog box
 
 
-**OK**  button is disabled if not all input parameters are defined or some errors are found. Error is shown as tooltip and in status bar.
+**OK/Apply**  button is disabled if not all input parameters are defined or some errors are found. Error is shown as tooltip and in status bar.
 
 .. _inspection_panel: 
 
@@ -371,23 +407,79 @@ This point of view can be modified by user with help of viewer commands like **P
 Description of OCC 3D Viewer architecture and functionality is provided in GUI module user's guide in chapter **OCC 3D Viewer**.
 
 
-.. _parameters:
+.. _parameter_usage:
 
-Parameters
----------
+Parameter usage
+---------------
 
-Parameter
-^^^^^^^^^
+Model parametrization can be done using parameters.
 
+Parameter can be created in the active partset or part by:
 
+- :ref:`parameter`;
+- :ref:`parameters`;
+- :ref:`parameter_expression`.
+
+Created parameters can be used in features defining any argument as parameter or expression containing parameters.
+
+List of features using parameters is given in **Parameters** dialog box:
+
+ .. image:: images/parameters_feature.png
+   :align: center
+
+.. centered::
+   Parameters dialog box
+  
+If parameter value is changed, then all features where it is used are rebuilt.
+
+Parameter name should be unique in the active document.
+
+However, partset and part can have parameters with the same name. If parameter name in Partset and Part are identical, then Part parameter has higher prority and its value will be used in the features of this part.
+
+In contrast to features (see :ref:`object_browser`), there is an additional option  when Delete parameters.   
+
+.. image:: images/delete_parameter.png
+   :align: center
+
+.. centered::
+   Delete parameter
+
+After click **Replace** button. selected parameter is removed but parent parameters and features are not removed. Deleted parameter is replaced by its value.
+
+.. _parameter_expression:
+
+Create parameter on fly
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Parameter can be created during feature creation simply writing *variable=expression* in any editbox.
+
+After validation of feature a new parameter with given name **variable** and value equal to evaluated expression appears in object browser under **Parameters** in the active partset or part.
 
 .. _preferences:
 
 SHAPER preferences
 ------------------
 
+SHAPER preferences define visualization of objects, visualization during selection, edition. New preferences can be used right after modification or later after activation of SHAPER module.
+
+To call **Preferences** dialog box:
+
+#. select in the Main Menu *File - > Preferences* item or
+#. use  **Ctrl+P** shortcut.
+
+SHAPER preferences include 4 tabs:
+
+- :ref:`visualization_preferences`;
+- :ref:`plugins_preferences`;
+- :ref:`sketch_preferences`;
+- :ref:`viewer_preferences`.
+  
+.. _visualization_preferences:
+
 Visualization tab
 ^^^^^^^^^^^^^^^^^
+
+Visualization tab is activated by default when **Preferences** dialog box is opened in active SHAPER module.
 
 .. image:: images/visualization_preferences.png
    :align: center
@@ -395,6 +487,18 @@ Visualization tab
 .. centered::
    Preferences - Visualization tab
 
+To redefine any color click on the corrersponding line to acccsess **Select color** dialog box
+
+.. image:: images/select_color.png
+   :align: center
+
+.. centered::
+   **Select color** dialog box
+   
+
+   
+.. _plugins_preferences:
+   
 Plugins tab
 ^^^^^^^^^^^
 
@@ -404,6 +508,8 @@ Plugins tab
 .. centered::
    Preferences - Plugins tab
 
+.. _sketch_preferences:
+   
 Sketch tab
 ^^^^^^^^^^
 
@@ -413,6 +519,8 @@ Sketch tab
 .. centered::
    Preferences - Sketch tab
 
+.. _viewer_preferences:
+   
 Viewer tab
 ^^^^^^^^^^
 
