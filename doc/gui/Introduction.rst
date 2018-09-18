@@ -37,7 +37,7 @@ New study contains only Partset with 7 default constructions which cannot be del
 - three planes **YOZ**, **XOZ**, **XOY**  coinciding with coordinate planes.    
 
 Only  points, axis and plane (see  :ref:`constructionPlugin`) and sketches (see  :ref:`sketchPlugin`) can be added in Partset to be used in any part later.
-:ref:`parameter_usage` created can be used both in Partset and any Part.
+:ref:`parameter_usage` can be used both in Partset and any Part.
 
      
 New Part can be created as described in :ref:`partPlugin`.
@@ -174,7 +174,7 @@ Each dock window can be closed using **Cross** window button and opened again us
 Object browser
 ^^^^^^^^^^^^^^
 
-Object browser contains all documents created in the current study. shown in Tree View.
+Object browser contains all documents created in the current study. 
 
 Each document includes standard branches where created objects are placed.
 
@@ -208,7 +208,13 @@ New part contains only 3 empty branches:
 - Constructions;
 - Results.
 
-Features are placed one after another in the active document with default names and their results are placed in the corresponding branch.
+Features are placed one after another in the active document with default names and their results are placed into the corresponding branch.
+
+Not defaullt branch is added into Tree View when the first feature of this type is created.
+
+Note, that result used in feature as argument is removed from Tree View.
+
+This child result can be restored using Recover Feature.
 
 Each feature, result, construction, group, field, parameter can be renamed using *Rename* pop-up menu command.
 
@@ -284,7 +290,7 @@ By default Property Panel is hidden.
 
 The Property Panel is shown on operation start at left side of the main window by default.
 
-If Object Browser is shown at the same side then they will be tabbed.
+If Object Browser is shown at the same side then it will be tabbed with Property Panel.
 
 Property panel consists of two parts:
 
@@ -305,7 +311,7 @@ Property panel consists of two parts:
    :align: center
 
 .. centered::
-   **Cancel**  button
+   **Cancel/Close**  button
 
 .. image:: images/button_help.png
    :align: center
@@ -460,6 +466,8 @@ After validation of feature a new parameter with given name **variable** and val
 SHAPER preferences
 ------------------
 
+Description of General application preferences and **Preferences** dialog box is provided in GUI module user's guide in chapter **Setting Preferences**.
+
 SHAPER preferences define visualization of objects, visualization during selection, edition. New preferences can be used right after modification or later after activation of SHAPER module.
 
 To call **Preferences** dialog box:
@@ -473,13 +481,17 @@ SHAPER preferences include 4 tabs:
 - :ref:`plugins_preferences`;
 - :ref:`sketch_preferences`;
 - :ref:`viewer_preferences`.
+
+Visualization tab is activated by default when **Preferences** dialog box is opened in active SHAPER module.
+
+Other tabs are activated by clck on tab header.
   
 .. _visualization_preferences:
 
 Visualization tab
 ^^^^^^^^^^^^^^^^^
 
-Visualization tab is activated by default when **Preferences** dialog box is opened in active SHAPER module.
+This tab defines presentation of objects displayed in OCC 3D viewer.
 
 .. image:: images/visualization_preferences.png
    :align: center
@@ -487,6 +499,32 @@ Visualization tab is activated by default when **Preferences** dialog box is ope
 .. centered::
    Preferences - Visualization tab
 
+**Input fields**:
+
+- **Result color** selects default shading color for objects from **Results** branch;
+- **Group color** selects default color for objects from **Group** branch;
+- **Construction color** selects default color for objects from **Constructions** branch;
+- **Part color** selects default color for parts shown in Partset;  
+- **Field color** selects default color for objects from **Field** branch;
+- **Body deflection coefficient** defines default deflection coefficient for objects from **Results** branch. A smaller coefficient provides better quality of a shape in the viewer;
+- **Construction deflection coefficient** defines default deflection coefficient for objects from **Construction** branch. A smaller coefficient provides better quality of a shape in the viewer;
+- **Reference shape wireframe color in operation** selects default color used for wireframe visualization of objects used in active operation;
+- **Result shape wireframe color in operation** selects default color used for wireframe visualization of result in active operation. Click **See preview** button to show result;
+- **Multi selector item color in operation** selects default color used for wireframe visualization of objects selected in propertry panel to distiguish them among all objects used in active operation;
+- **Color of removed feature in operation** selects default color used for visualization of sketch entities to be removed during  Trim/Split operations;
+- **Color of sketch plane** selects default shading color for objects from **Results** branch;
+- **Hidden faces transparency** defines default transparency value for hidden faces;
+- **Dimension arrow size**  defines default size of arrows for extension line showing dimensional constraint;  
+- **Dimension font** defines font used for value of dimensional constraint;
+- **Dimension value size**  defines default size of value for dimensional constraint;
+- **Sketch dimension color**  defines default color of dimensional constraint; 
+- **Construction plane color** selects default color for Construction planes;  
+- **Sketch entity color** selects default color for sketch objects;
+- **Sketch external entity color** selects default color for external objects selected as reference during sketch creation/edition;
+- **Sketch auxiliary entity color** selects default color for sketch auxiliary objects;
+- **Sketch overconsrtaint color** selects default color for sketch with redundant constraints;
+- **Sketch fully consrtaint color** selects default color for sketch with zero degrees of freedom.
+  
 To redefine any color click on the corrersponding line to acccsess **Select color** dialog box
 
 .. image:: images/select_color.png
@@ -495,12 +533,13 @@ To redefine any color click on the corrersponding line to acccsess **Select colo
 .. centered::
    **Select color** dialog box
    
-
+Preferences for sketch are applicable  during sketch creation/edition operation.
    
 .. _plugins_preferences:
    
 Plugins tab
 ^^^^^^^^^^^
+Plugins tab defines folders where plugins and resources are located.
 
 .. image:: images/plugins_preferences.png
    :align: center
@@ -508,10 +547,31 @@ Plugins tab
 .. centered::
    Preferences - Plugins tab
 
+**Input fields**:
+
+- **Default path** selects default folder where plugins are located. Click on **Open** button opens standard **Find directory** dialog box to navigate to desired folder;
+
+- **Import initial directory** selects default folder where resources are located. Click on **Open** button opens standard **Find directory** dialog box to navigate to desired folder.
+
+.. image:: images/open_button.png
+   :align: center
+
+.. centered::
+   **Open** button
+
+.. image:: images/find_directory.png
+   :align: center
+
+.. centered::
+   **Find directory** dialog box
+    
+   
 .. _sketch_preferences:
    
 Sketch tab
 ^^^^^^^^^^
+
+Sketch tab defines properties of coordinate planes shown for selection of sketch plane when no convinient objects are shown in OCC 3D viewer.
 
 .. image:: images/sketch_preferences.png
    :align: center
@@ -519,13 +579,35 @@ Sketch tab
 .. centered::
    Preferences - Sketch tab
 
+**Input fields**:
+
+- **Size** defines size of coordinate planes;
+- **Thickness**  defines thickness of coordinate plane borders; 
+- **Rotate to plane when selected** check-box turns on/off automatic switch the viewer to the top view for the selected sketch plane.  
+
+   
 .. _viewer_preferences:
    
 Viewer tab
 ^^^^^^^^^^
+
+Viewer tab defines selection in OCC 3D viewer properties. 
 
 .. image:: images/viewer_preferences.png
    :align: center
 
 .. centered::
    Preferences - Viewer tab   
+
+**Input fields**:
+
+- **Default Selection** defines objects to be selected by mouse click in OCC 3D viewer:
+
+  - **Faces** check-box turns on/off selection of faces;
+  - **Edges** check-box turns on/off selection of edges;
+  - **Vertices** check-box turns on/off selection of vertices;
+
+- **Selection sensitivity** defines size of area around object in pixels, in which  mouse click selects object inside this area:
+
+  - **Vertex** defines selection  sensitivity for vertices; 
+  - **Edge**  defines selection  sensitivity for edges.  
