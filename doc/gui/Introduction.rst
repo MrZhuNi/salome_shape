@@ -426,7 +426,7 @@ Parameter can be created in the active partset or part by:
 - :ref:`parameters`;
 - :ref:`parameter_expression`.
 
-Created parameters can be used in features defining any argument as parameter or expression containing parameters.
+Any argument in features can be defined as parameter or expression containing parameters.
 
 List of features using parameters is given in **Parameters** dialog box:
 
