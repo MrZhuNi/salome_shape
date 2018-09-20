@@ -1,3 +1,4 @@
+  .. _create_sketch_rectangle:
 
 Rectangle
 =========

@@ -2,34 +2,25 @@
 Box
 ===
 
-Custom feature box is located at ..\sources\src\PythonAddons\macros\box.
+Custom files for feature **Box** are:
 
-.. literalinclude:: examples/box/feature.py   
-    :linenos:
-    :language: python
+-  empty __init__.py,
+- :ref:`create_custom_box_py`,
+- :ref:`create_custom_box_xml`,
+- icon.png located at sub-folder */icons*.
 
-:download:`Download this script <examples/box/feature.py>`
+.. image:: images/box_ico.png
+   :align: center
 
-.. literalinclude:: examples/box/widget.xml    
-    :linenos:
-    :language: html
+.. centered::
+   File icon.png
 
-:download:`Download this script <examples/box/widget.xml>`
-
-The feature Box creates a box solid by extrusion of rectangle.
-
-Result in Shaper module is described below.
+The custom feature **Box** creates a box solid by extrusion of rectangle.
 
 To create a Box in the active part:
 
 #. select in the Main Menu *Macros - > Box* item  or
-#. click **Box** button in the Macros toolbar:
-
-.. image:: images/box.png
-   :align: center
-
-.. centered::
-   **Box**  button 
+#. click **Box** button in the Macros toolbar corresponding to file icon.png:
 
 The following property panel appears. 
 
@@ -41,22 +32,17 @@ The following property panel appears.
 
 Input fields: 
 
-- **DX**, **DY**, **DZ** sizes of the box along corresponded coordinate axes. The box will be created starting from the origin.   
+- **Width**, **Length**, **Height** are sizes of the box along corresponding coordinate axes. The box will be created starting from the origin.   
 
 Result
 """"""
 
-The Result of operation will be a SOLID. The edges of the box will be parallel to the coordinate axes.
+The Result of operation will be Extrusion and Sketch. 
 
-Name is assigned automatically:
-    
-* **Box_1**, **Box_2**, ... to Feature;
-* **Box_1_1**, **Box_2_1**, ... to Result.
-
-Example is shown below.
+The edges of the box will be parallel to the coordinate axes.
 
 .. image:: images/Boxes.png
 	   :align: center
 		   
 .. centered::
-   Box created  
+   Box created 
