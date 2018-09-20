@@ -34,7 +34,7 @@ By dimensions
 .. image:: images/Box_dimensions.png
    :align: center
 
-In this case it is necessary to specify **DX**, **DY**, **DZ** sizes of the box along corresponded coordinate axes. The box will be created starting from the origin.
+In this case it is necessary to specify **DX**, **DY**, **DZ** sizes of the box along corresponding coordinate axes. The box will be created starting from the origin.
 
 **TUI Command**:  *model.addBox(Part_doc, DX, DY, DZ)*
   
