@@ -21,12 +21,12 @@ The following property panel appears.
   :align: center
 
 .. centered::
-  Create a polyline
+  Polyline property panel
 
 Input fields:
 
 - **Points and vertices** panel contains list of points and vertices selected in 3D OCC viewer. Polyline consequently connects points;
-- **Closed** check-box turns on/off connection of the start and end points to make polyline closed.
+- **Closed** check-box turns on/off connection of the start and end points to make polyline closed/opened.
 
 **TUI Commands**:  *model.addPolyline3D(Part_1_doc, Polyline_objects, Key)*
 
