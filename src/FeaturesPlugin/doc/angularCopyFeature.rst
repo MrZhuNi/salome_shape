@@ -32,7 +32,7 @@ Input fields:
 
 **TUI Command**:  *model.addMultiRotation(Part_doc, [shape], axis, step, Nb)*
 
-**Arguments**: 1 part + list of shapes in format *model.selection(TYPE, shape)* + axis in format *model.selection(TYPE, shape)*+ real (step value) + integer (Nb. Copies).
+**Arguments**: part + list of shapes in format *model.selection(TYPE, shape)* + axis in format *model.selection(TYPE, shape)*+ real (step value) + integer (Nb. Copies).
 
 Result
 """"""

@@ -40,7 +40,7 @@ Input fields:
 
 **TUI Command**:  *model.addMultiTranslation(Part_doc, [shape], axis1, step1, Nb1, axis2, step2, Nb2)*
 
-**Arguments**: 1 part + list of shapes in format *model.selection(TYPE, shape)* + 2 axis in format *model.selection(TYPE, shape)*+ 2 real (step values) + 2 integers (Nb. Copies).
+**Arguments**: part + list of shapes in format *model.selection(TYPE, shape)* + 2 axis in format *model.selection(TYPE, shape)*+ 2 real (step values) + 2 integers (Nb. Copies).
 
 Result
 """"""
@@ -50,6 +50,6 @@ Result of operation is compound.
    :align: center
 
 .. centered::
-   Sub-shapes
+   Linear copy
 
 **See Also** a sample TUI Script of a :ref:`tui_create_linearcopy` operation.

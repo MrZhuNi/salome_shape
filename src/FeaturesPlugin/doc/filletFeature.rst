@@ -77,7 +77,7 @@ Input fields:
 
 **TUI Command**:  *model.addFillet(Part_doc, [face,edge], R1, R2)*
 
-**Arguments**: 1 part + list of faces and edges subjected to fillet operation in format *model.selection(TYPE, shape)* + 2 reals (start and end radius values).
+**Arguments**: part + list of faces and edges subjected to fillet operation in format *model.selection(TYPE, shape)* + 2 reals (start and end radius values).
 
 Result
 """"""
