@@ -62,6 +62,7 @@
 #include <QClipboard>
 #include <QTimer>
 #include <QMainWindow>
+#include <QCheckBox>
 
 #include <memory>
 #include <string>
@@ -164,6 +165,15 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
   //this->setLayout(aMainLay);
   connect(myTypeCtrl, SIGNAL(valueChanged(int)), this, SLOT(onSelectionTypeChanged()));
 
+  bool aSameTop = theData->getBooleanAttribute("same_topology", false);
+  if (aSameTop) {
+    myGeomCheck = new QCheckBox(tr("Add elements that share the same topology"), this);
+    aMainLay->addWidget(myGeomCheck);
+    connect(myGeomCheck, SIGNAL(toggled(bool)), SLOT(onSameTopology(bool)));
+  }
+  else
+    myGeomCheck = 0;
+
   myIsNeutralPointClear = theData->getBooleanAttribute("clear_in_neutral_point", true);
   if (myShapeTypes.size() > 1 || myIsUseChoice) {
     if (defaultValues.contains(myFeatureId + attributeID())) {
@@ -222,7 +232,6 @@ bool ModuleBase_WidgetMultiSelector::storeValueCustom()
   std::string aType = anAttribute->attributeType();
   if (aType == ModelAPI_AttributeSelectionList::typeId()) {
     AttributeSelectionListPtr aSelectionListAttr = myFeature->data()->selectionList(attributeID());
-    int aa = aSelectionListAttr->size();
     std::string aMode = myTypeCtrl->textValue().toStdString();
     if (myTypeCtrl->isVisible() && myIsFirst && (!myDefMode.empty()))
       aMode = myDefMode;
@@ -1036,4 +1045,15 @@ void ModuleBase_WidgetMultiSelector::onListActivated()
 {
   //focusTo();
   emitFocusInWidget();
+}
+
+void ModuleBase_WidgetMultiSelector::onSameTopology(bool theOn)
+{
+  AttributePtr anAttribute = myFeature->data()->attribute(attributeID());
+  std::string aType = anAttribute->attributeType();
+  if (aType == ModelAPI_AttributeSelectionList::typeId()) {
+    AttributeSelectionListPtr aSelectionListAttr = myFeature->data()->selectionList(attributeID());
+    //TODO: set same topology flag
+    updateObject(myFeature);
+  }
 }
