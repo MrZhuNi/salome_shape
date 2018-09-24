@@ -36,7 +36,7 @@ Result
 """"""
 Result of operation is closed or open  Polyline.
 
-.. image:: images/polyline.png
+.. image:: images/CreatePolyline.png
    :align: center
 
 .. centered::
