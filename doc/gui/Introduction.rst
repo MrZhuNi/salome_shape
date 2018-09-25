@@ -8,18 +8,18 @@ Introduction to SHAPER
 SHAPER module of SALOME is destined for:
 
 - import and export of geometrical models in IGES, BREP, STEP and XAO formats;
-- parametrical construction of geometrical objects using a wide range of functions;
+- parametric construction of geometrical objects using a wide range of functions;
     
-  - creation of complex 2D sections using :ref:`sketchPlugin` with consequent extrusion or revolution :ref:`featuresPlugin`;
-  - construction of model using primitives defined in  :ref:`primitivesPlugin`;
-  - usage of Boolean operations :ref:`featuresPlugin`;
+  - creation of complex 2D sections using :ref:`sketchPlugin` with consequent extrusion or revolution (see :ref:`featuresPlugin`);
+  - construction of model using primitives defined in :ref:`primitivesPlugin`;
+  - usage of Boolean operations (see :ref:`featuresPlugin`);
   
 - viewing geometrical objects in the OCC viewer;
 - transformation of geometrical objects using various algorithms.
 
 It is possible to easily set :ref:`parameter_usage` predefined to be used as arguments when objects are created.
 
-SHAPER module preferences are described in the SHAPER :ref:`preferences` section of SALOME Help.
+SHAPER module preferences are described in the :ref:`preferences` section of SALOME Help.
 
 Almost all SHAPER  module functionalities are accessible via Python Interface.
 
@@ -30,13 +30,13 @@ SHAPER module works with one study containing several documents:
 
 Only one document can be active.
   
-New study contains only Partset with 7 default constructions which cannot be deleted:
+New study contains only partset with 7 default constructions which cannot be deleted:
   
-- one point **Origin** coincing with origin of coordinate system;
+- one point **Origin** coinciding with origin of coordinate system;
 - three axes **OX**, **OY**, **OZ**  coinciding with coordinate axes;
 - three planes **YOZ**, **XOZ**, **XOY**  coinciding with coordinate planes.    
 
-Only  points, axis and plane (see  :ref:`constructionPlugin`) and sketches (see  :ref:`sketchPlugin`) can be added in Partset to be used in any part later.
+Only  points, axis and planes (see  :ref:`constructionPlugin`) and sketches (see  :ref:`sketchPlugin`) can be added into Partset to be used in any part later.
 :ref:`parameter_usage` can be used both in Partset and any Part.
 
      
@@ -104,7 +104,7 @@ SHAPER toolbar
 Application toolbar contains:
 
 - standard toolbar;
-- modukles toolbar;
+- modules toolbar;
 - SHAPER toolbar.
 
 .. image:: images/toolbar.png
@@ -160,13 +160,13 @@ The Property Panel is shown on operation start at left dock area of the main win
 
 If Object Browser is shown at the same side then they will be tabbed.
 
-Each dock window can be closed using **Cross** window button and opened again using a corresponding command from **View - Windows** :ref:`main_menu` or alternatively using pop-up menu.
+Each dock window can be closed using **Cross** window button and opened again using a corresponding command from *View - Windows* :ref:`main_menu` or alternatively using pop-up menu.
 
 .. image:: images/popup_menu.png
    :align: center
 
 .. centered::
-   Pop-up menu for visibilty of windows and toolbars
+   Pop-up menu for visibility of windows and toolbars
 
 
 .. _object_browser: 
@@ -210,11 +210,16 @@ New part contains only 3 empty branches:
 
 Features are placed one after another in the active document with default names and their results are placed into the corresponding branch.
 
-Not defaullt branch is added into Tree View when the first feature of this type is created.
+Example of default names assigned automatically for :ref:`box_feature` are:
+ 
+* **Box_1**, **Box_2**, ... to Feature;
+* **Box_1_1**, **Box_2_1**, ... to Result.
 
-Note, that result used in feature as argument is removed from Tree View.
+Not default branch is added into Tree View when the first feature of this type is created.
 
-This child result can be restored using Recover Feature.
+Note, that result used in feature as argument is removed.
+
+This child result can be restored using **Recover** feature.
 
 Each feature, result, construction, group, field, parameter can be renamed using *Rename* pop-up menu command.
 
@@ -236,7 +241,7 @@ Each feature, result, construction, group, field, parameter can be renamed using
 .. centered::
    Construction pop-up menu
 
-Order of featurs can be changed using *Move to the end* pop-up menu command. Selected feature will be moved to the end of feture list.
+Order of features can be changed using *Move to the end* pop-up menu command. Selected feature will be moved to the end of feature list.
 
 Folders can be used to arrange long Tree View for features.
 
@@ -270,9 +275,9 @@ Features can be removed from folder back using *Move out before the folder* / *M
 
 Feature together with its result can be deleted using *Delete* pop-up menu command.
 
-Note that all features using removed feature and their results will be removed simulteneously.
+Note that all features using removed feature and their results will be removed simultaneously.
 
-**Delete feature** dialog box shows list of feature to be removed. After confirmation by click **Yes** button all these features are removed.
+**Delete feature** dialog box shows list of features to be removed. After confirmation by click **Yes** button all these features are removed.
 
 
 .. image:: images/delete_feature.png
@@ -286,38 +291,23 @@ Note that all features using removed feature and their results will be removed s
 Property panel
 ^^^^^^^^^^^^^^
 
-By default Property Panel is hidden.
-
-The Property Panel is shown on operation start at left side of the main window by default.
-
-If Object Browser is shown at the same side then it will be tabbed with Property Panel.
-
 Property panel consists of two parts:
 
 - controls container for input of parameters for the current operation;
 - buttons panel containing standard buttons:
-    
-  - **Ok/Apply** executes operation with defined parameters,
-  - **Cancel/Close** calls **Abort operation** dialog box to confirm  operation abort,
-  - **Help** calls User's guide opened on page describing the current operation.
+ 
+  .. image:: images/button_ok.png
+    :align: left
+  **Ok/Apply** executes operation with defined parameters,
 
-.. image:: images/button_ok.png
-   :align: center
 
-.. centered::
-   **OK/Apply**  button
+  .. image:: images/button_cancel.png
+   :align: left
+  **Cancel/Close** calls **Abort operation** dialog box to confirm  operation abort, 
 
-.. image:: images/button_cancel.png
-   :align: center
-
-.. centered::
-   **Cancel/Close**  button
-
-.. image:: images/button_help.png
-   :align: center
-
-.. centered::
-   **Help**  button
+  .. image:: images/button_help.png
+   :align: left
+  **Help** calls User's guide opened on page describing the current operation.
 
 .. image:: images/abort_operation.png
    :align: center
@@ -326,6 +316,8 @@ Property panel consists of two parts:
    **Abort operation** dialog box
 
 
+.. image:: images/button_ok.png
+    :align: left
 **OK/Apply**  button is disabled if not all input parameters are defined or some errors are found. Error is shown as tooltip and in status bar.
 
 .. _inspection_panel: 
@@ -333,7 +325,7 @@ Property panel consists of two parts:
 Inspection panel 
 ^^^^^^^^^^^^^^^^
 
-Inspection panel provides the list of types and quantities of all topological entities, composing the selected result, consruction  or feature.
+Inspection panel provides the list of types and quantities of all topological entities, composing the selected result, construction or feature.
 
 .. image:: images/inspection_panel.png
    :align: center
@@ -341,7 +333,7 @@ Inspection panel provides the list of types and quantities of all topological en
 .. centered::
    Inspection panel for default Box
 
-**Object** displays name of the selected result, consruction  or feature.
+**Object** displays name of the selected result, construction  or feature.
 
 **Type** characterizes the whole shape.
    
@@ -356,13 +348,11 @@ The information about Point, Axis or Edge  additionally shows coordinates of poi
 
 The information about  Plane, Face additionally shows coordinates of center point and direction of normal.
 
-.. image:: images/inspection_panel_line.png
+.. image:: images/inspection_panel_face.png
    :align: center
 
 .. centered::
    Inspection panel for Face 
-
- 
 
 .. _python console:
 
@@ -371,7 +361,7 @@ Python console
 
 Python console interpreters Python commands entered manually.
 
-In particular, it is possble to load python script:
+In particular, it is possible to load python script:
 
 *execfile(r"/dn48/newgeom/data/example.py")*
 
@@ -415,8 +405,8 @@ Description of OCC 3D Viewer architecture and functionality is provided in GUI m
 
 .. _parameter_usage:
 
-Parameter usage
----------------
+Parameters 
+----------
 
 Model parametrization can be done using parameters.
 
@@ -440,7 +430,7 @@ If parameter value is changed, then all features where it is used are rebuilt.
 
 Parameter name should be unique in the active document.
 
-However, partset and part can have parameters with the same name. If parameter name in Partset and Part are identical, then Part parameter has higher prority and its value will be used in the features of this part.
+However, partset and part can have parameters with the same name. If parameter name in Partset and Part are identical, then Part parameter has higher priority and its value will be used in the features of this part.
 
 In contrast to features (see :ref:`object_browser`), there is an additional option  when Delete parameters.   
 
@@ -484,7 +474,7 @@ SHAPER preferences include 4 tabs:
 
 Visualization tab is activated by default when **Preferences** dialog box is opened in active SHAPER module.
 
-Other tabs are activated by clck on tab header.
+Other tabs are activated by click on tab header.
   
 .. _visualization_preferences:
 
@@ -502,17 +492,17 @@ This tab defines presentation of objects displayed in OCC 3D viewer.
 **Input fields**:
 
 - **Result color** selects default shading color for objects from **Results** branch;
-- **Group color** selects default color for objects from **Group** branch;
+- **Group color** selects default color for objects from **Groups** branch;
 - **Construction color** selects default color for objects from **Constructions** branch;
 - **Part color** selects default color for parts shown in Partset;  
-- **Field color** selects default color for objects from **Field** branch;
+- **Field color** selects default color for objects from **Fields** branch;
 - **Body deflection coefficient** defines default deflection coefficient for objects from **Results** branch. A smaller coefficient provides better quality of a shape in the viewer;
-- **Construction deflection coefficient** defines default deflection coefficient for objects from **Construction** branch. A smaller coefficient provides better quality of a shape in the viewer;
+- **Construction deflection coefficient** defines default deflection coefficient for objects from **Constructions** branch. A smaller coefficient provides better quality of a shape in the viewer;
 - **Reference shape wireframe color in operation** selects default color used for wireframe visualization of objects used in active operation;
 - **Result shape wireframe color in operation** selects default color used for wireframe visualization of result in active operation. Click **See preview** button to show result;
-- **Multi selector item color in operation** selects default color used for wireframe visualization of objects selected in propertry panel to distiguish them among all objects used in active operation;
-- **Color of removed feature in operation** selects default color used for visualization of sketch entities to be removed during  Trim/Split operations;
-- **Color of sketch plane** selects default shading color for objects from **Results** branch;
+- **Multi selector item color in operation** selects default color used for visualization of objects selected in property panel to distinguish them among all objects used in active operation;
+- **Color of removed feature in operation** selects default color used for visualization of sketch entities to be removed during **Trim/Split** operations;
+- **Color of sketch plane** selects default shading color for sketch plane;
 - **Hidden faces transparency** defines default transparency value for hidden faces;
 - **Dimension arrow size**  defines default size of arrows for extension line showing dimensional constraint;  
 - **Dimension font** defines font used for value of dimensional constraint;
@@ -523,9 +513,9 @@ This tab defines presentation of objects displayed in OCC 3D viewer.
 - **Sketch external entity color** selects default color for external objects selected as reference during sketch creation/edition;
 - **Sketch auxiliary entity color** selects default color for sketch auxiliary objects;
 - **Sketch overconsrtaint color** selects default color for sketch with redundant constraints;
-- **Sketch fully consrtaint color** selects default color for sketch with zero degrees of freedom.
+- **Sketch fully constraint color** selects default color for sketch with zero degrees of freedom.
   
-To redefine any color click on the corrersponding line to acccsess **Select color** dialog box
+To redefine any color click on the corresponding line to access **Select color** dialog box
 
 .. image:: images/select_color.png
    :align: center
@@ -571,7 +561,7 @@ Plugins tab defines folders where plugins and resources are located.
 Sketch tab
 ^^^^^^^^^^
 
-Sketch tab defines properties of coordinate planes shown for selection of sketch plane when no convinient objects are shown in OCC 3D viewer.
+Sketch tab defines properties of coordinate planes shown for selection of sketch plane when no convenient objects are shown in OCC 3D viewer.
 
 .. image:: images/sketch_preferences.png
    :align: center

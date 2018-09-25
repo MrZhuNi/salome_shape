@@ -23,7 +23,7 @@ There are 2 algorithms for creation of a Cylinder:
 
 .. image:: images/cylinder_portion_32x32.png
    :align: left
-**Portion of cylinder** creates a one segment of cylinder.
+**Portion of cylinder** creates one segment of cylinder.
 
 Cylinder
 """"""""
@@ -32,12 +32,12 @@ Cylinder
    :align: center
 	
 .. centered::
-   **Cylinder**
+   **Cylinder** property panel
 
-The description of input fields for **Cylinder** tab is given below:
+Input fields:
 
-- selected **Point** defines center of the cylinder base;
-- selected **Vector** defines the axis of the cylinder;
+- **Point** defines center of the cylinder base selected in 3D OCC  viewer or object browser; 
+- **Vector** defines the axis of the cylinder selected in 3D OCC  viewer or object browser;
 - Dimensions:      
    - **Radius**;
    - **Height**.    
@@ -46,7 +46,7 @@ The description of input fields for **Cylinder** tab is given below:
 
 * *model.addCylinder(Part_doc, Point, Axis, Radius, Height)*
 
-**Arguments**:   1 Part + 1 vertex +1 vector +  2 values (dimensions: radius, height).
+**Arguments**:   Part + 1 vertex +1 vector +  2 real values (radius, height).
 
 Portion of cylinder
 """""""""""""""""""
@@ -55,7 +55,7 @@ Portion of cylinder
 	   :align: center
 		   
 .. centered::
-   **Portion of cylinder**  
+   **Portion of cylinder**  property panel 
 
 Input fields for ***Portion of cylinder** tab includes in addition **Angle** to create a portion of cylinder.
 
@@ -63,17 +63,10 @@ Input fields for ***Portion of cylinder** tab includes in addition **Angle** to 
 
 * *model.addCylinder(Part_doc, Point, Axis, Radius, Height,Angle)*
   
-**Arguments**:   1 Part + 1 vertex +1 vector +  3 values (dimensions: radius, height and angle).
+**Arguments**:   1 Part + 1 vertex +1 vector +  3 real values (radius, height and angle).
 
 Result
 """"""
-
-The Result of operation will be a SOLID.
-
-Name is assigned automatically:
-    
-* **Cylinder_1**, **Cylinder_2**, ... to Feature;
-* **Cylinder_1_1**, **Cylinder_2_1**, ... to Result.
 
 Example is shown below.
 

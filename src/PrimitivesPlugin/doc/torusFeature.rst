@@ -23,27 +23,20 @@ The following property panel appears.
 .. centered::
    Torus
 
- The description of input fields is given below:
+Input fields:
 
--  selected **Point** defines center of the torus;
--  selected **Vector** defines the axis of the torus;
+- **Point** defines center of the torus base selected in 3D OCC  viewer or object browser; 
+- **Vector** defines the axis of the torus selected in 3D OCC  viewer or object browser;
 - Dimensions:      
    - **Radius**;
    - **Ring radius**.
   
 **TUI Command**: *model.addTorus(Part_doc, Point, Axis, Radius1, Radius2)*
 
-**Arguments**:  1 Part + 1 vertex + 1 vector + 2 values (Dimensions: first and second radii).
+**Arguments**:  Part + 1 vertex + 1 vector + 2 real values (first and second radii).
 
 Result
 """"""
-
-The Result of operation will be a SOLID.
-
-Name is assigned automatically:
-    
-* **Torus_1**, **Torus_2**, ... to Feature;
-* **Torus_1_1**, **Torus_2_1**, ... to Result.
 
 Example is shown below.
 

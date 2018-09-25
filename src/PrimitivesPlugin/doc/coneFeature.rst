@@ -23,10 +23,10 @@ The following property panel appears.
 .. centered::
    Cone property panel
 
-The description of input fields is given below:
+Input fields:
 
--  selected **Point** defines center of the cone base;
--  selected **Vector** defines the axis of the cone;
+- **Point** defines center of the cone base selected in 3D OCC  viewer or object browser; 
+- **Vector** defines the axis of the cone selected in 3D OCC  viewer or object browser;
 - Dimensions:      
    - **Base Radius**;
    - **Top radius**;  
@@ -34,23 +34,14 @@ The description of input fields is given below:
   
 **TUI Command**: *model.addCone(Part_doc, Point, Axis, Radius1, Radius2, Height)* 
 
-**Arguments**:  1 Part + 1 vertex + 1 vector + 3 values (Dimensions: base and top radii, heght).
+**Arguments**:  Part + 1 vertex + 1 vector + 3 real values (base and top radii, heght).
 
 Result
 """"""
 
-The Result of operation will be a SOLID.
-
 If both radii are non-zero, then the cone will be truncated.
 
 If the radii are equal, the Cylinder will be created instead of cone.
-
-Name is assigned automatically:
-    
-* **Cone_1**, **Cone_2**, ... to Feature;
-* **Cone_1_1**, **Cone_2_1**, ... to Result.
-
-Example is shown below.
 
 .. image:: images/Cone_res.png
 	   :align: center

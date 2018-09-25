@@ -23,24 +23,17 @@ The following property panel appears.
 .. centered::
    Sphere property panel
    
-The description of input fields is given below:
+Input fields:
 
-- selected **Point** defines center of the sphere; 
+- **Point** defines center of the sphere selected in 3D OCC  viewer or object browser; 
 - **Radius** defines the radius.
   
 **TUI Command**: *model.addSphere(Part_doc, Point, Radius)*.
 
-**Arguments**:  1 Part + 1 vertex +1 value (radius).
+**Arguments**:  Part + 1 vertex + 1 real value (radius).
 
 Result
 """"""
-
-The Result of operation will be a SOLID.
-
-Name is assigned automatically:
-    
-* **Sphere_1**, **Sphere_2**, ... to Feature;
-* **Sphere_1_1**, **Sphere_2_1**, ... to Result.
 
 Example is shown below.
 

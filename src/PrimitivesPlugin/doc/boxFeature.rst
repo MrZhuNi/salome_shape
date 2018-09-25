@@ -1,4 +1,4 @@
-
+.. _box_feature:
 
 Box
 ===
@@ -20,50 +20,50 @@ There are 2 algorithms for creation of a Box:
 
 .. image:: images/box_2pt_32x32.png
    :align: left
-**By dimensions** creates a box by dimensions along X, Y, Z axis.
+**By dimensions** 
 
 .. image:: images/box_dxyz_32x32.png
    :align: left
-**By two points** creates a box by two points of the box diagnal.
-
+**By two points** 
 
 
 By dimensions
 """""""""""""
 
+Box is created by dimensions along X, Y, Z axis starting from the origin.
+
 .. image:: images/Box_dimensions.png
    :align: center
 
-In this case it is necessary to specify **DX**, **DY**, **DZ** sizes of the box along corresponding coordinate axes. The box will be created starting from the origin.
+Input fields:
+
+- **DX**, **DY**, **DZ** define sizes of the box along corresponding coordinate axes. 
 
 **TUI Command**:  *model.addBox(Part_doc, DX, DY, DZ)*
   
-**Arguments**:    1 Part + 3 values (dimensions at origin).
+**Arguments**:    Part + 3 real values (dimensions at origin).
 
 
 By two points
 """""""""""""
 
+Box is created by two points of the box diagonal.
+
 .. image:: images/Box_2points.png
 	 :align: center
 
-In this case it is necessary to select **Point 1** and **Point 2** to define a diagonal points of the box.
-  
-**TUI Command**:  *model.addBox(Part_doc, FirstPoint, SecondPoint)*
+Input fields:
 
-**Arguments**:   1 Part + 2 selected points (opposite vertices of the box)
+- **Point 1** and **Point 2**  define diagonal points of the box selected in 3D OCC  viewer or object browser.
+  
+**TUI Command**:  *model.addBox(Part_doc, point1, point2)*
+
+**Arguments**:   Part + 2 selected points (opposite vertices of the box)
 
 Result
 """"""
 
-The Result of operation will be a SOLID. The edges of the box will be parallel to the coordinate axes.
-
-Name is assigned automatically:
-    
-* **Box_1**, **Box_2**, ... to Feature;
-* **Box_1_1**, **Box_2_1**, ... to Result.
-
-Example is shown below.
+The edges of the created boxes are parallel to the coordinate axes.
 
 .. image:: images/Boxes.png
 	   :align: center
