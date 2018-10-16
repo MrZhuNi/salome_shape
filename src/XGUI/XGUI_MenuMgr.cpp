@@ -49,18 +49,20 @@
 XGUI_MenuMgr::XGUI_MenuMgr(XGUI_Workshop* theWorkshop)
 : myWorkshop(theWorkshop)
 {
-  Events_Loop* aLoop = Events_Loop::loop();
-
-  aLoop->registerListener(this, Events_Loop::eventByName(Config_FeatureMessage::GUI_EVENT()));
+  ModuleBase_EventsListener* aListener = ModuleBase_EventsListener::instance();
+  connect(aListener, SIGNAL(hasEvent(ModuleBase_Event*)),
+    SLOT(processEvent(ModuleBase_Event*)), Qt::QueuedConnection);
 }
 
-void XGUI_MenuMgr::processEvent(const std::shared_ptr<Events_Message>& theMessage)
+void XGUI_MenuMgr::processEvent(ModuleBase_Event* theMessage)
 {
+  std::shared_ptr<Events_Message> aMsg = theMessage->message();
+
   //A message to start feature creation received.
-  if (theMessage->eventID() ==
+  if (aMsg->eventID() ==
       Events_Loop::loop()->eventByName(Config_FeatureMessage::GUI_EVENT())) {
     std::shared_ptr<Config_FeatureMessage> aFeatureMsg =
-       std::dynamic_pointer_cast<Config_FeatureMessage>(theMessage);
+       std::dynamic_pointer_cast<Config_FeatureMessage>(aMsg);
     if (!aFeatureMsg->isInternal()) {
       addFeature(aFeatureMsg);
     }

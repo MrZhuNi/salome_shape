@@ -26,6 +26,8 @@
 #include "PartSet_OperationPrs.h"
 
 #include <ModuleBase_IModule.h>
+#include <ModuleBase_EventsListener.h>
+
 #include <ModelAPI_Object.h>
 #include <ModelAPI_Result.h>
 #include <ModelAPI_Feature.h>
@@ -43,8 +45,9 @@ class XGUI_Workshop;
  * This is the module custom presentation, which manage an AIS presentation, that can be filled
  * by a feature and visualized in the viewer additionally to usual workshop objects.
 */
-class PartSet_CustomPrs : public Events_Listener
+class PartSet_CustomPrs : public QObject //Events_Listener
 {
+  Q_OBJECT
 public:
   /// Returns yellow color
   static const std::string OPERATION_PARAMETER_COLOR() { return "255, 255, 0"; }
@@ -99,8 +102,9 @@ public:
   /// it caused erroneus case because the presentation has linkage to the previous context.
   void clearPrs();
 
+private slots:
   //! Redefinition of Events_Listener method to listen a moment that the presentation becomes empty
-  virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
+  virtual void processEvent(ModuleBase_Event* theMessage);
 
 private:
   /// Creates the AIS operation presentation

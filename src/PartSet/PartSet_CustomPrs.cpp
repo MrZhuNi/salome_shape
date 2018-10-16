@@ -44,8 +44,11 @@
 PartSet_CustomPrs::PartSet_CustomPrs(ModuleBase_IWorkshop* theWorkshop)
   : myWorkshop(theWorkshop), myFeature(FeaturePtr()), myPresentationIsEmpty(false)
 {
-  Events_Loop* aLoop = Events_Loop::loop();
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_EMPTY_OPERATION_PRESENTATION));
+  //Events_Loop* aLoop = Events_Loop::loop();
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_EMPTY_OPERATION_PRESENTATION));
+  ModuleBase_EventsListener* aListener = ModuleBase_EventsListener::instance();
+  connect(aListener, SIGNAL(hasEvent(ModuleBase_Event*)),
+    SLOT(processEvent(ModuleBase_Event*)), Qt::QueuedConnection);
 
   initPresentation(ModuleBase_IModule::CustomizeArguments);
   initPresentation(ModuleBase_IModule::CustomizeResults);
@@ -229,9 +232,10 @@ void PartSet_CustomPrs::clearPrs()
   clearPresentation(ModuleBase_IModule::CustomizeHighlightedObjects);
 }
 
-void PartSet_CustomPrs::processEvent(const std::shared_ptr<Events_Message>& theMessage)
+void PartSet_CustomPrs::processEvent(ModuleBase_Event* theMessage)
 {
-  if (theMessage->eventID() == Events_Loop::eventByName(EVENT_EMPTY_OPERATION_PRESENTATION))
+  std::shared_ptr<Events_Message> aMsg = theMessage->message();
+  if (aMsg->eventID() == Events_Loop::eventByName(EVENT_EMPTY_OPERATION_PRESENTATION))
     myPresentationIsEmpty = true; /// store state to analize it after display/erase is finished
 }
 

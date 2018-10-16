@@ -27,13 +27,15 @@
 #include <QPixmap>
 #include <QIcon>
 #include <QImage>
+#include <QObject>
 
 /**\class ModuleBase_IconFactory
  * \ingroup GUI
  * \brief This is a class which provides icons of objects for object browser 
  */
-class MODULEBASE_EXPORT ModuleBase_IconFactory
+class MODULEBASE_EXPORT ModuleBase_IconFactory: public QObject
 {
+  Q_OBJECT
 public:
   /// Returns icons factory instance
   static ModuleBase_IconFactory* get();

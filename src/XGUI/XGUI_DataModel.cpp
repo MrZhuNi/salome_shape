@@ -42,13 +42,16 @@ XGUI_DataModel::XGUI_DataModel(QObject* theParent) : QAbstractItemModel(theParen
   XGUI_ObjectsBrowser* aOB = qobject_cast<XGUI_ObjectsBrowser*>(theParent);
   myWorkshop = aOB->workshop();
 
-  Events_Loop* aLoop = Events_Loop::loop();
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_CREATED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_DELETED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_UPDATED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_ORDER_UPDATED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_DOCUMENT_CHANGED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
+  ModuleBase_EventsListener* aListener = ModuleBase_EventsListener::instance();
+  connect(aListener, SIGNAL(hasEvent(ModuleBase_Event*)),
+    SLOT(processEvent(ModuleBase_Event*)), Qt::QueuedConnection);
+  //Events_Loop* aLoop = Events_Loop::loop();
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_CREATED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_DELETED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_UPDATED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_ORDER_UPDATED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_DOCUMENT_CHANGED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
 }
 
 XGUI_DataModel::~XGUI_DataModel()
@@ -57,11 +60,13 @@ XGUI_DataModel::~XGUI_DataModel()
 }
 
 //******************************************************
-void XGUI_DataModel::processEvent(const std::shared_ptr<Events_Message>& theMessage)
+void XGUI_DataModel::processEvent(ModuleBase_Event* theMessage)
 {
-  if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_CREATED)) {
+  std::shared_ptr<Events_Message> aMsg = theMessage->message();
+
+  if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_CREATED)) {
     std::shared_ptr<ModelAPI_ObjectUpdatedMessage> aUpdMsg =
-      std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(theMessage);
+      std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(aMsg);
     std::set<ObjectPtr> aObjects = aUpdMsg->objects();
     QObjectPtrList aCreated;
     std::set<ObjectPtr>::const_iterator aIt;
@@ -82,9 +87,9 @@ void XGUI_DataModel::processEvent(const std::shared_ptr<Events_Message>& theMess
       dataChanged(aParentIndex1, aParentIndex2);
     }
   }
-  else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_DELETED)) {
+  else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_DELETED)) {
     std::shared_ptr<ModelAPI_ObjectDeletedMessage> aUpdMsg =
-      std::dynamic_pointer_cast<ModelAPI_ObjectDeletedMessage>(theMessage);
+      std::dynamic_pointer_cast<ModelAPI_ObjectDeletedMessage>(aMsg);
     const std::list<std::pair<std::shared_ptr<ModelAPI_Document>, std::string>>& aMsgGroups =
       aUpdMsg->groups();
     std::list<std::pair<std::shared_ptr<ModelAPI_Document>, std::string>>::const_iterator aIt;
@@ -92,9 +97,9 @@ void XGUI_DataModel::processEvent(const std::shared_ptr<Events_Message>& theMess
       QTreeNodesList aList = myRoot->objectsDeleted(aIt->first, aIt->second.c_str());
     rebuildDataTree();
   }
-  else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_UPDATED)) {
+  else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_UPDATED)) {
     std::shared_ptr<ModelAPI_ObjectUpdatedMessage> aUpdMsg =
-      std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(theMessage);
+      std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(aMsg);
     std::set<ObjectPtr> aObjects = aUpdMsg->objects();
 
     QObjectPtrList aCreated;
@@ -142,9 +147,9 @@ void XGUI_DataModel::processEvent(const std::shared_ptr<Events_Message>& theMess
       }
     }
   }
-  else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_ORDER_UPDATED)) {
+  else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_ORDER_UPDATED)) {
     std::shared_ptr<ModelAPI_OrderUpdatedMessage> aUpdMsg =
-      std::dynamic_pointer_cast<ModelAPI_OrderUpdatedMessage>(theMessage);
+      std::dynamic_pointer_cast<ModelAPI_OrderUpdatedMessage>(aMsg);
     if (aUpdMsg->reordered().get()) {
       DocumentPtr aDoc = aUpdMsg->reordered()->document();
       std::string aGroup = aUpdMsg->reordered()->group();
@@ -155,16 +160,16 @@ void XGUI_DataModel::processEvent(const std::shared_ptr<Events_Message>& theMess
       }
     }
   }
-  else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_DOCUMENT_CHANGED)) {
+  else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_DOCUMENT_CHANGED)) {
     DocumentPtr aDoc = ModelAPI_Session::get()->activeDocument();
     ModuleBase_ITreeNode* aRoot = myRoot->findRoot(aDoc);
     if (aRoot) {
       updateSubTree(aRoot);
     }
   }
-  else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_TO_REDISPLAY)) {
+  else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_TO_REDISPLAY)) {
     std::shared_ptr<ModelAPI_ObjectUpdatedMessage> aUpdMsg =
-      std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(theMessage);
+      std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(aMsg);
     std::set<ObjectPtr> aObjects = aUpdMsg->objects();
 
     QObjectPtrList aCreated;

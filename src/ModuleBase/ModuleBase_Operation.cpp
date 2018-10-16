@@ -48,6 +48,15 @@
 #include <QDebug>
 #endif
 
+
+void ModuleBase_FinishOperation::work()
+{
+  SessionPtr aMgr = ModelAPI_Session::get();
+  aMgr->finishOperation();
+  thread()->quit();
+}
+
+
 ModuleBase_Operation::ModuleBase_Operation(const QString& theId, QObject* theParent)
     : QObject(theParent),
       myIsModified(false),
@@ -137,10 +146,14 @@ bool ModuleBase_Operation::commit()
     if (aPanel)
       aPanel->onAcceptData();
 
-    SessionPtr aMgr = ModelAPI_Session::get();
 
     commitOperation();
+
+    SessionPtr aMgr = ModelAPI_Session::get();
     aMgr->finishOperation();
+    //ModuleBase_FinishOperation* aFinish = new ModuleBase_FinishOperation();
+    //ModuleBase_WorkController aController(aFinish);
+    //aController.perform();
 
     stopOperation();
     emit stopped();

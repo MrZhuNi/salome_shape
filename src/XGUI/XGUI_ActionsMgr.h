@@ -23,10 +23,10 @@
 
 #include "XGUI.h"
 
-#include <Events_Listener.h>
 #include <ModelAPI_Feature.h>
 
 #include <ModuleBase_ActionInfo.h>
+#include <ModuleBase_EventsListener.h>
 
 #include <QObject>
 #include <QMap>
@@ -42,7 +42,7 @@ class QAction;
 /// class XGUI_ActionsMgr
 /// \ingroup GUI
 /// A class for management of actions (features) activation/deactivation
-class XGUI_EXPORT XGUI_ActionsMgr : public QObject, public Events_Listener
+class XGUI_EXPORT XGUI_ActionsMgr : public QObject//, public Events_Listener
 {
   Q_OBJECT
 
@@ -88,9 +88,6 @@ class XGUI_EXPORT XGUI_ActionsMgr : public QObject, public Events_Listener
   /// \param theKeySequence - string that contain a key sequence to register
   QKeySequence registerShortcut(const QString& theKeySequence);
 
-  /// Redefinition of Events_Listener method
-  virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
-
   /// Return property panel's action like ok, cancel, help.
   /// If there is no such action, it will be created.
   QAction* operationStateAction(OperationStateActionId theId);
@@ -101,6 +98,10 @@ class XGUI_EXPORT XGUI_ActionsMgr : public QObject, public Events_Listener
   /// Return info (icon, text, etc) about the action by the given id,
   /// if it was registered in the manager
   ActionInfo actionInfoById(const QString& theId);
+
+private slots:
+  /// Redefinition of Events_Listener method
+  virtual void processEvent(ModuleBase_Event* theMessage);
 
  private:
   /// Update workbench actions according to OperationMgr state:

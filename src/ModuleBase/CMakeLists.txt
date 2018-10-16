@@ -104,6 +104,8 @@ SET(PROJECT_HEADERS
   ModuleBase_WidgetRadiobox.h
   ModuleBase_WidgetPointInput.h
   ModuleBase_ITreeNode.h
+  ModuleBase_WorkController.h
+  ModuleBase_EventsListener.h
 )
 
 SET(PROJECT_MOC_HEADERS
@@ -153,6 +155,9 @@ SET(PROJECT_MOC_HEADERS
   ModuleBase_WidgetNameEdit.h
   ModuleBase_WidgetRadiobox.h
   ModuleBase_WidgetPointInput.h
+  ModuleBase_WorkController.h
+  ModuleBase_EventsListener.h
+  ModuleBase_IconFactory.h
 )
 
 SET(PROJECT_SOURCES
@@ -221,6 +226,8 @@ SET(PROJECT_SOURCES
   ModuleBase_WidgetNameEdit.cpp
   ModuleBase_WidgetRadiobox.cpp
   ModuleBase_WidgetPointInput.cpp
+  ModuleBase_WorkController.cpp
+  ModuleBase_EventsListener.cpp
 )
 
 SET(PROJECT_LIBRARIES

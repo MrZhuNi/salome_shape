@@ -62,10 +62,9 @@ XGUI_ActionsMgr::XGUI_ActionsMgr(XGUI_Workshop* theParent)
   myShortcuts << QKeySequence::Close;
 
   //Initialize event listening
-  Events_Loop* aLoop = Events_Loop::loop();
-  static Events_ID aStateResponseEventId =
-      Events_Loop::loop()->eventByName(EVENT_FEATURE_STATE_RESPONSE);
-  aLoop->registerListener(this, aStateResponseEventId, NULL, true);
+  ModuleBase_EventsListener* aListener = ModuleBase_EventsListener::instance();
+  connect(aListener, SIGNAL(hasEvent(ModuleBase_Event*)),
+    SLOT(processEvent(ModuleBase_Event*)), Qt::QueuedConnection);
 }
 
 XGUI_ActionsMgr::~XGUI_ActionsMgr()
@@ -211,13 +210,15 @@ QKeySequence XGUI_ActionsMgr::registerShortcut(const QString& theKeySequence)
   return aResult;
 }
 
-void XGUI_ActionsMgr::processEvent(const std::shared_ptr<Events_Message>& theMessage)
+void XGUI_ActionsMgr::processEvent(ModuleBase_Event* theMessage)
 {
+  std::shared_ptr<Events_Message> aMsg = theMessage->message();
+
   const Events_ID kResponseEvent =
       Events_Loop::loop()->eventByName(EVENT_FEATURE_STATE_RESPONSE);
-  if (theMessage->eventID() == kResponseEvent) {
+  if (aMsg->eventID() == kResponseEvent) {
     std::shared_ptr<ModelAPI_FeatureStateMessage> aStateMessage =
-        std::dynamic_pointer_cast<ModelAPI_FeatureStateMessage>(theMessage);
+        std::dynamic_pointer_cast<ModelAPI_FeatureStateMessage>(aMsg);
     if (!aStateMessage.get())
       return;
     std::list<std::string> aFeaturesList = aStateMessage->features();
@@ -230,11 +231,6 @@ void XGUI_ActionsMgr::processEvent(const std::shared_ptr<Events_Message>& theMes
       }
       setActionEnabled(anActionId, aStateMessage->state(*it, theDefaultState));
     }
-  } else if (theMessage.get()) {
-    #ifdef _DEBUG
-    std::cout << "XGUI_ActionsMgr::processEvent: unhandled message caught: " << std::endl
-              << theMessage->eventID().eventText() << std::endl;
-    #endif
   }
 }
 

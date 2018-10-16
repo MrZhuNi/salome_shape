@@ -23,11 +23,12 @@
 
 #include "XGUI.h"
 
-#include <Events_Listener.h>
+#include <ModuleBase_EventsListener.h>
 
 #include <string>
 #include <list>
 #include <memory>
+#include <QObject>
 
 class XGUI_MenuWorkbench;
 class XGUI_Workshop;
@@ -41,20 +42,22 @@ class QAction;
 * in XML file. It listens the read feature of XML and fills internal structure of menu workbenches
 * and groups of feature. After, it creates menues and tools in the module.
 */
-class XGUI_MenuMgr : public Events_Listener
+class XGUI_EXPORT XGUI_MenuMgr : public QObject //Events_Listener
 {
+  Q_OBJECT
  public:
   /// Constructor
   /// \param theWorkshop the current workshop
-  XGUI_EXPORT XGUI_MenuMgr(XGUI_Workshop* theWorkshop);
-  XGUI_EXPORT virtual ~XGUI_MenuMgr() {}
+  XGUI_MenuMgr(XGUI_Workshop* theWorkshop);
+  virtual ~XGUI_MenuMgr() {}
 
   /// Creates feature actions
-  XGUI_EXPORT void createFeatureActions();
+  void createFeatureActions();
 
+public slots:
   /// Redefinition of Events_Listener method
   /// \param theMessage a message
-  XGUI_EXPORT virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
+  void processEvent(ModuleBase_Event* theMessage);
 
 protected:
   /// Process event "Add a feature"

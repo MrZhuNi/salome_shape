@@ -91,6 +91,7 @@ SET(PROJECT_MOC_HEADERS
     XGUI_Workshop.h
     XGUI_WorkshopListener.h
 	XGUI_InspectionPanel.h
+	XGUI_MenuMgr.h
 )
 
 # sources / moc wrappings

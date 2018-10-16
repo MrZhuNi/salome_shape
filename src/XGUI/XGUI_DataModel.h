@@ -23,6 +23,7 @@
 
 #include "XGUI.h"
 #include <ModuleBase_Definitions.h>
+#include <ModuleBase_EventsListener.h>
 #include <ModelAPI_Object.h>
 #include <ModelAPI_Document.h>
 #include <Events_Listener.h>
@@ -44,7 +45,7 @@ class ModuleBase_ITreeNode;
  * - An index which contains internal pointer as ModelAPI_Document is 
  *   a folder which belongs to this document
  */
-class XGUI_EXPORT XGUI_DataModel : public QAbstractItemModel, public Events_Listener
+class XGUI_EXPORT XGUI_DataModel : public QAbstractItemModel//, public Events_Listener
 {
 Q_OBJECT
 public:
@@ -62,7 +63,7 @@ public:
 
   /// Event Listener method
   /// \param theMessage an event message
-  virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
+  //virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
 
   //! Returns an object by the given Model index.
   //! Returns 0 if the given index is not index of an object
@@ -162,6 +163,11 @@ signals:
   /// Signal about tree had been rebuilt
   void treeRebuilt();
 
+private slots:
+  /// Event Listener method
+  /// \param theMessage an event message
+  void processEvent(ModuleBase_Event* theMessage);
+
 private:
   enum VisibilityState {
     NoneState,
@@ -176,69 +182,9 @@ private:
 
   void updateSubTree(ModuleBase_ITreeNode* theParent);
 
-  /// Find a root index which contains objects of the given document
-  /// \param theDoc the document object
-  //QModelIndex findDocumentRootIndex(const ModelAPI_Document* theDoc, int aColumn = 1) const;
-
-  /// Returns number of folders in document.
-  /// Considered folders which has to be shown only if they are not empty.
-  /// \param theDoc document which has to be checked. If 0 then Root document will be considered
-  //int foldersCount(ModelAPI_Document* theDoc = 0) const;
-
-  /// Retrurns indexes of folders which can not be shown because they are empty
-  /// \param theDoc document which has to be checked. If 0 then Root document will be considered
-  //QIntList missedFolderIndexes(ModelAPI_Document* theDoc = 0) const;
-
-  /// Returns Id (row) of a folder taking into consideration
-  /// folders which can not be shown non empty
-  /// \param theType Type of the folder
-  /// \param theDoc a document which contains this folder
-  //int folderId(std::string theType, ModelAPI_Document* theDoc = 0) const;
-
-  /// Removes a row from branch of tree
-  /// \param theStart - start row to update indexes
-  /// \param theSize - number of indexes in the folder
-  /// \param theParent - index of parent folder
-  //void rebuildBranch(int theRow, int theCount, const QModelIndex& theParent = QModelIndex());
-
-  /// Returns list of folders types which can not be shown empty
-  /// \param fromRoot - root document flag
-  //QStringList listOfShowNotEmptyFolders(bool fromRoot = true) const;
-
-  //int getNumberOfFolderItems(const ModelAPI_Folder* theFolder) const;
-  //ObjectPtr getObjectInFolder(const ModelAPI_Folder* theFolder, int theId) const;
-
-  //VisibilityState getVisibilityState(const QModelIndex& theIndex) const;
-
-  //void addShownFolder(DocumentPtr theDoc, QString theFolder)
-  //{
-  //  if (!myShownFolders.contains(theDoc)) {
-  //    myShownFolders[theDoc] = QStringList();
-  //  }
-  //  myShownFolders[theDoc].append(theFolder);
-  //}
-
-  //void removeShownFolder(DocumentPtr theDoc, QString theFolder)
-  //{
-  //  if (myShownFolders.contains(theDoc)) {
-  //    myShownFolders[theDoc].removeAll(theFolder);
-  //    if (myShownFolders[theDoc].isEmpty())
-  //      myShownFolders.remove(theDoc);
-  //  }
-  //}
-
-  //bool hasShownFolder(DocumentPtr theDoc, QString theFolder) const
-  //{
-  //  if (myShownFolders.contains(theDoc))
-  //    return myShownFolders[theDoc].contains(theFolder);
-  //  return false;
-  //}
-
-  //Config_DataModelReader* myXMLReader;
 
   XGUI_Workshop* myWorkshop;
   QMap<DocumentPtr, QStringList> myShownFolders;
-  //bool myIsEventsProcessingBlocked;
 
   ModuleBase_ITreeNode* myRoot;
 };

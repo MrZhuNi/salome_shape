@@ -176,8 +176,11 @@ PartSet_Module::PartSet_Module(ModuleBase_IWorkshop* theWshop)
 
   myOverconstraintListener = new PartSet_OverconstraintListener(theWshop);
 
-  Events_Loop* aLoop = Events_Loop::loop();
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_DOCUMENT_CHANGED));
+  //Events_Loop* aLoop = Events_Loop::loop();
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_DOCUMENT_CHANGED));
+  ModuleBase_EventsListener* aListener = ModuleBase_EventsListener::instance();
+  connect(aListener, SIGNAL(hasEvent(ModuleBase_Event*)),
+    SLOT(processEvent(ModuleBase_Event*)), Qt::QueuedConnection);
 
   registerSelectionFilter(SF_GlobalFilter, new PartSet_GlobalFilter(myWorkshop));
   registerSelectionFilter(SF_FilterInfinite, new PartSet_FilterInfinite(myWorkshop));
@@ -1289,8 +1292,8 @@ void PartSet_Module::customizeObjectBrowser(QWidget* theObjectBrowser)
     connect(aOB->treeView(), SIGNAL(doubleClicked(const QModelIndex&)),
       SLOT(onTreeViewDoubleClick(const QModelIndex&)));
 
-    Events_Loop* aLoop = Events_Loop::loop();
-    aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_CREATED));
+    //Events_Loop* aLoop = Events_Loop::loop();
+    //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_CREATED));
   }
 }
 
@@ -1422,9 +1425,11 @@ if (aObjIndex.isValid()) { \
 }
 
 //******************************************************
-void PartSet_Module::processEvent(const std::shared_ptr<Events_Message>& theMessage)
+void PartSet_Module::processEvent(ModuleBase_Event* theMessage)
 {
-  if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_DOCUMENT_CHANGED)) {
+  std::shared_ptr<Events_Message> aMsg = theMessage->message();
+
+  if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_DOCUMENT_CHANGED)) {
     // Do not change activation of parts if an operation active
     static QStringList aAllowActivationList;
     if (aAllowActivationList.isEmpty())
@@ -1479,9 +1484,9 @@ void PartSet_Module::processEvent(const std::shared_ptr<Events_Message>& theMess
     if (needUpdate) {
       aTreeView->viewport()->repaint(aTreeView->viewport()->rect());
     }
-  } else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_CREATED)) {
+  } else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_CREATED)) {
     std::shared_ptr<ModelAPI_ObjectUpdatedMessage> aUpdMsg =
-        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(theMessage);
+        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(aMsg);
     std::set<ObjectPtr> aObjects = aUpdMsg->objects();
 
     ObjectPtr aConstrObj;

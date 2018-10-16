@@ -35,8 +35,11 @@ QMap<QString, QString> PartSet_IconFactory::myIcons;
 
 PartSet_IconFactory::PartSet_IconFactory():ModuleBase_IconFactory()
 {
-  Events_Loop::loop()->registerListener(this,
-    Events_Loop::eventByName(Config_FeatureMessage::GUI_EVENT()));
+  //Events_Loop::loop()->registerListener(this,
+  //  Events_Loop::eventByName(Config_FeatureMessage::GUI_EVENT()));
+  ModuleBase_EventsListener* aListener = ModuleBase_EventsListener::instance();
+  connect(aListener, SIGNAL(hasEvent(ModuleBase_Event*)),
+    SLOT(processEvent(ModuleBase_Event*)), Qt::QueuedConnection);
 }
 
 
@@ -127,12 +130,13 @@ QIcon PartSet_IconFactory::getIcon(ObjectPtr theObj)
   return anIcon;
 }
 
-void PartSet_IconFactory::processEvent(const std::shared_ptr<Events_Message>& theMessage)
+void PartSet_IconFactory::processEvent(ModuleBase_Event* theMessage)
 {
-  if (theMessage->eventID() ==
+  std::shared_ptr<Events_Message> aMsg = theMessage->message();
+  if (aMsg->eventID() ==
       Events_Loop::loop()->eventByName(Config_FeatureMessage::GUI_EVENT())) {
     std::shared_ptr<Config_FeatureMessage> aFeatureMsg =
-       std::dynamic_pointer_cast<Config_FeatureMessage>(theMessage);
+       std::dynamic_pointer_cast<Config_FeatureMessage>(aMsg);
     if (!aFeatureMsg->isInternal()) {
       ActionInfo aFeatureInfo;
       aFeatureInfo.initFrom(aFeatureMsg);

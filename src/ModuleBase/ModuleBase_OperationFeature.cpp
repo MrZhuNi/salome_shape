@@ -353,10 +353,13 @@ bool ModuleBase_OperationFeature::commit()
     myFeature->setStable(true);
 
     SessionPtr aMgr = ModelAPI_Session::get();
-    /// Set current feature and remeber old current feature
+    // Set current feature and remeber old current feature
 
     commitOperation();
     aMgr->finishOperation();
+    //ModuleBase_FinishOperation* aFinish = new ModuleBase_FinishOperation();
+    //ModuleBase_WorkController aController(aFinish);
+    //aController.perform();
 
     stopOperation();
     emit stopped();

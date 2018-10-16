@@ -22,6 +22,7 @@
 #define ModuleBase_Operation_H
 
 #include <ModuleBase.h>
+#include <ModuleBase_WorkController.h>
 
 #include <QObject>
 #include <QString>
@@ -32,6 +33,16 @@ class ModuleBase_OperationDescription;
 class ModuleBase_IPropertyPanel;
 
 class QKeyEvent;
+
+
+
+class ModuleBase_FinishOperation : public ModuleBase_IWorker
+{
+  Q_OBJECT
+public slots:
+  virtual void work();
+};
+
 
 /*!
  * \class ModuleBase_Operation

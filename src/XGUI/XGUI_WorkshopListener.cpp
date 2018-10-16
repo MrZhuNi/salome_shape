@@ -97,42 +97,47 @@ XGUI_WorkshopListener::~XGUI_WorkshopListener(void)
 //******************************************************
 void XGUI_WorkshopListener::initializeEventListening()
 {
+  ModuleBase_EventsListener* aListener = ModuleBase_EventsListener::instance();
+  connect(aListener, SIGNAL(hasEvent(ModuleBase_Event*)),
+    SLOT(processEvent(ModuleBase_Event*)), Qt::QueuedConnection);
   //Initialize event listening
-  Events_Loop* aLoop = Events_Loop::loop();
-  aLoop->registerListener(this, Events_InfoMessage::errorID());  //!< Listening application errors.
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_UPDATED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_CREATED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
-  aLoop->registerListener(this, Events_LongOp::eventID());
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_PLUGIN_LOADED));
+  //Events_Loop* aLoop = Events_Loop::loop();
+  //aLoop->registerListener(this, Events_InfoMessage::errorID());  //!< Listening application errors.
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_UPDATED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_CREATED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
+  //aLoop->registerListener(this, Events_LongOp::eventID());
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_PLUGIN_LOADED));
 
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_UPDATE_VIEWER_BLOCKED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_UPDATE_VIEWER_UNBLOCKED));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_EMPTY_AIS_PRESENTATION));
-  aLoop->registerListener(this, Events_Loop::eventByName(EVENT_UPDATE_BY_WIDGET_SELECTION));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_UPDATE_VIEWER_BLOCKED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_UPDATE_VIEWER_UNBLOCKED));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_EMPTY_AIS_PRESENTATION));
+  //aLoop->registerListener(this, Events_Loop::eventByName(EVENT_UPDATE_BY_WIDGET_SELECTION));
 
-  aLoop->registerListener(this, Events_Loop::eventByName("FinishOperation"));
-  aLoop->registerListener(this, Events_Loop::eventByName("AbortOperation"));
+  //aLoop->registerListener(this, Events_Loop::eventByName("FinishOperation"));
+  //aLoop->registerListener(this, Events_Loop::eventByName("AbortOperation"));
 }
 
 //******************************************************
-void XGUI_WorkshopListener::processEvent(const std::shared_ptr<Events_Message>& theMessage)
+void XGUI_WorkshopListener::processEvent(ModuleBase_Event* theMessage)
 {
+  std::shared_ptr<Events_Message> aMsg = theMessage->message();
+
   if (QApplication::instance() &&
       QApplication::instance()->thread() != QThread::currentThread()) {
     #ifdef _DEBUG
     std::cout << "XGUI_Workshop::processEvent: " << "Working in another thread." << std::endl;
     #endif
     SessionPtr aMgr = ModelAPI_Session::get();
-    PostponeMessageQtEvent* aPostponeEvent = new PostponeMessageQtEvent(theMessage);
+    PostponeMessageQtEvent* aPostponeEvent = new PostponeMessageQtEvent(aMsg);
     QApplication::postEvent(this, aPostponeEvent);
     return;
   }
 
   // Process creation of Part
-  if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_CREATED)) {
+  if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_CREATED)) {
     std::shared_ptr<ModelAPI_ObjectUpdatedMessage> aUpdMsg =
-        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(theMessage);
+        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(aMsg);
     onFeatureCreatedMsg(aUpdMsg);
     if (myUpdatePrefs) {
       XGUI_SalomeConnector* aSalomeConnector = workshop()->salomeConnector();
@@ -141,19 +146,19 @@ void XGUI_WorkshopListener::processEvent(const std::shared_ptr<Events_Message>& 
       myUpdatePrefs = false;
     }
   }
-  else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_PLUGIN_LOADED)) {
+  else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_PLUGIN_LOADED)) {
     myUpdatePrefs = true;
   }
   // Redisplay feature
-  else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_TO_REDISPLAY)) {
+  else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_TO_REDISPLAY)) {
     std::shared_ptr<ModelAPI_ObjectUpdatedMessage> aUpdMsg =
-        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(theMessage);
+        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(aMsg);
     onFeatureRedisplayMsg(aUpdMsg);
-  } else if (theMessage->eventID() == Events_Loop::eventByName(EVENT_EMPTY_AIS_PRESENTATION)) {
+  } else if (aMsg->eventID() == Events_Loop::eventByName(EVENT_EMPTY_AIS_PRESENTATION)) {
     std::shared_ptr<ModelAPI_ObjectUpdatedMessage> aUpdMsg =
-        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(theMessage);
+        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(aMsg);
     onFeatureEmptyPresentationMsg(aUpdMsg);
-  } else if (theMessage->eventID() == Events_Loop::eventByName(EVENT_UPDATE_BY_WIDGET_SELECTION)) {
+  } else if (aMsg->eventID() == Events_Loop::eventByName(EVENT_UPDATE_BY_WIDGET_SELECTION)) {
     ModuleBase_ModelWidget* aWidget = workshop()->propertyPanel()->activeWidget();
     if (aWidget) {
       ModuleBase_WidgetSelector* aWidgetSelector =
@@ -161,33 +166,33 @@ void XGUI_WorkshopListener::processEvent(const std::shared_ptr<Events_Message>& 
       if (aWidgetSelector)
         workshop()->selector()->setSelected(aWidgetSelector->getAttributeSelection());
     }
-  } else if (theMessage->eventID() == Events_Loop::eventByName("FinishOperation")/* ||
+  } else if (aMsg->eventID() == Events_Loop::eventByName("FinishOperation")/* ||
              theMessage->eventID() == Events_Loop::eventByName("AbortOperation")*/)
     workshop()->facesPanel()->reset(false); // do not flush redisplay, it is flushed after event
 
   //Update property panel on corresponding message. If there is no current operation (no
   //property panel), or received message has different feature to the current - do nothing.
-  else if (theMessage->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_UPDATED)) {
+  else if (aMsg->eventID() == Events_Loop::loop()->eventByName(EVENT_OBJECT_UPDATED)) {
     std::shared_ptr<ModelAPI_ObjectUpdatedMessage> anUpdateMsg =
-        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(theMessage);
+        std::dynamic_pointer_cast<ModelAPI_ObjectUpdatedMessage>(aMsg);
     onFeatureUpdatedMsg(anUpdateMsg);
-  } else if (theMessage->eventID() == Events_LongOp::eventID()) {
+  } else if (aMsg->eventID() == Events_LongOp::eventID()) {
     if (Events_LongOp::isPerformed()) {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     } else {
       QApplication::restoreOverrideCursor();
     }
-  } else if (theMessage->eventID() == Events_Loop::eventByName(EVENT_UPDATE_VIEWER_BLOCKED)) {
+  } else if (aMsg->eventID() == Events_Loop::eventByName(EVENT_UPDATE_VIEWER_BLOCKED)) {
     // the viewer's update context will not happens until viewer updated is emitted
       workshop()->displayer()->enableUpdateViewer(false);
-  } else if (theMessage->eventID() == Events_Loop::eventByName(EVENT_UPDATE_VIEWER_UNBLOCKED)) {
+  } else if (aMsg->eventID() == Events_Loop::eventByName(EVENT_UPDATE_VIEWER_UNBLOCKED)) {
     // the viewer's update context is unblocked, the viewer's update works
     XGUI_Displayer* aDisplayer = workshop()->displayer();
     aDisplayer->enableUpdateViewer(true);
   } else {
     //Show error dialog if error message received.
     std::shared_ptr<Events_InfoMessage> anIngfoMsg =
-      std::dynamic_pointer_cast<Events_InfoMessage>(theMessage);
+      std::dynamic_pointer_cast<Events_InfoMessage>(aMsg);
     if (anIngfoMsg) {
       emit errorOccurred(anIngfoMsg);
     }
@@ -460,7 +465,8 @@ bool XGUI_WorkshopListener::event(QEvent * theEvent)
   PostponeMessageQtEvent* aPostponedEv = dynamic_cast<PostponeMessageQtEvent*>(theEvent);
   if (aPostponedEv) {
     std::shared_ptr<Events_Message> aEventPtr = aPostponedEv->postponedMessage();
-    processEvent(aEventPtr);
+    ModuleBase_Event aEv(aEventPtr);
+    processEvent(&aEv);
     return true;
   }
   return false;

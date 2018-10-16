@@ -22,6 +22,7 @@
 #define XGUI_WORKSHOP_LISTENER_H
 
 #include "XGUI.h"
+#include <ModuleBase_EventsListener.h>
 #include <Events_Listener.h>
 #include <Events_Message.h>
 
@@ -44,7 +45,7 @@ class Events_InfoMessage;
  * \ingroup GUI
  * \brief Class which process the events from the event loop.
  */
-class XGUI_EXPORT XGUI_WorkshopListener : public QObject, public Events_Listener
+class XGUI_EXPORT XGUI_WorkshopListener : public QObject//, public Events_Listener
 {
   Q_OBJECT
 public:
@@ -57,11 +58,14 @@ public:
   void initializeEventListening();
 
   //! Redefinition of Events_Listener method
-  virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
+  //virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
 
 signals:
   /// Emitted when error in applivation happens
   void errorOccurred(std::shared_ptr<Events_InfoMessage> theMsg);
+
+private slots:
+  void processEvent(ModuleBase_Event* theMessage);
 
 protected:
   /// Procedure to process postponed events

@@ -23,7 +23,9 @@
 
 #include "PartSet.h"
 #include <ModuleBase_IconFactory.h>
-#include <Events_Listener.h>
+#include <ModuleBase_EventsListener.h>
+//#include <Events_Listener.h>
+#include <Events_Message.h>
 
 #include <QMap>
 
@@ -33,8 +35,10 @@
  * \brief This is a class is redefined in order to provide
  * icons of objects for object browser specific for PartSetModule
  */
-class PARTSET_EXPORT PartSet_IconFactory : public ModuleBase_IconFactory, public Events_Listener
+class PARTSET_EXPORT PartSet_IconFactory : public ModuleBase_IconFactory
+  //, public Events_Listener
 {
+  Q_OBJECT
 public:
   /// Constructor
   PartSet_IconFactory();
@@ -45,7 +49,12 @@ public:
 
   /// Event Listener method
   /// \param theMessage an event message
-  virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
+  //virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
+
+private slots:
+  /// Event Listener method
+  /// \param theMessage an event message
+  virtual void processEvent(ModuleBase_Event* theMessage);
 
 private:
   static QMap<QString, QString> myIcons;

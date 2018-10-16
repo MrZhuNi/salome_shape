@@ -29,11 +29,12 @@
 
 #include <ModuleBase_IModule.h>
 #include <ModuleBase_Definitions.h>
+#include <ModuleBase_EventsListener.h>
 #include <ModelAPI_Feature.h>
 #include <ModelAPI_Attribute.h>
 #include <ModelAPI_CompositeFeature.h>
 
-#include <Events_Listener.h>
+//#include <Events_Listener.h>
 
 //#include <StdSelect_FaceFilter.hxx>
 #include <TopoDS_Shape.hxx>
@@ -67,7 +68,7 @@ class QAction;
 * \ingroup Modules
 * Implementation of Partset module
 */
-class PARTSET_EXPORT PartSet_Module : public ModuleBase_IModule, public Events_Listener
+class PARTSET_EXPORT PartSet_Module : public ModuleBase_IModule//, public Events_Listener
 {
 Q_OBJECT
 
@@ -280,7 +281,7 @@ public:
 
   /// Event Listener method
   /// \param theMessage an event message
-  virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
+  // virtual void processEvent(const std::shared_ptr<Events_Message>& theMessage);
 
   /// Set the object with the object results are customized
   /// \param theFeature a feature
@@ -435,6 +436,10 @@ protected slots:
   /// \param theWidget a sender
   /// \param theIndex the current choice index
   void onChoiceChanged(ModuleBase_ModelWidget* theWidget, int theIndex);
+
+  /// Event Listener method
+  /// \param theMessage an event message
+  virtual void processEvent(ModuleBase_Event* theMessage);
 
 protected:
   /// Appends specific selection modes for the module to the list of types

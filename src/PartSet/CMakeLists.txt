@@ -77,6 +77,8 @@ SET(PROJECT_MOC_HEADERS
     PartSet_WidgetSketchCreator.h
     PartSet_WidgetSketchLabel.h
     PartSet_ExternalPointsMgr.h
+    PartSet_IconFactory.h
+	PartSet_CustomPrs.h
 )
 
 SET(PROJECT_SOURCES
