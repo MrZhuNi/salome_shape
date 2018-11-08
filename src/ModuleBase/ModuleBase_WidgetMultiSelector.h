@@ -41,6 +41,7 @@ class QWidget;
 class ModuleBase_ListView;
 class ModuleBase_IWorkshop;
 class ModuleBase_ChoiceCtrl;
+class ModuleBase_FilterStarter;
 
 /**
 * \ingroup GUI
@@ -247,6 +248,8 @@ protected:
 
   bool myIsFirst;
   std::string myDefMode;
+
+  ModuleBase_FilterStarter* myFiltersWgt;
 };
 
 #endif /* MODULEBASE_WIDGETFILESELECTOR_H_ */
