@@ -23,6 +23,7 @@
 #include <CollectionPlugin_Group.h>
 #include <CollectionPlugin_Field.h>
 #include <CollectionPlugin_Validators.h>
+#include <CollectionPlugin_GroupFilters.h>
 #include <ModelAPI_Session.h>
 
 #include <ModuleBase_WidgetCreatorFactory.h>
@@ -55,8 +56,10 @@ FeaturePtr CollectionPlugin_Plugin::createFeature(std::string theFeatureID)
 {
   if (theFeatureID == CollectionPlugin_Group::ID()) {
     return FeaturePtr(new CollectionPlugin_Group);
-  }else if (theFeatureID == CollectionPlugin_Field::ID()) {
+  } else if (theFeatureID == CollectionPlugin_Field::ID()) {
     return FeaturePtr(new CollectionPlugin_Field);
+  } else if (theFeatureID == CollectionPlugin_GroupFilters::ID()) {
+    return FeaturePtr(new CollectionPlugin_GroupFilters);
   }
 
 

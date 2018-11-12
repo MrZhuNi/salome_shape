@@ -157,9 +157,9 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
       }
     }
   }
-  bool aUseFilters = theData->getBooleanAttribute("use_filters", false);
-  if (aUseFilters) {
-    myFiltersWgt = new ModuleBase_FilterStarter(this, theWorkshop);
+  std::string aUseFilters = theData->getProperty("use_filters");
+  if (aUseFilters.length() > 0) {
+    myFiltersWgt = new ModuleBase_FilterStarter(aUseFilters.c_str(), this, theWorkshop);
     aMainLay->addWidget(myFiltersWgt);
   }
 

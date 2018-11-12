@@ -42,6 +42,13 @@ email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com
         </field-panel>
         <validator id="CollectionPlugin_FieldValidator"/>
       </feature>
+
+      <feature id="GroupFilters"
+               title="Selection filters"
+               internal="1">
+        <selection_filters>
+        </selection_filters>
+      </feature>
     </group>
   </workbench>
 </plugin>

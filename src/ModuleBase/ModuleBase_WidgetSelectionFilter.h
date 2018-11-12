@@ -21,17 +21,22 @@
 #ifndef ModuleBase_WidgetSelectionFilter_H
 #define ModuleBase_WidgetSelectionFilter_H
 
-#include <ModuleBase.h>
+#include "ModuleBase.h"
+#include "ModuleBase_ModelWidget.h"
+
 #include <QWidget>
 
 class QLabel;
+class QComboBox;
+class QGroupBox;
 class ModuleBase_IWorkshop;
 
 class MODULEBASE_EXPORT ModuleBase_FilterStarter: public QWidget
 {
   Q_OBJECT
 public:
-  ModuleBase_FilterStarter(QWidget* theParent, ModuleBase_IWorkshop* theWorkshop);
+  ModuleBase_FilterStarter(const std::string& theFeature, QWidget* theParent,
+    ModuleBase_IWorkshop* theWorkshop);
 
   ~ModuleBase_FilterStarter() {}
 
@@ -39,11 +44,42 @@ private slots:
   void onFiltersLaunch();
 
 private:
+  std::string myFeatureName;
+  ModuleBase_IWorkshop* myWorkshop;
+
   QLabel* myFilterLbl;
   QLabel* myModifyLbl;
 
-  ModuleBase_IWorkshop* myWorkshop;
 };
 
+
+class ModuleBase_WidgetSelectionFilter : public ModuleBase_ModelWidget
+{
+  Q_OBJECT
+public:
+  ModuleBase_WidgetSelectionFilter(QWidget* theParent, ModuleBase_IWorkshop* theWorkshop,
+    const Config_WidgetAPI* theData);
+
+  /// Returns list of widget controls
+  /// \return a control list
+  virtual QList<QWidget*> getControls() const;
+
+protected:
+  /// Saves the internal parameters to the given feature (not ussed for this widget)
+  /// \return True in success
+  virtual bool storeValueCustom() { return true;  }
+
+  /// Restore value from attribute data to the widget's control (not ussed for this widget)
+  virtual bool restoreValueCustom() { return true; }
+
+private slots:
+  void onAddFilter();
+
+private:
+  ModuleBase_IWorkshop* myWorkshop;
+
+  QComboBox* myFiltersCombo;
+  QGroupBox* myFiltersGroup;
+};
 
 #endif
