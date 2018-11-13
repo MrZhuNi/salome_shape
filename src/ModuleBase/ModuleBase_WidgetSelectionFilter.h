@@ -40,6 +40,8 @@ public:
 
   ~ModuleBase_FilterStarter() {}
 
+  void setSelectionType(const QString& theType);
+
 private slots:
   void onFiltersLaunch();
 
@@ -49,7 +51,7 @@ private:
 
   QLabel* myFilterLbl;
   QLabel* myModifyLbl;
-
+  int myShapeType;
 };
 
 
@@ -80,6 +82,8 @@ private:
 
   QComboBox* myFiltersCombo;
   QGroupBox* myFiltersGroup;
+
+  int mySelectionType;
 };
 
 #endif

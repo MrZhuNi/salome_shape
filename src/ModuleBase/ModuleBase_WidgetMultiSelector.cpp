@@ -113,7 +113,7 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
                                                                const Config_WidgetAPI* theData)
 : ModuleBase_WidgetSelector(theParent, theWorkshop, theData),
   myIsSetSelectionBlocked(false), myCurrentHistoryIndex(-1),
-  myIsFirst(true)
+  myIsFirst(true), myFiltersWgt(0)
 {
   std::string aPropertyTypes = theData->getProperty("type_choice");
   QString aTypesStr = aPropertyTypes.c_str();
@@ -180,6 +180,8 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
       myTypeCtrl->setValue(myDefMode.c_str());
     }
   }
+  if (myFiltersWgt)
+    myFiltersWgt->setSelectionType(myTypeCtrl->textValue());
 }
 
 ModuleBase_WidgetMultiSelector::~ModuleBase_WidgetMultiSelector()
@@ -499,6 +501,10 @@ void ModuleBase_WidgetMultiSelector::onSelectionTypeChanged()
 {
   // Clear current selection in order to avoid updating of object browser with obsolete indexes
   // which can appear because of results deletetion after changing a type of selection
+  QString aSelectionType = myTypeCtrl->textValue();
+  if (myFiltersWgt)
+    myFiltersWgt->setSelectionType(aSelectionType);
+
   QList<ModuleBase_ViewerPrsPtr> aEmptyList;
   myWorkshop->setSelected(aEmptyList);
 
@@ -512,7 +518,7 @@ void ModuleBase_WidgetMultiSelector::onSelectionTypeChanged()
   std::string aType = anAttribute->attributeType();
   if (aType == ModelAPI_AttributeSelectionList::typeId()) {
     AttributeSelectionListPtr aSelectionListAttr = myFeature->data()->selectionList(attributeID());
-    aSelectionListAttr->setSelectionType(myTypeCtrl->textValue().toStdString());
+    aSelectionListAttr->setSelectionType(aSelectionType.toStdString());
   }
 
   // clear attribute values

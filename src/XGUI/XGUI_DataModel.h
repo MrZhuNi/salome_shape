@@ -29,7 +29,6 @@
 
 #include <QAbstractItemModel>
 
-class Config_DataModelReader;
 class XGUI_Workshop;
 class ModuleBase_ITreeNode;
 

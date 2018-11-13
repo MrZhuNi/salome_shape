@@ -24,6 +24,7 @@
 #include "ModuleBase_IModule.h"
 #include "ModuleBase_IPropertyPanel.h"
 #include "ModuleBase_PageWidget.h"
+#include "ModuleBase_WidgetSelector.h"
 
 #include <QLayout>
 #include <QPushButton>
@@ -31,6 +32,8 @@
 #include <QComboBox>
 #include <QGroupBox>
 #include <QDialog>
+
+static int SelectionType = 0;
 
 ModuleBase_FilterStarter::ModuleBase_FilterStarter(const std::string& theFeature,
   QWidget* theParent, ModuleBase_IWorkshop* theWorkshop)
@@ -61,13 +64,36 @@ ModuleBase_FilterStarter::ModuleBase_FilterStarter(const std::string& theFeature
 
 void ModuleBase_FilterStarter::onFiltersLaunch()
 {
- // ModuleBase_OperationFiltering* aOperation = new ModuleBase_OperationFiltering(myWorkshop, this);
- // myWorkshop->processLaunchOperation(aOperation);
+  SelectionType = myShapeType;
+  ModuleBase_WidgetSelector* aSelector = dynamic_cast<ModuleBase_WidgetSelector*>(parent());
+  aSelector->storeValue(); // Store values defined by user
   ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
     (myWorkshop->module()->createOperation(myFeatureName));
   myWorkshop->processLaunchOperation(aFOperation);
 }
 
+void ModuleBase_FilterStarter::setSelectionType(const QString& theType)
+{
+  QString aType = theType.toUpper();
+  if ((aType == "VERTEX") || (aType == "VERTICES"))
+    myShapeType = GeomAPI_Shape::VERTEX;
+  else if ((aType == "EDGE") || (aType == "EDGES"))
+    myShapeType = GeomAPI_Shape::EDGE;
+  else if ((aType == "WIRE") || (aType == "WIRES"))
+    myShapeType = GeomAPI_Shape::WIRE;
+  else if ((aType == "FACE") || (aType == "FACES"))
+    myShapeType = GeomAPI_Shape::FACE;
+  else if ((aType == "SHELL") || (aType == "SHELLS"))
+    myShapeType = GeomAPI_Shape::SHELL;
+  else if ((aType == "SOLID") || (aType == "SOLIDS"))
+    myShapeType = GeomAPI_Shape::SOLID;
+  else if ((aType == "COMPSOLID") || (aType == "COMPSOLIDS"))
+    myShapeType = GeomAPI_Shape::COMPSOLID;
+  else if ((aType == "COMPOUND") || (aType == "COMPOUNDS"))
+    myShapeType = GeomAPI_Shape::COMPOUND;
+  else
+    myShapeType = GeomAPI_Shape::SHAPE;
+}
 
 
 //*****************************************************************************
@@ -76,7 +102,7 @@ void ModuleBase_FilterStarter::onFiltersLaunch()
 ModuleBase_WidgetSelectionFilter::ModuleBase_WidgetSelectionFilter(QWidget* theParent,
   ModuleBase_IWorkshop* theWorkshop, const Config_WidgetAPI* theData)
   : ModuleBase_ModelWidget(theParent, theData),
-  myWorkshop(theWorkshop)
+  myWorkshop(theWorkshop), mySelectionType(SelectionType)
 {
   QVBoxLayout* aMainLayout = new QVBoxLayout(this);
   ModuleBase_Tools::adjustMargins(aMainLayout);
