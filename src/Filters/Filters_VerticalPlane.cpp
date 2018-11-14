@@ -18,24 +18,30 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#ifndef VIEWFILTERS_HORIZONTALPLANE_H_
-#define VIEWFILTERS_HORIZONTALPLANE_H_
+#include "Filters_VerticalPlane.h"
 
-#include "ViewFilters.h"
+#include <GeomAPI_Face.h>
+#include <GeomAPI_Pln.h>
 
-#include <ModelAPI_ViewFilter.h>
-
-class ViewFilters_HorizontalPlane : public ModelAPI_ViewFilter
+bool Filters_VerticalPlane::isOk(const GeomShapePtr& theShape) const
 {
-public:
-  virtual bool isOk(const GeomShapePtr& theShape) const;
+  if (!theShape->isFace())
+    return false;
 
-  /// Returns list of supported types of shapes (see GeomAPI_Shape::ShapeType)
-  virtual std::list<int> shapeTypes() const;
+  if (!theShape->isPlanar())
+    return false;
+  GeomFacePtr aFace = std::dynamic_pointer_cast<GeomAPI_Face>(theShape);
 
-  /// Returns name of the filter to represent it in GUI
-  virtual std::string name() const { return "Horizontal faces"; }
-};
+  GeomPlanePtr aPlane = aFace->getPlane();
+  GeomDirPtr aDir = aPlane->direction();
+  if (aDir->z() <= 1.e-7)
+    return true;
+  return false;
+}
 
-
-#endif
+std::list<int> Filters_VerticalPlane::shapeTypes() const
+{
+  std::list<int> aList;
+  aList.push_back(GeomAPI_Shape::FACE);
+  return aList;
+}

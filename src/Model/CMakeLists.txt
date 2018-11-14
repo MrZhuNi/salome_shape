@@ -56,7 +56,7 @@ SET(PROJECT_HEADERS
     Model_FeatureValidator.h
     Model_AttributeValidator.h
     Model_SelectionNaming.h
-	Model_ViewFilter.h
+	Model_Filter.h
 )
 
 SET(PROJECT_SOURCES
@@ -94,7 +94,7 @@ SET(PROJECT_SOURCES
     Model_FeatureValidator.cpp
     Model_AttributeValidator.cpp
     Model_SelectionNaming.cpp
-	Model_ViewFilter.cpp
+	Model_Filter.cpp
 )
 
 SET(PROJECT_LIBRARIES

@@ -18,30 +18,24 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#include "ViewFilters_Plugin.h"
-#include "ViewFilters_HorizontalPlane.h"
-#include "ViewFilters_VerticalPlane.h"
+#ifndef FILTERS_VERTICALPLANE_H_
+#define FILTERS_VERTICALPLANE_H_
 
-#include <ModelAPI_Session.h>
-#include <ModelAPI_ViewFilter.h>
+#include "Filters.h"
 
-// the only created instance of this plugin
-static ViewFilters_Plugin* MY_VIEWFILTERS_INSTANCE = new ViewFilters_Plugin();
+#include <ModelAPI_Filter.h>
 
-ViewFilters_Plugin::ViewFilters_Plugin()
+class Filters_VerticalPlane : public ModelAPI_Filter
 {
-  // register validators
-  SessionPtr aMgr = ModelAPI_Session::get();
-  ModelAPI_FiltersFactory* aFactory = aMgr->filters();
-  aFactory->registerFilter("HorizontalFaces", new ViewFilters_HorizontalPlane);
-  aFactory->registerFilter("VerticalFaces", new ViewFilters_VerticalPlane);
+public:
+  virtual bool isOk(const GeomShapePtr& theShape) const;
 
-  // register this plugin
-  ModelAPI_Session::get()->registerPlugin(this);
-}
+  /// Returns list of supported types of shapes (see GeomAPI_Shape::ShapeType)
+  virtual std::list<int> shapeTypes() const;
 
-FeaturePtr ViewFilters_Plugin::createFeature(std::string theFeatureID)
-{
-  // feature of such kind is not found
-  return FeaturePtr();
-}
+  /// Returns name of the filter to represent it in GUI
+  virtual std::string name() const { return "Vertical faces"; }
+};
+
+
+#endif

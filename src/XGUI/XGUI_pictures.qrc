@@ -80,5 +80,8 @@
 
      <file>pictures/filter.png</file>
      <file>pictures/plus_minus.png</file>
+     <file>pictures/add.png</file>
+     <file>pictures/accept.png</file>
+     <file>pictures/stop.png</file>
  </qresource>
  </RCC>

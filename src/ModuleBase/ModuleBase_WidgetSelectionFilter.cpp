@@ -26,12 +26,15 @@
 #include "ModuleBase_PageWidget.h"
 #include "ModuleBase_WidgetSelector.h"
 
+#include <ModelAPI_Session.h>
+
 #include <QLayout>
 #include <QPushButton>
 #include <QLabel>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QDialog>
+#include <QToolButton>
 
 static int SelectionType = 0;
 
@@ -95,6 +98,47 @@ void ModuleBase_FilterStarter::setSelectionType(const QString& theType)
     myShapeType = GeomAPI_Shape::SHAPE;
 }
 
+//*****************************************************************************
+//*****************************************************************************
+//*****************************************************************************
+ModuleBase_FilterItem::ModuleBase_FilterItem(const FilterPtr& theFilter, QWidget* theParent)
+  : QWidget(theParent), myFilter(theFilter)
+{
+  QHBoxLayout* aLayout = new QHBoxLayout(this);
+  aLayout->setContentsMargins(0, 0, 0, 0);
+
+  // Reverse filter button
+  myRevBtn = new QToolButton(this);
+  myRevBtn->setCheckable(true);
+  myRevBtn->setChecked(false);
+  myRevBtn->setAutoRaise(true);
+  myRevBtn->setIcon(QIcon(":pictures/accept.png"));
+  connect(myRevBtn, SIGNAL(toggled(bool)), SLOT(onReverse(bool)));
+  aLayout->addWidget(myRevBtn);
+
+  aLayout->addWidget(new QLabel(myFilter->name().c_str(), this), 1);
+
+  QToolButton* aDelBtn = new QToolButton(this);
+  aDelBtn->setIcon(QIcon(":pictures/button_cancel.png"));
+  aDelBtn->setAutoRaise(true);
+  connect(aDelBtn, SIGNAL(clicked(bool)), SLOT(onDelete()));
+  aLayout->addWidget(aDelBtn);
+}
+
+
+void ModuleBase_FilterItem::onReverse(bool theCheck)
+{
+  if (theCheck)
+    myRevBtn->setIcon(QIcon(":pictures/stop.png"));
+  else
+    myRevBtn->setIcon(QIcon(":pictures/accept.png"));
+}
+
+void ModuleBase_FilterItem::onDelete()
+{
+  emit deleteItem(this);
+}
+
 
 //*****************************************************************************
 //*****************************************************************************
@@ -108,30 +152,92 @@ ModuleBase_WidgetSelectionFilter::ModuleBase_WidgetSelectionFilter(QWidget* theP
   ModuleBase_Tools::adjustMargins(aMainLayout);
 
   myFiltersGroup = new QGroupBox(tr("Dynamic Filters"), this);
-  QVBoxLayout* aGroupLayout = new QVBoxLayout(myFiltersGroup);
+  myGroupLayout = new QVBoxLayout(myFiltersGroup);
+  myGroupLayout->setContentsMargins(0, 0, 0, 0);
+  myGroupLayout->setSpacing(0);
 
   QWidget* aFiltersWgt = new QWidget(myFiltersGroup);
   QHBoxLayout* aFiltersLay = new QHBoxLayout(aFiltersWgt);
+  ModuleBase_Tools::adjustMargins(aFiltersLay);
 
   QLabel* aFilterLbl = new QLabel(aFiltersWgt);
   aFilterLbl->setPixmap(QPixmap(":pictures/filter.png"));
 
   myFiltersCombo = new QComboBox(aFiltersWgt);
+  SessionPtr aSession = ModelAPI_Session::get();
+  myFilters =
+    aSession->filters()->filtersForShapeType((GeomAPI_Shape::ShapeType) mySelectionType);
+  QStringList aItems;
+  std::list<FilterPtr>::const_iterator aIt;
+  for (aIt = myFilters.cbegin(); aIt != myFilters.cend(); aIt++)
+    aItems.push_back((*aIt)->name().c_str());
+  myFiltersCombo->addItems(aItems);
 
-  QPushButton* aAddBtn = new QPushButton(tr("Add"), aFiltersWgt);
-  connect(aAddBtn, SIGNAL(clicked()), SLOT(onAddFilter()));
+  QToolButton* aAddBtn = new QToolButton(aFiltersWgt);
+  aAddBtn->setIcon(QIcon(":pictures/add.png"));
+  aAddBtn->setAutoRaise(true);
+  aAddBtn->setToolTip(tr("Add current filter"));
+  connect(aAddBtn, SIGNAL(clicked()), SLOT(onAddItem()));
 
   aFiltersLay->addWidget(aFilterLbl);
-  aFiltersLay->addWidget(myFiltersCombo);
+  aFiltersLay->addWidget(myFiltersCombo, 1);
   aFiltersLay->addWidget(aAddBtn);
 
-  aGroupLayout->addWidget(aFiltersWgt);
+  myGroupLayout->addWidget(aFiltersWgt);
 
   aMainLayout->addWidget(myFiltersGroup);
+
+  QWidget* aBtnWgt = new QWidget(this);
+  QHBoxLayout* aBtnLayout = new QHBoxLayout(aBtnWgt);
+  ModuleBase_Tools::adjustMargins(aBtnLayout);
+
+  aBtnLayout->addStretch(1);
+
+  QPushButton* aSelectBtn = new QPushButton(tr("Select"), aBtnWgt);
+  connect(aSelectBtn, SIGNAL(clicked()), SLOT(onSelect()));
+  aBtnLayout->addWidget(aSelectBtn);
+
+  aMainLayout->addWidget(aBtnWgt);
+
   aMainLayout->addStretch(1);
 }
 
-void ModuleBase_WidgetSelectionFilter::onAddFilter()
+void ModuleBase_WidgetSelectionFilter::onAddItem()
+{
+  int aId = myFiltersCombo->currentIndex();
+  myFiltersCombo->removeItem(aId);
+
+  std::list<FilterPtr>::iterator aIt;
+  int i;
+  FilterPtr aFilter;
+  for (aIt = myFilters.begin(), i = 0; aIt != myFilters.cend(); i++, aIt++) {
+    if (i == aId) {
+      aFilter = (*aIt);
+      myFilters.erase(aIt);
+      break;
+    }
+  }
+  if (aFilter.get()) {
+    myUseFilters.push_back(aFilter);
+    ModuleBase_FilterItem* aItem = new ModuleBase_FilterItem(aFilter, myFiltersGroup);
+    connect(aItem, SIGNAL(deleteItem(ModuleBase_FilterItem*)),
+      SLOT(onDeleteItem(ModuleBase_FilterItem*)));
+    myGroupLayout->addWidget(aItem);
+  }
+}
+
+void ModuleBase_WidgetSelectionFilter::onDeleteItem(ModuleBase_FilterItem* theItem)
+{
+  FilterPtr aFilter = theItem->filter();
+  myGroupLayout->removeWidget(theItem);
+  theItem->deleteLater();
+
+  myUseFilters.remove(aFilter);
+  myFilters.push_back(aFilter);
+  myFiltersCombo->addItem(aFilter->name().c_str());
+}
+
+void ModuleBase_WidgetSelectionFilter::onSelect()
 {
 
 }

@@ -21,16 +21,16 @@
 INCLUDE(Common)
 
 SET(PROJECT_HEADERS
-    ViewFilters.h
-    ViewFilters_Plugin.h
-	ViewFilters_HorizontalPlane.h
-	ViewFilters_VerticalPlane.h
+    Filters.h
+    Filters_Plugin.h
+    Filters_HorizontalPlane.h
+    Filters_VerticalPlane.h
 )
 
 SET(PROJECT_SOURCES
-    ViewFilters_Plugin.cpp
-	ViewFilters_HorizontalPlane.cpp
-	ViewFilters_VerticalPlane.cpp
+    Filters_Plugin.cpp
+    Filters_HorizontalPlane.cpp
+    Filters_VerticalPlane.cpp
 )
 
 SET(PROJECT_LIBRARIES
@@ -40,9 +40,9 @@ SET(PROJECT_LIBRARIES
     GeomAPI
 )
 
-ADD_DEFINITIONS(-DVIEWFILTERS_EXPORTS ${OpenCASCADE_DEFINITIONS})
-ADD_LIBRARY(ViewFilters SHARED ${PROJECT_SOURCES} ${PROJECT_HEADERS})
-TARGET_LINK_LIBRARIES(ViewFilters ${PROJECT_LIBRARIES})
+ADD_DEFINITIONS(-DFILTERS_EXPORTS ${OpenCASCADE_DEFINITIONS})
+ADD_LIBRARY(Filters SHARED ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+TARGET_LINK_LIBRARIES(Filters ${PROJECT_LIBRARIES})
 
 INCLUDE_DIRECTORIES(
   ${OpenCASCADE_INCLUDE_DIR}
@@ -53,4 +53,4 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
 )
 
-INSTALL(TARGETS ViewFilters DESTINATION ${SHAPER_INSTALL_PLUGIN_FILES})
+INSTALL(TARGETS Filters DESTINATION ${SHAPER_INSTALL_PLUGIN_FILES})

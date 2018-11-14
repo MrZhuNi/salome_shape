@@ -18,30 +18,30 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#include "ViewFilters_HorizontalPlane.h"
+#include "Filters_Plugin.h"
+#include "Filters_HorizontalPlane.h"
+#include "Filters_VerticalPlane.h"
 
-#include <GeomAPI_Face.h>
-#include <GeomAPI_Pln.h>
+#include <ModelAPI_Session.h>
+#include <ModelAPI_Filter.h>
 
-bool ViewFilters_HorizontalPlane::isOk(const GeomShapePtr& theShape) const
+// the only created instance of this plugin
+static Filters_Plugin* MY_VIEWFILTERS_INSTANCE = new Filters_Plugin();
+
+Filters_Plugin::Filters_Plugin()
 {
-  if (!theShape->isFace())
-    return false;
+  // register validators
+  SessionPtr aMgr = ModelAPI_Session::get();
+  ModelAPI_FiltersFactory* aFactory = aMgr->filters();
+  aFactory->registerFilter("HorizontalFaces", new Filters_HorizontalPlane);
+  aFactory->registerFilter("VerticalFaces", new Filters_VerticalPlane);
 
-  if (!theShape->isPlanar())
-    return false;
-  GeomFacePtr aFace = std::dynamic_pointer_cast<GeomAPI_Face>(theShape);
-
-  GeomPlanePtr aPlane = aFace->getPlane();
-  GeomDirPtr aDir = aPlane->direction();
-  if (aDir->isParallel(GeomDirPtr(new GeomAPI_Dir(0,0,1))))
-    return true;
-  return false;
+  // Do not register this plugin because it doesn't creates features
+  //ModelAPI_Session::get()->registerPlugin(this);
 }
 
-std::list<int> ViewFilters_HorizontalPlane::shapeTypes() const
+FeaturePtr Filters_Plugin::createFeature(std::string theFeatureID)
 {
-  std::list<int> aList;
-  aList.push_back(GeomAPI_Shape::FACE);
-  return aList;
+  // feature of such kind is not found
+  return FeaturePtr();
 }

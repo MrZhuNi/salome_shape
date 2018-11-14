@@ -20,7 +20,7 @@
 @ALL_SOLVERS@
 -->
   <plugin library="GeomValidators"/>
-  <plugin library="ViewFilters"/>
+  <plugin library="Filters"/>
   <plugin library="DFBrowser" internal="true"/>
 <!--
   <plugin library="SamplePanelPlugin" configuration="plugin-SamplePanel.xml"/>

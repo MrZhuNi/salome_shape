@@ -18,25 +18,21 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#ifndef VIEWFILTERS_PLUGIN_H_
-#define VIEWFILTERS_PLUGIN_H_
+#ifndef FILTERS_H
+#define FILTERS_H
 
-#include "ViewFilters.h"
-#include <ModelAPI_Plugin.h>
-#include <ModelAPI_Feature.h>
-
-/**\class GeomValidators_Plugin
- * \ingroup Plugins
- * \brief Interface common for any plugin: allows to use plugin by the plugins manager.
- */
-class VIEWFILTERS_EXPORT ViewFilters_Plugin : public ModelAPI_Plugin
-{
-public:
-  /// Creates the feature object of this plugin by the feature string ID
-  virtual FeaturePtr createFeature(std::string theFeatureID);
-
-public:
-  ViewFilters_Plugin();
-};
+#if defined FILTERS_EXPORTS
+#if defined WIN32
+#define FILTERS_EXPORT              __declspec( dllexport )
+#else
+#define FILTERS_EXPORT
+#endif
+#else
+#if defined WIN32
+#define FILTERS_EXPORT              __declspec( dllimport )
+#else
+#define FILTERS_EXPORT
+#endif
+#endif
 
 #endif

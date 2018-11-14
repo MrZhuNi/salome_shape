@@ -18,12 +18,12 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#include "ViewFilters_VerticalPlane.h"
+#include "Filters_HorizontalPlane.h"
 
 #include <GeomAPI_Face.h>
 #include <GeomAPI_Pln.h>
 
-bool ViewFilters_VerticalPlane::isOk(const GeomShapePtr& theShape) const
+bool Filters_HorizontalPlane::isOk(const GeomShapePtr& theShape) const
 {
   if (!theShape->isFace())
     return false;
@@ -34,12 +34,12 @@ bool ViewFilters_VerticalPlane::isOk(const GeomShapePtr& theShape) const
 
   GeomPlanePtr aPlane = aFace->getPlane();
   GeomDirPtr aDir = aPlane->direction();
-  if (aDir->z() <= 1.e-7)
+  if (aDir->isParallel(GeomDirPtr(new GeomAPI_Dir(0,0,1))))
     return true;
   return false;
 }
 
-std::list<int> ViewFilters_VerticalPlane::shapeTypes() const
+std::list<int> Filters_HorizontalPlane::shapeTypes() const
 {
   std::list<int> aList;
   aList.push_back(GeomAPI_Shape::FACE);

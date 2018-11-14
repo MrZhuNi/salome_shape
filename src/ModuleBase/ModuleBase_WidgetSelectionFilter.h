@@ -24,11 +24,15 @@
 #include "ModuleBase.h"
 #include "ModuleBase_ModelWidget.h"
 
+#include <ModelAPI_Filter.h>
 #include <QWidget>
 
 class QLabel;
 class QComboBox;
 class QGroupBox;
+class QToolButton;
+class QVBoxLayout;
+
 class ModuleBase_IWorkshop;
 
 class MODULEBASE_EXPORT ModuleBase_FilterStarter: public QWidget
@@ -55,6 +59,26 @@ private:
 };
 
 
+class ModuleBase_FilterItem : public QWidget
+{
+  Q_OBJECT
+public:
+  ModuleBase_FilterItem(const FilterPtr& theFilter, QWidget* theParent);
+
+  FilterPtr filter() const { return myFilter; }
+
+signals:
+  void deleteItem(ModuleBase_FilterItem* theItem);
+
+  private slots:
+  void onReverse(bool theCheck);
+  void onDelete();
+
+private:
+  FilterPtr myFilter;
+  QToolButton* myRevBtn;
+};
+
 class ModuleBase_WidgetSelectionFilter : public ModuleBase_ModelWidget
 {
   Q_OBJECT
@@ -75,15 +99,21 @@ protected:
   virtual bool restoreValueCustom() { return true; }
 
 private slots:
-  void onAddFilter();
+  void onAddItem();
+  void onDeleteItem(ModuleBase_FilterItem* theItem);
+  void onSelect();
 
 private:
   ModuleBase_IWorkshop* myWorkshop;
 
   QComboBox* myFiltersCombo;
   QGroupBox* myFiltersGroup;
+  QVBoxLayout* myGroupLayout;
 
   int mySelectionType;
+  std::list<FilterPtr> myFilters;
+  std::list<FilterPtr> myUseFilters;
 };
+
 
 #endif

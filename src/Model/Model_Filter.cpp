@@ -18,15 +18,15 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#include "Model_ViewFilter.h"
+#include "Model_Filter.h"
 
 #include <Events_InfoMessage.h>
 
 
-void Model_FiltersFactory::registerFilter(const std::string& theID, ModelAPI_ViewFilter* theFilter)
+void Model_FiltersFactory::registerFilter(const std::string& theID, ModelAPI_Filter* theFilter)
 {
   if (myFilters.find(theID) != myFilters.end()) {
-    Events_InfoMessage("Model_ViewFilter", "Filter %1 is already registered").arg(theID).send();
+    Events_InfoMessage("Model_FiltersFactory", "Filter %1 is already registered").arg(theID).send();
   }
   else {
     myFilters[theID] = FilterPtr(theFilter);

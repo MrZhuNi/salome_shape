@@ -18,14 +18,14 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#ifndef VIEWFILTERS_VERTICALPLANE_H_
-#define VIEWFILTERS_VERTICALPLANE_H_
+#ifndef FILTERS_HORIZONTALPLANE_H_
+#define FILTERS_HORIZONTALPLANE_H_
 
-#include "ViewFilters.h"
+#include "Filters.h"
 
-#include <ModelAPI_ViewFilter.h>
+#include <ModelAPI_Filter.h>
 
-class ViewFilters_VerticalPlane : public ModelAPI_ViewFilter
+class Filters_HorizontalPlane : public ModelAPI_Filter
 {
 public:
   virtual bool isOk(const GeomShapePtr& theShape) const;
@@ -34,7 +34,7 @@ public:
   virtual std::list<int> shapeTypes() const;
 
   /// Returns name of the filter to represent it in GUI
-  virtual std::string name() const { return "Vertical faces"; }
+  virtual std::string name() const { return "Horizontal faces"; }
 };
 
 

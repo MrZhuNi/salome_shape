@@ -19,12 +19,12 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#ifndef Model_ViewFilter_H_
-#define Model_ViewFilter_H_
+#ifndef Model_Filter_H_
+#define Model_Filter_H_
 
 #include "Model.h"
 
-#include <ModelAPI_ViewFilter.h>
+#include <ModelAPI_Filter.h>
 
 #include <map>
 
@@ -38,7 +38,7 @@ class Model_FiltersFactory : public ModelAPI_FiltersFactory
 public:
   /// Register an instance of a filter
   /// \param theID
-  virtual void registerFilter(const std::string& theID, ModelAPI_ViewFilter* theFilter);
+  virtual void registerFilter(const std::string& theID, ModelAPI_Filter* theFilter);
 
   /// Returns list of filters for the given shape type
   /// \param theType a shape type

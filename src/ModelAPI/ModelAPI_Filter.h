@@ -18,10 +18,11 @@
 // email : webmaster.salome@opencascade.com<mailto:webmaster.salome@opencascade.com>
 //
 
-#ifndef ModelAPI_ViewFilter_H_
-#define ModelAPI_ViewFilter_H_
+#ifndef ModelAPI_Filter_H_
+#define ModelAPI_Filter_H_
 
 #include "ModelAPI.h"
+#include "ModelAPI_Object.h"
 
 #include <GeomAPI_Shape.h>
 
@@ -30,23 +31,20 @@
 
 /**\class ModelAPI_ViewFilter
 * \ingroup DataModel
-* \brief An interface class for parameters of filters definition
-*/
-class ModelAPI_FilterParameter
-{
-public:
-  virtual ~ModelAPI_FilterParameter() {}
-};
-
-typedef std::shared_ptr<ModelAPI_FilterParameter> FilterParamPtr;
-
-/**\class ModelAPI_ViewFilter
-* \ingroup DataModel
 * \brief An interface class for filter objects
 */
-class ModelAPI_ViewFilter
+class ModelAPI_Filter
 {
 public:
+  enum ParameterType {
+    NoParameter,
+    RealParameter,
+    ShapeParameter,
+    ObjectParameter
+  };
+
+  /// Returns name of the filter to represent it in GUI
+  virtual std::string name() const = 0;
 
   /// Returns true if the given shape is accepted by filter
   /// \param theShape the given shape
@@ -55,14 +53,33 @@ public:
   /// Returns list of supported types of shapes (see GeomAPI_Shape::ShapeType)
   virtual std::list<int> shapeTypes() const = 0;
 
-  /// Set parameter for the filter
-  virtual void setParameter(const FilterParamPtr& theParam) {}
+  // Returns type of used parameter
+  virtual ParameterType parameterType() const { return NoParameter;  }
 
-  /// Returns name of the filter to represent it in GUI
-  virtual std::string name() const = 0;
+  /// Set double parameter for the filter
+  virtual void setParameter(double theParam) {}
+
+  /// Set shape parameter for the filter
+  virtual void setParameter(const GeomShapePtr& theParam) {}
+
+  /// Set object parameter for the filter
+  virtual void setParameter(const ObjectPtr& theParam) {}
+
+  /// Returns object parameter
+  virtual ObjectPtr objectParameter() const { return ObjectPtr(); }
+
+  /// Returns shape parameter
+  virtual GeomShapePtr shapeParameter() const { return GeomShapePtr(); }
+
+  /// Returns real parameter
+  virtual double realParameter() const { return 0; }
+
+  /// Returns shape parameter type. Types from GeomAPI_Shape  have to be used.
+  /// A type GeomAPI_Shape::SHAPE means any shape
+  virtual int shapeParameterType() const { return GeomAPI_Shape::SHAPE; }
 };
 
-typedef std::shared_ptr<ModelAPI_ViewFilter> FilterPtr;
+typedef std::shared_ptr<ModelAPI_Filter> FilterPtr;
 
 
 /**\class ModelAPI_ValidatorsFactory
@@ -74,7 +91,7 @@ class ModelAPI_FiltersFactory
 public:
   /// Register an instance of a filter
   /// \param theID
-  virtual void registerFilter(const std::string& theID, ModelAPI_ViewFilter* theFilter) = 0;
+  virtual void registerFilter(const std::string& theID, ModelAPI_Filter* theFilter) = 0;
 
   /// Returns list of filters for the given shape type
   /// \param theType a shape type
