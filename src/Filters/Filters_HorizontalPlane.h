@@ -28,6 +28,8 @@
 class Filters_HorizontalPlane : public ModelAPI_Filter
 {
 public:
+  Filters_HorizontalPlane() : ModelAPI_Filter() {}
+
   virtual bool isOk(const GeomShapePtr& theShape) const;
 
   /// Returns list of supported types of shapes (see GeomAPI_Shape::ShapeType)

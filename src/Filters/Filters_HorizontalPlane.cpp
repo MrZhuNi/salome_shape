@@ -30,7 +30,7 @@ bool Filters_HorizontalPlane::isOk(const GeomShapePtr& theShape) const
 
   if (!theShape->isPlanar())
     return false;
-  GeomFacePtr aFace = std::dynamic_pointer_cast<GeomAPI_Face>(theShape);
+  GeomFacePtr aFace(new GeomAPI_Face(theShape));
 
   GeomPlanePtr aPlane = aFace->getPlane();
   GeomDirPtr aDir = aPlane->direction();

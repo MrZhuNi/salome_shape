@@ -22,11 +22,18 @@
 #include "ModuleBase_Tools.h"
 #include "ModuleBase_IWorkshop.h"
 #include "ModuleBase_IModule.h"
+#include "ModuleBase_IViewer.h"
 #include "ModuleBase_IPropertyPanel.h"
 #include "ModuleBase_PageWidget.h"
-#include "ModuleBase_WidgetSelector.h"
+#include "ModuleBase_WidgetMultiSelector.h"
 
 #include <ModelAPI_Session.h>
+#include <GeomAPI_ShapeExplorer.h>
+
+#include <AIS_InteractiveContext.hxx>
+#include <StdSelect_BRepOwner.hxx>
+#include <TopoDS_Compound.hxx>
+#include <BRep_Builder.hxx>
 
 #include <QLayout>
 #include <QPushButton>
@@ -68,8 +75,11 @@ ModuleBase_FilterStarter::ModuleBase_FilterStarter(const std::string& theFeature
 void ModuleBase_FilterStarter::onFiltersLaunch()
 {
   SelectionType = myShapeType;
-  ModuleBase_WidgetSelector* aSelector = dynamic_cast<ModuleBase_WidgetSelector*>(parent());
+  ModuleBase_WidgetMultiSelector* aSelector =
+    dynamic_cast<ModuleBase_WidgetMultiSelector*>(parent());
+  aSelector->onSelectionTypeChanged(); // In order to clear current selection
   aSelector->storeValue(); // Store values defined by user
+
   ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
     (myWorkshop->module()->createOperation(myFeatureName));
   myWorkshop->processLaunchOperation(aFOperation);
@@ -113,6 +123,7 @@ ModuleBase_FilterItem::ModuleBase_FilterItem(const FilterPtr& theFilter, QWidget
   myRevBtn->setChecked(false);
   myRevBtn->setAutoRaise(true);
   myRevBtn->setIcon(QIcon(":pictures/accept.png"));
+  myRevBtn->setToolTip(tr("Reverse the filter"));
   connect(myRevBtn, SIGNAL(toggled(bool)), SLOT(onReverse(bool)));
   aLayout->addWidget(myRevBtn);
 
@@ -121,13 +132,17 @@ ModuleBase_FilterItem::ModuleBase_FilterItem(const FilterPtr& theFilter, QWidget
   QToolButton* aDelBtn = new QToolButton(this);
   aDelBtn->setIcon(QIcon(":pictures/button_cancel.png"));
   aDelBtn->setAutoRaise(true);
+  aDelBtn->setToolTip(tr("Delete the filter"));
   connect(aDelBtn, SIGNAL(clicked(bool)), SLOT(onDelete()));
   aLayout->addWidget(aDelBtn);
+
+  myRevBtn->setChecked(myFilter->isReversed());
 }
 
 
 void ModuleBase_FilterItem::onReverse(bool theCheck)
 {
+  myFilter->setReversed(theCheck);
   if (theCheck)
     myRevBtn->setIcon(QIcon(":pictures/stop.png"));
   else
@@ -148,6 +163,8 @@ ModuleBase_WidgetSelectionFilter::ModuleBase_WidgetSelectionFilter(QWidget* theP
   : ModuleBase_ModelWidget(theParent, theData),
   myWorkshop(theWorkshop), mySelectionType(SelectionType)
 {
+  myOwners = new SelectMgr_IndexedMapOfOwner();
+
   QVBoxLayout* aMainLayout = new QVBoxLayout(this);
   ModuleBase_Tools::adjustMargins(aMainLayout);
 
@@ -176,7 +193,7 @@ ModuleBase_WidgetSelectionFilter::ModuleBase_WidgetSelectionFilter(QWidget* theP
   QToolButton* aAddBtn = new QToolButton(aFiltersWgt);
   aAddBtn->setIcon(QIcon(":pictures/add.png"));
   aAddBtn->setAutoRaise(true);
-  aAddBtn->setToolTip(tr("Add current filter"));
+  aAddBtn->setToolTip(tr("Add the current filter"));
   connect(aAddBtn, SIGNAL(clicked()), SLOT(onAddItem()));
 
   aFiltersLay->addWidget(aFilterLbl);
@@ -187,20 +204,69 @@ ModuleBase_WidgetSelectionFilter::ModuleBase_WidgetSelectionFilter(QWidget* theP
 
   aMainLayout->addWidget(myFiltersGroup);
 
+  // Select Button
   QWidget* aBtnWgt = new QWidget(this);
   QHBoxLayout* aBtnLayout = new QHBoxLayout(aBtnWgt);
   ModuleBase_Tools::adjustMargins(aBtnLayout);
 
   aBtnLayout->addStretch(1);
 
-  QPushButton* aSelectBtn = new QPushButton(tr("Select"), aBtnWgt);
-  connect(aSelectBtn, SIGNAL(clicked()), SLOT(onSelect()));
-  aBtnLayout->addWidget(aSelectBtn);
+  mySelectBtn = new QPushButton(tr("Select"), aBtnWgt);
+  connect(mySelectBtn, SIGNAL(clicked()), SLOT(onSelect()));
+  aBtnLayout->addWidget(mySelectBtn);
 
   aMainLayout->addWidget(aBtnWgt);
 
+  // Label widgets
+  QWidget* aLblWgt = new QWidget(this);
+  QHBoxLayout* aLblLayout = new QHBoxLayout(aLblWgt);
+  ModuleBase_Tools::adjustMargins(aLblLayout);
+
+  aLblLayout->addWidget(new QLabel(tr("Number of selected objects:"), aLblWgt));
+
+  myNbLbl = new QLabel("0", aLblWgt);
+  aLblLayout->addWidget(myNbLbl);
+
+  aMainLayout->addWidget(aLblWgt);
+
+  // Show only button
+  QWidget* aBtn2Wgt = new QWidget(this);
+  QHBoxLayout* aBtn2Layout = new QHBoxLayout(aBtn2Wgt);
+  ModuleBase_Tools::adjustMargins(aBtn2Layout);
+
+  aBtn2Layout->addStretch(1);
+
+  myShowBtn = new QPushButton(tr("Show only"), aBtn2Wgt);
+  myShowBtn->setCheckable(true);
+  connect(myShowBtn, SIGNAL(toggled(bool)), SLOT(onShowOnly(bool)));
+  aBtn2Layout->addWidget(myShowBtn);
+
+  aMainLayout->addWidget(aBtn2Wgt);
+
   aMainLayout->addStretch(1);
+
+  updateSelectBtn();
 }
+
+ModuleBase_WidgetSelectionFilter::~ModuleBase_WidgetSelectionFilter()
+{
+  myOwners.Nullify();
+  if ((!myPreview.IsNull()) && myShowBtn->isChecked()) {
+    Handle(AIS_InteractiveContext) aCtx = myWorkshop->viewer()->AISContext();
+    aCtx->Remove(myPreview, false);
+    myPreview.Nullify();
+    AIS_ListOfInteractive::const_iterator aIt;
+    Handle(AIS_Shape) aShapeIO;
+    for (aIt = myListIO.cbegin(); aIt != myListIO.cend(); aIt++) {
+      aShapeIO = Handle(AIS_Shape)::DownCast(*aIt);
+      if (!aShapeIO.IsNull()) {
+        aCtx->Display(aShapeIO, false);
+      }
+    }
+    aCtx->UpdateCurrentViewer();
+  }
+}
+
 
 void ModuleBase_WidgetSelectionFilter::onAddItem()
 {
@@ -224,6 +290,9 @@ void ModuleBase_WidgetSelectionFilter::onAddItem()
       SLOT(onDeleteItem(ModuleBase_FilterItem*)));
     myGroupLayout->addWidget(aItem);
   }
+  updateSelectBtn();
+  clearCurrentSelection(true);
+  updateNumberSelected();
 }
 
 void ModuleBase_WidgetSelectionFilter::onDeleteItem(ModuleBase_FilterItem* theItem)
@@ -235,14 +304,135 @@ void ModuleBase_WidgetSelectionFilter::onDeleteItem(ModuleBase_FilterItem* theIt
   myUseFilters.remove(aFilter);
   myFilters.push_back(aFilter);
   myFiltersCombo->addItem(aFilter->name().c_str());
+
+  updateSelectBtn();
+  clearCurrentSelection(true);
+  updateNumberSelected();
 }
 
 void ModuleBase_WidgetSelectionFilter::onSelect()
 {
+  if (myUseFilters.size() == 0)
+    return;
+  Handle(AIS_InteractiveContext) aCtx = myWorkshop->viewer()->AISContext();
+  if (aCtx.IsNull())
+    return;
 
+  clearCurrentSelection();
+
+  BRep_Builder aBuilder;
+  TopoDS_Compound aComp;
+  aBuilder.MakeCompound(aComp);
+
+  if (!myShowBtn->isChecked()) {
+    aCtx->DisplayedObjects(AIS_KOI_Shape, -1, myListIO);
+    if (!myPreview.IsNull())
+      myListIO.Remove(myPreview);
+  }
+  AIS_ListOfInteractive::const_iterator aIt;
+  Handle(AIS_Shape) aShapeIO;
+  for (aIt = myListIO.cbegin(); aIt != myListIO.cend(); aIt++) {
+    aShapeIO = Handle(AIS_Shape)::DownCast(*aIt);
+    if (!aShapeIO.IsNull()) {
+      GeomShapePtr aShape(new GeomAPI_Shape);
+      aShape->setImpl(new TopoDS_Shape(aShapeIO->Shape()));
+      std::list<GeomShapePtr> aSubShapes =
+        aShape->subShapes((GeomAPI_Shape::ShapeType)mySelectionType);
+      std::list<GeomShapePtr>::const_iterator aShapesIt;
+      for (aShapesIt = aSubShapes.cbegin(); aShapesIt != aSubShapes.cend(); aShapesIt++) {
+        GeomShapePtr aShape = (*aShapesIt);
+        bool isValid = true;
+        std::list<FilterPtr>::const_iterator aFilterIt;
+        for (aFilterIt = myUseFilters.cbegin(); aFilterIt != myUseFilters.cend(); aFilterIt++) {
+          if (!(*aFilterIt)->isValid(aShape)) {
+            isValid = false;
+            break;
+          }
+        }
+        if (isValid) {
+          TopoDS_Shape aTShape = aShape->impl<TopoDS_Shape>();
+          Handle(StdSelect_BRepOwner) aOwner = new StdSelect_BRepOwner(aTShape, aShapeIO, true);
+          myOwners->Add(aOwner);
+          aBuilder.Add(aComp, aTShape);
+        }
+      }
+    }
+  }
+  if (myOwners->Size() > 0)
+    updatePreview(aComp);
+  updateNumberSelected();
 }
 
+void ModuleBase_WidgetSelectionFilter::updatePreview(const TopoDS_Shape& theShape)
+{
+  Handle(AIS_InteractiveContext) aCtx = myWorkshop->viewer()->AISContext();
+  if (aCtx.IsNull())
+    return;
+
+  if (myPreview.IsNull()) {
+    myPreview = new AIS_Shape(theShape);
+    myPreview->SetDisplayMode(myShowBtn->isChecked()? AIS_Shaded : AIS_WireFrame);
+    myPreview->SetColor(Quantity_NOC_YELLOW);
+    myPreview->SetTransparency();
+    aCtx->Display(myPreview, true);
+    aCtx->Deactivate(myPreview);
+  }
+  else {
+    myPreview->Set(theShape);
+    aCtx->Redisplay(myPreview, true);
+  }
+}
+
+
+void ModuleBase_WidgetSelectionFilter::onShowOnly(bool theErase)
+{
+  if (myPreview.IsNull())
+    return;
+  Handle(AIS_InteractiveContext) aCtx = myWorkshop->viewer()->AISContext();
+
+  if (theErase) {
+    aCtx->SetDisplayMode(myPreview, AIS_Shaded, false);
+    myListIO.Clear();
+    aCtx->DisplayedObjects(AIS_KOI_Shape, -1, myListIO);
+    myListIO.Remove(myPreview);
+  }
+  else {
+    aCtx->SetDisplayMode(myPreview, AIS_WireFrame, false);
+  }
+  AIS_ListOfInteractive::const_iterator aIt;
+  Handle(AIS_Shape) aShapeIO;
+  for (aIt = myListIO.cbegin(); aIt != myListIO.cend(); aIt++) {
+    aShapeIO = Handle(AIS_Shape)::DownCast(*aIt);
+    if (!aShapeIO.IsNull()) {
+      if (theErase)
+        aCtx->Erase(aShapeIO, false);
+      else
+        aCtx->Display(aShapeIO, false);
+    }
+  }
+  aCtx->UpdateCurrentViewer();
+}
+
+void ModuleBase_WidgetSelectionFilter::updateSelectBtn()
+{
+  mySelectBtn->setEnabled(myUseFilters.size() > 0);
+}
+
+void ModuleBase_WidgetSelectionFilter::updateNumberSelected()
+{
+  myNbLbl->setText(QString::number(myOwners->Size()));
+}
 QList<QWidget*> ModuleBase_WidgetSelectionFilter::getControls() const
 {
   return QList<QWidget*>();
+}
+
+void ModuleBase_WidgetSelectionFilter::clearCurrentSelection(bool toUpdate)
+{
+  myOwners->Clear();
+  if (!myPreview.IsNull()) {
+    Handle(AIS_InteractiveContext) aCtx = myWorkshop->viewer()->AISContext();
+    aCtx->Remove(myPreview, toUpdate);
+    myPreview.Nullify();
+  }
 }

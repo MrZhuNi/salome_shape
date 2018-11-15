@@ -43,12 +43,10 @@ public:
     ObjectParameter
   };
 
+  ModelAPI_Filter(): myIsReverse(false) {}
+
   /// Returns name of the filter to represent it in GUI
   virtual std::string name() const = 0;
-
-  /// Returns true if the given shape is accepted by filter
-  /// \param theShape the given shape
-  virtual bool isOk(const GeomShapePtr& theShape) const = 0;
 
   /// Returns list of supported types of shapes (see GeomAPI_Shape::ShapeType)
   virtual std::list<int> shapeTypes() const = 0;
@@ -77,6 +75,26 @@ public:
   /// Returns shape parameter type. Types from GeomAPI_Shape  have to be used.
   /// A type GeomAPI_Shape::SHAPE means any shape
   virtual int shapeParameterType() const { return GeomAPI_Shape::SHAPE; }
+
+  /// Set reversed flag for the filter
+  void setReversed(bool theRev) { myIsReverse = theRev; }
+
+  bool isReversed() const { return myIsReverse; }
+
+  bool isValid(const GeomShapePtr& theShape)
+  {
+    if (myIsReverse)
+      return !isOk(theShape);
+    return isOk(theShape);
+  }
+
+protected:
+  /// Returns true if the given shape is accepted by filter
+  /// \param theShape the given shape
+  virtual bool isOk(const GeomShapePtr& theShape) const = 0;
+
+private:
+  bool myIsReverse;
 };
 
 typedef std::shared_ptr<ModelAPI_Filter> FilterPtr;

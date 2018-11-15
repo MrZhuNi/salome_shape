@@ -36,6 +36,7 @@ SET(PROJECT_HEADERS
     CollectionPlugin_WidgetCreator.h
     CollectionPlugin_WidgetField.h
 	CollectionPlugin_Validators.h
+	CollectionPlugin_GroupFilters.h
 )
 
 SET(PROJECT_MOC_HEADERS
