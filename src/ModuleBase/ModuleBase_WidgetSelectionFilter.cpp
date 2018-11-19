@@ -26,8 +26,10 @@
 #include "ModuleBase_IPropertyPanel.h"
 #include "ModuleBase_PageWidget.h"
 #include "ModuleBase_WidgetMultiSelector.h"
+#include "ModuleBase_ResultPrs.h"
 
 #include <ModelAPI_Session.h>
+#include <ModelAPI_AttributeSelectionList.h>
 #include <GeomAPI_ShapeExplorer.h>
 
 #include <AIS_InteractiveContext.hxx>
@@ -43,7 +45,33 @@
 #include <QDialog>
 #include <QToolButton>
 
-static int SelectionType = 0;
+static FeaturePtr SelectorFeature;
+static std::string AttributeId;
+
+
+GeomAPI_Shape::ShapeType selectionType(const QString& theType)
+{
+  QString aType = theType.toUpper();
+  if ((aType == "VERTEX") || (aType == "VERTICES"))
+    return GeomAPI_Shape::VERTEX;
+  else if ((aType == "EDGE") || (aType == "EDGES"))
+    return GeomAPI_Shape::EDGE;
+  else if ((aType == "WIRE") || (aType == "WIRES"))
+    return GeomAPI_Shape::WIRE;
+  else if ((aType == "FACE") || (aType == "FACES"))
+    return GeomAPI_Shape::FACE;
+  else if ((aType == "SHELL") || (aType == "SHELLS"))
+    return GeomAPI_Shape::SHELL;
+  else if ((aType == "SOLID") || (aType == "SOLIDS"))
+    return GeomAPI_Shape::SOLID;
+  else if ((aType == "COMPSOLID") || (aType == "COMPSOLIDS"))
+    return GeomAPI_Shape::COMPSOLID;
+  else if ((aType == "COMPOUND") || (aType == "COMPOUNDS"))
+    return GeomAPI_Shape::COMPOUND;
+  else
+    return GeomAPI_Shape::SHAPE;
+}
+
 
 ModuleBase_FilterStarter::ModuleBase_FilterStarter(const std::string& theFeature,
   QWidget* theParent, ModuleBase_IWorkshop* theWorkshop)
@@ -74,38 +102,15 @@ ModuleBase_FilterStarter::ModuleBase_FilterStarter(const std::string& theFeature
 
 void ModuleBase_FilterStarter::onFiltersLaunch()
 {
-  SelectionType = myShapeType;
   ModuleBase_WidgetMultiSelector* aSelector =
     dynamic_cast<ModuleBase_WidgetMultiSelector*>(parent());
-  aSelector->onSelectionTypeChanged(); // In order to clear current selection
-  aSelector->storeValue(); // Store values defined by user
+  SelectorFeature = aSelector->feature();
+  AttributeId = aSelector->attributeID();
 
+  // Launch Filters operation
   ModuleBase_OperationFeature* aFOperation = dynamic_cast<ModuleBase_OperationFeature*>
     (myWorkshop->module()->createOperation(myFeatureName));
   myWorkshop->processLaunchOperation(aFOperation);
-}
-
-void ModuleBase_FilterStarter::setSelectionType(const QString& theType)
-{
-  QString aType = theType.toUpper();
-  if ((aType == "VERTEX") || (aType == "VERTICES"))
-    myShapeType = GeomAPI_Shape::VERTEX;
-  else if ((aType == "EDGE") || (aType == "EDGES"))
-    myShapeType = GeomAPI_Shape::EDGE;
-  else if ((aType == "WIRE") || (aType == "WIRES"))
-    myShapeType = GeomAPI_Shape::WIRE;
-  else if ((aType == "FACE") || (aType == "FACES"))
-    myShapeType = GeomAPI_Shape::FACE;
-  else if ((aType == "SHELL") || (aType == "SHELLS"))
-    myShapeType = GeomAPI_Shape::SHELL;
-  else if ((aType == "SOLID") || (aType == "SOLIDS"))
-    myShapeType = GeomAPI_Shape::SOLID;
-  else if ((aType == "COMPSOLID") || (aType == "COMPSOLIDS"))
-    myShapeType = GeomAPI_Shape::COMPSOLID;
-  else if ((aType == "COMPOUND") || (aType == "COMPOUNDS"))
-    myShapeType = GeomAPI_Shape::COMPOUND;
-  else
-    myShapeType = GeomAPI_Shape::SHAPE;
 }
 
 //*****************************************************************************
@@ -161,10 +166,18 @@ void ModuleBase_FilterItem::onDelete()
 ModuleBase_WidgetSelectionFilter::ModuleBase_WidgetSelectionFilter(QWidget* theParent,
   ModuleBase_IWorkshop* theWorkshop, const Config_WidgetAPI* theData)
   : ModuleBase_ModelWidget(theParent, theData),
-  myWorkshop(theWorkshop), mySelectionType(SelectionType)
+  myWorkshop(theWorkshop),
+  mySelectorFeature(SelectorFeature),
+  mySelectorAttribute(AttributeId)
 {
-  myOwners = new SelectMgr_IndexedMapOfOwner();
+  // Clear Old selection
+  AttributePtr aAttr = SelectorFeature->attribute(AttributeId);
+  AttributeSelectionListPtr aSelListAttr =
+    std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(aAttr);
+  mySelectionType = selectionType(aSelListAttr->selectionType().c_str());
+  aSelListAttr->clear();
 
+  // Define widgets
   QVBoxLayout* aMainLayout = new QVBoxLayout(this);
   ModuleBase_Tools::adjustMargins(aMainLayout);
 
@@ -250,23 +263,26 @@ ModuleBase_WidgetSelectionFilter::ModuleBase_WidgetSelectionFilter(QWidget* theP
 
 ModuleBase_WidgetSelectionFilter::~ModuleBase_WidgetSelectionFilter()
 {
-  myOwners.Nullify();
-  if ((!myPreview.IsNull()) && myShowBtn->isChecked()) {
+  myValues.clear();
+  if (!myPreview.IsNull()) {
     Handle(AIS_InteractiveContext) aCtx = myWorkshop->viewer()->AISContext();
     aCtx->Remove(myPreview, false);
     myPreview.Nullify();
-    AIS_ListOfInteractive::const_iterator aIt;
-    Handle(AIS_Shape) aShapeIO;
-    for (aIt = myListIO.cbegin(); aIt != myListIO.cend(); aIt++) {
-      aShapeIO = Handle(AIS_Shape)::DownCast(*aIt);
-      if (!aShapeIO.IsNull()) {
-        aCtx->Display(aShapeIO, false);
+    if (myShowBtn->isChecked()) {
+      AIS_ListOfInteractive::const_iterator aIt;
+      Handle(AIS_Shape) aShapeIO;
+      for (aIt = myListIO.cbegin(); aIt != myListIO.cend(); aIt++) {
+        aShapeIO = Handle(AIS_Shape)::DownCast(*aIt);
+        if (!aShapeIO.IsNull()) {
+          aCtx->Display(aShapeIO, false);
+        }
       }
     }
     aCtx->UpdateCurrentViewer();
   }
+  SelectorFeature = FeaturePtr();
+  AttributeId = "";
 }
-
 
 void ModuleBase_WidgetSelectionFilter::onAddItem()
 {
@@ -325,14 +341,15 @@ void ModuleBase_WidgetSelectionFilter::onSelect()
   aBuilder.MakeCompound(aComp);
 
   if (!myShowBtn->isChecked()) {
+    myListIO.Clear();
     aCtx->DisplayedObjects(AIS_KOI_Shape, -1, myListIO);
     if (!myPreview.IsNull())
       myListIO.Remove(myPreview);
   }
   AIS_ListOfInteractive::const_iterator aIt;
-  Handle(AIS_Shape) aShapeIO;
+  Handle(ModuleBase_ResultPrs) aShapeIO;
   for (aIt = myListIO.cbegin(); aIt != myListIO.cend(); aIt++) {
-    aShapeIO = Handle(AIS_Shape)::DownCast(*aIt);
+    aShapeIO = Handle(ModuleBase_ResultPrs)::DownCast(*aIt);
     if (!aShapeIO.IsNull()) {
       GeomShapePtr aShape(new GeomAPI_Shape);
       aShape->setImpl(new TopoDS_Shape(aShapeIO->Shape()));
@@ -352,13 +369,15 @@ void ModuleBase_WidgetSelectionFilter::onSelect()
         if (isValid) {
           TopoDS_Shape aTShape = aShape->impl<TopoDS_Shape>();
           Handle(StdSelect_BRepOwner) aOwner = new StdSelect_BRepOwner(aTShape, aShapeIO, true);
-          myOwners->Add(aOwner);
           aBuilder.Add(aComp, aTShape);
+
+          ModuleBase_ViewerPrsPtr aValue(new ModuleBase_ViewerPrs(aShapeIO->getResult(), aShape, aOwner));
+          myValues.append(aValue);
         }
       }
     }
   }
-  if (myOwners->Size() > 0)
+  if (myValues.size() > 0)
     updatePreview(aComp);
   updateNumberSelected();
 }
@@ -420,7 +439,7 @@ void ModuleBase_WidgetSelectionFilter::updateSelectBtn()
 
 void ModuleBase_WidgetSelectionFilter::updateNumberSelected()
 {
-  myNbLbl->setText(QString::number(myOwners->Size()));
+  myNbLbl->setText(QString::number(myValues.size()));
 }
 QList<QWidget*> ModuleBase_WidgetSelectionFilter::getControls() const
 {
@@ -429,10 +448,21 @@ QList<QWidget*> ModuleBase_WidgetSelectionFilter::getControls() const
 
 void ModuleBase_WidgetSelectionFilter::clearCurrentSelection(bool toUpdate)
 {
-  myOwners->Clear();
+  myValues.clear();
   if (!myPreview.IsNull()) {
     Handle(AIS_InteractiveContext) aCtx = myWorkshop->viewer()->AISContext();
     aCtx->Remove(myPreview, toUpdate);
     myPreview.Nullify();
+  }
+}
+
+void ModuleBase_WidgetSelectionFilter::onFeatureAccepted()
+{
+  AttributePtr aAttr = mySelectorFeature->attribute(mySelectorAttribute);
+  AttributeSelectionListPtr aSelListAttr =
+    std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(aAttr);
+  aSelListAttr->clear();
+  foreach(ModuleBase_ViewerPrsPtr aPrs, myValues) {
+    aSelListAttr->append(aPrs->object(), aPrs->shape());
   }
 }

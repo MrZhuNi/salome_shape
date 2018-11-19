@@ -180,8 +180,6 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
       myTypeCtrl->setValue(myDefMode.c_str());
     }
   }
-  if (myFiltersWgt)
-    myFiltersWgt->setSelectionType(myTypeCtrl->textValue());
 }
 
 ModuleBase_WidgetMultiSelector::~ModuleBase_WidgetMultiSelector()
@@ -502,9 +500,6 @@ void ModuleBase_WidgetMultiSelector::onSelectionTypeChanged()
   // Clear current selection in order to avoid updating of object browser with obsolete indexes
   // which can appear because of results deletetion after changing a type of selection
   QString aSelectionType = myTypeCtrl->textValue();
-  if (myFiltersWgt)
-    myFiltersWgt->setSelectionType(aSelectionType);
-
   QList<ModuleBase_ViewerPrsPtr> aEmptyList;
   myWorkshop->setSelected(aEmptyList);
 

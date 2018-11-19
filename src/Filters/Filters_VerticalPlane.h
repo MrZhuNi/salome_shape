@@ -30,13 +30,14 @@ class Filters_VerticalPlane : public ModelAPI_Filter
 public:
   Filters_VerticalPlane() : ModelAPI_Filter() {}
 
-  virtual bool isOk(const GeomShapePtr& theShape) const;
-
   /// Returns list of supported types of shapes (see GeomAPI_Shape::ShapeType)
   virtual std::list<int> shapeTypes() const;
 
   /// Returns name of the filter to represent it in GUI
   virtual std::string name() const { return "Vertical faces"; }
+
+protected:
+  virtual bool isOk(const GeomShapePtr& theShape) const;
 };
 
 

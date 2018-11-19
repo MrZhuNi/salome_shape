@@ -23,6 +23,7 @@
 
 #include "ModuleBase.h"
 #include "ModuleBase_ModelWidget.h"
+#include "ModuleBase_ViewerPrs.h"
 
 #include <ModelAPI_Filter.h>
 
@@ -31,6 +32,7 @@
 #include <AIS_ListOfInteractive.hxx>
 
 #include <QWidget>
+#include <QList>
 
 class QLabel;
 class QComboBox;
@@ -50,8 +52,6 @@ public:
 
   ~ModuleBase_FilterStarter() {}
 
-  void setSelectionType(const QString& theType);
-
 private slots:
   void onFiltersLaunch();
 
@@ -61,7 +61,6 @@ private:
 
   QLabel* myFilterLbl;
   QLabel* myModifyLbl;
-  int myShapeType;
 };
 
 
@@ -98,10 +97,14 @@ public:
   /// \return a control list
   virtual QList<QWidget*> getControls() const;
 
+  /// It is called when user press Ok or OkPlus buttons in the parent property panel
+  /// By default this slot does nothing
+  virtual void onFeatureAccepted();
+
 protected:
   /// Saves the internal parameters to the given feature (not ussed for this widget)
   /// \return True in success
-  virtual bool storeValueCustom() { return true;  }
+  virtual bool storeValueCustom() { return true; }
 
   /// Restore value from attribute data to the widget's control (not ussed for this widget)
   virtual bool restoreValueCustom() { return true; }
@@ -132,10 +135,13 @@ private:
   std::list<FilterPtr> myFilters;
   std::list<FilterPtr> myUseFilters;
 
-  Handle(SelectMgr_IndexedMapOfOwner) myOwners;
+  QList<ModuleBase_ViewerPrsPtr> myValues;
   Handle(AIS_Shape) myPreview;
 
   AIS_ListOfInteractive myListIO;
+
+  FeaturePtr mySelectorFeature;
+  std::string mySelectorAttribute;
 };
 
 

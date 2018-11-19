@@ -41,6 +41,11 @@ public:
     return MY_KIND;
   }
 
+  virtual bool isInHistory()
+  {
+    return false;
+  }
+
   /// Creates a new group result if needed
   COLLECTIONPLUGIN_EXPORT virtual void execute() {}
 
