@@ -481,3 +481,31 @@ void Model_AttributeSelectionList::setGeometricalSelection(const bool theIsGeome
   myCash.clear(); // empty list as indicator that cash is not used
   owner()->data()->sendAttributeUpdated(this);
 }
+
+bool Model_AttributeSelectionList::merge(Model_AttributeSelection* theStart)
+{
+  int aSize = size();
+  TDF_Label aStartLab = theStart->selectionLabel().Father();
+  ResultPtr aContext = theStart->context();
+  if (aContext.get()) {
+    GeomShapePtr aValue = theStart->value();
+    if (aValue.get() && !aValue->isNull()) {
+      for(int anIndex = aStartLab.Tag(); anIndex < aSize; anIndex++) {
+        AttributeSelectionPtr aSel = value(anIndex);
+        if (aContext == aSel->context() && aValue->isSame(aSel->value())) { // remove theStart
+          std::set<int> aRemoved;
+          aRemoved.insert(aStartLab.Tag() - 1);
+          remove(aRemoved);
+          // also re-select theStart to make name cover both attributes (after split of merged)
+          aSel = value(anIndex - 1); // attributes of this attribute were moved up by "remove"
+          static ObjectPtr anEmptyContext;
+          static GeomShapePtr anEmptyShape;
+          aSel->setValue(anEmptyContext, anEmptyShape);
+          aSel->setValue(aContext, aValue);
+          return true;
+        }
+      }
+    }
+  }
+  return false; // not merged
+}

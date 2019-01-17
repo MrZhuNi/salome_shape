@@ -594,13 +594,17 @@ bool Model_AttributeSelection::update()
       aNewShape = aNS->Get();
 
     if (anOldShape.IsNull() || aNewShape.IsNull() || !anOldShape.IsEqual(aNewShape)) {
+      bool aIsRemoved = false; // this may be removed, so, don't send the "update" message
       // shape type should not be changed: if shape becomes compound of such shapes, then split
       if (myParent && !anOldShape.IsNull() && !aNewShape.IsNull() &&
           anOldShape.ShapeType() != aNewShape.ShapeType() &&
           aNewShape.ShapeType() == TopAbs_COMPOUND) {
         split(aContext, aNewShape, anOldShape.ShapeType());
+      } else if (myParent && !aNewShape.IsNull()) { // merge: remove equal shapes from the list
+        aIsRemoved = myParent->merge(this);
       }
-      owner()->data()->sendAttributeUpdated(this);  // send updated if shape is changed
+      if (!aIsRemoved)
+        owner()->data()->sendAttributeUpdated(this);  // send updated if shape is changed
     }
     return aResult;
   }
@@ -705,7 +709,7 @@ bool Model_AttributeSelection::selectPart(
   return !aName.empty();
 }
 
-TDF_Label Model_AttributeSelection::selectionLabel()
+TDF_Label Model_AttributeSelection::selectionLabel() const
 {
   return myRef.myRef->Label().FindChild(1);
 }
