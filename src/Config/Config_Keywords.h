@@ -53,6 +53,7 @@ const static char* WDG_PLACE_HOLDER = "placeholder";
 const static char* WDG_ACTION = "action";
 const static char* WDG_POINT_INPUT = "point_input";
 const static char* WDG_SELECTION_FILTERS = "selection_filters";
+const static char* WDG_TREE_DATA_SELECTOR = "tree_data_selector";
 
 // Containers
 const static char* WDG_GROUP = "groupbox";

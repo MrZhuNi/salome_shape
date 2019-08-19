@@ -105,6 +105,7 @@ SET(PROJECT_HEADERS
   ModuleBase_ITreeNode.h
   ModuleBase_WidgetSelectionFilter.h
   ModuleBase_IStepPrs.h
+  ModuleBase_WidgetTreeDataSelect.h
 )
 
 SET(PROJECT_MOC_HEADERS
@@ -155,6 +156,7 @@ SET(PROJECT_MOC_HEADERS
   ModuleBase_WidgetRadiobox.h
   ModuleBase_WidgetPointInput.h
   ModuleBase_WidgetSelectionFilter.h
+  ModuleBase_WidgetTreeDataSelect.h
 )
 
 SET(PROJECT_SOURCES
@@ -225,6 +227,7 @@ SET(PROJECT_SOURCES
   ModuleBase_WidgetPointInput.cpp
   ModuleBase_WidgetSelectionFilter.cpp
   ModuleBase_IStepPrs.cpp
+  ModuleBase_WidgetTreeDataSelect.cpp
 )
 
 SET(PROJECT_LIBRARIES
