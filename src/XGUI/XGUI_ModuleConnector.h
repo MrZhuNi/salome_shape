@@ -136,6 +136,9 @@ Q_OBJECT
   //! \param theAIS the object which has to be activated
   virtual void applyCurrentSelectionModes(const AISObjectPtr& theAIS);
 
+  //! Returns pointer on data structure used in Object browser
+  virtual ModuleBase_ITreeNode* dataTreeRoot() const;
+
 private:
   QObjectPtrList activeObjects(const QObjectPtrList& theObjList) const;
 

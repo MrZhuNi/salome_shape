@@ -22,6 +22,7 @@
 
 #include <ModuleBase.h>
 #include <ModuleBase_ModelWidget.h>
+#include <QAbstractItemModel>
 
 class QTreeView;
 
@@ -58,6 +59,33 @@ protected:
 
 private:
   QTreeView* myTreeView;
+};
+
+
+class ModuleBase_ITreeNode;
+
+class ModuleBase_CheckDataModel : public QAbstractItemModel
+{
+  Q_OBJECT
+public:
+  /// Constructor
+  /// \param theParent a parent object
+  ModuleBase_CheckDataModel(QObject* theParent, ModuleBase_ITreeNode* theRoot) :
+    QAbstractItemModel(theParent), myRoot(theRoot) {}
+
+  virtual int columnCount(const QModelIndex& theParent = QModelIndex()) const { return 1; }
+
+  virtual QVariant data(const QModelIndex& theIndex, int theRole = Qt::DisplayRole) const;
+
+  virtual QModelIndex index(int theRow, int theCol,
+    const QModelIndex& theParent = QModelIndex()) const;
+
+  virtual QModelIndex parent(const QModelIndex& theIndex) const;
+
+  virtual int rowCount(const QModelIndex& theParent = QModelIndex()) const;
+
+private:
+  ModuleBase_ITreeNode* myRoot;
 };
 
 #endif

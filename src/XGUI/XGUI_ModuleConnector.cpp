@@ -29,6 +29,7 @@
 #include "XGUI_ActionsMgr.h"
 #include "XGUI_ErrorMgr.h"
 #include "XGUI_ObjectsBrowser.h"
+#include "XGUI_DataModel.h"
 
 #include <ModuleBase_IModule.h>
 #include <ModuleBase_ViewerPrs.h>
@@ -232,4 +233,9 @@ void XGUI_ModuleConnector::applyCurrentSelectionModes(const AISObjectPtr& theAIS
 {
   Handle(AIS_InteractiveObject) anIO = theAIS->impl<Handle(AIS_InteractiveObject)>();
   myWorkshop->selectionActivate()->activate(anIO, false);
+}
+
+ModuleBase_ITreeNode* XGUI_ModuleConnector::dataTreeRoot() const
+{
+  return myWorkshop->objectBrowser()->dataModel()->root();
 }

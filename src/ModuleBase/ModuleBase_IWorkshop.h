@@ -39,6 +39,7 @@ class ModuleBase_Operation;
 class ModuleBase_ISelectionActivate;
 class ModuleBase_ViewerPrs;
 class QMainWindow;
+class ModuleBase_ITreeNode;
 
 /**
  * \ingroup GUI
@@ -151,6 +152,9 @@ Q_OBJECT
   //! The AIS presentation has to be already displayed. After activation viewer has to be updated
   //! \param theAIS the object which has to be activated
   virtual void applyCurrentSelectionModes(const AISObjectPtr& theAIS) = 0;
+
+  //! Returns pointer on data structure used in Object browser
+  virtual ModuleBase_ITreeNode* dataTreeRoot() const = 0;
 
 signals:
   /// Signal selection changed.

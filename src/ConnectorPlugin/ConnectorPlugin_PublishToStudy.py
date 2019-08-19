@@ -57,6 +57,13 @@ class PublishToStudyFeature(ModelAPI.ModelAPI_Feature):
     def initAttributes(self):
         self.data().addAttribute(self.TREE_ID(), ModelAPI.ModelAPI_AttributeRefList_typeId())
 
+    def isMacro(self):
+        """
+        Override Feature.isMacro().
+        Rectangle feature is macro: removes itself on the creation transaction finish.
+        """
+        return True
+
     ## Exports all shapes and groups into the GEOM module.
     def execute(self):
         pass
