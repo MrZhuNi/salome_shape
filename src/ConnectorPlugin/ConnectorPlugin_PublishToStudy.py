@@ -18,33 +18,45 @@
 #
 
 ## @package Plugins
-#  Python plugin for exporting entities into Salome's GEOM module
+#  PublishToStudy class definition
 
 import ModelAPI
+import ExchangeAPI
+import EventsAPI
 
-from ConnectorPlugin_ExportFeature import ExportFeature
-from ConnectorPlugin_PublishToStudy import PublishToStudyFeature
+import salome
+from salome.geom import geomBuilder
+
+from salome.shaper import model
+
 
 ## @ingroup Plugins
-#  The main class for management the construction features as plugin.
-class ConnectorPlugin(ModelAPI.ModelAPI_Plugin):
+#  Feature to export all shapes and groups into the GEOM module
+class PublishToStudyFeature(ModelAPI.ModelAPI_Feature):
 
     ## The constructor.
     def __init__(self):
-        ModelAPI.ModelAPI_Plugin.__init__(self)
+        ModelAPI.ModelAPI_Feature.__init__(self)
         pass
 
-    ## Creates the feature objects of this plugin by the feature string ID.
-    def createFeature(self, theFeatureID):
-        if theFeatureID == ExportFeature.ID():
-            return ExportFeature().__disown__()
-        elif theFeatureID == PublishToStudyFeature.ID():
-            return PublishToStudyFeature().__disown__()
-        else:
-            print("ConnectorPlugin: No such feature %s" % theFeatureID)
+    ## Export kind. Static.
+    @staticmethod
+    def ID():
+        return "PublishToStudy"
 
-## The plugin created on module importing (from c++)
-plugin = ConnectorPlugin()
-## Main session of the application
-aSession = ModelAPI.ModelAPI_Session.get()
-aSession.registerPlugin(plugin)
+    @staticmethod
+    def TREE_ID():
+        """Returns ID tree control."""
+        return "DataTree"
+
+    ## Returns the kind of a feature.
+    def getKind(self):
+        return PublishToStudyFeature.ID()
+
+    ## This feature has no attributes, as it is action.
+    def initAttributes(self):
+        self.data().addAttribute(self.TREE_ID(), ModelAPI.ModelAPI_AttributeRefList_typeId())
+
+    ## Exports all shapes and groups into the GEOM module.
+    def execute(self):
+        pass

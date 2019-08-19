@@ -7,6 +7,14 @@
         tooltip="Export all bodies and groups into GEOM module"
         icon="icons/Connector/geom_export.png"
         helpfile="ConnectorPlugin/ConnectorPlugin.html"/>
+      <feature
+        id="PublishToStudy"
+        title="Publish to Study"
+        tooltip="Publish to Study all bodies and groups"
+        icon="icons/Connector/geom_export.png"
+        helpfile="ConnectorPlugin/ConnectorPlugin.html">
+        <tree_data_selector id="DataTree" tooltip="Current data tree"/>
+      </feature>
     </group>
   </workbench>
 </plugin>
