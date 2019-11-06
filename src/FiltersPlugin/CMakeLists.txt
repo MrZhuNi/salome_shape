@@ -64,6 +64,7 @@ SET(PROJECT_LIBRARIES
 
 SET(PROJECT_PYFILES
     FiltersPlugin_TopoConnectedFaces.py
+    FiltersPlugin_SameNormalFaces.py
 )
 
 SET(XML_RESOURCES
@@ -76,6 +77,7 @@ SET(XML_RESOURCES
   filter-OppositeToEdge.xml
   filter-RelativeToSolid.xml
   filter-TopoConnectedFaces.xml
+  filter-SameNormalFaces.xml
 )
 
 ADD_DEFINITIONS(-DFILTERS_EXPORTS ${OpenCASCADE_DEFINITIONS})

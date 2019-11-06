@@ -56,6 +56,7 @@ FiltersPlugin_Plugin::FiltersPlugin_Plugin()
   aFactory->registerFilter("ExternalFaces", new FiltersPlugin_ExternalFaces);
 
   Config_ModuleReader::loadScript("FiltersPlugin_TopoConnectedFaces");
+  Config_ModuleReader::loadScript("FiltersPlugin_SameNormalFaces");
 
   // register validators
   ModelAPI_ValidatorsFactory* aValidators = aMgr->validators();
