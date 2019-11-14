@@ -50,45 +50,21 @@ class FiltersPlugin_SameNormalFaces(ModelAPI_Filter):
 
   def isOk(self, theShape, theResult, theArgs):
     """ True if theShape is applicable for the filter """
-    selectedShapeAttr = modelAPI_AttributeSelection(theArgs.argument("Shape"))
+
+    selectedShapeAttr = modelAPI_AttributeSelection(theArgs.argument("SameNormalFaces"))
     if selectedShapeAttr is None:
       return False
     selectedShape = selectedShapeAttr.value()
-    isPropagated = modelAPI_AttributeBoolean(theArgs.argument("Propagation")).value()
+    self.myCached[selectedShape] = []
+    selectedFace = GeomAPI_Face(selectedShape)
+    selectedPlane = selectedFace.getPlane()
 
-    # cache selected shape and applicable faces
-    if selectedShape not in self.myCached:
-      anOwner = bodyOwner(theResult, True)
-      if anOwner is None:
-        anOwner = modelAPI_ResultBody(theResult)
-        if anOwner is None:
-          return False
-      topLevelShape = anOwner.shape()
-      if not topLevelShape.isSubShape(selectedShape):
-        return False;
-
-      mapVFAlgo = mapShapesAndAncestors(topLevelShape, GeomAPI_Shape.VERTEX, GeomAPI_Shape.FACE)
-      mapVF = mapVFAlgo.map()
-      mapEFAlgo = mapShapesAndAncestors(topLevelShape, GeomAPI_Shape.EDGE, GeomAPI_Shape.FACE)
-      mapEF = mapEFAlgo.map()
-
-      # faces adjacent to the selected shape
-      applicableFaces = OriShapeSet()
-      if selectedShape.shapeType() == GeomAPI_Shape.VERTEX:
-        if selectedShape in mapVF: applicableFaces = mapVF[selectedShape]
-      elif selectedShape.shapeType() == GeomAPI_Shape.EDGE:
-        if selectedShape in mapEF: applicableFaces = mapEF[selectedShape]
-      elif selectedShape.shapeType() == GeomAPI_Shape.FACE:
-        applicableFaces.insert(selectedShape)
-        self.adjacentFaces(selectedShape, mapVF, GeomAPI_Shape.VERTEX, applicableFaces, False)
-      else:
+    Face = GeomAPI_Face(theShape)
+    if not Face.isPlanar():
         return False
-      # propagate the connection
-      if isPropagated:
-        appFacesCopy = applicableFaces
-        for ind in range(appFacesCopy.size()):
-          self.adjacentFaces(appFacesCopy[ind], mapEF, GeomAPI_Shape.EDGE, applicableFaces)
-      self.myCached[selectedShape] = applicableFaces
+    Plane = Face.getPlane()
+    if selectedPlane.intersect(Plane) is None:
+      self.myCached[selectedShape].append(theShape)
 
     return theShape in self.myCached[selectedShape]
 
@@ -98,8 +74,7 @@ class FiltersPlugin_SameNormalFaces(ModelAPI_Filter):
 
   def initAttributes(self, theArgs):
     """ Initializes arguments of a filter """
-    theArgs.initAttribute("Shape", ModelAPI_AttributeSelection_typeId())
-    theArgs.initAttribute("Propagation", ModelAPI_AttributeBoolean_typeId())
+    theArgs.initAttribute("SameNormalFaces", ModelAPI_AttributeSelection_typeId())
 
   def adjacentFaces(self, theFace, theMapSA, theShapeType, theApplicableFaces, theRecursive = True):
     """ Find all faces neighbour to theFace """

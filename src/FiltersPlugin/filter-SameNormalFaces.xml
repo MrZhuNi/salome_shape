@@ -1,9 +1,8 @@
 <filter id="SameNormalFaces">
-  <shape_selector id="SameNormalFaces__Shape"
-                  label="Shape:"
-                  tooltip="Select vertex, edge or face."
-                  shape_types="vertex edge face">
-    <validator id="GeomValidators_ShapeType" parameters="vertex,edge,face"/>
+  <shape_selector id="SameNormalFaces__SameNormalFaces"
+                  label="Planes:"
+                  tooltip="Select planes or planar faces."
+                  shape_types="faces">
+    <validator id="GeomValidators_ShapeType" parameters="plane"/>
   </shape_selector>
-  <boolvalue id="SameNormalFaces__Propagation" label="Propagation"/>
 </filter>
