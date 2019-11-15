@@ -143,6 +143,4 @@ This algorithm finds all the planar faces with the same normal than the argument
 
 - **Result type:** Face
 - **Arguments:** A planar Face.
-- **Algorithm:**
-    - If a point of an edge is selected as an argument, the result is all faces that contain this argument.If a face is selected, the result is all faces that have shared edges or vertices with this selection.
-    - If “propagation” flag is enabled (it is disabled by default), the algorithm becomes recursive: all connected faces are added to the results. So, for the solid shape there will be all faces except internal-volumes faces, not connected to any external faces.
+- **Algorithm:** The result will be all planar faces with the same normal than the selected planar face
