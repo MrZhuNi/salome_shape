@@ -58,12 +58,14 @@ class FiltersPlugin_SameNormalFaces(ModelAPI_Filter):
     self.myCached[selectedShape] = []
     selectedFace = GeomAPI_Face(selectedShape)
     selectedPlane = selectedFace.getPlane()
+    selectedNormal = selectedPlane.direction()
 
     Face = GeomAPI_Face(theShape)
     if not Face.isPlanar():
-        return False
+        return self.myCached[selectedShape]
     Plane = Face.getPlane()
-    if selectedPlane.intersect(Plane) is None:
+    Normal = Plane.direction()
+    if selectedPlane.intersect(Plane) is None and selectedNormal.angle(Normal) < math.pi/360:
       self.myCached[selectedShape].append(theShape)
 
     return theShape in self.myCached[selectedShape]
