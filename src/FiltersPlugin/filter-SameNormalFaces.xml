@@ -1,5 +1,5 @@
 <filter id="SameNormalFaces">
-  <shape_selector id="SameNormalFaces__SameNormalFaces"
+  <shape_selector id="SameNormalFaces__Face"
                   label="Planes:"
                   tooltip="Select planes or planar faces."
                   shape_types="faces">

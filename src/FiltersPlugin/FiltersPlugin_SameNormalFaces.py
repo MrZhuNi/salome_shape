@@ -17,6 +17,7 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
+import math
 
 from ModelAPI import *
 from GeomAPI import *
@@ -51,7 +52,7 @@ class FiltersPlugin_SameNormalFaces(ModelAPI_Filter):
   def isOk(self, theShape, theResult, theArgs):
     """ True if theShape is applicable for the filter """
 
-    selectedShapeAttr = modelAPI_AttributeSelection(theArgs.argument("SameNormalFaces"))
+    selectedShapeAttr = modelAPI_AttributeSelection(theArgs.argument("Face"))
     if selectedShapeAttr is None:
       return False
     selectedShape = selectedShapeAttr.value()
@@ -62,7 +63,7 @@ class FiltersPlugin_SameNormalFaces(ModelAPI_Filter):
 
     Face = GeomAPI_Face(theShape)
     if not Face.isPlanar():
-        return self.myCached[selectedShape]
+        return False
     Plane = Face.getPlane()
     Normal = Plane.direction()
     if selectedPlane.intersect(Plane) is None and selectedNormal.angle(Normal) < math.pi/360:
@@ -76,7 +77,7 @@ class FiltersPlugin_SameNormalFaces(ModelAPI_Filter):
 
   def initAttributes(self, theArgs):
     """ Initializes arguments of a filter """
-    theArgs.initAttribute("SameNormalFaces", ModelAPI_AttributeSelection_typeId())
+    theArgs.initAttribute("Face", ModelAPI_AttributeSelection_typeId())
 
   def adjacentFaces(self, theFace, theMapSA, theShapeType, theApplicableFaces, theRecursive = True):
     """ Find all faces neighbour to theFace """
