@@ -183,6 +183,9 @@ public:
   /// Cleans cash related to the already stored elements
   MODELAPI_EXPORT virtual void cleanCash() = 0;
 
+  /// Returns in the set results that are stored as modified or generated in this result
+  MODELAPI_EXPORT virtual void modifiedSources(std::list<ResultPtr>& theSources) = 0;
+
 protected:
   /// Default constructor accessible only from Model_Objects
   MODELAPI_EXPORT ModelAPI_ResultBody();

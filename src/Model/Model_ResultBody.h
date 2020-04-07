@@ -113,6 +113,9 @@ public:
   /// Cleans cash related to the already stored elements
   MODEL_EXPORT virtual void cleanCash() override;
 
+  /// Returns in the set results that are stored as modified or generated in this result
+  MODEL_EXPORT virtual void modifiedSources(std::list<ResultPtr>& theSources) override;
+
 protected:
   /// Makes a body on the given feature
   Model_ResultBody();

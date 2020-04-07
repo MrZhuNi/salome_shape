@@ -300,6 +300,11 @@ MODELAPI_EXPORT std::list<std::shared_ptr<ModelAPI_Feature> > referencedFeatures
   std::shared_ptr<ModelAPI_Result> theTarget, const std::string& theFeatureKind,
   const bool theSortResults);
 
+/*! Returns the result that was created from theEntry result: only this result is created, same shape type,
+ * only from this result the result is created.
+* \param theEntry string that identifies a result (part feature id):(feature is)[:(result number in the feature)]
+*/
+MODELAPI_EXPORT std::shared_ptr<ModelAPI_Result> singleEvolution(const std::string theEntry);
 }
 
 #endif

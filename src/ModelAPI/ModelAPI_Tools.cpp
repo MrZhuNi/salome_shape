@@ -1102,6 +1102,121 @@ std::list<FeaturePtr> referencedFeatures(
   return aResList;
 }
 
+std::shared_ptr<ModelAPI_Result> singleEvolution(const std::string theEntry)
+{
+  ResultPtr aRes;
+  std::size_t aFirstColon = theEntry.find(":");
+  if (aFirstColon == std::string::npos)
+    return aRes;
+  // searching a part
+  std::string aPartIdStr = theEntry.substr(0, aFirstColon);
+  int aPartId = std::stoi(aPartIdStr);
+  SessionPtr aSession = ModelAPI_Session::get();
+  DocumentPtr aRoot = aSession->moduleDocument();
+  int aRootFeatures = aRoot->size(ModelAPI_Feature::group());
+  FeaturePtr aPartFeat;
+  for(int aRootId = 0; aRootId < aRootFeatures; aRootId++) {
+    ObjectPtr aRootObj = aRoot->object(ModelAPI_Feature::group(), aRootId);
+    FeaturePtr aRootFeat = std::dynamic_pointer_cast<ModelAPI_Feature>(aRootObj);
+    if (aRootFeat.get()) {
+      DataPtr aData = aRootFeat->data();
+      if (aData.get() && aData->isValid() && aData->featureId() == aPartId) {
+        aPartFeat = aRootFeat;
+        break;
+      }
+    }
+  }
+  if (!aPartFeat.get() || aPartFeat->results().empty())
+    return aRes;
+   DocumentPtr aPartDoc = std::dynamic_pointer_cast<ModelAPI_ResultPart>(aPartFeat->firstResult())->partDoc();
+   if (!aPartDoc.get())
+     return aRes;
+  // searching a feature
+  std::string aFeatIdStr = theEntry.substr(aFirstColon + 1);
+  std::string aResIdStr;
+  std::size_t aSecondColon = aFeatIdStr.find(":");
+  if (aSecondColon != std::string::npos) {
+    aResIdStr = aFeatIdStr.substr(aSecondColon + 1);
+    aFeatIdStr = aFeatIdStr.substr(0, aSecondColon);
+  }
+  int aFeatId = std::stoi(aFeatIdStr);
+  int aFeaturesNum = aPartDoc->size(ModelAPI_Feature::group());
+  FeaturePtr aFeat;
+  for(int anId = 0; anId < aFeaturesNum; anId++) {
+    ObjectPtr anObj = aPartDoc->object(ModelAPI_Feature::group(), anId);
+    aFeat = std::dynamic_pointer_cast<ModelAPI_Feature>(anObj);
+    if (aFeat.get()) {
+      DataPtr aData = aFeat->data();
+      if (aData.get() && aData->isValid() && aData->featureId() == aFeatId)
+        break;
+      aFeat.reset();
+    }
+  }
+  if (!aFeat.get() || aFeat->results().empty())
+    return aRes;
+  // searching for a result
+  int aResId = 0;
+  if (!aResIdStr.empty()) {
+    aResId = std::stoi(aResIdStr);
+  }
+  ResultPtr anOldRes;
+  std::list<ResultPtr>::const_iterator aResIt = aFeat->results().cbegin();
+  for(; aResIt != aFeat->results().cend(); aResIt++) {
+    if (aResId == 0) {
+      anOldRes = *aResIt;
+      break;
+    }
+    aResId--;
+  }
+  if (!anOldRes.get() || !anOldRes->shape().get())
+    return aRes;
+  // searching for a new result
+  std::list<ResultPtr> allRes;
+  allResults(aFeat, allRes);
+  std::list<ObjectPtr> allObjs;
+  allObjs.push_back(aFeat);
+  for(std::list<ResultPtr>::iterator anIter = allRes.begin(); anIter != allRes.end(); anIter++)
+    allObjs.push_back(*anIter);
+  ModelAPI_ValidatorsFactory* aValidators = aSession->validators();
+  FeaturePtr aConcealer;
+  for(std::list<ObjectPtr>::iterator anOld = allObjs.begin(); anOld != allObjs.end(); anOld++) {
+    const std::set<AttributePtr>& aRefs = (*anOld)->data()->refsToMe();
+    std::set<AttributePtr>::const_iterator aRefIt = aRefs.cbegin();
+    for(; aRefIt != aRefs.end(); aRefIt++) {
+      FeaturePtr aRefFeat = std::dynamic_pointer_cast<ModelAPI_Feature>((*aRefIt)->owner());
+      if (!aRefFeat.get())
+        continue;
+      if (!aValidators->isConcealed(aRefFeat->getKind(), (*aRefIt)->id()))
+        continue; // use only concealed attributes
+      if (aConcealer.get() && aConcealer != aRefFeat)
+        return aRes; // multiple concealers
+      aConcealer = aRefFeat;
+    }
+  }
+  if (!aConcealer.get() || aConcealer->results().size() != 1)
+    return aRes; // no new features at all or concealer contains may result
+  if (!aConcealer->firstResult()->shape().get() || aConcealer->firstResult()->shape()->shapeType() != anOldRes->shape()->shapeType())
+    return aRes; // shapes in old and new results are not of the same type
+  aRes = aConcealer->firstResult();
+
+  ResultBodyPtr aBody = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aRes);
+  if (aBody.get()) {
+    std::list<ResultPtr> aSources;
+    aBody->modifiedSources(aSources);
+    if (aSources.empty())
+      return ResultPtr(); // no sources of modification stored in the data tree
+    std::list<ResultPtr>::iterator aSourceIter = aSources.begin();
+    for(; aSourceIter != aSources.end(); aSourceIter++) {
+      FeaturePtr aSourceFeat = aPartDoc->feature(*aSourceIter);
+      if (!aSourceFeat.get())
+        return ResultPtr(); // invalid feature or feature from other document
+      if (aSourceFeat != aFeat)
+        return ResultPtr(); // modied by other feature
+    }
+  }
+  return aRes;
+}
+
 // LCOV_EXCL_STOP
 
 } // namespace ModelAPI_Tools

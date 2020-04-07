@@ -31,10 +31,15 @@
 #include <GeomAPI_ShapeIterator.h>
 #include <GeomAPI_ShapeExplorer.h>
 
+#include <TNaming_NamedShape.hxx>
+#include <TNaming_Iterator.hxx>
+#include <TNaming_SameShapeIterator.hxx>
+#include <TNaming_Tool.hxx>
 #include <TopoDS_Shape.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopTools_MapOfShape.hxx>
 #include <TDataStd_UAttribute.hxx>
+#include <TDF_Reference.hxx>
 
 // if this attribute exists, the shape is connected topology
 Standard_GUID kIsConnectedTopology("e51392e0-3a4d-405d-8e36-bbfe19858ef5");
@@ -447,5 +452,38 @@ void Model_ResultBody::computeOldForSub(const GeomShapePtr& theSub,
         }
       }
     }
+  }
+}
+
+void Model_ResultBody::modifiedSources(std::list<ResultPtr>& theSources)
+{
+  TDF_Label aLab = std::dynamic_pointer_cast<Model_Data>(data())->shapeLab();
+  TDF_LabelMap aResMap;
+  if (aLab.IsAttribute(TNaming_NamedShape::GetID())) {
+    for(TNaming_Iterator anIter(aLab); anIter.More(); anIter.Next()) {
+      TopoDS_Shape anOld = anIter.OldShape();
+      if (!anOld.IsNull() && TNaming_Tool::HasLabel(aLab, anOld)) {
+        // searching where this old shape is a new shape
+        for(TNaming_SameShapeIterator aNewIter(anOld, aLab); aNewIter.More(); aNewIter.Next()) {
+          for(TNaming_Iterator aNSIter(aNewIter.Label()); aNSIter.More(); aNSIter.Next()) {
+            if (!aNSIter.NewShape().IsNull() && aNSIter.NewShape().IsSame(anOld)) {
+              aResMap.Add(aNewIter.Label());
+              break;
+            }
+          }
+        }
+      }
+    }
+  } else if (aLab.IsAttribute(TDF_Reference::GetID())) { // check also simple reference to the origin
+    Handle(TDF_Reference) aRef;
+    aLab.FindAttribute(TDF_Reference::GetID(), aRef);
+    aResMap.Add(aRef->Get());
+  }
+
+  std::shared_ptr<Model_Document> aDoc = std::dynamic_pointer_cast<Model_Document>(document());
+  for(TDF_MapIteratorOfLabelMap aLabIter(aResMap); aLabIter.More(); aLabIter.Next()) {
+    ResultPtr aRes = aDoc->resultByLab(aLabIter.Value());
+    if (aRes.get())
+      theSources.push_back(aRes);
   }
 }

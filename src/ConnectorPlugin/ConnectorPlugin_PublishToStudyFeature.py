@@ -58,6 +58,24 @@ class PublishToStudyFeature(ModelAPI.ModelAPI_Feature):
     def initAttributes(self):
         pass
 
+    ## Computes unique entry for result: partId:featureId[number of result in feature]
+    def computeEntry(self, theRes):
+        aDoc = theRes.document()
+        aFeat = aDoc.feature(theRes)
+        aFeatId = str(aFeat.data().featureId())
+        aRootDoc = ModelAPI.ModelAPI_Session.get().moduleDocument()
+        aPartFeat = ModelAPI.findPartFeature(aRootDoc, aDoc)
+        aPartFeatureId = str(aPartFeat.data().featureId())
+        aResIndex = 0
+        for aRes in aFeat.results():
+          if aRes.data().isEqual(theRes.data()):
+            break
+          aResIndex += 1
+        if aResIndex != 0:
+          aFeatId += ":" + str(aResIndex)
+        anEntry = aPartFeatureId + ":" + aFeatId
+        return anEntry
+
     ## Exports all shapes and groups into the GEOM module.
     def execute(self):
         aSession = ModelAPI.ModelAPI_Session.get()
@@ -77,7 +95,7 @@ class PublishToStudyFeature(ModelAPI.ModelAPI_Feature):
         # collect all processed internal entries to break the link of unprocessed later
         allProcessed = []
 
-        # iterate all parts and all results to publish them in SHAPER_STUDY
+        # iterate all parts and all results to find all alive items
         for aPartId in range(aPartSet.size(model.ModelAPI_ResultPart_group())):
           aPartObject = aPartSet.object(model.ModelAPI_ResultPart_group(), aPartId)
           aPartRes = ModelAPI.modelAPI_ResultPart(ModelAPI.modelAPI_Result(aPartObject))
@@ -87,18 +105,62 @@ class PublishToStudyFeature(ModelAPI.ModelAPI_Feature):
             break
           aPartFeatureId = aPartSet.feature(aPartRes).data().featureId()
           # Collects all features of exported results to find results of the same features and extend id.
-          # Map from feature index to index of result. If index is zero (initial), no surrfix to entry is added.
-          aFeaturesIndices = {}
           for aResId in range(aPartDoc.size(model.ModelAPI_ResultBody_group())):
             aResObject = aPartDoc.object(model.ModelAPI_ResultBody_group(), aResId)
             aRes = model.objectToResult(aResObject)
-            aResFeatureId = str(aPartDoc.feature(aRes).data().featureId())
-            if aResFeatureId in aFeaturesIndices:
-              aFeaturesIndices[aResFeatureId] += 1
-              aResFeatureId += ":" + str(aFeaturesIndices[aResFeatureId])
-            else:
-              aFeaturesIndices[aResFeatureId] = 0
-            aSSEntry = str(aPartFeatureId) + ":" + aResFeatureId
+            aSSEntry = self.computeEntry(aRes)
+            allProcessed.append(aSSEntry)
+
+        # process all SHAPER-STUDY shapes to find dead of evolved
+        allNewReferences = [] # entries of new objects that are now referenced by evolved
+        aSOIter = SHAPERSTUDY_utils.getStudy().NewChildIterator(aComponent)
+        while aSOIter.More():
+          aSO = aSOIter.Value()
+          aSOIter.Next() # here because there is continue inside the loop
+          anIOR = aSO.GetIOR()
+          if len(anIOR):
+            anObj = salome.orb.string_to_object(anIOR)
+            if isinstance(anObj, SHAPERSTUDY_ORB._objref_SHAPER_Object):
+              anEntry = anObj.GetEntry()
+              if len(anEntry) == 0:
+                continue;
+              elif anEntry not in allProcessed: # found a removed shape: make it dead for the moment
+                # but before check this result was updated to the new result
+                anEvolutionRes = ModelAPI.singleEvolution(anEntry)
+                if anEvolutionRes:
+                  # try to find the last evolution
+                  aNewEntry = self.computeEntry(anEvolutionRes)
+                  aNewRes = ModelAPI.singleEvolution(aNewEntry)
+                  while aNewRes:
+                    aNewEntry = self.computeEntry(aNewRes)
+                    aNewRes = ModelAPI.singleEvolution(aNewEntry)
+                  allNewReferences.append(aNewEntry)
+                  anObj.SetEntry(aNewEntry) # set a new entry and a shape
+                  anObj.SetShapeByStream(anEvolutionRes.shape().getShapeStream(False))
+                  aSO.SetAttrString("AttributeName", anEvolutionRes.data().name()) # also rename
+                else: # remove the reference - red node
+                  aRes, aSO2 = aSO.FindSubObject(1)
+                  if aRes:
+                    aRes, aRef = aSO2.ReferencedObject()
+                    if aRes:
+                      aBuilder = SHAPERSTUDY_utils.getStudy().NewBuilder()
+                      aBuilder.RemoveReference(aSO2)
+
+         # iterate all parts and all results to publish them in SHAPER_STUDY
+        for aPartId in range(aPartSet.size(model.ModelAPI_ResultPart_group())):
+          aPartObject = aPartSet.object(model.ModelAPI_ResultPart_group(), aPartId)
+          aPartRes = ModelAPI.modelAPI_ResultPart(ModelAPI.modelAPI_Result(aPartObject))
+          aPartDoc = aPartRes.partDoc()
+          if aPartDoc is None and aPartObject is not None:
+            break
+          aPartFeatureId = aPartSet.feature(aPartRes).data().featureId()
+          # Collects all features of exported results to find results of the same features and extend id.
+          for aResId in range(aPartDoc.size(model.ModelAPI_ResultBody_group())):
+            aResObject = aPartDoc.object(model.ModelAPI_ResultBody_group(), aResId)
+            aRes = model.objectToResult(aResObject)
+            aSSEntry = self.computeEntry(aRes)
+            if aSSEntry in allNewReferences:
+              continue
             aSShape = anEngine.FindOrCreateShape(aSSEntry)
             aSShape.SetShapeByStream(aRes.shape().getShapeStream(False))
             if not aSShape.GetSO(): # publish in case it is a new shape
@@ -115,27 +177,6 @@ class PublishToStudyFeature(ModelAPI.ModelAPI_Feature):
             self.processGroups(aRes, anEngine, aPartFeatureId, aSShape, False)
             # Fields
             self.processGroups(aRes, anEngine, aPartFeatureId, aSShape, True)
-
-        # process all SHAPER-STUDY shapes to find dead
-        aSOIter = SHAPERSTUDY_utils.getStudy().NewChildIterator(aComponent)
-        while aSOIter.More():
-          aSO = aSOIter.Value()
-          aSOIter.Next() ### here because there is continue inside the loop!
-          anIOR = aSO.GetIOR()
-          if len(anIOR):
-            anObj = salome.orb.string_to_object(anIOR)
-            if isinstance(anObj, SHAPERSTUDY_ORB._objref_SHAPER_Object):
-              anEntry = anObj.GetEntry()
-              if len(anEntry) == 0:
-                continue;
-              elif anEntry not in allProcessed: # found a removed shape: make it dead for the moment
-                # remove the reference - red node
-                aRes, aSO2 = aSO.FindSubObject(1)
-                if aRes:
-                  aRes, aRef = aSO2.ReferencedObject()
-                  if aRes:
-                    aBuilder = SHAPERSTUDY_utils.getStudy().NewBuilder()
-                    aBuilder.RemoveReference(aSO2)
 
     # Part of the "execute" method: processes the Groups of theRes result publication.
     # If theFields is true, the same is performed for Fields.
