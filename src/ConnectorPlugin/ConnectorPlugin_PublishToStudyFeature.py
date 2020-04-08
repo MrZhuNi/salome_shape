@@ -159,19 +159,18 @@ class PublishToStudyFeature(ModelAPI.ModelAPI_Feature):
             aResObject = aPartDoc.object(model.ModelAPI_ResultBody_group(), aResId)
             aRes = model.objectToResult(aResObject)
             aSSEntry = self.computeEntry(aRes)
-            if aSSEntry in allNewReferences:
-              continue
             aSShape = anEngine.FindOrCreateShape(aSSEntry)
-            aSShape.SetShapeByStream(aRes.shape().getShapeStream(False))
-            if not aSShape.GetSO(): # publish in case it is a new shape
-              anEngine.AddInStudy(aSShape, aRes.data().name(), None)
-            else: # restore a red reference if it was deleted
-              aDone, aSO2 = aSShape.GetSO().FindSubObject(1)
-              if aDone:
-                aDone, aRef = aSO2.ReferencedObject()
-                if not aDone:
-                  aBuilder = SHAPERSTUDY_utils.getStudy().NewBuilder()
-                  aBuilder.Addreference(aSO2, aSShape.GetSO())
+            if not aSSEntry in allNewReferences:
+              aSShape.SetShapeByStream(aRes.shape().getShapeStream(False))
+              if not aSShape.GetSO(): # publish in case it is a new shape
+                anEngine.AddInStudy(aSShape, aRes.data().name(), None)
+              else: # restore a red reference if it was deleted
+                aDone, aSO2 = aSShape.GetSO().FindSubObject(1)
+                if aDone:
+                  aDone, aRef = aSO2.ReferencedObject()
+                  if not aDone:
+                    aBuilder = SHAPERSTUDY_utils.getStudy().NewBuilder()
+                    aBuilder.Addreference(aSO2, aSShape.GetSO())
             allProcessed.append(aSSEntry)
             # Groups
             self.processGroups(aRes, anEngine, aPartFeatureId, aSShape, False)
