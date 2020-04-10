@@ -145,6 +145,25 @@ class PublishToStudyFeature(ModelAPI.ModelAPI_Feature):
                     if aRes:
                       aBuilder = SHAPERSTUDY_utils.getStudy().NewBuilder()
                       aBuilder.RemoveReference(aSO2)
+                  # if the object is not marked as dead, mark it (#3201) to make all entries unique
+                  aDeadEntry = anObj.GetEntry()
+                  if not aDeadEntry.startswith("dead"):
+                    anIndex = aSO.Tag()
+                    anObj.SetEntry("dead0" + str(anIndex) + "_" + aDeadEntry)
+
+                    # also for groups
+                    aGrSOIter = SHAPERSTUDY_utils.getStudy().NewChildIterator(aSO)
+                    while aGrSOIter.More():
+                      aGroupSO = aGrSOIter.Value()
+                      aGrSOIter.Next()
+                      anIOR = aGroupSO.GetIOR()
+                      if len(anIOR):
+                        aGroup = salome.orb.string_to_object(anIOR)
+                        if isinstance(aGroup, SHAPERSTUDY_ORB._objref_SHAPER_Group) or \
+                           isinstance(aGroup, SHAPERSTUDY_ORB._objref_SHAPER_Field):
+                          if not aGroup.GetEntry().startswith("dead"):
+                            aDeadGroupEntry = "dead0" + str(anIndex) + "_" + aGroup.GetEntry()
+                            aGroup.SetEntry(aDeadGroupEntry)
 
          # iterate all parts and all results to publish them in SHAPER_STUDY
         for aPartId in range(aPartSet.size(model.ModelAPI_ResultPart_group())):
