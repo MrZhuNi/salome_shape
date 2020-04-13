@@ -1105,11 +1105,15 @@ std::list<FeaturePtr> referencedFeatures(
 std::shared_ptr<ModelAPI_Result> singleEvolution(const std::string theEntry)
 {
   ResultPtr aRes;
+  if (theEntry.empty())
+    return aRes;
   std::size_t aFirstColon = theEntry.find(":");
   if (aFirstColon == std::string::npos)
     return aRes;
   // searching a part
   std::string aPartIdStr = theEntry.substr(0, aFirstColon);
+  if (aPartIdStr.size() > 1 && aPartIdStr[0] == 'd')
+    return aRes;
   int aPartId = std::stoi(aPartIdStr);
   SessionPtr aSession = ModelAPI_Session::get();
   DocumentPtr aRoot = aSession->moduleDocument();
