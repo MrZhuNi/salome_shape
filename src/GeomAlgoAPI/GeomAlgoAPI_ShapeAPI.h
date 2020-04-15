@@ -52,6 +52,19 @@ public:
   static std::shared_ptr<GeomAPI_Shape> makeBox(std::shared_ptr<GeomAPI_Pnt> theFirstPoint,
                      std::shared_ptr<GeomAPI_Pnt> theSecondPoint) throw (GeomAlgoAPI_Exception);
 
+  /// Creates a box using coordinates of a point and dimensions
+  /// \param theOx The X coordinate of the point
+  /// \param theOy The Y coordinate of the point
+  /// \param theOz The Z coordinate of the point
+  /// \param theDx The dimension on X
+  /// \param theDy The dimension on Y
+  /// \param theDz The dimension on Z
+  /// \return a shape
+  static std::shared_ptr<GeomAPI_Shape> makeBox(const double theOx, const double theOy,
+		                                            const double theOz, const double theDx,
+												                        const double theDy, const double theDz)
+		                                            throw (GeomAlgoAPI_Exception);
+
   /// Creates a cylinder using a center, an axis, a radius and a height.
   /// \param theBasePoint The center of the lower base of the cylinder
   /// \param theEdge The axis of the cylinder

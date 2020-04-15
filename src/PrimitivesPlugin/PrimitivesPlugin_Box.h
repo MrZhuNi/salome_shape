@@ -27,14 +27,14 @@
 class GeomAPI_Shape;
 class ModelAPI_ResultBody;
 
-/**\class PrimitivesPlugin_Box
- * \ingroup Plugins
- * \brief Feature for creation of a box primitive using various methods.
- *
- * Box creates a cuboid - Parallelepiped with 6 rectangular faces. It can be built via two
- * methods : using two points that define a diagonal, or using 3 lengths that define the 
- * rectangular dimensions.
- */
+/// \class PrimitivesPlugin_Box
+/// \ingroup Plugins
+/// \brief Feature for creation of a box primitive using various methods.
+///
+/// Supported following methods:
+/// * two points that define a diagonal,
+/// * three lengths that define the rectangular dimensions,
+/// * one point and three lengths that define the rectangular dimensions.
 class PrimitivesPlugin_Box : public ModelAPI_Feature
 {
  public:
@@ -66,6 +66,13 @@ class PrimitivesPlugin_Box : public ModelAPI_Feature
     return MY_CREATION_METHOD_ID;
   }
 
+  /// Attribute name for creation method
+  inline static const std::string& CREATION_METHOD_BY_ONE_POINT_AND_DIMS()
+  {
+    static const std::string MY_CREATION_METHOD_ID("BoxByOnePointAndDims");
+    return MY_CREATION_METHOD_ID;
+  }
+
   /// Attribute name of first point
   inline static const std::string& POINT_FIRST_ID()
   {
@@ -80,25 +87,67 @@ class PrimitivesPlugin_Box : public ModelAPI_Feature
     return MY_POINT_SECOND_ID;
   }
 
-  /// Attribute first coordinate
+  /// Attribute name of the X dimension
   inline static const std::string& DX_ID()
   {
     static const std::string MY_DX_ID("dx");
     return MY_DX_ID;
   }
 
-  /// Attribute second coordinate
+  /// Attribute name of the Y dimension
   inline static const std::string& DY_ID()
   {
     static const std::string MY_DY_ID("dy");
     return MY_DY_ID;
   }
 
-  /// Attribute third coordinate
+  /// Attribute name of the Z dimension
   inline static const std::string& DZ_ID()
   {
     static const std::string MY_DZ_ID("dz");
     return MY_DZ_ID;
+  }
+  
+  /// Attribute name of the coordinate X for the origin
+  inline static const std::string& OX_ID()
+  {
+    static const std::string MY_OX_ID("ox");
+    return MY_OX_ID;
+  }
+  
+  /// Attribute name of the coordinate Y for the origin
+  inline static const std::string& OY_ID()
+  {
+    static const std::string MY_OY_ID("oy");
+    return MY_OY_ID;
+  }
+  
+  /// Attribute name of the coordinate Z for the origin
+  inline static const std::string& OZ_ID()
+  {
+    static const std::string MY_OZ_ID("oz");
+    return MY_OZ_ID;
+  }
+  
+  /// Attribute name of the half length in X
+  inline static const std::string& HALF_DX_ID()
+  {
+    static const std::string MY_HALF_DX_ID("half_dx");
+    return MY_HALF_DX_ID;
+  }
+  
+  /// Attribute name of the half length in Y
+  inline static const std::string& HALF_DY_ID()
+  {
+    static const std::string MY_HALF_DY_ID("half_dy");
+    return MY_HALF_DY_ID;
+  }
+  
+  /// Attribute name of the half length in Z
+  inline static const std::string& HALF_DZ_ID()
+  {
+    static const std::string MY_HALF_DZ_ID("half_dz");
+    return MY_HALF_DZ_ID;
   }
 
   /// Returns the kind of a feature
@@ -125,8 +174,11 @@ class PrimitivesPlugin_Box : public ModelAPI_Feature
   ///Perform the creation of the box using two points defining a diagonal
   void createBoxByTwoPoints();
 
-  ///Perform the creation of the box using three cordinates
+  ///Perform the creation of the box using three dimensions
   void createBoxByDimensions();
+
+  ///Perform the creation of the box using one point and three dimensions
+  void createBoxByOnePointAndDims();
 
 };
 

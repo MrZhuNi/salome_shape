@@ -86,6 +86,16 @@ namespace GeomAlgoAPI_ShapeAPI
   }
 
   //===============================================================================================
+  std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeAPI::makeBox(
+    const double theOx, const double theOy, const double theOz,
+	const double theDx, const double theDy, const double theDz) throw (GeomAlgoAPI_Exception)
+  {
+    static const std::string aMsg("Box builder with two points");
+	GeomAlgoAPI_Box aBoxAlgo(theOx, theOy, theOz, theDx, theDy, theDz);
+	return runAlgoAndCheckShape(aBoxAlgo, aMsg);
+  }
+
+  //===============================================================================================
   std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeAPI::makeCylinder(
     std::shared_ptr<GeomAPI_Pnt> theBasePoint, std::shared_ptr<GeomAPI_Edge> theEdge,
     double theRadius, double theHeight) throw (GeomAlgoAPI_Exception)
