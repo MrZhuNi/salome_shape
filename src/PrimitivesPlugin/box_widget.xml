@@ -8,7 +8,6 @@
         default="10.0"
         icon=""
         tooltip="Dimension in X">
-          <validator id="GeomValidators_Positive" parameters="0"/>
       </doublevalue>
       <doublevalue
         id="dy"
@@ -17,7 +16,6 @@
         default="10.0"
         icon=""
         tooltip="Dimension in Y">
-          <validator id="GeomValidators_Positive" parameters="0"/>
       </doublevalue>
       <doublevalue
         id="dz"
@@ -26,7 +24,6 @@
         default="10.0"
         icon=""
         tooltip="Dimension in Z">
-          <validator id="GeomValidators_Positive" parameters="0"/>
       </doublevalue>
     </box>
     <box id="BoxByTwoPoints" title="By two points" icon="icons/Primitives/box_2pt_32x32.png">
