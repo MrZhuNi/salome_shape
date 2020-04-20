@@ -108,6 +108,18 @@ public:
   static std::shared_ptr<GeomAPI_Shape> makeSphere(double theRadius)
                      throw (GeomAlgoAPI_Exception);
 
+  /// Creates a sphere using radius, phi angles and theta angles.
+  /// \param theRMin The inner radius of the sphere
+  /// \param theRMax The outer radius of the sphere
+  /// \param thePhiMin The lower phi limit
+  /// \param thePhiMax The higher phi limit
+  /// \param theThetaMin The lower theta limit
+  /// \param theThetaMax The higher theta limit
+  static std::shared_ptr<GeomAPI_Shape> makeSphere(double theRMin, double theRMax,
+                                                   double thePhiMin, double thePhiMax,
+                                                   double theThetaMin, double theThetaMax)
+                     throw (GeomAlgoAPI_Exception);
+
   /// Creates a torus using a base point, an axis, a radius and a ring radius.
   /// \param theBasePoint The center of the torus
   /// \param theEdge The axis of the torus

@@ -44,6 +44,27 @@ class PrimitivesPlugin_Sphere : public ModelAPI_Feature
     return MY_SPHERE_ID;
   }
 
+  /// Attribute name for creation method
+  inline static const std::string& CREATION_METHOD()
+  {
+    static const std::string MY_CREATION_METHOD_ID("CreationMethod");
+    return MY_CREATION_METHOD_ID;
+  }
+
+  /// Attribute name for creation method
+  inline static const std::string& CREATION_METHOD_BY_PT_RADIUS()
+  {
+    static const std::string MY_CREATION_METHOD_ID("SphereByPointRadius");
+    return MY_CREATION_METHOD_ID;
+  }
+
+  /// Attribute name for creation method
+  inline static const std::string& CREATION_METHOD_BY_DIMENSIONS()
+  {
+    static const std::string MY_CREATION_METHOD_ID("SphereByDimensions");
+    return MY_CREATION_METHOD_ID;
+  }
+
   /// Attribute name of the base point
   inline static const std::string& CENTER_POINT_ID()
   {
@@ -56,6 +77,48 @@ class PrimitivesPlugin_Sphere : public ModelAPI_Feature
   {
     static const std::string MY_RADIUS_ID("radius");
     return MY_RADIUS_ID;
+  }
+  
+  /// attribute name of the inner radius
+  inline static const std::string& RMIN_ID()
+  {
+    static const std::string MY_RMIN_ID("rmin");
+    return MY_RMIN_ID;
+  }
+  
+  /// attribute name of the outer radius
+  inline static const std::string& RMAX_ID()
+  {
+    static const std::string MY_RMAX_ID("rmax");
+    return MY_RMAX_ID;
+  }
+  
+  /// attribute name of the lower phi limit
+  inline static const std::string& PHIMIN_ID()
+  {
+    static const std::string MY_PHIMIN_ID("phimin");
+    return MY_PHIMIN_ID;
+  }
+  
+  /// attribute name of the higher phi limit
+  inline static const std::string& PHIMAX_ID()
+  {
+    static const std::string MY_PHIMAX_ID("phimax");
+    return MY_PHIMAX_ID;
+  }
+  
+  /// attribute name of the lower theta limit
+  inline static const std::string& THETAMIN_ID()
+  {
+    static const std::string MY_THETAMIN_ID("thetamin");
+    return MY_THETAMIN_ID;
+  }
+  
+  /// attribute name of the higher theta limit
+  inline static const std::string& THETAMAX_ID()
+  {
+    static const std::string MY_THETAMAX_ID("thetamax");
+    return MY_THETAMAX_ID;
   }
 
   /// Returns the kind of a feature
@@ -78,6 +141,12 @@ class PrimitivesPlugin_Sphere : public ModelAPI_Feature
   /// Load Naming data structure of the feature to the document
   void loadNamingDS(std::shared_ptr<GeomAlgoAPI_Sphere> theSphereAlgo,
                     std::shared_ptr<ModelAPI_ResultBody> theResultSphere);
+  
+  ///
+  void createSphereByPtRadius();
+  
+  ///
+  void createShereByDimensions();
 
 };
 

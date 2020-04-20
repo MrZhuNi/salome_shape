@@ -200,6 +200,19 @@ namespace GeomAlgoAPI_ShapeAPI
   }
 
   //===============================================================================================
+  std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeAPI::makeSphere(
+                                                   double theRMin, double theRMax,
+                                                   double thePhiMin, double thePhiMax,
+                                                   double theThetaMin, double theThetaMax)
+      throw (GeomAlgoAPI_Exception)
+  {
+    static const std::string aMsg("Sphere builder");
+    GeomAlgoAPI_Sphere aSphereAlgo(theRMin, theRMax, thePhiMin, thePhiMax,
+                                   theThetaMin, theThetaMax);
+    return runAlgoAndCheckShape(aSphereAlgo, aMsg);
+  }
+
+  //===============================================================================================
   std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeAPI::makeTorus(
       std::shared_ptr<GeomAPI_Pnt> theBasePoint,
       std::shared_ptr<GeomAPI_Edge> theEdge,double theRadius, double theRingRadius)
