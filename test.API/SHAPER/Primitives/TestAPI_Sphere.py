@@ -41,3 +41,9 @@ try:
   Sphere_5 = shaperpy.makeSphere(None, 10.)
 except myExcept as ec:
   assert(ec.what() == "Sphere builder :: center is not valid.")
+
+Sphere_6 = shaperpy.makeSphere(10., 40.,0,180.,0.,180.)
+try:
+  Sphere_7 = shaperpy.makeSphere(40., 10.,0,180.,0.,180.)
+except myExcept as ec:
+  assert(ec.what() == "Sphere builder :: RMin is larger than RMax.")

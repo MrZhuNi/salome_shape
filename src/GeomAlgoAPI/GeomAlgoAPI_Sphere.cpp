@@ -59,7 +59,10 @@ GeomAlgoAPI_Sphere::GeomAlgoAPI_Sphere(const double theRMin, const double theRMa
 bool GeomAlgoAPI_Sphere::check()
 {
   if (isRootGeo) {
-    // traitement a faire plus tard
+    if ((myRMin-myRMax) > Precision::Confusion()) {
+      myError = "Sphere builder :: RMin is larger than RMax.";
+      return false;
+    }
   } else {
     if (!myCenterPoint) {
       myError = "Sphere builder :: center is not valid.";
