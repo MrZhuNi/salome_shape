@@ -224,6 +224,8 @@ void SHAPERGUI::initialize(CAM_Application* theApp)
       }
     }
   }
+  SHAPERGUI_DataModel* aDataModel = dynamic_cast<SHAPERGUI_DataModel*>(dataModel());
+  aDataModel->initRootObject();
 }
 
 //******************************************************
@@ -267,9 +269,6 @@ bool SHAPERGUI::activateModule(SUIT_Study* theStudy)
 {
   bool isDone = LightApp_Module::activateModule(theStudy);
   loadToolbarsConfig();
-
-  SHAPERGUI_DataModel* aDataModel = dynamic_cast<SHAPERGUI_DataModel*>(dataModel());
-  aDataModel->initRootObject();
 
   if (isDone) {
     setMenuShown(true);
