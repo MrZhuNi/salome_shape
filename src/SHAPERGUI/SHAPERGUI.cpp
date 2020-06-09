@@ -205,6 +205,13 @@ void SHAPERGUI::initialize(CAM_Application* theApp)
 #endif
     createMenu(aId, aEditMenu);
 
+  if (!myInspectionPanel) {
+    myInspectionPanel = myWorkshop->inspectionPanel();
+    connect(myInspectionPanel->toggleViewAction(), SIGNAL(toggled(bool)),
+      this, SLOT(onWhatIs(bool)));
+  }
+  hideInternalWindows();
+
   // Initialize viewer proxy if OCC viewer is already exist
   ViewManagerList aOCCViewManagers;
   application()->viewManagers(OCCViewer_Viewer::Type(), aOCCViewManagers);
@@ -283,11 +290,6 @@ bool SHAPERGUI::activateModule(SUIT_Study* theStudy)
       aObjDoc->toggleViewAction()->setVisible(true);
     }
 
-    if (!myInspectionPanel) {
-      myInspectionPanel = myWorkshop->inspectionPanel();
-      connect(myInspectionPanel->toggleViewAction(), SIGNAL(toggled(bool)),
-              this, SLOT(onWhatIs(bool)));
-    }
     myInspectionPanel->toggleViewAction()->setVisible(true);
 
     myWorkshop->facesPanel()->toggleViewAction()->setVisible(true);
@@ -386,15 +388,11 @@ bool SHAPERGUI::activateModule(SUIT_Study* theStudy)
 }
 
 //******************************************************
-bool SHAPERGUI::deactivateModule(SUIT_Study* theStudy)
+void SHAPERGUI::hideInternalWindows()
 {
-  saveToolbarsConfig();
-
   myProxyViewer->activateViewer(false);
   setMenuShown(false);
   setToolShown(false);
-
-  myWorkshop->deactivateModule();
 
   QObject* aObj = myWorkshop->objectBrowser()->parent();
   QDockWidget* aObjDoc = dynamic_cast<QDockWidget*>(aObj);
@@ -404,16 +402,29 @@ bool SHAPERGUI::deactivateModule(SUIT_Study* theStudy)
     aObjDoc->toggleViewAction()->setVisible(false);
   }
 
-  myIsInspectionVisible = myInspectionPanel->isVisible();
   myInspectionPanel->hide();
   myInspectionPanel->toggleViewAction()->setVisible(false);
 
-  myIsFacesPanelVisible = myWorkshop->facesPanel()->isVisible();
   myWorkshop->facesPanel()->hide();
   myWorkshop->facesPanel()->toggleViewAction()->setVisible(false);
 
   myWorkshop->propertyPanel()->hide();
   myWorkshop->propertyPanel()->toggleViewAction()->setVisible(false);
+
+  myWorkshop->hidePanel(myWorkshop->facesPanel());
+}
+
+
+//******************************************************
+bool SHAPERGUI::deactivateModule(SUIT_Study* theStudy)
+{
+  saveToolbarsConfig();
+  myWorkshop->deactivateModule();
+
+  myIsInspectionVisible = myInspectionPanel->isVisible();
+  myIsFacesPanelVisible = myWorkshop->facesPanel()->isVisible();
+  hideInternalWindows();
+
 
   // the active operation should be stopped for the next activation.
   // There should not be active operation and visualized preview.
@@ -446,7 +457,6 @@ bool SHAPERGUI::deactivateModule(SUIT_Study* theStudy)
     mySelector = 0;
   }
 
-  myWorkshop->hidePanel(myWorkshop->facesPanel());
   //myWorkshop->contextMenuMgr()->disconnectViewer();
 
   SUIT_ResourceMgr* aResMgr = application()->resourceMgr();
