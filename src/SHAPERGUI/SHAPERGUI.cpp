@@ -74,6 +74,8 @@
 #include <QMenu>
 #include <QToolBar>
 
+#include <ModelAPI_Session.h>
+
 #if OCC_VERSION_HEX < 0x070400
   #define SALOME_PATCH_FOR_CTRL_WHEEL
 #endif
@@ -274,6 +276,14 @@ void SHAPERGUI::viewManagers(QStringList& theList) const
 //******************************************************
 bool SHAPERGUI::activateModule(SUIT_Study* theStudy)
 {
+  ModelAPI_Session::get()->moduleDocument(); // initialize a root document if not done yet
+
+  // this must be done in the initialization and in activation (on the second activation initialization
+  // in not called, so SComponent must be added anyway
+  SHAPERGUI_DataModel* aDataModel = dynamic_cast<SHAPERGUI_DataModel*>(dataModel());
+  aDataModel->initRootObject();
+
+
   bool isDone = LightApp_Module::activateModule(theStudy);
   loadToolbarsConfig();
 
@@ -1235,6 +1245,6 @@ void SHAPERGUI::resetToolbars()
 
 void SHAPERGUI::publishToStudy()
 {
-  if (isActiveModule())
+  if (isActiveModule() && ModelAPI_Session::get()->hasModuleDocument())
     myWorkshop->module()->launchOperation("PublishToStudy", false);
 }
