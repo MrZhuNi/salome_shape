@@ -1252,21 +1252,23 @@ bool SketchPlugin_ProjectionValidator::isValid(const AttributePtr& theAttribute,
     std::shared_ptr<GeomAPI_Curve> aCurve(new GeomAPI_Curve(anEdge));
     std::shared_ptr<GeomAPI_BSpline> aBSpline(new GeomAPI_BSpline(aCurve));
     if (aBSpline->isPeriodic()) {
-      GeomPlanePtr aPlane = GeomAlgoAPI_ShapeTools::findPlane(ListOfShape(1, anEdge));
-      std::shared_ptr<GeomAPI_Dir> aBSplineNormal = aPlane->direction();
-      double aDot = fabs(aNormal->dot(aBSplineNormal));
-      aValid = fabs(aDot - 1.0) <= tolerance * tolerance;
-      if (!aValid) {
-        // B-spline's plane is orthogonal to the sketch plane,
-        // thus, need to check whether B-spline is planar.
-        std::list<GeomPointPtr> aPoles = aBSpline->poles();
-        for (std::list<GeomPointPtr>::iterator it = aPoles.begin();
-             it != aPoles.end() && !aValid; ++it) {
-          if (aPlane->distance(*it) > tolerance)
-            aValid = true; // non-planar B-spline curve
+      GeomPlanePtr aBSplinePlane = GeomAlgoAPI_ShapeTools::findPlane(ListOfShape(1, anEdge));
+      if (aBSplinePlane) {
+        std::shared_ptr<GeomAPI_Dir> aBSplineNormal = aBSplinePlane->direction();
+        double aDot = fabs(aNormal->dot(aBSplineNormal));
+        aValid = fabs(aDot - 1.0) <= tolerance * tolerance;
+        if (!aValid) {
+          // B-spline's plane is orthogonal to the sketch plane,
+          // thus, need to check whether B-spline is planar.
+          std::list<GeomPointPtr> aPoles = aBSpline->poles();
+          for (std::list<GeomPointPtr>::iterator it = aPoles.begin();
+            it != aPoles.end() && !aValid; ++it) {
+            if (aBSplinePlane->distance(*it) > tolerance)
+              aValid = true; // non-planar B-spline curve
+          }
+          if (!aValid)
+            theError = "Error: Periodic B-spline is orthogonal to the sketch plane.";
         }
-        if (!aValid)
-          theError = "Error: Periodic B-spline is orthogonal to the sketch plane.";
       }
     }
   }
