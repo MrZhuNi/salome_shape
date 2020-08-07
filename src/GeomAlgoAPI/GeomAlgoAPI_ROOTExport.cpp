@@ -22,6 +22,8 @@
 #include <OSD_OpenFile.hxx>
 
 #include <fstream>
+#include <sstream>
+
 
 //=================================================================================================
 GeomAlgoAPI_ROOTExport::GeomAlgoAPI_ROOTExport(const std::string& theFileName)
@@ -49,17 +51,10 @@ void GeomAlgoAPI_ROOTExport::buildBox(const std::string& theObjectName,
                                       const double theDX, const double theDY, const double theDZ)
 {
   std::cout<<"buildBox"<<std::endl;
-  char anOX[50], anOY[50], anOZ[50], aDX[50], aDY[50], aDZ[50];
-  sprintf(anOX, "%.f", theOX);
-  sprintf(anOY, "%.f", theOY);
-  sprintf(anOZ, "%.f", theOZ);
-  sprintf(aDX, "%.f", theDX);
-  sprintf(aDY, "%.f", theDY);
-  sprintf(aDZ, "%.f", theDZ);
-  myContent += "Double_t point_"+theObjectName+"[3] = {"+std::string(anOX)+",";
-  myContent += std::string(anOY)+","+std::string(anOZ)+"};\n";
+  myContent += "Double_t point_"+theObjectName+"[3] = {"+doubleToString(theOX)+",";
+  myContent += doubleToString(theOY)+","+doubleToString(theOZ)+"};\n";
   myContent += "TGeoBBox* " + theObjectName + "= new TGeoBBox(\"" +theObjectName + "\",";
-  myContent += std::string(aDX)+","+std::string(aDY)+","+std::string(aDZ)+",point_";
+  myContent += doubleToString(theDX)+","+doubleToString(theDY)+","+doubleToString(theDZ)+",point_";
   myContent += theObjectName + ");\n";
 }
 
@@ -113,4 +108,12 @@ bool GeomAlgoAPI_ROOTExport::write()
   aFile << myContent << std::endl;
   aFile.close();
   return true;
+}
+
+//=================================================================================================
+const std::string GeomAlgoAPI_ROOTExport::doubleToString(const double& value)
+{
+    std::ostringstream str;
+    str << value;
+    return str.str();
 }

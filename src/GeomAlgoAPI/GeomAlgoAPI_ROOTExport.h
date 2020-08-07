@@ -59,6 +59,8 @@ public:
 
   /// Write the file
   GEOMALGOAPI_EXPORT bool write();
+  
+  GEOMALGOAPI_EXPORT const std::string doubleToString(const double& value);
 
 private:
   std::string myFileName;
