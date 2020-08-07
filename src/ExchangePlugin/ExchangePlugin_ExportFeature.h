@@ -84,6 +84,32 @@ public:
     static const std::string MY_XAO_GEOMETRY_NAME_ID("xao_geometry_name");
     return MY_XAO_GEOMETRY_NAME_ID;
   }
+
+  /// attribute name of root file path
+  inline static const std::string& ROOT_FILE_PATH_ID()
+  {
+    static const std::string MY_ROOT_FILE_PATH_ID("root_file_path");
+    return MY_ROOT_FILE_PATH_ID;
+  }
+  /// attribute name of author for XAO format
+  inline static const std::string& ROOT_MANAGER_NAME_ID()
+  {
+    static const std::string MY_ROOT_MANAGER_NAME_ID("root_manager_name");
+    return MY_ROOT_MANAGER_NAME_ID;
+  }
+  /// attribute name of geometry name for XAO format
+  inline static const std::string& ROOT_MANAGER_TITLE_ID()
+  {
+    static const std::string MY_ROOT_MANAGER_TITLE_ID("root_manager_title");
+    return MY_ROOT_MANAGER_TITLE_ID;
+  }
+  /// attribute name of materials file
+  inline static const std::string& MAT_FILE_ID()
+  {
+    static const std::string MY_MAT_FILE_ID("mat_file");
+    return MY_MAT_FILE_ID;
+  }
+
   /// Default constructor
   EXCHANGEPLUGIN_EXPORT ExchangePlugin_ExportFeature();
   /// Default destructor
@@ -123,6 +149,9 @@ protected:
 
   /// Performs export to XAO file
   EXCHANGEPLUGIN_EXPORT void exportXAO(const std::string& theFileName);
+
+  /// Performs export to XAO file
+  EXCHANGEPLUGIN_EXPORT void exportROOT(const std::string& theFileName);
 };
 
 #endif /* EXPORT_EXPORTFEATURE_H_ */

@@ -27,6 +27,8 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Events
                     ${PROJECT_SOURCE_DIR}/src/GeomAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomAlgoAPI
                     ${PROJECT_SOURCE_DIR}/src/XAO
+                    ${PROJECT_SOURCE_DIR}/src/PrimitivesPlugin
+                    ${PROJECT_SOURCE_DIR}/src/CollectionPlugin
 )
 
 SET(PROJECT_HEADERS
@@ -37,6 +39,7 @@ SET(PROJECT_HEADERS
     ExchangePlugin_Validators.h
     ExchangePlugin_Tools.h
     ExchangePlugin_Dump.h
+    ExchangePlugin_ExportRoot.h
 )
 
 SET(PROJECT_SOURCES
@@ -46,6 +49,7 @@ SET(PROJECT_SOURCES
     ExchangePlugin_Validators.cpp
     ExchangePlugin_Tools.cpp
     ExchangePlugin_Dump.cpp
+    ExchangePlugin_ExportRoot.cpp
 )
 
 SET(XML_RESOURCES

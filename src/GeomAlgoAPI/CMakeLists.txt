@@ -82,6 +82,7 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_SolidClassifier.h
     GeomAlgoAPI_MapShapesAndAncestors.h
     GeomAlgoAPI_Chamfer.h
+    GeomAlgoAPI_ROOTExport.h
 )
 
 SET(PROJECT_SOURCES
@@ -144,6 +145,7 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_MapShapesAndAncestors.cpp
     GeomAlgoAPI_Projection.cpp
     GeomAlgoAPI_Chamfer.cpp
+    GeomAlgoAPI_ROOTExport.cpp
 )
 
 SET(PROJECT_LIBRARIES

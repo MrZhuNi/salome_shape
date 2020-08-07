@@ -26,6 +26,7 @@
 #include <iostream>
 #include <ostream>
 #endif
+#include <iostream>
 
 #include <Config_Common.h>
 #include <Config_PropManager.h>
@@ -33,6 +34,7 @@
 #include <GeomAlgoAPI_BREPExport.h>
 #include <GeomAlgoAPI_CompoundBuilder.h>
 #include <GeomAlgoAPI_IGESExport.h>
+#include <GeomAlgoAPI_ROOTExport.h>
 #include <GeomAlgoAPI_STEPExport.h>
 #include <GeomAlgoAPI_Tools.h>
 #include <GeomAlgoAPI_XAOExport.h>
@@ -41,6 +43,7 @@
 #include <GeomAPI_ShapeExplorer.h>
 #include <GeomAPI_Trsf.h>
 
+#include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeStringArray.h>
@@ -64,7 +67,16 @@
 #include <XAO_Xao.hxx>
 #include <XAO_Geometry.hxx>
 
+#include <ExchangePlugin_ExportRoot.h>
 #include <ExchangePlugin_Tools.h>
+
+#include <PrimitivesPlugin_Box.h>
+
+#ifdef WIN32
+# define _separator_ '\\'
+#else
+# define _separator_ '/'
+#endif
 
 ExchangePlugin_ExportFeature::ExchangePlugin_ExportFeature()
 {
@@ -86,6 +98,8 @@ void ExchangePlugin_ExportFeature::initAttributes()
     ModelAPI_AttributeString::typeId());
   data()->addAttribute(ExchangePlugin_ExportFeature::XAO_FILE_PATH_ID(),
     ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::ROOT_FILE_PATH_ID(),
+    ModelAPI_AttributeString::typeId());
   data()->addAttribute(ExchangePlugin_ExportFeature::FILE_FORMAT_ID(),
     ModelAPI_AttributeString::typeId());
   data()->addAttribute(ExchangePlugin_ExportFeature::SELECTION_LIST_ID(),
@@ -93,6 +107,12 @@ void ExchangePlugin_ExportFeature::initAttributes()
   data()->addAttribute(ExchangePlugin_ExportFeature::XAO_AUTHOR_ID(),
     ModelAPI_AttributeString::typeId());
   data()->addAttribute(ExchangePlugin_ExportFeature::XAO_GEOMETRY_NAME_ID(),
+    ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID(),
+    ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID(),
+    ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::MAT_FILE_ID(),
     ModelAPI_AttributeString::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
@@ -108,6 +128,9 @@ void ExchangePlugin_ExportFeature::attributeChanged(const std::string& theID)
   if (theID == XAO_FILE_PATH_ID()) {
     string(ExchangePlugin_ExportFeature::FILE_PATH_ID())->setValue(
       string(ExchangePlugin_ExportFeature::XAO_FILE_PATH_ID())->value());
+  } else if (theID == ROOT_FILE_PATH_ID()) {
+    string(ExchangePlugin_ExportFeature::FILE_PATH_ID())->setValue(
+      string(ExchangePlugin_ExportFeature::ROOT_FILE_PATH_ID())->value());
   }
 }
 
@@ -119,10 +142,14 @@ void ExchangePlugin_ExportFeature::execute()
   AttributeStringPtr aFormatAttr =
       this->string(ExchangePlugin_ExportFeature::FILE_FORMAT_ID());
   std::string aFormat = aFormatAttr->value();
+  std::cout<<"FORMAT"<<std::endl;
+  std::cout<<aFormat<<std::endl;
 
   AttributeStringPtr aFilePathAttr =
       this->string(ExchangePlugin_ExportFeature::FILE_PATH_ID());
   std::string aFilePath = aFilePathAttr->value();
+  std::cout<<"FILE"<<std::endl;
+  std::cout<<aFilePath<<std::endl;
   if (aFilePath.empty())
     return;
 
@@ -143,13 +170,24 @@ void ExchangePlugin_ExportFeature::exportFile(const std::string& theFileName,
       aFormatName = "STEP";
     } else if (anExtension == "IGES" || anExtension == "IGS") {
       aFormatName = "IGES-5.1";
+    } else if (anExtension == "C") {
+      aFormatName = "ROOT";
     } else {
       aFormatName = anExtension;
     }
   }
 
+  std::cout<<"PASSAGE1"<<std::endl;
+  std::cout<<aFormatName<<std::endl;
+
   if (aFormatName == "XAO") {
     exportXAO(theFileName);
+    return;
+  }
+
+  
+  if (aFormatName == "ROOT") {
+    exportROOT(theFileName);
     return;
   }
 
@@ -556,6 +594,76 @@ void ExchangePlugin_ExportFeature::exportXAO(const std::string& theFileName)
     return;
   }
 // LCOV_EXCL_STOP
+}
+
+
+void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
+{
+  std::cout<<"EXPORT ROOT ==> debut"<<std::endl;
+  std::string aName = string(ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID())->value();
+  std::string aTitle = string(ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID())->value();
+  std::string aFileMat = string(ExchangePlugin_ExportFeature::MAT_FILE_ID())->value();
+
+  std::shared_ptr<GeomAlgoAPI_ROOTExport> anAlgo(new GeomAlgoAPI_ROOTExport(theFileName));
+
+  std::list<std::string> listNames = ExchangePlugin_Tools::split(theFileName, _separator_);
+  listNames = ExchangePlugin_Tools::split(listNames.back(), '.');
+
+  // Create the head of file
+  anAlgo->buildHead(listNames.front(), aName, aTitle);
+  
+  // Materials and medias
+  std::map<std::string, std::vector<std::string> > aMat;
+  std::map<std::string, std::vector<std::string> > aMedium;
+  ExchangePlugin_ExportRoot::readFileMat(aFileMat, aMat, aMedium);
+  std::cout<<"Size  "<<aMat.size()<<std::endl;
+  std::cout<<"Size  "<<aMedium.size()<<std::endl;
+  
+  anAlgo->buildMatAndMedium(aMat, aMedium);
+
+  // Add feature in the file 
+  std::list<FeaturePtr> theExport = document()->allFeatures();
+  std::list<FeaturePtr>::iterator itExport = theExport.begin();
+  std::vector<std::string> aListNamesOfFeatures;
+  for (; itExport != theExport.end(); ++itExport)
+  {
+      FeaturePtr aCurFeature = *itExport;
+      if (aCurFeature->getKind() == "Box") {
+        double anOx, anOy, anOz, aDx, aDy, aDz;
+        ExchangePlugin_ExportRoot::computeBox(aCurFeature, anOx, anOy, anOz, aDx, aDy, aDz);
+        //std::cout<<"BOX EN COURS (Feature) :: "<<aCurFeature->data()->name()<<std::endl;
+        //std::cout<<"BOX EN COURS (Result) :: "<<aCurFeature->firstResult()->data()->name()<<std::endl;
+        std::string anObjectName = aCurFeature->firstResult()->data()->name();
+        anAlgo->buildBox(anObjectName, anOx, anOy, anOz, aDx, aDy, aDz);
+        aListNamesOfFeatures.push_back(anObjectName);
+        aListNamesOfFeatures.push_back(aCurFeature->data()->name());
+      }
+  }
+  
+  std::cout<<"Nb of elements :: " << aListNamesOfFeatures.size() << std::endl;
+  
+  // Add all groups in the file
+  itExport = theExport.begin();
+  for (; itExport != theExport.end(); ++itExport)
+  {
+      FeaturePtr aCurFeature = *itExport;
+      if (aCurFeature->getKind() == "Group") {
+        std::vector<std::string> aListNames;
+        std::string anObjectName = aCurFeature->firstResult()->data()->name();
+        ExchangePlugin_ExportRoot::computeGroup(aCurFeature, aListNames);
+        
+        //for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
+        for (std::vector<std::string>::iterator it = aListNames.begin(); it != aListNames.end(); it++) {
+          std::string aName = anObjectName + "_" + *it;
+          anAlgo->BuildVolume(aName, *it, anObjectName);
+        }
+      }
+  }
+
+  anAlgo->buildEnd();
+
+  // Create the file with the content
+  anAlgo->write();
 }
 
 bool ExchangePlugin_ExportFeature::isMacro() const

@@ -31,5 +31,24 @@
                    placeholder="Please input the geometry name">
       </stringvalue>
     </case>
+    <case id="ROOT" title="ROOT">
+      <export_file_selector id="root_file_path"
+                            type="save"
+                            title="Export file"
+                            path="">
+        <validator id="ExchangePlugin_ExportFormat"
+                   parameters="C:root" />
+      </export_file_selector>
+      <stringvalue id="root_manager_name"
+                   label="Manager name"
+                   placeholder="Please input the name of the manager">
+      </stringvalue>
+      <stringvalue id="root_manager_title"
+                   label="Manager title"
+                   placeholder="Please input the title of the manager">
+      </stringvalue>
+      <file_selector id="mat_file" title="Materials file" path="">
+      </file_selector>
+    </case>
   </switch>
 </source>
