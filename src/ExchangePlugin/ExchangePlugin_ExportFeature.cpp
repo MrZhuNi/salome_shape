@@ -142,14 +142,10 @@ void ExchangePlugin_ExportFeature::execute()
   AttributeStringPtr aFormatAttr =
       this->string(ExchangePlugin_ExportFeature::FILE_FORMAT_ID());
   std::string aFormat = aFormatAttr->value();
-  std::cout<<"FORMAT"<<std::endl;
-  std::cout<<aFormat<<std::endl;
 
   AttributeStringPtr aFilePathAttr =
       this->string(ExchangePlugin_ExportFeature::FILE_PATH_ID());
   std::string aFilePath = aFilePathAttr->value();
-  std::cout<<"FILE"<<std::endl;
-  std::cout<<aFilePath<<std::endl;
   if (aFilePath.empty())
     return;
 
@@ -177,15 +173,11 @@ void ExchangePlugin_ExportFeature::exportFile(const std::string& theFileName,
     }
   }
 
-  std::cout<<"PASSAGE1"<<std::endl;
-  std::cout<<aFormatName<<std::endl;
-
   if (aFormatName == "XAO") {
     exportXAO(theFileName);
     return;
   }
 
-  
   if (aFormatName == "ROOT") {
     exportROOT(theFileName);
     return;
@@ -599,7 +591,6 @@ void ExchangePlugin_ExportFeature::exportXAO(const std::string& theFileName)
 
 void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
 {
-  std::cout<<"EXPORT ROOT ==> debut"<<std::endl;
   std::string aName = string(ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID())->value();
   std::string aTitle = string(ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID())->value();
   std::string aFileMat = string(ExchangePlugin_ExportFeature::MAT_FILE_ID())->value();
@@ -616,8 +607,6 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
   std::map<std::string, std::vector<std::string> > aMat;
   std::map<std::string, std::vector<std::string> > aMedium;
   ExchangePlugin_ExportRoot::readFileMat(aFileMat, aMat, aMedium);
-  std::cout<<"Size  "<<aMat.size()<<std::endl;
-  std::cout<<"Size  "<<aMedium.size()<<std::endl;
   
   anAlgo->buildMatAndMedium(aMat, aMedium);
 
@@ -639,8 +628,6 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
         aListNamesOfFeatures.push_back(aCurFeature->data()->name());
       }
   }
-  
-  std::cout<<"Nb of elements :: " << aListNamesOfFeatures.size() << std::endl;
   
   // Add all groups in the file
   itExport = theExport.begin();
