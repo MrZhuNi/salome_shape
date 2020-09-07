@@ -30,19 +30,19 @@ DoubleField::DoubleField(const XAO::Dimension& dimension, const int& nbElements,
 }
 
 Step* DoubleField::addNewStep(const int& step)
-throw (XAO_Exception)
+
 {
     return addStep(step, 0);
 }
 
 DoubleStep* DoubleField::addStep(const int& step)
-throw (XAO_Exception)
+
 {
     return addStep(step, 0);
 }
 
 DoubleStep* DoubleField::addStep(const int& step, const int& stamp)
-throw (XAO_Exception)
+
 {
     if (hasStep(step))
         throw XAO_Exception(MsgBuilder() << "Step with number " << step << " already exists.");
@@ -53,7 +53,7 @@ throw (XAO_Exception)
 }
 
 DoubleStep* DoubleField::getStep(const int& index)
-throw (XAO_Exception)
+
 {
     checkStepIndex(index);
     return (DoubleStep*)m_steps[index];

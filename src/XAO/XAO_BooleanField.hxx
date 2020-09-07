@@ -53,14 +53,14 @@ namespace XAO
 
         virtual const XAO::Type getType() { return XAO::BOOLEAN; }
 
-        virtual Step* addNewStep(const int& step) throw (XAO_Exception);
+        virtual Step* addNewStep(const int& step);
 
         /**
          * Adds a new step.
          * @param step the number of the step.
          * @return the newly created step.
          */
-        BooleanStep* addStep(const int& step) throw (XAO_Exception);
+        BooleanStep* addStep(const int& step);
 
         /**
          * Adds a new step.
@@ -68,15 +68,14 @@ namespace XAO
          * @param stamp the stamp of the step.
          * @return the newly created step.
          */
-        BooleanStep* addStep(const int& step, const int& stamp)
-        throw (XAO_Exception);
+        BooleanStep* addStep(const int& step, const int& stamp);
 
         /**
          * Gets the step of given index.
          * @param index the index.
          * @return the step for the given index.
          */
-        BooleanStep* getStep(const int& index) throw (XAO_Exception);
+        BooleanStep* getStep(const int& index);
     };
 }
 

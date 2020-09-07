@@ -49,7 +49,7 @@ Field::~Field()
 
 Field* Field::createField(const XAO::Type& type, const XAO::Dimension& dimension,
         const int& nbElements, const int& nbComponents, const std::string& name)
-throw (XAO_Exception)
+
 {
     if (type == XAO::BOOLEAN)
         return new BooleanField(dimension, nbElements, nbComponents, name);
@@ -64,21 +64,21 @@ throw (XAO_Exception)
 }
 
 const std::string Field::getComponentName(const int& index)
-throw (XAO_Exception)
+
 {
     checkComponent(index);
     return m_components[index];
 }
 
 void Field::setComponentName(const int& index, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkComponent(index);
     m_components[index] = name;
 }
 
 void Field::setComponentsNames(const std::vector<std::string>& names)
-throw (XAO_Exception)
+
 {
     for (unsigned int  i = 0; i < names.size(); ++i)
     {
@@ -117,7 +117,7 @@ bool Field::hasStep(const int& step)
 }
 
 void Field::checkComponent(const int& component)
-throw (XAO_Exception)
+
 {
     if (component < m_nbComponents && component >= 0)
         return;
@@ -127,7 +127,7 @@ throw (XAO_Exception)
 }
 
 void Field::checkStepIndex(const int& step)
-throw (XAO_Exception)
+
 {
   if (step < (int)m_steps.size() && step >= 0)
         return;

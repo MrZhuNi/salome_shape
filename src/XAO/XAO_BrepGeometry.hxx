@@ -79,13 +79,13 @@ namespace XAO
          * Writes shape to a file
          * @param fileName the path to the file
          */
-        virtual void writeShapeFile(const std::string& fileName) throw (XAO_Exception);
+        virtual void writeShapeFile(const std::string& fileName) ;
 
         /**
          * Reads shape from a file
          * @param fileName the path to the file
          */
-        virtual void readShapeFile(const std::string& fileName) throw (XAO_Exception);
+        virtual void readShapeFile(const std::string& fileName) ;
 
 #ifdef SWIG
         %pythoncode %{
@@ -154,8 +154,7 @@ namespace XAO
          * @param yCoord the Y coordinate.
          * @param zCoord the Z coordinate.
          */
-        void getVertexXYZ(const int& vertexIndex, double& xCoord, double& yCoord, double& zCoord)
-        throw (XAO_Exception);
+        void getVertexXYZ(const int& vertexIndex, double& xCoord, double& yCoord, double& zCoord);
 
         /**
          * Gets the length of an edge.
@@ -295,38 +294,36 @@ namespace XAO
          * @param id the ID of the vertex.
          * @param name the name to set.
          */
-        void changeVertexName(const int& id, const std::string& name) throw (XAO_Exception);
+        void changeVertexName(const int& id, const std::string& name);
 
         /**
          * Changes the name of an edge.
          * @param id the ID of the edge
          * @param name the name to set.
          */
-        void changeEdgeName(const int& id, const std::string& name) throw (XAO_Exception);
+        void changeEdgeName(const int& id, const std::string& name);
 
         /**
          * Changes the name of a face.
          * @param id the ID of the face.
          * @param name the name to set.
          */
-        void changeFaceName(const int& id, const std::string& name) throw (XAO_Exception);
+        void changeFaceName(const int& id, const std::string& name);
 
         /**
          * Changes the name of a solid.
          * @param id the ID of the solid.
          * @param name the name to set.
          */
-        void changeSolidName(const int& id, const std::string& name) throw (XAO_Exception);
+        void changeSolidName(const int& id, const std::string& name);
 
     private:
         void initIds();
         void initListIds(const TopAbs_ShapeEnum& shapeType, GeometricElementList& eltList);
-        TopoDS_Shape getSubShape(const TopoDS_Shape& mainShape, const TopAbs_ShapeEnum& shapeType, const int& shapeIndex)
-            throw (XAO_Exception);
+        TopoDS_Shape getSubShape(const TopoDS_Shape& mainShape, const TopAbs_ShapeEnum& shapeType, const int& shapeIndex);
         const int countGeometricalElements(const TopoDS_Shape& shape, const TopAbs_ShapeEnum& shapeType);
         std::vector<int> getGeometricalElements(const TopoDS_Shape& shape, const TopAbs_ShapeEnum& shapeType, const XAO::Dimension& dim);
-        const int findElement(const XAO::Dimension& dim, const int& id)
-            throw (XAO_Exception);
+        const int findElement(const XAO::Dimension& dim, const int& id);
 
     private:
         TopoDS_Shape m_shape;

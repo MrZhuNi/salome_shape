@@ -56,7 +56,7 @@ std::vector<std::string> StringStep::getValues()
 }
 
 std::vector<std::string> StringStep::getElement(const int& element)
-throw (XAO_Exception)
+
 {
     checkElementIndex(element);
 
@@ -65,7 +65,7 @@ throw (XAO_Exception)
 }
 
 std::vector<std::string> StringStep::getComponent(const int& component)
-throw (XAO_Exception)
+
 {
     checkComponentIndex(component);
 
@@ -83,7 +83,7 @@ throw (XAO_Exception)
 }
 
 const std::string StringStep::getValue(const int& element, const int& component)
-throw (XAO_Exception)
+
 {
     checkElementIndex(element);
     checkComponentIndex(component);
@@ -92,13 +92,13 @@ throw (XAO_Exception)
 }
 
 const std::string StringStep::getStringValue(const int& element, const int& component)
-throw (XAO_Exception)
+
 {
     return getValue(element, component);
 }
 
 void StringStep::setValues(const std::vector<std::string>& values)
-throw (XAO_Exception)
+
 {
     checkNbValues((int)values.size());
 
@@ -112,7 +112,7 @@ throw (XAO_Exception)
 }
 
 void StringStep::setElement(const int& element, const std::vector<std::string>& elements)
-throw (XAO_Exception)
+
 {
     checkElementIndex(element);
     checkNbComponents((int)elements.size());
@@ -122,7 +122,7 @@ throw (XAO_Exception)
 }
 
 void StringStep::setComponent(const int& component, const std::vector<std::string>& components)
-throw (XAO_Exception)
+
 {
     checkElementIndex(component);
     checkNbElements((int)components.size());
@@ -132,7 +132,7 @@ throw (XAO_Exception)
 }
 
 void StringStep::setValue(const int& element, const int& component, const std::string& value)
-throw (XAO_Exception)
+
 {
     checkElementIndex(element);
     checkComponentIndex(component);
@@ -141,7 +141,7 @@ throw (XAO_Exception)
 }
 
 void StringStep::setStringValue(const int& element, const int& component, const std::string& value)
-throw (XAO_Exception)
+
 {
     setValue(element, component, value);
 }

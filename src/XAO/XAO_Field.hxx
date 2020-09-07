@@ -67,8 +67,7 @@ namespace XAO
          */
         static Field* createField(const XAO::Type& type, const XAO::Dimension& dimension,
                                   const int& nbElements, const int& nbComponents,
-                                  const std::string& name = std::string(""))
-        throw (XAO_Exception);
+                                  const std::string& name = std::string(""));
 
         /**
          * Destructor.
@@ -146,27 +145,27 @@ namespace XAO
          * @param index the index of the component to get.
          * @return the name of the component for the given index.
          */
-        const std::string getComponentName(const int& index) throw (XAO_Exception);
+        const std::string getComponentName(const int& index);
 
         /**
          * Sets the name of a component.
          * @param componentIndex the index of the component to set.
          * @param name the name to set.
          */
-        void setComponentName(const int& componentIndex, const std::string& name) throw (XAO_Exception);
+        void setComponentName(const int& componentIndex, const std::string& name);
 
         /**
          * Sets the name of the components.
          * @param names the names to set.
          */
-        void setComponentsNames(const std::vector<std::string>& names) throw (XAO_Exception);
+        void setComponentsNames(const std::vector<std::string>& names);
 
         /**
          * Adds a new step of the same type than the field.
          * @param number the numer of the step.
          * @return the new create step.
          */
-        virtual Step* addNewStep(const int& number) throw (XAO_Exception) = 0;
+        virtual Step* addNewStep(const int& number) = 0;
 
         /**
          * Remove a step.
@@ -195,8 +194,8 @@ namespace XAO
         stepIterator end() { return m_steps.end(); }
 
     protected:
-        void checkComponent(const int& component) throw (XAO_Exception);
-        void checkStepIndex(const int& step) throw (XAO_Exception);
+        void checkComponent(const int& component);
+        void checkStepIndex(const int& step);
 
     protected:
         /** The name of the Field. */

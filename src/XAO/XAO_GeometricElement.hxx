@@ -147,28 +147,28 @@ namespace XAO
          * \param reference the reference to set.
          * \throw XAO_Exception if index is bigger than the size of the list.
          */
-        void setElement(const int& index, const std::string& name, const std::string& reference) throw (XAO_Exception);
+        void setElement(const int& index, const std::string& name, const std::string& reference) ;
         /**
          * Gets the name of an element.
          * \param index the index of the element to set.
          * \return the name of the element with the given index.
          * \throw XAO_Exception if index is bigger than the size of the list.
          */
-        const std::string getName(const int& index) throw (XAO_Exception);
+        const std::string getName(const int& index);
         /**
          * Sets the name of an element.
          * \param index the index of the element.
          * \param name the name to set.
          * \throw XAO_Exception if index is bigger than the size of the list.
          */
-        void setName(const int& index, const std::string& name) throw (XAO_Exception);
+        void setName(const int& index, const std::string& name) ;
 
         /**
          * Checks if an element has a name.
          * @param index the index of the element.
          * @return true if the element has a name, false otherwise.
          */
-        const bool hasName(const int& index) throw (XAO_Exception);
+        const bool hasName(const int& index);
 
         /**
          * Gets the reference of an element.
@@ -176,21 +176,21 @@ namespace XAO
          * \return the reference of the element.
          * \throw XAO_Exception if index is bigger than the size of the list.
          */
-        const std::string getReference(const int& index) throw (XAO_Exception);
+        const std::string getReference(const int& index);
         /**
          * Sets the reference of an element.
          * \param index the index of the element to set.
          * \param reference the reference to set.
          * \throw XAO_Exception if index is bigger than the size of the list.
          */
-        void setReference(const int& index, const std::string& reference) throw (XAO_Exception);
+        void setReference(const int& index, const std::string& reference) ;
 
         /**
          * Gets the index of an element using its reference.
          * \param reference the searched reference.
          * \return the index of the element or -1 if no element found.
          */
-        const int getIndexByReference(const std::string& reference) throw (XAO_Exception);
+        const int getIndexByReference(const std::string& reference) ;
 
         /**
          * Iterator on the element of the list.
@@ -210,7 +210,7 @@ namespace XAO
         iterator end() { return m_elements.end(); }
 
     private:
-        void checkElementIndex(const int& index) const throw (XAO_Exception);
+        void checkElementIndex(const int& index) const ;
 
     private:
         int m_count;

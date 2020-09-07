@@ -57,7 +57,7 @@ std::vector<int> IntegerStep::getValues()
 }
 
 std::vector<int> IntegerStep::getElement(const int& element)
-throw (XAO_Exception)
+
 {
     checkElementIndex(element);
 
@@ -66,7 +66,7 @@ throw (XAO_Exception)
 }
 
 std::vector<int> IntegerStep::getComponent(const int& component)
-throw (XAO_Exception)
+
 {
     checkComponentIndex(component);
 
@@ -84,7 +84,7 @@ throw (XAO_Exception)
 }
 
 const int IntegerStep::getValue(const int& element, const int& component)
-throw (XAO_Exception)
+
 {
     checkElementIndex(element);
     checkComponentIndex(component);
@@ -93,13 +93,13 @@ throw (XAO_Exception)
 }
 
 const std::string IntegerStep::getStringValue(const int& element, const int& component)
-throw (XAO_Exception)
+
 {
     return XaoUtils::intToString(getValue(element, component));
 }
 
 void IntegerStep::setValues(const std::vector<int>& values)
-throw (XAO_Exception)
+
 {
     checkNbValues((int)values.size());
 
@@ -113,7 +113,7 @@ throw (XAO_Exception)
 }
 
 void IntegerStep::setElement(const int& element, const std::vector<int>& elements)
-throw (XAO_Exception)
+
 {
     checkElementIndex(element);
     checkNbComponents((int)elements.size());
@@ -123,7 +123,7 @@ throw (XAO_Exception)
 }
 
 void IntegerStep::setComponent(const int& component, const std::vector<int>& components)
-throw (XAO_Exception)
+
 {
     checkElementIndex(component);
     checkNbElements((int)components.size());
@@ -133,7 +133,7 @@ throw (XAO_Exception)
 }
 
 void IntegerStep::setValue(const int& element, const int& component, const int& value)
-throw (XAO_Exception)
+
 {
     checkElementIndex(element);
     checkComponentIndex(component);
@@ -142,7 +142,7 @@ throw (XAO_Exception)
 }
 
 void IntegerStep::setStringValue(const int& element, const int& component, const std::string& value)
-throw (XAO_Exception)
+
 {
     setValue(element, component, XaoUtils::stringToInt(value));
 }

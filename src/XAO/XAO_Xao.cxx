@@ -75,7 +75,7 @@ const int Xao::countGroups() const
 }
 
 Group* Xao::getGroup(const int& index)
-throw (XAO_Exception)
+
 {
     checkGroupIndex(index);
 
@@ -90,7 +90,7 @@ throw (XAO_Exception)
 }
 
 Group* Xao::addGroup(const XAO::Dimension& dim, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkGeometry();
     checkGroupDimension(dim);
@@ -121,13 +121,13 @@ const int Xao::countFields() const
 }
 
 const XAO::Type Xao::getFieldType(const int& index)
-throw (XAO_Exception)
+
 {
     return getField(index)->getType();
 }
 
 Field* Xao::getField(const int& index)
-throw (XAO_Exception)
+
 {
     checkFieldIndex(index);
 
@@ -142,7 +142,7 @@ throw (XAO_Exception)
 }
 
 BooleanField* Xao::getBooleanField(const int& index)
-throw (XAO_Exception)
+
 {
     Field* field = getField(index);
     if (field->getType() != XAO::BOOLEAN)
@@ -151,7 +151,7 @@ throw (XAO_Exception)
 }
 
 DoubleField* Xao::getDoubleField(const int& index)
-throw (XAO_Exception)
+
 {
     Field* field = getField(index);
     if (field->getType() != XAO::DOUBLE)
@@ -160,7 +160,7 @@ throw (XAO_Exception)
 }
 
 IntegerField* Xao::getIntegerField(const int& index)
-throw (XAO_Exception)
+
 {
     Field* field = getField(index);
     if (field->getType() != XAO::INTEGER)
@@ -169,7 +169,7 @@ throw (XAO_Exception)
 }
 
 StringField* Xao::getStringField(const int& index)
-throw (XAO_Exception)
+
 {
     Field* field = getField(index);
     if (field->getType() != XAO::STRING)
@@ -178,7 +178,7 @@ throw (XAO_Exception)
 }
 
 Field* Xao::addField(const XAO::Type& type, const XAO::Dimension& dim, const int& nbComponents, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkGeometry();
     int nbElts = m_geometry->countElements(dim);
@@ -188,7 +188,7 @@ throw (XAO_Exception)
 }
 
 IntegerField* Xao::addIntegerField(const XAO::Dimension& dim, const int& nbComponents, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkGeometry();
     int nbElts = m_geometry->countElements(dim);
@@ -197,7 +197,7 @@ throw (XAO_Exception)
     return field;
 }
 BooleanField* Xao::addBooleanField(const XAO::Dimension& dim, const int& nbComponents, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkGeometry();
     int nbElts = m_geometry->countElements(dim);
@@ -206,7 +206,7 @@ throw (XAO_Exception)
     return field;
 }
 DoubleField* Xao::addDoubleField(const XAO::Dimension& dim, const int& nbComponents, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkGeometry();
     int nbElts = m_geometry->countElements(dim);
@@ -215,7 +215,7 @@ throw (XAO_Exception)
     return field;
 }
 StringField* Xao::addStringField(const XAO::Dimension& dim, const int& nbComponents, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkGeometry();
     int nbElts = m_geometry->countElements(dim);
@@ -262,14 +262,14 @@ const bool Xao::setXML(const std::string& xml)
 }
 
 void Xao::checkGeometry() const
-throw(XAO_Exception)
+
 {
     if (m_geometry == NULL)
         throw XAO_Exception("Geometry is null");
 }
 
 void Xao::checkGroupIndex(const int& index) const
-throw(XAO_Exception)
+
 {
     if (index >= 0 && index < countGroups())
         return;
@@ -279,7 +279,7 @@ throw(XAO_Exception)
 }
 
 void Xao::checkFieldIndex(const int& index) const
-throw(XAO_Exception)
+
 {
     if (index >= 0 && index < countFields())
         return;
@@ -289,7 +289,7 @@ throw(XAO_Exception)
 }
 
 void Xao::checkGroupDimension(const XAO::Dimension& dim) const
-throw(XAO_Exception)
+
 {
     if (dim == XAO::WHOLE)
         throw XAO_Exception(MsgBuilder() << "Invalid dimension for group: " << dim);

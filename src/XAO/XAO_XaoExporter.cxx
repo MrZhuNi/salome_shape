@@ -639,7 +639,7 @@ namespace {
 }
 
 const bool XaoExporter::saveToFile(Xao* xaoObject, const std::string& fileName, const std::string& shapeFileName)
-throw (XAO_Exception)
+
 {
     xmlDocPtr doc = exportXMLDoc(xaoObject, shapeFileName);
     xmlSaveFormatFileEnc(fileName.c_str(), doc, "UTF-8", 1); // format = 1 for node indentation
@@ -649,7 +649,7 @@ throw (XAO_Exception)
 }
 
 const std::string XaoExporter::saveToXml(Xao* xaoObject)
-throw (XAO_Exception)
+
 {
     xmlDocPtr doc = exportXMLDoc(xaoObject, "");
 
@@ -663,7 +663,7 @@ throw (XAO_Exception)
 }
 
 const bool XaoExporter::readFromFile(const std::string& fileName, Xao* xaoObject)
-throw (XAO_Exception)
+
 {
     // parse the file and get the DOM
     int options = XML_PARSE_HUGE | XML_PARSE_NOCDATA;
@@ -678,7 +678,7 @@ throw (XAO_Exception)
 }
 
 const bool XaoExporter::setXML(const std::string& xml, Xao* xaoObject)
-throw (XAO_Exception)
+
 {
     int options = XML_PARSE_HUGE | XML_PARSE_NOCDATA;
     xmlDocPtr doc = xmlReadDoc(BAD_CAST xml.c_str(), "", NULL, options);

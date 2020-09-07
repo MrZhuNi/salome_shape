@@ -86,7 +86,7 @@ namespace XAO
          * \return the integer value.
          * \throw XAO_Exception if value cannot be converted to string.
          */
-        static const int stringToInt(const std::string& value) throw(XAO_Exception);
+        static const int stringToInt(const std::string& value);
 
         /**
          * Converts a double into a string.
@@ -100,7 +100,7 @@ namespace XAO
          * \return the double value.
          * \throw XAO_Exception if value cannot be converted to string.
          */
-        static const double stringToDouble(const std::string& value) throw(XAO_Exception);
+        static const double stringToDouble(const std::string& value);
 
         /**
          * Converts a boolean into a string.
@@ -115,7 +115,7 @@ namespace XAO
          * \throw XAO_Exception if value cannot be converted to boolean.
          * \note accepted values are "true", "1", "false", "0".
          */
-        static const bool stringToBoolean(const std::string& value) throw(XAO_Exception);
+        static const bool stringToBoolean(const std::string& value);
 
         /**
          * Converts a Dimension to string.
@@ -123,7 +123,7 @@ namespace XAO
          * \return the dimension as a string.
          * \throw XAO_Exception
          */
-        static const std::string dimensionToString(const XAO::Dimension& dimension) throw(XAO_Exception);
+        static const std::string dimensionToString(const XAO::Dimension& dimension);
 
         /**
          * Converts a string into a Dimension.
@@ -131,7 +131,7 @@ namespace XAO
          * \return the converted Dimension.
          * \throw XAO_Exception if dimension cannot be converted.
          */
-        static const XAO::Dimension stringToDimension(const std::string& dimension) throw(XAO_Exception);
+        static const XAO::Dimension stringToDimension(const std::string& dimension);
 
         /**
          * Converts a Type to string.
@@ -139,7 +139,7 @@ namespace XAO
          * \return the Type as a string.
          * \throw XAO_Exception
          */
-        static const std::string fieldTypeToString(const XAO::Type& type) throw(XAO_Exception);
+        static const std::string fieldTypeToString(const XAO::Type& type);
 
         /**
          * Converts a string into a Type.
@@ -147,7 +147,7 @@ namespace XAO
          * \return the converted Type.
          * \throw XAO_Exception if type cannot be converted.
          */
-        static const XAO::Type stringToFieldType(const std::string& type) throw(XAO_Exception);
+        static const XAO::Type stringToFieldType(const std::string& type);
 
         /**
          * Converts a Format to string.
@@ -155,7 +155,7 @@ namespace XAO
          * \return the Format as a string.
          * \throw XAO_Exception
          */
-        static const std::string shapeFormatToString(const XAO::Format& format) throw(XAO_Exception);
+        static const std::string shapeFormatToString(const XAO::Format& format);
 
         /**
          * Converts a string into a Format.
@@ -163,7 +163,7 @@ namespace XAO
          * \return the converted Format.
          * \throw XAO_Exception if format cannot be converted.
          */
-        static const XAO::Format stringToShapeFormat(const std::string& format) throw(XAO_Exception);
+        static const XAO::Format stringToShapeFormat(const std::string& format);
     };
 
     /**

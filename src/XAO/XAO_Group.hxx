@@ -44,8 +44,7 @@ namespace XAO
          * @param nbElements the number of geometrical elements for the dimension in the geometry.
          * @param name the name of the group.
          */
-        Group(const XAO::Dimension& dim, const int& nbElements, const std::string& name = std::string(""))
-        throw (XAO_Exception);
+        Group(const XAO::Dimension& dim, const int& nbElements, const std::string& name = std::string(""));
 
         /**
          * Destructor.
@@ -140,8 +139,7 @@ namespace XAO
          * @param element
          * @throw XAO_Exception if element is bigger than the number of elements.
          */
-        void checkIndex(const int& element)
-        throw (XAO_Exception);
+        void checkIndex(const int& element);
 
     private:
         /** The name of the group. */

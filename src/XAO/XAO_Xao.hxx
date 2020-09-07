@@ -115,7 +115,7 @@ namespace XAO
          * Sets the geometry.
          * \param geometry the geometry to set.
          */
-        void setGeometry(Geometry* geometry) throw (XAO_Exception)
+        void setGeometry(Geometry* geometry) 
         {
             if (m_geometry != NULL)
                 throw XAO_Exception("Geometry already set.");
@@ -137,14 +137,14 @@ namespace XAO
          * \param index the index of the wanted group.
          * \return the group.
          */
-        Group* getGroup(const int& index) throw (XAO_Exception);
+        Group* getGroup(const int& index) ;
         /**
          * Adds a group.
          * \param dim the dimension of the group.
          * \param name the name of the group.
          * \return the created group.
          */
-        Group* addGroup(const XAO::Dimension& dim, const std::string& name = std::string("")) throw (XAO_Exception);
+        Group* addGroup(const XAO::Dimension& dim, const std::string& name = std::string("")) ;
         /**
          * Removes a group.
          * \param group the group to remove.
@@ -167,19 +167,19 @@ namespace XAO
          * \param index the index of the wanted field.
          * \return the type of the field.
          */
-        const XAO::Type getFieldType(const int& index) throw (XAO_Exception);
+        const XAO::Type getFieldType(const int& index) ;
 
         /**
          * Gets a field.
          * \param index the index of the wanted field.
          * \return the field.
          */
-        Field* getField(const int& index) throw (XAO_Exception);
+        Field* getField(const int& index) ;
 
-        BooleanField* getBooleanField(const int& index) throw (XAO_Exception);
-        DoubleField* getDoubleField(const int& index) throw (XAO_Exception);
-        IntegerField* getIntegerField(const int& index) throw (XAO_Exception);
-        StringField* getStringField(const int& index) throw (XAO_Exception);
+        BooleanField* getBooleanField(const int& index) ;
+        DoubleField* getDoubleField(const int& index) ;
+        IntegerField* getIntegerField(const int& index) ;
+        StringField* getStringField(const int& index) ;
 
         /**
          * Adds a field.
@@ -190,17 +190,16 @@ namespace XAO
          * \return the created field.
          */
         Field* addField(const XAO::Type& type, const XAO::Dimension& dim, const int& nbComponents,
-                const std::string& name = std::string(""))
-        throw (XAO_Exception);
+                const std::string& name = std::string(""));
 
         BooleanField* addBooleanField(const XAO::Dimension& dim, const int& nbComponents,
-                const std::string& name = std::string("")) throw (XAO_Exception);
+                const std::string& name = std::string("")) ;
         IntegerField* addIntegerField(const XAO::Dimension& dim, const int& nbComponents,
-                const std::string& name = std::string("")) throw (XAO_Exception);
+                const std::string& name = std::string("")) ;
         DoubleField* addDoubleField(const XAO::Dimension& dim, const int& nbComponents,
-                const std::string& name = std::string("")) throw (XAO_Exception);
+                const std::string& name = std::string("")) ;
         StringField* addStringField(const XAO::Dimension& dim, const int& nbComponents,
-                const std::string& name = std::string("")) throw (XAO_Exception);
+                const std::string& name = std::string("")) ;
 
         /**
          * Removes a field.
@@ -239,10 +238,10 @@ namespace XAO
         const bool setXML(const std::string& xml);
 
     private:
-        void checkGeometry() const throw (XAO_Exception);
-        void checkGroupIndex(const int& index) const throw (XAO_Exception);
-        void checkFieldIndex(const int& index) const throw (XAO_Exception);
-        void checkGroupDimension(const XAO::Dimension& dim) const throw (XAO_Exception);
+        void checkGeometry() const ;
+        void checkGroupIndex(const int& index) const ;
+        void checkFieldIndex(const int& index) const ;
+        void checkGroupDimension(const XAO::Dimension& dim) const ;
 
     private:
         /** The author of the file. */

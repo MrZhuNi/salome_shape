@@ -31,19 +31,19 @@ BooleanField::BooleanField(const XAO::Dimension& dimension,
 }
 
 Step* BooleanField::addNewStep(const int& step)
-throw (XAO_Exception)
+
 {
     return addStep(step, 0);
 }
 
 BooleanStep* BooleanField::addStep(const int& step)
-throw (XAO_Exception)
+
 {
     return addStep(step, 0);
 }
 
 BooleanStep* BooleanField::addStep(const int& step, const int& stamp)
-throw (XAO_Exception)
+
 {
     if (hasStep(step))
         throw XAO_Exception(MsgBuilder() << "Step with number " << step << " already exists.");
@@ -54,7 +54,7 @@ throw (XAO_Exception)
 }
 
 BooleanStep* BooleanField::getStep(const int& index)
-throw (XAO_Exception)
+
 {
     checkStepIndex(index);
     return (BooleanStep*)m_steps[index];

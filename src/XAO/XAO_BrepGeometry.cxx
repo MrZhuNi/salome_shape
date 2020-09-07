@@ -66,7 +66,7 @@ void BrepGeometry::setShapeString(const std::string& shape)
 }
 
 void BrepGeometry::writeShapeFile(const std::string& fileName)
-throw (XAO_Exception)
+
 {
     bool res = BRepTools::Write(m_shape, fileName.c_str());
     if (!res)
@@ -74,7 +74,7 @@ throw (XAO_Exception)
 }
 
 void BrepGeometry::readShapeFile(const std::string& fileName)
-throw (XAO_Exception)
+
  {
     BRep_Builder builder;
     bool res = BRepTools::Read(m_shape, fileName.c_str(), builder);
@@ -137,7 +137,7 @@ void BrepGeometry::initListIds(const TopAbs_ShapeEnum& shapeType, GeometricEleme
 }
 
 TopoDS_Shape BrepGeometry::getSubShape(const TopoDS_Shape& mainShape, const TopAbs_ShapeEnum& shapeType, const int& shapeIndex)
-throw (XAO_Exception)
+
 {
     TopTools_MapOfShape mapShape;
     TopTools_ListOfShape listShape;
@@ -247,7 +247,7 @@ std::vector<int> BrepGeometry::getSolidFaces(const int& solidIndex, const int& s
 }
 
 void BrepGeometry::getVertexXYZ(const int& vertexIndex, double& xCoord, double& yCoord, double& zCoord)
-throw (XAO_Exception)
+
 {
     xCoord = 0.;
     yCoord = 0.;
@@ -336,7 +336,7 @@ void BrepGeometry::setSolidID(const int& index, const int& id)
 
 // -----------------------------
 const int BrepGeometry::findElement(const XAO::Dimension& dim, const int& id)
-throw (XAO_Exception)
+
 {
     if (dim == XAO::VERTEX)
         return findVertex(id);
@@ -393,25 +393,25 @@ const std::string BrepGeometry::findSolidName(const int& id)
 
 // -----------------------------
 void BrepGeometry::changeVertexName(const int& id, const std::string& name)
-throw (XAO_Exception)
+
 {
     setVertexName(findVertex(id), name);
 }
 
 void BrepGeometry::changeEdgeName(const int& id, const std::string& name)
-throw (XAO_Exception)
+
 {
     setEdgeName(findEdge(id), name);
 }
 
 void BrepGeometry::changeFaceName(const int& id, const std::string& name)
-throw (XAO_Exception)
+
 {
     setFaceName(findFace(id), name);
 }
 
 void BrepGeometry::changeSolidName(const int& id, const std::string& name)
-throw (XAO_Exception)
+
 {
     setSolidName(findSolid(id), name);
 }

@@ -66,7 +66,7 @@ void GeometricElementList::setSize(const int& nb)
 }
 
 void GeometricElementList::checkElementIndex(const int& index) const
-throw (XAO_Exception)
+
 {
     if (m_count >= 0 && index < m_count)
         return;
@@ -76,7 +76,7 @@ throw (XAO_Exception)
 }
 
 void GeometricElementList::setElement(const int& index, const std::string& name, const std::string& reference)
-throw (XAO_Exception)
+
 {
     checkElementIndex(index);
     m_elements[index].setName(name);
@@ -84,42 +84,42 @@ throw (XAO_Exception)
 }
 
 const std::string GeometricElementList::getName(const int& index)
-throw (XAO_Exception)
+
 {
     checkElementIndex(index);
     return m_elements[index].getName();
 }
 
 void GeometricElementList::setName(const int& index, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkElementIndex(index);
     m_elements[index].setName(name);
 }
 
 const bool GeometricElementList::hasName(const int& index)
-throw (XAO_Exception)
+
 {
     checkElementIndex(index);
     return m_elements[index].hasName();
 }
 
 const std::string GeometricElementList::getReference(const int& index)
-throw (XAO_Exception)
+
 {
     checkElementIndex(index);
     return m_elements[index].getReference();
 }
 
 void GeometricElementList::setReference(const int& index, const std::string& name)
-throw (XAO_Exception)
+
 {
     checkElementIndex(index);
     m_elements[index].setReference(name);
 }
 
 const int GeometricElementList::getIndexByReference(const std::string& ref)
-throw (XAO_Exception)
+
 {
     for (int index = 0; index < m_count; ++index)
     {

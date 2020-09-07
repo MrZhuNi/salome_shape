@@ -117,30 +117,30 @@ namespace XAO
          * Checks that given element index is in the range of element indexes.
          * @param element the index to check.
          */
-        void checkElementIndex(const int& element) throw (XAO_Exception);
+        void checkElementIndex(const int& element);
         /**
          * Checks that given component index is in the range of component indexes.
          * @param component the index to check.
          */
-        void checkComponentIndex(const int& component)throw (XAO_Exception);
+        void checkComponentIndex(const int& component);
 
         /**
          * Checks that the given number of elements is correct.
          * @param nbElements the number of elements to check.
          */
-        void checkNbElements(const int& nbElements)throw (XAO_Exception);
+        void checkNbElements(const int& nbElements);
 
         /**
          * Checks that the given number of components is correct.
          * @param nbComponents the number of components to check.
          */
-        void checkNbComponents(const int& nbComponents)throw (XAO_Exception);
+        void checkNbComponents(const int& nbComponents);
 
         /**
          * checks that the given number of values is correct.
          * @param nbValues the number of values to check.
          */
-        void checkNbValues(const int& nbValues)throw (XAO_Exception);
+        void checkNbValues(const int& nbValues);
 
     protected:
         /** the index of the step. */

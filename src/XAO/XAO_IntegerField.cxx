@@ -30,19 +30,19 @@ IntegerField::IntegerField(const XAO::Dimension& dimension, const int& nbElement
 }
 
 Step* IntegerField::addNewStep(const int& step)
-throw (XAO_Exception)
+
 {
     return addStep(step, 0);
 }
 
 IntegerStep* IntegerField::addStep(const int& step)
-throw (XAO_Exception)
+
 {
     return addStep(step, 0);
 }
 
 IntegerStep* IntegerField::addStep(const int& step, const int& stamp)
-throw (XAO_Exception)
+
 {
     if (hasStep(step))
         throw XAO_Exception(MsgBuilder() << "Step with number " << step << " already exists.");
@@ -53,7 +53,7 @@ throw (XAO_Exception)
 }
 
 IntegerStep* IntegerField::getStep(const int& index)
-throw (XAO_Exception)
+
 {
     checkStepIndex(index);
     return (IntegerStep*)m_steps[index];
