@@ -50,7 +50,6 @@ void GeomAlgoAPI_ROOTExport::buildBox(const std::string& theObjectName,
                                       const double theOX, const double theOY, const double theOZ,
                                       const double theDX, const double theDY, const double theDZ)
 {
-  std::cout<<"buildBox"<<std::endl;
   myContent += "Double_t point_"+theObjectName+"[3] = {"+doubleToString(theOX)+",";
   myContent += doubleToString(theOY)+","+doubleToString(theOZ)+"};\n";
   myContent += "TGeoBBox* " + theObjectName + "= new TGeoBBox(\"" +theObjectName + "\",";
@@ -100,7 +99,6 @@ void GeomAlgoAPI_ROOTExport::buildEnd()
 bool GeomAlgoAPI_ROOTExport::write()
 {
   std::ofstream aFile;
-  std::cout<<myFileName.c_str()<<std::endl;
   OSD_OpenStream(aFile, myFileName.c_str(), std::ofstream::out);
   if (!aFile.is_open())
     return false;
