@@ -59,9 +59,13 @@ public:
   EXCHANGEAPI_EXPORT
   virtual ~ExchangeAPI_Import();
 
-  INTERFACE_4(ExchangePlugin_ImportFeature::ID(),
+  INTERFACE_6(ExchangePlugin_ImportFeature::ID(),
               filePath, ExchangePlugin_ImportFeature::FILE_PATH_ID(),
               ModelAPI_AttributeString, /** File path */,
+              stepimporttype, ExchangePlugin_ImportFeature::IMPORT_TYPE_ID(),
+              ModelAPI_AttributeString, /**import type */,
+              stepfilePath, ExchangePlugin_ImportFeature::STEP_FILE_PATH_ID(),
+              ModelAPI_AttributeString, /**step File path */,
               scalinterunits, ExchangePlugin_ImportFeature::STEP_SCALE_INTER_UNITS_ID(),
               ModelAPI_AttributeBoolean, /** Scale internationals units */,
               materials, ExchangePlugin_ImportFeature::STEP_MATERIALS_ID(),
@@ -75,8 +79,7 @@ public:
   void setFilePath(const std::string & theFilePath);
   
   EXCHANGEAPI_EXPORT
-  void setParameters(const std::shared_ptr<ModelAPI_Feature> & theFeature,
-                     const std::string & theFilePath, 
+  void setParameters(const std::string & theFilePath, 
                      const bool  anScalInterUnits,
                      const bool  anMaterials,
                      const bool  anColor);

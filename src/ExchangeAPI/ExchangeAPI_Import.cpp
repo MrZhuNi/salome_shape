@@ -58,7 +58,7 @@ ExchangeAPI_Import::ExchangeAPI_Import(
 : ModelHighAPI_Interface(theFeature)
 {
   if (initialize())
-    setParameters(theFeature,theFilePath,anScalInterUnits,anMaterials,anColor );
+    setParameters(theFilePath,anScalInterUnits,anMaterials,anColor);
 }
 
 ExchangeAPI_Import::~ExchangeAPI_Import()
@@ -67,16 +67,16 @@ ExchangeAPI_Import::~ExchangeAPI_Import()
 }
 
 //--------------------------------------------------------------------------------------
-void ExchangeAPI_Import::setParameters(const std::shared_ptr<ModelAPI_Feature> & theFeature,
-                                       const std::string & theFilePath, 
+void ExchangeAPI_Import::setParameters(const std::string & theFilePath, 
                                        const bool  anScalInterUnits,
                                        const bool  anMaterials,
                                        const bool  anColor)
 {
-  fillAttribute(theFilePath, myfilePath);
-  fillAttribute(anScalInterUnits, theFeature->boolean(ExchangePlugin_ImportFeature::STEP_SCALE_INTER_UNITS_ID()));
-  fillAttribute(anMaterials, theFeature->boolean(ExchangePlugin_ImportFeature::STEP_MATERIALS_ID()));
-  fillAttribute(anColor, theFeature->boolean(ExchangePlugin_ImportFeature::STEP_COLORS_ID()));
+  fillAttribute(theFilePath, mystepfilePath);
+  fillAttribute("STEP", feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
+  fillAttribute(anScalInterUnits, feature()->boolean(ExchangePlugin_ImportFeature::STEP_SCALE_INTER_UNITS_ID()));
+  fillAttribute(anMaterials, feature()->boolean(ExchangePlugin_ImportFeature::STEP_MATERIALS_ID()));
+  fillAttribute(anColor, feature()->boolean(ExchangePlugin_ImportFeature::STEP_COLORS_ID()));
   execute();
 }
 
@@ -84,7 +84,8 @@ void ExchangeAPI_Import::setParameters(const std::shared_ptr<ModelAPI_Feature> &
 void ExchangeAPI_Import::setFilePath(const std::string & theFilePath)
 {
   fillAttribute(theFilePath, myfilePath);
-
+  std::string anExtension = GeomAlgoAPI_Tools::File_Tools::extension(theFilePath);
+  fillAttribute(anExtension, feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
   execute();
 }
 
