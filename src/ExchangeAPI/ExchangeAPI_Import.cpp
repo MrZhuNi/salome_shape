@@ -28,6 +28,8 @@
 #include <ModelAPI_AttributeStringArray.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Tools.h>
+#include <GeomAlgoAPI_Tools.h>
+
 //--------------------------------------------------------------------------------------
 #include <algorithm>
 
@@ -47,9 +49,35 @@ ExchangeAPI_Import::ExchangeAPI_Import(
     setFilePath(theFilePath);
 }
 
+ExchangeAPI_Import::ExchangeAPI_Import(
+    const std::shared_ptr<ModelAPI_Feature> & theFeature,
+    const std::string & theFilePath,
+    const bool  anScalInterUnits,
+    const bool  anMaterials,
+    const bool  anColor)
+: ModelHighAPI_Interface(theFeature)
+{
+  if (initialize())
+    setParameters(theFeature,theFilePath,anScalInterUnits,anMaterials,anColor );
+}
+
 ExchangeAPI_Import::~ExchangeAPI_Import()
 {
 
+}
+
+//--------------------------------------------------------------------------------------
+void ExchangeAPI_Import::setParameters(const std::shared_ptr<ModelAPI_Feature> & theFeature,
+                                       const std::string & theFilePath, 
+                                       const bool  anScalInterUnits,
+                                       const bool  anMaterials,
+                                       const bool  anColor)
+{
+  fillAttribute(theFilePath, myfilePath);
+  fillAttribute(anScalInterUnits, theFeature->boolean(ExchangePlugin_ImportFeature::STEP_SCALE_INTER_UNITS_ID()));
+  fillAttribute(anMaterials, theFeature->boolean(ExchangePlugin_ImportFeature::STEP_MATERIALS_ID()));
+  fillAttribute(anColor, theFeature->boolean(ExchangePlugin_ImportFeature::STEP_COLORS_ID()));
+  execute();
 }
 
 //--------------------------------------------------------------------------------------
@@ -66,7 +94,16 @@ void ExchangeAPI_Import::dump(ModelHighAPI_Dumper& theDumper) const
   FeaturePtr aBase = feature();
   std::string aPartName = theDumper.name(aBase->document());
 
-  std::string aFilePath = aBase->string(ExchangePlugin_ImportFeature::FILE_PATH_ID())->value();
+  AttributeStringPtr aImportTypeAttr = aBase->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID());
+  std::string aFormat = aImportTypeAttr->value();
+  std::string aFilePath;
+  if (aFormat == "STEP" || aFormat == "STP")
+  {
+    aFilePath = aBase->string(ExchangePlugin_ImportFeature::STEP_FILE_PATH_ID())->value();
+  }else{
+    aFilePath = aBase->string(ExchangePlugin_ImportFeature::FILE_PATH_ID())->value();
+  }
+
   std::string aFrom = "\\";
   std::string aTo = "\\\\";
   for(std::size_t aPos = aFilePath.find(aFrom);
@@ -75,9 +112,19 @@ void ExchangeAPI_Import::dump(ModelHighAPI_Dumper& theDumper) const
     aFilePath.replace(aPos, aFrom.size(), aTo);
     aPos += aTo.size();
   }
+  std::string anExtension = GeomAlgoAPI_Tools::File_Tools::extension(aFilePath);
+  if( anExtension == "STP" || anExtension == "STEP"){
+      theDumper << aBase << " = model.addImportStep(" << aPartName << ", \""
+                << aFilePath << "\"" ;
 
-  theDumper << aBase << " = model.addImport(" << aPartName << ", \""
+      theDumper << ", " << scalinterunits()->value() 
+                << ", " << materials()->value()
+                << ", " << colors()->value() << ")"<< std::endl;
+  }else{
+      theDumper << aBase << " = model.addImport(" << aPartName << ", \""
             << aFilePath << "\")" << std::endl;
+  }
+
   // to make import have results
   theDumper << "model.do()" << std::endl;
 
@@ -100,6 +147,18 @@ ImportPtr addImport(
 {
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(ExchangeAPI_Import::ID());
   return ImportPtr(new ExchangeAPI_Import(aFeature, theFilePath));
+}
+
+ImportPtr addImportStep(
+    const std::shared_ptr<ModelAPI_Document> & thePart,
+    const std::string & theFilePath,
+    const bool  anScalInterUnits,
+    const bool  anMaterials,
+    const bool  anColor )
+{
+  std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(ExchangeAPI_Import::ID());
+  return ImportPtr(new ExchangeAPI_Import(aFeature, theFilePath,
+                                          anScalInterUnits, anMaterials, anColor));
 }
 
 void importPart(const std::shared_ptr<ModelAPI_Document> & thePart,

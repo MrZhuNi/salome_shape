@@ -124,7 +124,8 @@ class Model_Objects
       const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0);
   /// Creates a body result
   std::shared_ptr<ModelAPI_ResultBody> createBody(
-      const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0);
+      const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0,
+     const std::wstring& theNameShape = L"");
   /// Creates a part result
   std::shared_ptr<ModelAPI_ResultPart> createPart(
       const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0);
@@ -219,12 +220,13 @@ class Model_Objects
 
   //! Initializes the data fields of the feature
   void initData(ObjectPtr theObj, TDF_Label theLab, const int theTag);
-
-  //! Allows to store the result in the data tree of the document
+  
+ //! Allows to store the result in the data tree of the document
   //! (attaches 'data' of result to tree)
   void storeResult(std::shared_ptr<ModelAPI_Data> theFeatureData,
                    std::shared_ptr<ModelAPI_Result> theResult,
-                   const int theResultIndex = 0);
+                   const int theResultIndex = 0,
+                   const std::wstring& theNameShape = L"");
 
   //! returns the label of result by index; creates this label if it was not created before
   TDF_Label resultLabel(const std::shared_ptr<ModelAPI_Data>& theFeatureData,

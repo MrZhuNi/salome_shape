@@ -46,18 +46,40 @@ public:
   EXCHANGEAPI_EXPORT
   ExchangeAPI_Import(const std::shared_ptr<ModelAPI_Feature> & theFeature,
                      const std::string & theFilePath);
+
+  /// Constructor with values for Step file
+  EXCHANGEAPI_EXPORT
+  ExchangeAPI_Import(const std::shared_ptr<ModelAPI_Feature> & theFeature,
+                     const std::string & theFilePath,
+                     const bool  anScalInterUnits,
+                     const bool  anMaterials,
+                     const bool  anColor);
+                     
   /// Destructor
   EXCHANGEAPI_EXPORT
   virtual ~ExchangeAPI_Import();
 
-  INTERFACE_1(ExchangePlugin_ImportFeature::ID(),
+  INTERFACE_4(ExchangePlugin_ImportFeature::ID(),
               filePath, ExchangePlugin_ImportFeature::FILE_PATH_ID(),
-              ModelAPI_AttributeString, /** File path */
+              ModelAPI_AttributeString, /** File path */,
+              scalinterunits, ExchangePlugin_ImportFeature::STEP_SCALE_INTER_UNITS_ID(),
+              ModelAPI_AttributeBoolean, /** Scale internationals units */,
+              materials, ExchangePlugin_ImportFeature::STEP_MATERIALS_ID(),
+              ModelAPI_AttributeBoolean, /** Materials */,
+              colors, ExchangePlugin_ImportFeature::STEP_COLORS_ID(),
+              ModelAPI_AttributeBoolean, /** Colors */
   )
 
   /// Set point values
   EXCHANGEAPI_EXPORT
   void setFilePath(const std::string & theFilePath);
+  
+  EXCHANGEAPI_EXPORT
+  void setParameters(const std::shared_ptr<ModelAPI_Feature> & theFeature,
+                     const std::string & theFilePath, 
+                     const bool  anScalInterUnits,
+                     const bool  anMaterials,
+                     const bool  anColor);
 
   /// Dump wrapped feature
   EXCHANGEAPI_EXPORT
@@ -74,6 +96,16 @@ EXCHANGEAPI_EXPORT
 ImportPtr addImport(const std::shared_ptr<ModelAPI_Document> & thePart,
                     const std::string & theFilePath);
 
+/**\ingroup CPPHighAPI
+ * \brief Create Import Step feature
+ */
+EXCHANGEAPI_EXPORT
+ImportPtr addImportStep(const std::shared_ptr<ModelAPI_Document> & thePart,
+                        const std::string & theFilePath,
+                        const bool  anScalInterUnits,
+                        const bool  anMaterials,
+                        const bool  anColor);
+                    
 /** \ingroup CPPHighAPI
  *  \brief Import features from the file to the document after the current feature (or to the end).
  */
