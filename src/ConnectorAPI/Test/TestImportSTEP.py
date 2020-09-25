@@ -80,7 +80,7 @@ def testImportSTEP():
     model.testNbSubShapes(Import_1, GeomAPI_Shape.SOLID, [2])
 
     aCompositeFeature = featureToCompositeFeature(Import_1_Feature)
-    assert aCompositeFeature.numberOfSubs(False) == 2
+    assert aCompositeFeature.numberOfSubs(False) == 4
 
     aFeature1 = aCompositeFeature.subFeature(0, False)
     assert aFeature1.getKind() == "Group"
