@@ -45,8 +45,21 @@
       </stringvalue>
       <stringvalue id="root_manager_title"
                    label="Manager title"
-                   placeholder="Please input the title of the manager">
+                   placeholder="Please input the title of the title">
       </stringvalue>
+      <stringvalue id="root_name_file"
+                   label="Name file export"
+                   placeholder="Please input the name of file export">
+      </stringvalue>
+      <shape_selector id="root_main_object"
+                      icon=""
+                      label="Main object"
+                      tooltip="Select solid object"
+                      shape_types="solids"
+                      default=""
+                      geometrical_selection="true">
+        <validator id="GeomValidators_ShapeType" parameters="solid"/>
+      </shape_selector>
       <file_selector id="mat_file" title="Materials file" path="">
       </file_selector>
     </case>

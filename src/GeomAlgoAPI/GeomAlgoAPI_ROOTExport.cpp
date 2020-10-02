@@ -52,11 +52,21 @@ void GeomAlgoAPI_ROOTExport::buildBox(const std::string& theObjectName,
 {
   myContent += "Double_t point_"+theObjectName+"[3] = {"+doubleToString(theOX)+",";
   myContent += doubleToString(theOY)+","+doubleToString(theOZ)+"};\n";
-  myContent += "TGeoBBox* " + theObjectName + "= new TGeoBBox(\"" +theObjectName + "\",";
+  myContent += "TGeoBBox *" + theObjectName + "_tmp = new TGeoBBox(\"" +theObjectName + "_tmp\",";
   myContent += doubleToString(theDX)+","+doubleToString(theDY)+","+doubleToString(theDZ)+",point_";
   myContent += theObjectName + ");\n";
 }
 
+//=================================================================================================
+void GeomAlgoAPI_ROOTExport::buildTranslation(const std::string& theObjectName,
+                                              const double theDX, const double theDY,
+                                              const double theDZ)
+{
+  myContent += "TGeoTranslation *" + theObjectName;
+  myContent += "_tmp = new TGeoTranslation(\"" + theObjectName + "_tmp\",";
+  myContent += doubleToString(theDX) + "," + doubleToString(theDY) + ",";
+  myContent += doubleToString(theDZ) + ");\n";
+}
 
 //=================================================================================================
 void GeomAlgoAPI_ROOTExport::buildMatAndMedium(
@@ -85,13 +95,23 @@ void GeomAlgoAPI_ROOTExport::BuildVolume(const std::string theName,
                                          const std::string theGeometryName,
                                          const std::string theMediumName)
 {
-  myContent += "TGeoVolume *" + theName + " = new TGeoVolume(\"" + theName;
-  myContent += "\"," + theGeometryName + "," + theMediumName + ");\n";
+  myContent += "TGeoVolume *" + theGeometryName + " = new TGeoVolume(\"" + theName;
+  myContent += "\"," + theGeometryName + "_tmp," + theMediumName + ");\n";
 }
 
 //=================================================================================================
-void GeomAlgoAPI_ROOTExport::buildEnd()
+void GeomAlgoAPI_ROOTExport::buildEnd(const std::string theSolidName,
+                                      const std::string theExportName)
 {
+  myContent += "// ####################################\n";
+  myContent += "geom->SetTopVolume(" + theSolidName + ");\n";
+  myContent += "geom->CloseGeometry();\n";
+  myContent += theSolidName + "->SetVisContainers(kTRUE);\n";
+  myContent += "geom->SetTopVisible(kTRUE);\n";
+  myContent += "geom->Export(\"" + theExportName + "\");\n";
+  myContent += "geom->CheckOverlaps(0.0001);\n";
+  myContent += "geom->PrintOverlaps();\n";
+  myContent += theSolidName + "->Draw();\n";
   myContent += "}";
 }
 

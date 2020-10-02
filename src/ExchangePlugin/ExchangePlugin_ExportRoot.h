@@ -41,6 +41,9 @@ public:
                          double& OX, double& OY, double& OZ, double& DX, double& DY, double& DZ);
   
   /// Compute ....
+  static void computeTranslation(FeaturePtr theCurFeature, double& DX, double& DY, double& DZ);
+  
+  /// Compute ....
   static void computeGroup(FeaturePtr theCurFeature, std::vector<std::string>& theListNames);
 };
 

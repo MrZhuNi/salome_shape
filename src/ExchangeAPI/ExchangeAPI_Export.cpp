@@ -72,7 +72,7 @@ ExchangeAPI_Export::ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& 
 }
 
 
-/// Constructor with values for export in other formats than XAO.
+/// Constructor with values for export in other formats than XAO or ROOT.
 ExchangeAPI_Export::ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                               const std::string & theFilePath,
                               const std::list<ModelHighAPI_Selection> & theSelectionList,
@@ -85,6 +85,29 @@ ExchangeAPI_Export::ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& 
   fillAttribute(theSelectionList,
                 theFeature->selectionList(ExchangePlugin_ExportFeature::SELECTION_LIST_ID()));
   fillAttribute(theFileFormat, theFeature->string(ExchangePlugin_ExportFeature::FILE_FORMAT_ID()));
+  execute();
+  apply(); // finish operation to make sure the export is done on the current state of the history
+}
+
+/// Constructor with values for ROOT export.
+ExchangeAPI_Export::ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                                       const std::string & theFilePath,
+                                       const std::string & theManagerName,
+                                       const std::string & theManagerTitle,
+                                       const std::string & theMatFile,
+                                       const std::string & theRootNameFile,
+                                       const ModelHighAPI_Selection & theMainObject)
+: ModelHighAPI_Interface(theFeature)
+{
+  initialize();
+  fillAttribute("ROOT", theFeature->string(ExchangePlugin_ExportFeature::EXPORT_TYPE_ID()));
+  fillAttribute(theFilePath, theFeature->string(ExchangePlugin_ExportFeature::ROOT_FILE_PATH_ID()));
+  fillAttribute(theManagerName, theFeature->string(ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID()));
+  fillAttribute(theManagerTitle, theFeature->string(ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID()));
+  fillAttribute(theMatFile, theFeature->string(ExchangePlugin_ExportFeature::MAT_FILE_ID()));
+  fillAttribute(theRootNameFile, theFeature->string(ExchangePlugin_ExportFeature::EXP_NAME_FILE_ID()));
+  fillAttribute(theMainObject, theFeature->selection(ExchangePlugin_ExportFeature::MAIN_OBJECT_ID()));
+  fillAttribute("ROOT", theFeature->string(ExchangePlugin_ExportFeature::FILE_FORMAT_ID()));
   execute();
   apply(); // finish operation to make sure the export is done on the current state of the history
 }
@@ -142,6 +165,24 @@ void ExchangeAPI_Export::dump(ModelHighAPI_Dumper& theDumper) const
       theDumper << ", '" << theGeometryName << "'";
     theDumper << ")" << std::endl;
   }
+  else if (exportType == "ROOT") {
+    std::string aTmpROOTFile =
+                aBase->string(ExchangePlugin_ExportFeature::ROOT_FILE_PATH_ID())->value();
+    correctSeparators(aTmpROOTFile);
+    theDumper << "exportToROOT(" << aDocName << ", '" << aTmpROOTFile << "'" ;
+    std::string theManagerName = aBase->string(ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID())->value();
+    theDumper << ", '" << theManagerName << "'";
+    std::string theManagerTitle =aBase->string(ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID())->value();
+    theDumper << ", '" << theManagerTitle << "'";
+    std::string theMatFile = aBase->string(ExchangePlugin_ExportFeature::MAT_FILE_ID())->value();
+    theDumper << ", '" << theMatFile << "'";
+    std::string theExpNameFile = aBase->string(ExchangePlugin_ExportFeature::EXP_NAME_FILE_ID())->value();
+    theDumper << ", '" << theExpNameFile << "'";
+    AttributeSelectionPtr anAttrObject =
+      aBase->selection(ExchangePlugin_ExportFeature::MAIN_OBJECT_ID());
+    theDumper << ", " << anAttrObject;
+    theDumper << ")" << std::endl;
+  }
   else {
     std::string aFilePath = aBase->string(ExchangePlugin_ExportFeature::FILE_PATH_ID())->value();
     correctSeparators(aFilePath);
@@ -186,6 +227,21 @@ ExportPtr exportToXAO(const std::shared_ptr<ModelAPI_Document> & thePart,
     thePart->addFeature(ExchangePlugin_ExportFeature::ID());
   // special internal case when for XAO a selection list is filled
   return ExportPtr(new ExchangeAPI_Export(aFeature, theFilePath, theSelectedShape, "XAO"));
+}
+
+ExportPtr exportToROOT(const std::shared_ptr<ModelAPI_Document> & thePart,
+                       const std::string & theFilePath,
+                       const std::string & theManagerName,
+                       const std::string & theManagerTitle,
+                       const std::string & theMatFile,
+                       const std::string & theRootNameFile,
+                       const ModelHighAPI_Selection& theMainObject)
+{
+  apply(); // finish previous operation to make sure all previous operations are done
+  std::shared_ptr<ModelAPI_Feature> aFeature =
+    thePart->addFeature(ExchangePlugin_ExportFeature::ID());
+  return ExportPtr(new ExchangeAPI_Export(aFeature, theFilePath, theManagerName, theManagerTitle,
+                                          theMatFile, theRootNameFile, theMainObject));
 }
 
 //--------------------------------------------------------------------------------------

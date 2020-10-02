@@ -27,6 +27,7 @@
 
 #include <CollectionPlugin_Group.h>
 #include <ExchangePlugin_Tools.h>
+#include <FeaturesPlugin_Translation.h>
 #include <PrimitivesPlugin_Box.h>
 
 #include <fstream>
@@ -81,7 +82,8 @@ void ExchangePlugin_ExportRoot::computeBox(FeaturePtr theCurFeature,
                                            double& OX, double& OY, double& OZ,
                                            double& DX, double& DY, double& DZ)
 {
-  std::string aMethodName = theCurFeature->data()->string(PrimitivesPlugin_Box::CREATION_METHOD())->value();
+  std::string aMethodName =
+    theCurFeature->data()->string(PrimitivesPlugin_Box::CREATION_METHOD())->value();
   if (aMethodName == "BoxByDimensions") {
     DX = (theCurFeature->data()->real(PrimitivesPlugin_Box::DX_ID())->value())/2;
     DY = (theCurFeature->data()->real(PrimitivesPlugin_Box::DY_ID())->value())/2;
@@ -90,8 +92,10 @@ void ExchangePlugin_ExportRoot::computeBox(FeaturePtr theCurFeature,
     OY = DY;
     OZ = DZ;
   } else if (aMethodName == "BoxByTwoPoints") {
-    AttributeSelectionPtr aRef1 = theCurFeature->data()->selection(PrimitivesPlugin_Box::POINT_FIRST_ID());
-    AttributeSelectionPtr aRef2 = theCurFeature->data()->selection(PrimitivesPlugin_Box::POINT_SECOND_ID());
+    AttributeSelectionPtr aRef1 =
+      theCurFeature->data()->selection(PrimitivesPlugin_Box::POINT_FIRST_ID());
+    AttributeSelectionPtr aRef2 =
+      theCurFeature->data()->selection(PrimitivesPlugin_Box::POINT_SECOND_ID());
     GeomShapePtr aShape1 = aRef1->value();
     if (!aShape1.get())
       aShape1 = aRef1->context()->shape();
@@ -119,6 +123,18 @@ void ExchangePlugin_ExportRoot::computeBox(FeaturePtr theCurFeature,
     OX = theCurFeature->data()->real(PrimitivesPlugin_Box::OX_ID())->value();
     OY = theCurFeature->data()->real(PrimitivesPlugin_Box::OY_ID())->value();
     OZ = theCurFeature->data()->real(PrimitivesPlugin_Box::OZ_ID())->value();
+  }
+}
+
+void ExchangePlugin_ExportRoot::computeTranslation(FeaturePtr theCurFeature,
+                                                   double& DX, double& DY, double& DZ)
+{
+  std::string aMethodName =
+    theCurFeature->data()->string(FeaturesPlugin_Translation::CREATION_METHOD())->value();
+  if (aMethodName == "ByDimensions") {
+    DX = theCurFeature->data()->real(FeaturesPlugin_Translation::DX_ID())->value();
+    DY = theCurFeature->data()->real(FeaturesPlugin_Translation::DY_ID())->value();
+    DZ = theCurFeature->data()->real(FeaturesPlugin_Translation::DZ_ID())->value();
   }
 }
 

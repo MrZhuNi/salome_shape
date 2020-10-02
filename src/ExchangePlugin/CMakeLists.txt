@@ -29,6 +29,7 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Events
                     ${PROJECT_SOURCE_DIR}/src/XAO
                     ${PROJECT_SOURCE_DIR}/src/PrimitivesPlugin
                     ${PROJECT_SOURCE_DIR}/src/CollectionPlugin
+                    ${PROJECT_SOURCE_DIR}/src/FeaturesPlugin
 )
 
 SET(PROJECT_HEADERS
@@ -88,5 +89,6 @@ ADD_UNIT_TESTS(TestImport.py
                Test2459.py
                TestExportToXAOWithFields.py
                TestExportToXAOWithGroupNotUpdated.py
+               TestExportToROOT.py
                TestExport_FiniteValidator.py
 )

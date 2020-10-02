@@ -108,10 +108,15 @@ void ExchangePlugin_ExportFeature::initAttributes()
     ModelAPI_AttributeString::typeId());
   data()->addAttribute(ExchangePlugin_ExportFeature::XAO_GEOMETRY_NAME_ID(),
     ModelAPI_AttributeString::typeId());
+  
   data()->addAttribute(ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID(),
     ModelAPI_AttributeString::typeId());
   data()->addAttribute(ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID(),
     ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::EXP_NAME_FILE_ID(),
+    ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::MAIN_OBJECT_ID(),
+    ModelAPI_AttributeSelection::typeId());
   data()->addAttribute(ExchangePlugin_ExportFeature::MAT_FILE_ID(),
     ModelAPI_AttributeString::typeId());
 
@@ -626,6 +631,13 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
         anAlgo->buildBox(anObjectName, anOx, anOy, anOz, aDx, aDy, aDz);
         aListNamesOfFeatures.push_back(anObjectName);
         aListNamesOfFeatures.push_back(aCurFeature->data()->name());
+      } else if (aCurFeature->getKind() == "Translation") {
+        double aDx, aDy, aDz;
+        std::string anObjectName = aCurFeature->firstResult()->data()->name();
+        ExchangePlugin_ExportRoot::computeTranslation(aCurFeature, aDx, aDy, aDz);
+        anAlgo->buildTranslation(anObjectName, aDx, aDy, aDz);
+        aListNamesOfFeatures.push_back(anObjectName);
+        aListNamesOfFeatures.push_back(aCurFeature->data()->name());
       }
   }
   
@@ -647,7 +659,18 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
       }
   }
 
-  anAlgo->buildEnd();
+  std::string aExportFileName = string(ExchangePlugin_ExportFeature::EXP_NAME_FILE_ID())->value();
+  AttributeSelectionPtr anObjectAttr = selection(MAIN_OBJECT_ID());
+  FeaturePtr aFeature = anObjectAttr->contextFeature();
+  std::string aNameShape ="";
+  if (aFeature.get()) {
+    aNameShape = aFeature->firstResult()->data()->name();
+  } else {
+    ObjectPtr anObject = anObjectAttr->contextObject();
+    aNameShape = anObject->data()->name();
+  }
+          
+  anAlgo->buildEnd(aNameShape, aExportFileName);
 
   // Create the file with the content
   anAlgo->write();

@@ -43,6 +43,11 @@ public:
   GEOMALGOAPI_EXPORT void buildBox(const std::string& theObjectName,
                                    const double theOX, const double theOY, const double theOZ,
                                    const double theDX, const double theDY, const double theDZ);
+  
+  /// Build translation
+  GEOMALGOAPI_EXPORT void buildTranslation(const std::string& theObjectName,
+                                           const double theDX, const double theDY,
+                                           const double theDZ);
 
   /// Build mat and medium
   GEOMALGOAPI_EXPORT void buildMatAndMedium(
@@ -55,7 +60,7 @@ public:
                                       const std::string theMediumName);
   
   /// Build the end of file
-  GEOMALGOAPI_EXPORT void buildEnd();
+  GEOMALGOAPI_EXPORT void buildEnd(const std::string theName, const std::string theExportName);
 
   /// Write the file
   GEOMALGOAPI_EXPORT bool write();

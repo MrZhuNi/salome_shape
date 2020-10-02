@@ -54,24 +54,33 @@ public:
 
   /// Constructor with values for XAO of selected result export.
   EXCHANGEAPI_EXPORT
-    explicit ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-      const std::string & theFilePath,
-      const ModelHighAPI_Selection& theResult,
-      const std::string & theAuthor,
-      const std::string & theGeometryName = std::string());
+  explicit ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                              const std::string & theFilePath,
+                              const ModelHighAPI_Selection& theResult,
+                              const std::string & theAuthor,
+                              const std::string & theGeometryName = std::string());
 
-  /// Constructor with values for export in other formats than XAO.
+  /// Constructor with values for export in other formats than XAO or ROOT.
   EXCHANGEAPI_EXPORT
   explicit ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                               const std::string & theFilePath,
                               const std::list<ModelHighAPI_Selection> & theSelectionList,
                               const std::string & theFileFormat = std::string());
+  
+  EXCHANGEAPI_EXPORT
+  explicit ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                              const std::string & theFilePath,
+                              const std::string & theManagerName,
+                              const std::string & theManagerTitle,
+                              const std::string & theMatFile,
+                              const std::string & theRootNameFile,
+                              const ModelHighAPI_Selection & theMainObject);
 
   /// Destructor.
   EXCHANGEAPI_EXPORT
   virtual ~ExchangeAPI_Export();
 
-  INTERFACE_7(ExchangePlugin_ExportFeature::ID(),
+  INTERFACE_12(ExchangePlugin_ExportFeature::ID(),
              exportType, ExchangePlugin_ExportFeature::EXPORT_TYPE_ID(),
              ModelAPI_AttributeString, /** ExportType */,
              filePath, ExchangePlugin_ExportFeature::FILE_PATH_ID(),
@@ -85,7 +94,18 @@ public:
              xaoAuthor, ExchangePlugin_ExportFeature::XAO_AUTHOR_ID(),
              ModelAPI_AttributeString, /** xao author */,
              xaoGeometryName, ExchangePlugin_ExportFeature::XAO_GEOMETRY_NAME_ID(),
-             ModelAPI_AttributeString, /** xao geometry name */)
+             ModelAPI_AttributeString, /** xao geometry name */,
+             rootFilePath, ExchangePlugin_ExportFeature::ROOT_FILE_PATH_ID(),
+             ModelAPI_AttributeString, /** root file path */,
+             rootMainObject, ExchangePlugin_ExportFeature::MAIN_OBJECT_ID(),
+             ModelAPI_AttributeSelection, /**root main ovject */,
+             rootManagerName, ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID(),
+             ModelAPI_AttributeString, /** root manager name */,
+             rootManagerTitle, ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID(),
+             ModelAPI_AttributeString, /** root manager title */,
+             rootNameFile , ExchangePlugin_ExportFeature::EXP_NAME_FILE_ID(),
+             ModelAPI_AttributeString, /** root name file */
+             )
 
   /// Dump wrapped feature
   EXCHANGEAPI_EXPORT
@@ -122,6 +142,18 @@ ExportPtr exportToXAO(const std::shared_ptr<ModelAPI_Document> & thePart,
   const ModelHighAPI_Selection& theSelectedShape,
   const std::string & theAuthor = std::string(),
   const std::string & theGeometryName = std::string());
+
+ /**\ingroup CPPHighAPI
+ * \brief Exports to ROOT file all features of the current document.
+ */
+ EXCHANGEAPI_EXPORT
+ ExportPtr exportToROOT(const std::shared_ptr<ModelAPI_Document> & thePart,
+                        const std::string & theFilePath,
+                        const std::string & theManagerName,
+                        const std::string & theManagerTitle,
+                        const std::string & theMatFile,
+                        const std::string & theRootNameFile,
+                        const ModelHighAPI_Selection& theMainObject);
 
 //--------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------

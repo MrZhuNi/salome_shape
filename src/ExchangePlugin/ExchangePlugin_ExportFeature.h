@@ -103,6 +103,18 @@ public:
     static const std::string MY_ROOT_MANAGER_TITLE_ID("root_manager_title");
     return MY_ROOT_MANAGER_TITLE_ID;
   }
+  /// attribute name of file export 
+  inline static const std::string& EXP_NAME_FILE_ID()
+  {
+    static const std::string MY_EXP_NAME_FILE_ID("root_name_file");
+    return MY_EXP_NAME_FILE_ID;
+  }
+  /// Attribute name of the main solid.
+  inline static const std::string& MAIN_OBJECT_ID()
+  {
+    static const std::string MY_MAIN_OBJECT_ID("root_main_object");
+    return MY_MAIN_OBJECT_ID;
+  }
   /// attribute name of materials file
   inline static const std::string& MAT_FILE_ID()
   {
