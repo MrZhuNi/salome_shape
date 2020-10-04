@@ -158,6 +158,11 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
     myLastRowValue.push_back("2"); 
   }
   
+  if(myTypeMethodeBypoint)
+    myDataTbl->hideColumn(1);
+  else
+    myDataTbl->hideColumn(0);
+  
 
   QStringList aHeaders;
   aHeaders << "Point";

@@ -148,7 +148,7 @@ public:
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_Fillet2D();
 
-  INTERFACE_8(FeaturesPlugin_Fillet::ID(),
+  INTERFACE_10(FeaturesPlugin_Fillet::ID(),
               creationMethod, FeaturesPlugin_Fillet::CREATION_METHOD(),
                               ModelAPI_AttributeString,
                               /** Creation method */,
@@ -164,6 +164,12 @@ public:
               arraypointradiusbypoint, FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS(),
                            ModelAPI_AttributeSelectionList,
                            /** Base objects */, 
+              myvalues, FeaturesPlugin_Fillet::VALUES_ID(),
+                           ModelAPI_AttributeTables,
+                           /** table for methode multi-radiuses by point */,
+              myvaluescurv, FeaturesPlugin_Fillet::VALUES_CURV_ID(),
+                           ModelAPI_AttributeTables,
+                           /** table for methode multi-radiuses by curviliean coodinate */,              
               radius, FeaturesPlugin_Fillet::RADIUS_ID(),
                       ModelAPI_AttributeDouble,
                       /** Value of the fixed radius fillet */,
@@ -207,7 +213,7 @@ FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
 /// \ingroup CPPHighAPI
 /// \brief Create Fillet feature.
 FEATURESAPI_EXPORT
-FilletPtr addFilletMultiRadiusBypoint(const std::shared_ptr<ModelAPI_Document>& thePart,
+FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Selection & theedgeselected,
                     const std::list<ModelHighAPI_Selection>& thepoint,
                     const std::list<ModelHighAPI_Double>& theRadius,
@@ -217,10 +223,10 @@ FilletPtr addFilletMultiRadiusBypoint(const std::shared_ptr<ModelAPI_Document>& 
 /// \ingroup CPPHighAPI
 /// \brief Create Fillet feature.
 FEATURESAPI_EXPORT
-FilletPtr addFilletMultiRadiusByCurv(const std::shared_ptr<ModelAPI_Document>& thePart,
-                         const ModelHighAPI_Selection & theedgeselected,
-                         const std::list<ModelHighAPI_Double>& thepointCurvCood,
-                         const std::list<ModelHighAPI_Double>& theRadius,
-                         const bool keepSubResults= false);
+FilletPtr addFillet( const std::shared_ptr<ModelAPI_Document>& thePart,
+                     const ModelHighAPI_Selection & theedgeselected,
+                     const std::list<ModelHighAPI_Double>& thepointCurvCood,
+                     const std::list<ModelHighAPI_Double>& theRadius,
+                     const bool keepSubResults= false);
   
 #endif // FeaturesAPI_Fillet_H_
