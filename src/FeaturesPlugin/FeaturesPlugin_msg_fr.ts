@@ -925,6 +925,10 @@
   <context>
     <name>Fillet:main_objects</name>
     <message>
+      <source>Faces, edges or/and solids</source>
+      <translation>Faces, arêtes ou/et solides</translation>
+    </message>
+    <message>
       <source>Faces or/and edges</source>
       <translation>Faces ou/et arêtes</translation>
     </message>

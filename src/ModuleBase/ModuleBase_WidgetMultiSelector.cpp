@@ -352,7 +352,7 @@ bool ModuleBase_WidgetMultiSelector::restoreValueCustom()
     if (aSelectionType.empty())
       aSelectionListAttr->setSelectionType(myDefMode);
     else {
-      setCurrentShapeType(aSelectionType.c_str());
+      setCurrentShapeType(ModuleBase_Tools::shapeType(aSelectionType.c_str()));
       myDefMode = aSelectionType;
       myIsFirst = false;
     }
@@ -752,28 +752,23 @@ QIntList ModuleBase_WidgetMultiSelector::shapeTypes() const
   QIntList aShapeTypes;
 
   if (myShapeTypes.length() > 1 && myIsUseChoice) {
-    QStringList aTypes = myTypeCtrl->textValue().split("|", QString::SkipEmptyParts);
-    for(QString aType: aTypes) {
-      aShapeTypes.append(ModuleBase_Tools::shapeType(aType));
-    }
+    aShapeTypes.append(ModuleBase_Tools::shapeType(myTypeCtrl->textValue()));
   }
   else {
     foreach (QString aType, myShapeTypes) {
-      QStringList aSubTypes = aType.split("|", QString::SkipEmptyParts);
-      for(QString aSubType: aSubTypes) {
-        aShapeTypes.append(ModuleBase_Tools::shapeType(aSubType));
-      }
+      aShapeTypes.append(ModuleBase_Tools::shapeType(aType));
     }
   }
   return aShapeTypes;
 }
 
 //********************************************************************
-void ModuleBase_WidgetMultiSelector::setCurrentShapeType(const QString& theShapeType)
+void ModuleBase_WidgetMultiSelector::setCurrentShapeType(const int theShapeType)
 {
   int idx = 0;
   foreach (QString aShapeTypeName, myShapeTypes) {
-    if(aShapeTypeName == theShapeType && idx != myTypeCtrl->value()) {
+    int aRefType = ModuleBase_Tools::shapeType(aShapeTypeName);
+    if(aRefType == theShapeType && idx != myTypeCtrl->value()) {
       updateSelectionModesAndFilters(false);
       bool isBlocked = myTypeCtrl->blockSignals(true);
       myTypeCtrl->setValue(idx);

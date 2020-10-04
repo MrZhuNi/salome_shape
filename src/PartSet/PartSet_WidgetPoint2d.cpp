@@ -284,22 +284,19 @@ bool PartSet_WidgetPoint2D::setSelection(QList<ModuleBase_ViewerPrsPtr>& theValu
       Handle(V3d_View) aView = myWorkshop->viewer()->activeView();
       const TopoDS_Shape& aTDShape = aShape->impl<TopoDS_Shape>();
       GeomPnt2dPtr aPnt = PartSet_Tools::getPnt2d(aView, aTDShape, mySketch);
-
       if (aPnt) {
-        //isDone = setPoint(aPnt->x(), aPnt->y());
-        //setConstraintToPoint(aPnt->x(), aPnt->y(), aValue);
-        processSelection(aValue, aPnt->x(), aPnt->y());
-        isDone = true;
+        isDone = setPoint(aPnt->x(), aPnt->y());
+        setConstraintToPoint(aPnt->x(), aPnt->y(), aValue);
       }
     }
   }
   return isDone;
 }
 
-//void PartSet_WidgetPoint2D::selectContent()
-//{
-// // myXSpin->selectAll();
-//}
+void PartSet_WidgetPoint2D::selectContent()
+{
+ // myXSpin->selectAll();
+}
 
 bool PartSet_WidgetPoint2D::setPoint(double theX, double theY)
 {
@@ -557,36 +554,12 @@ void PartSet_WidgetPoint2D::mouseReleased(ModuleBase_IViewWindow* theWindow, QMo
     aFirstValue = myPreSelected;
   }
 
-  double aX=0, aY=0;
-  bool aHasPoint = false;
-  if (aFirstValue.get()) {
-    GeomShapePtr aShape = aFirstValue->shape();
-    if (aShape->shapeType() == TopAbs_VERTEX) {
-      const TopoDS_Shape& aTDShape = aShape->impl<TopoDS_Shape>();
-      GeomPnt2dPtr aPnt = PartSet_Tools::getPnt2d(aView, aTDShape, mySketch);
-      aX = aPnt->x();
-      aY = aPnt->y();
-      aHasPoint = true;
-    }
-  }
-  if (!aHasPoint) {
-    gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), aView);
-    PartSet_Tools::convertTo2D(aPoint, mySketch, aView, aX, aY);
-  }
-  processSelection(aFirstValue, aX, aY);
-}
-
-void PartSet_WidgetPoint2D::processSelection(const ModuleBase_ViewerPrsPtr& theValue,
-  double theX, double theY)
-{
-  if (!setPoint(theX, theY))
-    return;
   // if we have selection and use it
-  if (theValue.get() && isValidSelectionCustom(theValue) && theValue->shape().get()) {
-    /// Trihedron Axis may be selected, but shape is empty
-    GeomShapePtr aGeomShape = theValue->shape();
+  if (aFirstValue.get() && isValidSelectionCustom(aFirstValue) &&
+      aFirstValue->shape().get()) { /// Trihedron Axis may be selected, but shape is empty
+    GeomShapePtr aGeomShape = aFirstValue->shape();
     TopoDS_Shape aShape = aGeomShape->impl<TopoDS_Shape>();
-    ObjectPtr aObject = theValue->object();
+    ObjectPtr aObject = aFirstValue->object();
 
     FeaturePtr aSelectedFeature = ModelAPI_Feature::feature(aObject);
     bool anExternal = false;
@@ -612,12 +585,34 @@ void PartSet_WidgetPoint2D::processSelection(const ModuleBase_ViewerPrsPtr& theV
       }
     }
     if (anExternal) {
-      if (!isFeatureContainsPoint(myFeature, theX, theY)) {
-        if (aShape.ShapeType() == TopAbs_EDGE) {
+      GeomPnt2dPtr aPnt = PartSet_Tools::getPnt2d(aView, aShape, mySketch);
+      double aX = 0, aY = 0;
+      if (aPnt) {
+        aX = aPnt->x();
+        aY = aPnt->y();
+      }
+      if (aPnt && isFeatureContainsPoint(myFeature, aX, aY)) {
+        // do not create a constraint to the point, which already used by the feature
+        // if the feature contains the point, focus is not switched
+        setPoint(aX, aY);
+      }
+      else {
+        if (aPnt)
+          setPoint(aX, aY);
+        else {
+          if (aShape.ShapeType() == TopAbs_EDGE) {
+            // point is taken from mouse event and set in attribute. It should be done before set
+            // coinident constraint to the external line. If a point is created, it should be in
+            // the mouse clicked point
+            gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(),
+                                                               theWindow->v3dView());
+            PartSet_Tools::convertTo2D(aPoint, mySketch, aView, aX, aY);
+            setPoint(aX, aY);
+          }
           setValueState(Stored); // in case of edge selection, Apply state should also be updated
         }
         bool anOrphanPoint = aShape.ShapeType() == TopAbs_VERTEX ||
-                              isOrphanPoint(aSelectedFeature, mySketch, theX, theY);
+                              isOrphanPoint(aSelectedFeature, mySketch, aX, aY);
         if (anExternal) {
           // we should not stop reentrant operation on external objects because
           anOrphanPoint = true;
@@ -625,7 +620,7 @@ void PartSet_WidgetPoint2D::processSelection(const ModuleBase_ViewerPrsPtr& theV
           if (aShape.ShapeType() == TopAbs_VERTEX) {
             FeaturePtr aFixedFeature = ModelAPI_Feature::feature(aFixedObject);
             if (aFixedFeature.get() && aFixedFeature->getKind() == SketchPlugin_Point::ID()) {
-              anOrphanPoint = isOrphanPoint(aFixedFeature, mySketch, theX, theY);
+              anOrphanPoint = isOrphanPoint(aFixedFeature, mySketch, aX, aY);
             }
           }
         }
@@ -642,21 +637,33 @@ void PartSet_WidgetPoint2D::processSelection(const ModuleBase_ViewerPrsPtr& theV
         emit focusOutWidget(this);
       }
     }
-    else {
-      if (!isFeatureContainsPoint(myFeature, theX, theY)) {
+    if (!anExternal) {
+      GeomPnt2dPtr aPnt = PartSet_Tools::getPnt2d(aView, aShape, mySketch);
+      if (aPnt && isFeatureContainsPoint(myFeature, aPnt->x(), aPnt->y())) {
+        // when the point is selected, the coordinates of the point should be set into the attribute
+        // if the feature contains the point, focus is not switched
+        setPoint(aPnt->x(), aPnt->y());
+      }
+      else {
         double aX = 0, aY = 0;
         bool anOrphanPoint = isOrphanPoint(aSelectedFeature, mySketch, aX, aY);
         // do not set a coincidence constraint in the attribute if the feature contains a point
         // with the same coordinates. It is important for line creation in order to do not set
         // the same constraints for the same points, oterwise the result line has zero length.
         bool isAuxiliaryFeature = false;
-        if (aShape.ShapeType() == TopAbs_VERTEX) {
-          setConstraintToPoint(theX, theY, theValue);
+        if (aPnt) {
+          aX = aPnt->x();
+          aY = aPnt->y();
+          setPoint(aX, aY);
+          setConstraintToPoint(aX, aY, aFirstValue);
         }
         else if (aShape.ShapeType() == TopAbs_EDGE) {
           // point is taken from mouse event and set in attribute. It should be done before setting
           // coinident constraint to the external line. If a point is created, it should be in
           // the mouse clicked point
+          gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWindow->v3dView());
+          PartSet_Tools::convertTo2D(aPoint, mySketch, aView, aX, aY);
+          setPoint(aX, aY);
           setConstraintToObject(aObject);
           setValueState(Stored); // in case of edge selection, Apply state should also be updated
           isAuxiliaryFeature = PartSet_Tools::isAuxiliarySketchEntity(aObject);
@@ -676,9 +683,9 @@ void PartSet_WidgetPoint2D::processSelection(const ModuleBase_ViewerPrsPtr& theV
     }
   }
   // The selection could be a center of an external circular object
-  else if (theValue.get() && (!theValue->interactive().IsNull())) {
+  else if (aFirstValue.get() && (!aFirstValue->interactive().IsNull())) {
     Handle(PartSet_CenterPrs) aAIS =
-        Handle(PartSet_CenterPrs)::DownCast(theValue->interactive());
+        Handle(PartSet_CenterPrs)::DownCast(aFirstValue->interactive());
     if (!aAIS.IsNull()) {
       gp_Pnt aPntComp = aAIS->Component()->Pnt();
       GeomVertexPtr aVertPtr(new GeomAPI_Vertex(aPntComp.X(), aPntComp.Y(), aPntComp.Z()));
@@ -698,6 +705,12 @@ void PartSet_WidgetPoint2D::processSelection(const ModuleBase_ViewerPrsPtr& theV
       // external objects e.g. selection of trihedron axis when input end arc point
       updateObject(feature());
 
+      GeomPnt2dPtr aPnt = PartSet_Tools::getPnt2d(aView, aShape, mySketch);
+      if (aPnt) {
+        // do not create a constraint to the point, which already used by the feature
+        // if the feature contains the point, focus is not switched
+        setPoint(aPnt->x(), aPnt->y());
+      }
       emit vertexSelected(); // it stops the reentrant operation
       myPreSelected.reset();
       emit focusOutWidget(this);
@@ -705,9 +718,12 @@ void PartSet_WidgetPoint2D::processSelection(const ModuleBase_ViewerPrsPtr& theV
   }
   else {
     // A case when point is taken from mouse event
+    gp_Pnt aPoint = PartSet_Tools::convertClickToPoint(theEvent->pos(), theWindow->v3dView());
+    double aX = 0, aY = 0;
+    PartSet_Tools::convertTo2D(aPoint, mySketch, aView, aX, aY);
 
     // if the feature contains the point, focus is not switched
-    if (isFeatureContainsPoint(myFeature, theX, theY))
+    if (!setPoint(aX, aY) || isFeatureContainsPoint(myFeature, aX, aY))
       return;
 
     myPreSelected.reset();

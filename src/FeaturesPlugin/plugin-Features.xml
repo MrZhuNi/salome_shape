@@ -126,7 +126,7 @@
         <source path="fillet1d_widget.xml"/>
       </feature>
       <feature id="Fillet" title="Fillet" tooltip="Perform fillet on face or edge"
-               icon="icons/Features/fillet.png" auto_preview="true" helpfile="filletFeature.html">
+               icon="icons/Features/fillet.png" auto_preview="false" helpfile="filletFeature.html">
         <source path="fillet_widget.xml"/>
       </feature>
       <feature id="Chamfer" title="Chamfer" tooltip="Perform chamfer on face or edge"

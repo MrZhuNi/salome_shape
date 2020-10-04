@@ -25,7 +25,6 @@
 
 #include <ModelAPI_CompositeFeature.h>
 #include <ModuleBase_ModelWidget.h>
-#include <ModuleBase_ViewerPrs.h>
 
 #include <QObject>
 
@@ -99,7 +98,7 @@ Q_OBJECT
                             const bool theToValidate);
 
   /// Select the internal content if it can be selected. It is empty in the default realization
-  //virtual void selectContent();
+  virtual void selectContent();
 
   /// Returns list of widget controls
   /// \return a control list
@@ -222,13 +221,6 @@ protected:
    /// \theObject a result object
    /// \return true if succed
    bool setConstraintToObject(const ObjectPtr& theObject);
-
-   /// Process selected value
-   /// \param theValue the selected object
-   /// \param theX X coordinate of clicked point
-   /// \param theY Y coordinate of clicked point
-   void processSelection(const ModuleBase_ViewerPrsPtr& theValue, double theX, double theY);
-
 
 public:
    /// Returns if the feature is an orphan point, circle or an arc. Returns true if it

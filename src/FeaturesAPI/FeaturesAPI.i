@@ -42,6 +42,8 @@
 %feature("kwargs") addCommon;
 %feature("kwargs") addCut;
 %feature("kwargs") addFillet;
+%feature("kwargs") addFilletMultiRadiusBypoint;
+%feature("kwargs") addFilletMultiRadiusByCurv;
 %feature("kwargs") addFuse;
 %feature("kwargs") addIntersection;
 %feature("kwargs") addMultiRotation;

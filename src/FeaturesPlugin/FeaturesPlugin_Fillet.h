@@ -61,6 +61,30 @@ public:
     return MY_VARYING_RADIUS;
   }
 
+  inline static const std::string CREATION_METHOD_MULTIPLES_RADIUSES()
+  {
+    static std::string MY_METHOD_MULTIPLES_RADIUSES("multiple_radiuses");
+    return MY_METHOD_MULTIPLES_RADIUSES;
+  }
+
+  inline static const std::string CREATION_METHOD_BY_POINTS()
+  {
+    static std::string MY_CREATION_METHOD_BY_POINTS("by_point_method");
+    return MY_CREATION_METHOD_BY_POINTS;
+  }
+
+  inline static const std::string ARRAY_POINT_RADIUS_BY_POINTS()
+  {
+    static std::string MY_ARRAY_POINT_RADIUS_BY_POINTS("array_point_radius_by_point");
+    return MY_ARRAY_POINT_RADIUS_BY_POINTS;
+  }
+
+  inline static const std::string CREATION_METHOD_BY_CURVILEAR_ABSCISSA()
+  {
+    static std::string MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA("by_curvilinear_abscissa_methode");
+    return MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA;
+  }
+
   /// Attribute name of main objects.
   inline static const std::string& OBJECT_LIST_ID()
   {
@@ -73,6 +97,27 @@ public:
   {
     static const std::string MY_START_RADIUS_ID("radius1");
     return MY_START_RADIUS_ID;
+  }
+
+  /// Attribute name of edge selected.
+  inline static const std::string& EDGE_SELECTED_ID()
+  {
+    static const std::string MY_EDGE_SELECTED_ID("edge_selected");
+    return MY_EDGE_SELECTED_ID;
+  }
+
+  /// attribute name of list of tables that contain deafult values (row 0) and the custom values
+  inline static const std::string& VALUES_ID()
+  {
+    static const std::string MY_VALUES_ID("values");
+    return MY_VALUES_ID;
+  }
+  
+  /// attribute name of list of tables that contain deafult values (row 0) and the custom values
+  inline static const std::string& VALUES_CURV_ID()
+  {
+    static const std::string MY_VALUES_ID("values_curv");
+    return MY_VALUES_ID;
   }
 
   /// Attribute name of end radius.
@@ -90,6 +135,8 @@ public:
 
   /// Request for initialization of data model of the feature: adding all attributes.
   FEATURESPLUGIN_EXPORT virtual void initAttributes();
+
+  FEATURESPLUGIN_EXPORT void attributeChanged(const std::string& theID);
 
   /// Use plugin manager for features creation.
   FeaturesPlugin_Fillet();
