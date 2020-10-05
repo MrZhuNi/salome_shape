@@ -64,8 +64,11 @@
                         icon="icons/Features/edge.png"
                         label="Start"
                         tooltip="Select edge"
-                        shape_types="edge">
+                        shape_types="edge"
+                        use_choice="false"
+                        concealment="true">
            <validator id="GeomValidators_ShapeType" parameters="empty,line"/>
+           <!--validator id="FeaturesPlugin_ValidatorFilletSelection"/-->
           </shape_selector>
           <multiradius-panel id="array_point_radius_by_point"
             filter_points="false">
@@ -76,13 +79,16 @@
          title="By curvilinear abscissa"
          tooltip="Fillet with multiple radiuses by curvilinear abscissa"
          icon="icons/Features/fillet_multiradius_by_curv.png">
-          <shape_selector id="edgeface_selected"
-                        icon="icons/Features/edge.png"
-                        label="Start"
-                        tooltip="Select edge"
-                        shape_types="edge face">
-           <validator id="GeomValidators_ShapeType" parameters="empty,line,face"/>
-          </shape_selector>
+          <multi_selector id="main_objects"
+                      label="Faces, edges or/and solids"
+                      icon=""
+                      tooltip="Select objects"
+                      shape_types="edges faces solids"
+                      use_choice="false"
+                      concealment="true">
+          <validator id="PartSet_DifferentObjects"/>
+          <validator id="FeaturesPlugin_ValidatorFilletSelection"/>
+          </multi_selector>
           <multiradiuscurv-panel id="array_point_radius_by_point"
             filter_points="false">
             <validator id="GeomValidators_ShapeType" parameters="empty,vertex"/>

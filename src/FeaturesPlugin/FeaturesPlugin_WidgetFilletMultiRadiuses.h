@@ -114,11 +114,11 @@ protected:
 
 private slots:
 
-  /// Slot called on add a step
-  void onAddStep();
+  /// Slot called on add a row
+  void onAdd();
 
-  /// Slot called on remove a step
-  void onRemoveStep();
+  /// Slot called on remove a row
+  void onRemove();
 
   /// Retunrs a list of possible shape types
   /// \return a list of shapes

@@ -124,13 +124,14 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
 {
   QVBoxLayout* aMainLayout = new QVBoxLayout(this);
 
-  aMainLayout->addWidget(new QLabel("Raduises", this));
+  aMainLayout->addWidget(new QLabel("Radii", this));
   // Radiuses controls
   QFrame* aRadiusesFrame = new QFrame(this);
+  aRadiusesFrame->setFrameShape( QFrame::HLine );
   aRadiusesFrame->setFrameShape(QFrame::Box);
   aRadiusesFrame->setFrameStyle(QFrame::StyledPanel);
-  QVBoxLayout* aRadiusesLayout = new QVBoxLayout(aRadiusesFrame);
-  aMainLayout->addWidget(aRadiusesFrame);
+  QVBoxLayout* aRadiusesLayout = new QVBoxLayout();
+  
 
   myDataTbl = new QTableWidget(2, 3, aRadiusesFrame);
 
@@ -166,7 +167,7 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
   
   QStringList aHeaders;
   aHeaders << "Point";
-  aHeaders << "Curvilinear /n Abscissa";
+  aHeaders << "Curvilinear Abscissa";
   aHeaders << "Radius";
 
  
@@ -211,9 +212,12 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
   font.setPointSize(12);
   myRemoveBtn->setFont(font);
   aBtnLayout->addWidget(myRemoveBtn);
+  
+  aRadiusesFrame->setLayout(aRadiusesLayout ) ;
+  aMainLayout->addWidget(aRadiusesFrame);
 
-  connect(aAddBtn, SIGNAL(clicked(bool)), SLOT(onAddStep()));
-  connect(myRemoveBtn, SIGNAL(clicked(bool)), SLOT(onRemoveStep()));
+  connect(aAddBtn, SIGNAL(clicked(bool)), SLOT(onAdd()));
+  connect(myRemoveBtn, SIGNAL(clicked(bool)), SLOT(onRemove()));
   connect(qApp, SIGNAL(focusChanged(QWidget*, QWidget*)), SLOT(onFocusChanged(QWidget*, QWidget*)));
 }
 
@@ -365,8 +369,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
   AttributeSelectionPtr anEdges =
     std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(aData->attribute(FeaturesPlugin_Fillet::EDGE_SELECTED_ID()));
 
-  if( !anEdges->isInitialized() )
-      return;
+  
   
   std::map<double,std::pair<QString,QString>> aValuesSort; 
 
@@ -375,6 +378,9 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
   std::map<double,std::pair<QString,QString>>::iterator itValuesSort;
   if(myTypeMethodeBypoint)
   {
+    if( !anEdges->isInitialized() )
+      return;
+
     GeomEdgePtr anEdge = GeomEdgePtr(new GeomAPI_Edge( anEdges->value()));
     GeomPointPtr first =  anEdge->firstPoint();
     GeomPointPtr last  =  anEdge->lastPoint();
@@ -424,12 +430,12 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
   }else{
 
     ModelAPI_AttributeTables::Value aVal;
-    if (aTablesAttr->isInitialized()){
+   if (aTablesAttr->isInitialized()){
         
         for (int anIndex = 0; anIndex < aTablesAttr->rows(); ++anIndex) {
           aVal = aTablesAttr->value(anIndex,0);
           double curv = getValueText(aVal).toDouble();
-          if ( aValuesSort.find( curv ) == aValuesSort.end() )
+         if ( aValuesSort.find( curv ) == aValuesSort.end() )
             aValuesSort[ curv ] = std::make_pair(getValueText(aVal), findRadius(getValueText(aVal)));
         }
         aRows = aTablesAttr->rows();
@@ -474,7 +480,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
           aItem = new QTableWidgetItem(aCurv);
           myDataTbl->setItem(k, 1, aItem);
     }
-    aItem = myDataTbl->item(k, 2);
+   aItem = myDataTbl->item(k, 2);
     if (aItem) {
           aItem->setText( elem.second);
     } else {
@@ -493,7 +499,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
 
 
 //**********************************************************************************
-void FeaturesPlugin_WidgetFilletMultiRadiuses::onAddStep()
+void FeaturesPlugin_WidgetFilletMultiRadiuses::onAdd()
 {
 
   QModelIndex index = myDataTbl->currentIndex();
@@ -510,7 +516,10 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onAddStep()
     i = myDataTbl->rowCount() - 2;
   
   if ( i == 0)
-    i =1;
+    i = 1;
+  else
+    i= i+1;
+  
 
   myDataTbl->model()->insertRow(i);
   QTableWidgetItem* aItem =0;
@@ -526,14 +535,14 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onAddStep()
   myDataTbl->setItem(i, 2, aItem);
   aItem = new QTableWidgetItem(myLastRowValue[2]);
   myDataTbl->setItem(i, 2, aItem);
-
   myDataTbl->blockSignals(false);
-
+  
   emit valuesChanged();
+  myDataTbl->setCurrentCell( i, 0);
 }
 
 //**********************************************************************************
-void FeaturesPlugin_WidgetFilletMultiRadiuses::onRemoveStep()
+void FeaturesPlugin_WidgetFilletMultiRadiuses::onRemove()
 {
   QModelIndex index = myDataTbl->currentIndex();
 
@@ -643,7 +652,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::
   aShape = aValue->shape();
   if ( (aResult.get() || aShape.get() ) && !aSelList->isInList(aResult, aShape)) {
     aSelList->append(aResult, aShape);
-    onRemoveStep();
+    onRemove();
    }else{
       mySetSelection = false;
       return false; 
