@@ -72,6 +72,7 @@ void FeaturesPlugin_Fillet::initAttributes()
   data()->addAttribute(VALUES_ID(), ModelAPI_AttributeTables::typeId());
   data()->addAttribute(VALUES_CURV_ID(), ModelAPI_AttributeTables::typeId());
   data()->addAttribute(EDGE_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
+  data()->addAttribute(EDGEFACE_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
 
   data()->addAttribute(ARRAY_POINT_RADIUS_BY_POINTS(), ModelAPI_AttributeSelectionList::typeId());
 
@@ -91,7 +92,6 @@ void FeaturesPlugin_Fillet::initAttributes()
 
 AttributePtr FeaturesPlugin_Fillet::objectsAttribute()
 {
-
   return attribute(OBJECT_LIST_ID());
 }
 
@@ -103,12 +103,17 @@ void FeaturesPlugin_Fillet::attributeChanged(const std::string& theID)
     AttributeSelectionPtr anEdges =
       std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(attribute(EDGE_SELECTED_ID()));
     AttributeSelectionListPtr array = selectionList(OBJECT_LIST_ID());
-    //if (array->isInitialized() )
-    //  array->clear(); 
-
     array->append(anEdges->namingName() );
-
-
+  
+    selection( EDGEFACE_SELECTED_ID())->setValue( anEdges->context(), anEdges->value());
+  }
+  else if (theID == EDGEFACE_SELECTED_ID() 
+      && string(CREATION_METHOD())->value() == CREATION_METHOD_MULTIPLES_RADIUSES()) {
+    
+    AttributeSelectionPtr anEdges =
+      std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(attribute(EDGEFACE_SELECTED_ID()));
+    AttributeSelectionListPtr array = selectionList(OBJECT_LIST_ID());
+    array->append(anEdges->namingName() );
   }
 }
 
@@ -156,6 +161,7 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
         aVal = aTablesAttr->value(k, 1);
         radiuses.push_back(aVal.myDouble);
     }
+
     aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, coodCurv,radiuses));
 
   }else

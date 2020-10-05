@@ -76,12 +76,12 @@
          title="By curvilinear abscissa"
          tooltip="Fillet with multiple radiuses by curvilinear abscissa"
          icon="icons/Features/fillet_multiradius_by_curv.png">
-          <shape_selector id="edge_selected"
+          <shape_selector id="edgeface_selected"
                         icon="icons/Features/edge.png"
                         label="Start"
                         tooltip="Select edge"
-                        shape_types="edge">
-           <validator id="GeomValidators_ShapeType" parameters="empty,line"/>
+                        shape_types="edge face">
+           <validator id="GeomValidators_ShapeType" parameters="empty,line,face"/>
           </shape_selector>
           <multiradiuscurv-panel id="array_point_radius_by_point"
             filter_points="false">

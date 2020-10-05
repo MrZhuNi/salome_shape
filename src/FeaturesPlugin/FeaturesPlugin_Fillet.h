@@ -106,6 +106,13 @@ public:
     return MY_EDGE_SELECTED_ID;
   }
 
+  /// Attribute name of edge selected.
+  inline static const std::string& EDGEFACE_SELECTED_ID()
+  {
+    static const std::string MY_EDGEFACE_SELECTED_ID("edgeface_selected");
+    return MY_EDGEFACE_SELECTED_ID;
+  }
+
   /// attribute name of list of tables that contain deafult values (row 0) and the custom values
   inline static const std::string& VALUES_ID()
   {

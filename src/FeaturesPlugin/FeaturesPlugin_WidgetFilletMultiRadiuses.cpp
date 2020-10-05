@@ -56,6 +56,7 @@
 #include <GeomAlgoAPI_PointBuilder.h>
 #include <GeomAPI_Edge.h>
 #include <GeomAPI_Pnt.h>
+#include <GeomAPI_Curve.h>
 #include <Locale_Convert.h>
 #include <QStandardItem>
 #include <map>
@@ -163,7 +164,6 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
   else
     myDataTbl->hideColumn(0);
   
-
   QStringList aHeaders;
   aHeaders << "Point";
   aHeaders << "Curvilinear /n Abscissa";
@@ -320,7 +320,6 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::eventFilter(QObject* theObject, Q
 //**********************************************************************************
 bool FeaturesPlugin_WidgetFilletMultiRadiuses::storeValueCustom()
 {
-
   DataPtr aData = myFeature->data();
 
   AttributeTablesPtr aTablesAttr;
@@ -380,7 +379,9 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
     GeomPointPtr first =  anEdge->firstPoint();
     GeomPointPtr last  =  anEdge->lastPoint();
     double taille = first->distance(last);
-    
+
+    std::shared_ptr<GeomAPI_Curve> aCurve(new GeomAPI_Curve(anEdges->value()));
+
     // Load points 
     AttributeSelectionListPtr aSelectionListAttr = aData->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
     AttributeDoubleArrayPtr aArrayAttr; 
@@ -406,7 +407,8 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
     for (; aPointsIt != aPoints.end(); ++aPointsIt) {
       AttributeSelectionPtr attsel = aSelectionListAttr->value(i);
       std::shared_ptr<GeomAPI_Pnt> aPnt = GeomAlgoAPI_PointBuilder::point(*aPointsIt);
-      res = (aPnt->distance(first) / taille);
+      std::shared_ptr<GeomAPI_Pnt> aPntCurv = aCurve->project(aPnt);
+      res = (aPntCurv->distance(first) / taille);
       QString aName = QString::fromStdWString(attsel->namingName());
       QString aRad = findRadius( QString::number(res) );
       if ( aValuesSort.find( res ) == aValuesSort.end() )
@@ -639,7 +641,6 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::
   ModuleBase_ViewerPrsPtr aValue = theValues.first();
   aResult = std::dynamic_pointer_cast<ModelAPI_Result>(aValue->object());
   aShape = aValue->shape();
-
   if ( (aResult.get() || aShape.get() ) && !aSelList->isInList(aResult, aShape)) {
     aSelList->append(aResult, aShape);
     onRemoveStep();

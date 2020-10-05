@@ -129,7 +129,6 @@ void GeomAlgoAPI_Fillet::build(const GeomShapePtr& theBaseSolid,
   for( ; itCurv != theCurvCoord.end(); ++itCurv, ++itRadius )
   {
     array.SetValue(i, gp_Pnt2d( (*itCurv) , (*itRadius)));
-    std::cout << "Value lance " << (*itCurv) << " "<< (*itRadius) << std::endl;
     i++;
   }
   // assign fillet radii for each contour of filleting edges

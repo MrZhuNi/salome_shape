@@ -26,6 +26,7 @@
 #include <GeomAlgoAPI_PointBuilder.h>
 #include <GeomAPI_Edge.h>
 #include <GeomAPI_Pnt.h>
+#include <GeomAPI_Curve.h>
 
 static GeomAPI_Shape::ShapeType typeOfSelection(
     const std::list<ModelHighAPI_Selection>& theBaseObjects)
@@ -172,6 +173,9 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
     GeomPointPtr first =  anEdge->firstPoint();
     GeomPointPtr last  =  anEdge->lastPoint();
     double taille = first->distance(last);
+
+    std::shared_ptr<GeomAPI_Curve> aCurve(new GeomAPI_Curve(edgeselected()->value()));
+
     ListOfShape aPoints;
     std::set<GeomShapePtr> aContexts;
     for (int anIndex = 0; anIndex < myarraypointradiusbypoint->size(); ++anIndex) {
@@ -196,7 +200,8 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
     ListOfShape::const_iterator aPointsIt = aPoints.begin();
     for (; aPointsIt != aPoints.end(); ++aPointsIt, aRowsRadiusIter++) {
       std::shared_ptr<GeomAPI_Pnt> aPnt = GeomAlgoAPI_PointBuilder::point(*aPointsIt);
-      double res = (aPnt->distance(first) / taille);
+      std::shared_ptr<GeomAPI_Pnt> aPntCurv = aCurve->project(aPnt);
+      double res = (aPntCurv->distance(first) / taille);
        aVal.myDouble = res;
       myvaluescurv()->setValue(aVal, aRowIndex, 0 );
       aVal.myDouble = aRowsRadiusIter->value(); 
@@ -250,8 +255,7 @@ void FeaturesAPI_Fillet2D::setBase(const std::list<ModelHighAPI_Selection>& theB
 }
 
 void FeaturesAPI_Fillet2D::setRadius(const ModelHighAPI_Double& theRadius)
-{
-   std::cout << "FeaturesAPI_Fillet2D::setRadius"  << std::endl;  
+{ 
   fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_SINGLE_RADIUS(), mycreationMethod);
   fillAttribute(theRadius, myradius);
 
@@ -260,8 +264,7 @@ void FeaturesAPI_Fillet2D::setRadius(const ModelHighAPI_Double& theRadius)
 
 void FeaturesAPI_Fillet2D::setRadius(const ModelHighAPI_Double& theRadius1,
                                      const ModelHighAPI_Double& theRadius2)
-{
-     std::cout << "FeaturesAPI_Fillet2D::setRadius CREATION_METHOD_VARYING_RADIUS"  << std::endl;  
+{ 
   fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_VARYING_RADIUS(), mycreationMethod);
   fillAttribute(theRadius1, mystartRadius);
   fillAttribute(theRadius2, myendRadius);
