@@ -39,6 +39,25 @@ public:
     static const std::string MY_ID("Interpolation");
     return MY_ID;
   }
+  /// Attribute name of creation method.
+  inline static const std::string& CREATION_METHODE_ID()
+  {
+    static const std::string MY_CREATION_METHODE_ID("interpolation_method");
+    return MY_CREATION_METHODE_ID;
+  }
+  /// Attribute name of creation method by selection
+  inline static const std::string& CREATION_METHODE_BY_SELECTION_ID()
+  {
+    static const std::string MY_CREATION_METHODE_BY_SELECTION_ID("by_selection");
+    return MY_CREATION_METHODE_BY_SELECTION_ID;
+  }
+
+  /// Attribute name of creation method analytical
+  inline static const std::string& CREATION_METHODE_ANALYTICAL_ID()
+  {
+    static const std::string MY_CREATION_METHODE_ANALYTICAL_ID("analytical");
+    return MY_CREATION_METHODE_ANALYTICAL_ID;
+  }
 
   /// Attribute name of base objects.
   inline static const std::string& BASE_OBJECTS_ID()
@@ -81,6 +100,68 @@ public:
     static const std::string MY_TANGENT_END_ID("tangent_end");
     return MY_TANGENT_END_ID;
   }
+  /// Attribute name of x(t) equation.
+  inline static const std::string& XT_ID()
+  {
+    static const std::string MY_XT_ID("xt");
+    return MY_XT_ID;
+  }
+
+  /// Attribute name of y(t) equation.
+  inline static const std::string& YT_ID()
+  {
+    static const std::string MY_YT_ID("yt");
+    return MY_YT_ID;
+  }
+
+  /// Attribute name of z(t) equation.
+  inline static const std::string& ZT_ID()
+  {
+    static const std::string MY_ZT_ID("zt");
+    return MY_ZT_ID;
+  }
+
+  /// Attribute name of min t.
+  inline static const std::string& MINT_ID()
+  {
+    static const std::string MY_MINT_ID("mint");
+    return MY_MINT_ID;
+  }
+
+  /// Attribute name of max t.
+  inline static const std::string& MAXT_ID()
+  {
+    static const std::string MY_MAXT_ID("maxt");
+    return MY_MAXT_ID;
+  }
+
+  /// attribute of parameter name
+  inline static const std::string& VARIABLE_ID()
+  {
+    static const std::string MY_VARIABLE_ID("variable");
+    return MY_VARIABLE_ID;
+  }
+
+  /// attribute of parameter expression
+  inline static const std::string& EXPRESSION_ID()
+  {
+    static const std::string MY_EXPRESSION_ID("expression");
+    return MY_EXPRESSION_ID;
+  }
+
+  /// attribute of parameter expression error
+  inline static const std::string& EXPRESSION_ERROR_ID()
+  {
+    static const std::string MY_EXPRESSION_ERROR_ID("ExpressionError");
+    return MY_EXPRESSION_ERROR_ID;
+  }
+
+  /// Attribute name of max t.
+  inline static const std::string& NUMSTEP_ID()
+  {
+    static const std::string MY_NUMSTEP_ID("numstep");
+    return MY_NUMSTEP_ID;
+  }
 
   /// Default value of the closed attribute
   inline static bool CLOSED_DEFAULT() { return false; }
@@ -97,6 +178,14 @@ public:
 
   /// Creates a new part document if needed.
   BUILDPLUGIN_EXPORT virtual void execute();
+
+  protected:
+  /// Evaluates theExpression and returns its value.
+  double evaluate(const std::wstring& theExpression, std::string& theError);
+
+  bool updateExpression(double& aValue);
+  void updateName();
+
 };
 
 #endif

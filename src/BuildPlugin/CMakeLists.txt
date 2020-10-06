@@ -23,6 +23,7 @@ INCLUDE(UnitTest)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Events
                     ${PROJECT_SOURCE_DIR}/src/Config
                     ${PROJECT_SOURCE_DIR}/src/ModelAPI
+                    ${PROJECT_SOURCE_DIR}/src/Locale
                     ${PROJECT_SOURCE_DIR}/src/GeomAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomAlgoAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
