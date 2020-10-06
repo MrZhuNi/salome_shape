@@ -141,7 +141,7 @@ public:
     static const std::string MY_VARIABLE_ID("variable");
     return MY_VARIABLE_ID;
   }
-
+  
   /// attribute of parameter expression
   inline static const std::string& EXPRESSION_ID()
   {
@@ -166,6 +166,13 @@ public:
   /// Default value of the closed attribute
   inline static bool CLOSED_DEFAULT() { return false; }
 
+ /// list of references to the arguments of this expression
+  inline static const std::string& ARGUMENTS_ID()
+  {
+    static const std::string MY_ARGUMENTS_ID("arguments");
+    return MY_ARGUMENTS_ID;
+  }
+
   /// \return the kind of a feature.
   BUILDPLUGIN_EXPORT virtual const std::string& getKind()
   {
@@ -178,13 +185,14 @@ public:
 
   /// Creates a new part document if needed.
   BUILDPLUGIN_EXPORT virtual void execute();
+  
+  BUILDPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
   protected:
   /// Evaluates theExpression and returns its value.
   double evaluate(const std::wstring& theExpression, std::string& theError);
 
-  bool updateExpression(double& aValue);
-  void updateName();
+  bool updateExpression(double& result);
 
 };
 
