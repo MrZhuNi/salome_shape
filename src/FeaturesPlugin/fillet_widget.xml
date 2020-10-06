@@ -80,7 +80,7 @@
          tooltip="Fillet with multiple radiuses by curvilinear abscissa"
          icon="icons/Features/fillet_multiradius_by_curv.png">
           <multi_selector id="main_objects"
-                      label="Faces, edges or/and solids"
+                      label="Edges or/and faces"
                       icon=""
                       tooltip="Select objects"
                       shape_types="edges faces solids"
