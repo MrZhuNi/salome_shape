@@ -23,6 +23,8 @@
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeInteger.h>
 #include <ModelAPI_AttributeDouble.h>
+#include <ModelAPI_AttributeRefList.h>
+
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
 
@@ -49,6 +51,15 @@
 
 #include <iostream>
 
+std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+    return str;
+}
+
 //=================================================================================================
 BuildPlugin_Interpolation::BuildPlugin_Interpolation()
 {
@@ -67,12 +78,14 @@ void BuildPlugin_Interpolation::initAttributes()
   data()->addAttribute(CREATION_METHODE_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(CREATION_METHODE_BY_SELECTION_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(CREATION_METHODE_ANALYTICAL_ID(), ModelAPI_AttributeString::typeId());
-
+  data()->addAttribute(CREATION_METHODE_ANALYTICAL_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(EXPRESSION_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(EXPRESSION_ERROR_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(VARIABLE_ID(), ModelAPI_AttributeString::typeId());
   data()->string(EXPRESSION_ERROR_ID())->setIsArgument(false);
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), EXPRESSION_ERROR_ID());
 
-    data()->addAttribute(XT_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(XT_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(YT_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(ZT_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(MINT_ID(), ModelAPI_AttributeDouble::typeId());
@@ -81,11 +94,17 @@ void BuildPlugin_Interpolation::initAttributes()
   
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHODE_ANALYTICAL_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHODE_BY_SELECTION_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), YT_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), ZT_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), MINT_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), MAXT_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), NUMSTEP_ID()); 
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), EXPRESSION_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VARIABLE_ID());
+
+  data()->addAttribute(ARGUMENTS_ID(), ModelAPI_AttributeRefList::typeId());
+  data()->reflist(ARGUMENTS_ID())->setIsArgument(false);
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), ARGUMENTS_ID());
+
+}
+
+void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
+{
 
 }
 
@@ -174,16 +193,96 @@ void BuildPlugin_Interpolation::execute()
     }
 
     setResult(aResultBody);
+
   }else
   {
-      string(EXPRESSION_ERROR_ID())->setValue("rien");
-      string(EXPRESSION_ID())->setValue(string( XT_ID())->value());
-      string(VARIABLE_ID())->setValue("t");
-      updateName();
-      double res;
-      if (!updateExpression(res))
+    double aMint = real(MINT_ID())->value(); 
+    double aMaxt = real(MAXT_ID())->value();
+    int aNbrStep = integer(NUMSTEP_ID())->value(); 
+    double scale = (aMaxt - aMint )/aNbrStep; 
+    std::cout << "aMint = " << aMint << std::endl;
+    std::cout << "aMaxt = " << aMaxt << std::endl;
+    std::cout << "aNbrStep = " << aNbrStep << std::endl;
+    std::cout << "scale = " << scale << std::endl;
+
+    std::list<std::vector<double> > aCoodPoints;
+    for( int step = 0; step < aNbrStep; step++ ){
+      std::vector<double> coodPoint;
+      double result; 
+      double value = step * scale + aMint; 
+      //x
+      std::string exp = string( XT_ID())->value();
+      exp = ReplaceAll(exp,"t", std::to_string(value) ); 
+      string(EXPRESSION_ID())->setValue(exp);
+      if (!updateExpression(result))
         setError("Expression error.", false);
-      std::cout << "res = " << res << std::endl;
+      coodPoint.push_back(result); 
+      //y
+      exp = string( YT_ID())->value();
+      exp = ReplaceAll(exp,"t", std::to_string(value) ); 
+      string(EXPRESSION_ID())->setValue(exp);
+      if (!updateExpression(result))
+        setError("Expression error.", false);
+      coodPoint.push_back(result); 
+      //Z
+      exp = string( ZT_ID())->value();
+      exp = ReplaceAll(exp,"t", std::to_string(value) ); 
+      string(EXPRESSION_ID())->setValue(exp);
+      if (!updateExpression(result))
+        setError("Expression error.", false);
+      coodPoint.push_back(result);
+
+      aCoodPoints.push_back(coodPoint);
+    }
+
+    std::list<GeomPointPtr> aPoints;
+    std::list<std::vector<double> >::const_iterator aItCoodPoints = aCoodPoints.begin();
+ 
+    for( ; aItCoodPoints != aCoodPoints.end(); ++aItCoodPoints ){
+      std::cout << "cood = " << "(" << (*aItCoodPoints)[0] << ", "<< 
+                                       (*aItCoodPoints)[1] << ", "<< 
+                                       (*aItCoodPoints)[2] << " ) "<<  std::endl;
+      std::shared_ptr<GeomAPI_Vertex> vertex = 
+          GeomAlgoAPI_PointBuilder::vertex( (*aItCoodPoints)[0],
+                                            (*aItCoodPoints)[1],
+                                            (*aItCoodPoints)[2]);
+      aPoints.push_back (vertex->point()); 
+    } 
+    GeomDirPtr aDirStart(new GeomAPI_Dir( aCoodPoints.front()[0],
+                                        aCoodPoints.front()[1], 
+                                        aCoodPoints.front()[2]));
+    GeomDirPtr aDirEnd(new GeomAPI_Dir( aCoodPoints.back()[0],
+                                        aCoodPoints.back()[1], 
+                                        aCoodPoints.back()[2]));
+    // Create curve from points
+    GeomEdgePtr anEdge =
+      GeomAlgoAPI_CurveBuilder::edge(aPoints, false, true, aDirStart, aDirEnd);
+    if (!anEdge.get()) {
+      setError("Error: Result curve is empty.");
+      return;
+    }
+
+    // Store result.
+    ResultBodyPtr aResultBody = document()->createBody(data());
+    /*std::set<GeomShapePtr>::const_iterator aContextIt = aContexts.begin();
+    for (; aContextIt != aContexts.end(); aContextIt++) {
+      aResultBody->storeModified(*aContextIt, anEdge, aContextIt == aContexts.begin());
+    }
+    std::list<GeomPointPtr>::const_iterator aPointsIt = aPoints.begin();
+    GeomAPI_ShapeExplorer anExp(anEdge, GeomAPI_Shape::EDGE);
+    for (; anExp.more() && aPointsIt != aPoints.cend(); anExp.next(), ++aPointsIt) {
+      GeomShapePtr aPoint = std::dynamic_pointer_cast<GeomAPI_Shape>( *aPointsIt );
+      GeomShapePtr anEdge = anExp.current();
+      aResultBody->generated(aPoint, anEdge);
+    }*/
+    int aVertexIndex = 1;
+    for (GeomAPI_ShapeExplorer anExp(anEdge, GeomAPI_Shape::VERTEX); anExp.more(); anExp.next()) {
+      std::string aVertexName = "Vertex_" + std::to_string((long long)aVertexIndex);
+      aResultBody->generated(anExp.current(), aVertexName);
+    }
+
+    setResult(aResultBody);
+        
   }
 
 }
@@ -200,8 +299,8 @@ double BuildPlugin_Interpolation::evaluate(const std::wstring& /*theExpression*/
     const std::list<ResultParameterPtr>& aParamsList = aProcessMessage->params();
     aResult = aProcessMessage->result();
     theError = aProcessMessage->error();
-    /* compare the list of parameters to store if changed
-    AttributeRefListPtr aParams = reflist(ARGUMENTS_ID());
+    // compare the list of parameters to store if changed
+  /*  AttributeRefListPtr aParams = reflist(ARGUMENTS_ID());
     bool aDifferent = aParams->size() != (int)aParamsList.size();
     if (!aDifferent) {
       std::list<ResultParameterPtr>::const_iterator aNewIter = aParamsList.begin();
@@ -226,65 +325,19 @@ double BuildPlugin_Interpolation::evaluate(const std::wstring& /*theExpression*/
 }
 
 
-bool BuildPlugin_Interpolation::updateExpression(double& aValue)
+bool BuildPlugin_Interpolation::updateExpression(double& result)
 {
   std::wstring anExpression = string(EXPRESSION_ID())->isUValue() ?
       Locale::Convert::toWString(string(EXPRESSION_ID())->valueU()) :
       Locale::Convert::toWString(string(EXPRESSION_ID())->value());
 
   std::string outErrorMessage;
-  aValue = evaluate(anExpression, outErrorMessage);
+  result= evaluate(anExpression, outErrorMessage);
 
   data()->string(EXPRESSION_ERROR_ID())->setValue(outErrorMessage);
   if (!outErrorMessage.empty())
     return false;
-
-  /*ResultParameterPtr aParam = document()->createParameter(data());
-  AttributeDoublePtr aValueAttribute = aParam->data()->real(ModelAPI_ResultParameter::VALUE());
-  aValueAttribute->setValue(aValue);
-  setResult(aParam);*/
   
+  std::cout << "result = " << result << std::endl;
   return true;
-}
-
-void BuildPlugin_Interpolation::updateName()
-{
-  std::wstring aName = string(VARIABLE_ID())->isUValue() ?
-      Locale::Convert::toWString(string(VARIABLE_ID())->valueU()) :
-      Locale::Convert::toWString(string(VARIABLE_ID())->value());
-  data()->setName(aName);
-
-  ResultParameterPtr aParam = document()->createParameter(data());
-  std::wstring anOldName = aParam->data()->name();
-  aParam->data()->setName(aName);
-  setResult(aParam);
-
-
-  // #2474 : if parameter name now hides/shows the higher level parameter name,
-  // update the depended expressions
-  DocumentPtr aRootDoc = ModelAPI_Session::get()->moduleDocument();
-  if (aParam->document() != aRootDoc) {
-    std::list<std::wstring> aNames; // collect names in the root document that must be checked
-    aNames.push_back(aName);
-    if (anOldName != aName) {
-      aNames.push_back(anOldName);
-    }
-    std::list<std::wstring>::iterator aNIter = aNames.begin();
-    for (; aNIter != aNames.end(); aNIter++) {
-      double aValue;
-      ResultParameterPtr aRootParam;
-      FeaturePtr aThis =
-        std::dynamic_pointer_cast<ModelAPI_Feature>(string(VARIABLE_ID())->owner());
-      if (ModelAPI_Tools::findVariable(aThis, *aNIter, aValue, aRootParam, aRootDoc)) {
-        std::set<std::shared_ptr<ModelAPI_Attribute> > anAttributes =
-          aRootParam->data()->refsToMe();
-        std::set<std::shared_ptr<ModelAPI_Attribute> >::const_iterator anAttributeIt =
-          anAttributes.cbegin();
-        for (; anAttributeIt != anAttributes.cend(); ++anAttributeIt) {
-          const AttributePtr& anAttribute = *anAttributeIt;
-          ModelAPI_AttributeEvalMessage::send(anAttribute, NULL);
-        }
-      }
-    }
-  }
 }
