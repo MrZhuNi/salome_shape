@@ -24,6 +24,7 @@
 #include <ModelAPI_AttributeInteger.h>
 #include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_AttributeRefList.h>
+#include <ModelAPI_AttributeTables.h>
 
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
@@ -47,22 +48,18 @@
 #include <GeomAPI_ShapeExplorer.h>
 #include <ModelAPI_Tools.h>
 
+#include <ModelAPI_Expression.h>
+
 #include <algorithm>
 
 #include <iostream>
+#include <sstream>
 
-std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
-    size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-    }
-    return str;
-}
 
 //=================================================================================================
 BuildPlugin_Interpolation::BuildPlugin_Interpolation()
 {
+   
 }
 
 //=================================================================================================
@@ -82,6 +79,7 @@ void BuildPlugin_Interpolation::initAttributes()
   data()->addAttribute(EXPRESSION_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(EXPRESSION_ERROR_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(VARIABLE_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(VALUE_ID(), ModelAPI_AttributeTables::typeId());
   data()->string(EXPRESSION_ERROR_ID())->setIsArgument(false);
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), EXPRESSION_ERROR_ID());
 
@@ -96,6 +94,7 @@ void BuildPlugin_Interpolation::initAttributes()
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHODE_BY_SELECTION_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), EXPRESSION_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VARIABLE_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VALUE_ID());
 
   data()->addAttribute(ARGUMENTS_ID(), ModelAPI_AttributeRefList::typeId());
   data()->reflist(ARGUMENTS_ID())->setIsArgument(false);
@@ -104,8 +103,44 @@ void BuildPlugin_Interpolation::initAttributes()
 }
 
 void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
-{
+{ 
+  if( (theID == XT_ID() 
+    || theID == YT_ID() 
+    || theID == ZT_ID() 
+    || theID == MINT_ID()
+    || theID == MAXT_ID()
+    || theID == NUMSTEP_ID())
+    && string(XT_ID())->value() !=""
+    && string(YT_ID())->value() !=""
+    && string(ZT_ID())->value() !=""
+    ){
+    updateCoods();
+  }
+    
+}
 
+void BuildPlugin_Interpolation::updateCoods()
+{ 
+    std::wstring exp;
+    double aMint = real(MINT_ID())->value(); 
+    double aMaxt = real(MAXT_ID())->value();
+    int aNbrStep = integer(NUMSTEP_ID())->value(); 
+    double scale = (aMaxt - aMint )/aNbrStep; 
+    string(VARIABLE_ID())->setValue("t");
+
+    tables(VALUE_ID())->setSize(aNbrStep,4);
+    for( int step = 0; step < aNbrStep; step++ ){
+      ModelAPI_AttributeTables::Value aVal;
+      aVal.myDouble = step * scale + aMint;
+      tables(VALUE_ID())->setValue(aVal,step,0);   
+    }
+
+    outErrorMessage="";
+    
+    evaluate(outErrorMessage);
+    if (!outErrorMessage.empty()){
+     std::cout << L"outErrorMessage= " << outErrorMessage << std::endl;
+    }
 }
 
 //=================================================================================================
@@ -196,148 +231,91 @@ void BuildPlugin_Interpolation::execute()
 
   }else
   {
-    double aMint = real(MINT_ID())->value(); 
-    double aMaxt = real(MAXT_ID())->value();
-    int aNbrStep = integer(NUMSTEP_ID())->value(); 
-    double scale = (aMaxt - aMint )/aNbrStep; 
-    std::cout << "aMint = " << aMint << std::endl;
-    std::cout << "aMaxt = " << aMaxt << std::endl;
-    std::cout << "aNbrStep = " << aNbrStep << std::endl;
-    std::cout << "scale = " << scale << std::endl;
-
+    if(   string( XT_ID())->value() == ""
+        ||string( YT_ID())->value() == ""
+        ||string( ZT_ID())->value() == "")
+      return; 
+    
+    if (!outErrorMessage.empty()){
+      setError("Error: Python interpreter " + outErrorMessage);
+      return;
+    }
+    AttributeTablesPtr table = tables( VALUE_ID() ); 
     std::list<std::vector<double> > aCoodPoints;
-    for( int step = 0; step < aNbrStep; step++ ){
-      std::vector<double> coodPoint;
-      double result; 
-      double value = step * scale + aMint; 
+    for( int step = 0; step < table->rows() ; step++ ){
+      std::vector<double> coodPoint; 
+      ModelAPI_AttributeTables::Value value;
       //x
-      std::string exp = string( XT_ID())->value();
-      exp = ReplaceAll(exp,"t", std::to_string(value) ); 
-      string(EXPRESSION_ID())->setValue(exp);
-      if (!updateExpression(result))
-        setError("Expression error.", false);
-      coodPoint.push_back(result); 
+      value = table->value(step, 1); 
+      coodPoint.push_back( value.myDouble ); 
       //y
-      exp = string( YT_ID())->value();
-      exp = ReplaceAll(exp,"t", std::to_string(value) ); 
-      string(EXPRESSION_ID())->setValue(exp);
-      if (!updateExpression(result))
-        setError("Expression error.", false);
-      coodPoint.push_back(result); 
-      //Z
-      exp = string( ZT_ID())->value();
-      exp = ReplaceAll(exp,"t", std::to_string(value) ); 
-      string(EXPRESSION_ID())->setValue(exp);
-      if (!updateExpression(result))
-        setError("Expression error.", false);
-      coodPoint.push_back(result);
+      value = table->value(step, 2); 
+      coodPoint.push_back( value.myDouble ); 
+      //
+      value = table->value(step, 3); 
+      coodPoint.push_back( value.myDouble ); 
 
       aCoodPoints.push_back(coodPoint);
     }
-
+    
     std::list<GeomPointPtr> aPoints;
+    std::list<GeomVertexPtr> aVertices;
     std::list<std::vector<double> >::const_iterator aItCoodPoints = aCoodPoints.begin();
  
     for( ; aItCoodPoints != aCoodPoints.end(); ++aItCoodPoints ){
       std::cout << "cood = " << "(" << (*aItCoodPoints)[0] << ", "<< 
                                        (*aItCoodPoints)[1] << ", "<< 
                                        (*aItCoodPoints)[2] << " ) "<<  std::endl;
-      std::shared_ptr<GeomAPI_Vertex> vertex = 
+      GeomVertexPtr vertex = 
           GeomAlgoAPI_PointBuilder::vertex( (*aItCoodPoints)[0],
                                             (*aItCoodPoints)[1],
                                             (*aItCoodPoints)[2]);
       aPoints.push_back (vertex->point()); 
+      aVertices.push_back (vertex);
     } 
+    /* 
     GeomDirPtr aDirStart(new GeomAPI_Dir( aCoodPoints.front()[0],
                                         aCoodPoints.front()[1], 
                                         aCoodPoints.front()[2]));
     GeomDirPtr aDirEnd(new GeomAPI_Dir( aCoodPoints.back()[0],
                                         aCoodPoints.back()[1], 
-                                        aCoodPoints.back()[2]));
+                                        aCoodPoints.back()[2]));*/
     // Create curve from points
     GeomEdgePtr anEdge =
-      GeomAlgoAPI_CurveBuilder::edge(aPoints, false, true, aDirStart, aDirEnd);
+      GeomAlgoAPI_CurveBuilder::edge(aPoints, false, true,GeomDirPtr(),GeomDirPtr()); //aDirStart, aDirEnd);
     if (!anEdge.get()) {
       setError("Error: Result curve is empty.");
       return;
     }
-
-    // Store result.
+ 
     ResultBodyPtr aResultBody = document()->createBody(data());
-    /*std::set<GeomShapePtr>::const_iterator aContextIt = aContexts.begin();
-    for (; aContextIt != aContexts.end(); aContextIt++) {
-      aResultBody->storeModified(*aContextIt, anEdge, aContextIt == aContexts.begin());
-    }
-    std::list<GeomPointPtr>::const_iterator aPointsIt = aPoints.begin();
-    GeomAPI_ShapeExplorer anExp(anEdge, GeomAPI_Shape::EDGE);
-    for (; anExp.more() && aPointsIt != aPoints.cend(); anExp.next(), ++aPointsIt) {
-      GeomShapePtr aPoint = std::dynamic_pointer_cast<GeomAPI_Shape>( *aPointsIt );
-      GeomShapePtr anEdge = anExp.current();
-      aResultBody->generated(aPoint, anEdge);
-    }*/
+    // Load the result
+    aResultBody->store(anEdge);
     int aVertexIndex = 1;
     for (GeomAPI_ShapeExplorer anExp(anEdge, GeomAPI_Shape::VERTEX); anExp.more(); anExp.next()) {
       std::string aVertexName = "Vertex_" + std::to_string((long long)aVertexIndex);
       aResultBody->generated(anExp.current(), aVertexName);
+      aVertexIndex++;
     }
-
+   
     setResult(aResultBody);
         
   }
 
 }
 
-double BuildPlugin_Interpolation::evaluate(const std::wstring& /*theExpression*/,
-                                            std::string& theError)
+void  BuildPlugin_Interpolation::evaluate(std::string& theError)
 {
   FeaturePtr aMyPtr = std::dynamic_pointer_cast<ModelAPI_Feature>(data()->owner());
-  std::shared_ptr<ModelAPI_ParameterEvalMessage> aProcessMessage =
-    ModelAPI_ParameterEvalMessage::send(aMyPtr, this);
+  std::shared_ptr<ModelAPI_BuildEvalMessage> aProcessMessage =
+    ModelAPI_BuildEvalMessage::send(aMyPtr, this);
 
-  double aResult = 0;
   if (aProcessMessage->isProcessed()) {
-    const std::list<ResultParameterPtr>& aParamsList = aProcessMessage->params();
-    aResult = aProcessMessage->result();
     theError = aProcessMessage->error();
-    // compare the list of parameters to store if changed
-  /*  AttributeRefListPtr aParams = reflist(ARGUMENTS_ID());
-    bool aDifferent = aParams->size() != (int)aParamsList.size();
-    if (!aDifferent) {
-      std::list<ResultParameterPtr>::const_iterator aNewIter = aParamsList.begin();
-      std::list<ObjectPtr> anOldList = aParams->list();
-      std::list<ObjectPtr>::const_iterator anOldIter = anOldList.begin();
-      for(; !aDifferent && aNewIter != aParamsList.end(); aNewIter++, anOldIter++) {
-        if (*aNewIter != *anOldIter)
-          aDifferent = true;
-      }
-    }
-    if (aDifferent) {
-      aParams->clear();
-      std::list<ResultParameterPtr>::const_iterator aNewIter = aParamsList.begin();
-      for(; aNewIter != aParamsList.end(); aNewIter++) {
-        aParams->append(*aNewIter);
-      }
-    }*/
+    std::cout << "theError= " << theError << std::endl;
   } else { // error: python interpreter is not active
     theError = "Python interpreter is not available";
   }
-  return aResult;
 }
 
 
-bool BuildPlugin_Interpolation::updateExpression(double& result)
-{
-  std::wstring anExpression = string(EXPRESSION_ID())->isUValue() ?
-      Locale::Convert::toWString(string(EXPRESSION_ID())->valueU()) :
-      Locale::Convert::toWString(string(EXPRESSION_ID())->value());
-
-  std::string outErrorMessage;
-  result= evaluate(anExpression, outErrorMessage);
-
-  data()->string(EXPRESSION_ERROR_ID())->setValue(outErrorMessage);
-  if (!outErrorMessage.empty())
-    return false;
-  
-  std::cout << "result = " << result << std::endl;
-  return true;
-}

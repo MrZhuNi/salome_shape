@@ -25,6 +25,8 @@
 #include <ModelAPI_Plugin.h>
 #include <ModelAPI_Feature.h>
 
+class BuildPlugin_EvalListener;
+
 /// \class BuildPlugin_Plugin
 /// \ingroup Plugins
 /// \brief The main class for management the build features as plugin.
@@ -36,6 +38,9 @@ public:
 
   /// Creates the feature object of this plugin by the feature string ID
   virtual FeaturePtr createFeature(std::string theFeatureID);
+
+ private:
+   std::shared_ptr<BuildPlugin_EvalListener> myEvalListener;
 };
 
 #endif

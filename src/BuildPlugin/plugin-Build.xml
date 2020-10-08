@@ -10,7 +10,7 @@
         <source path="edge_widget.xml"/>
       </feature>
       <feature id="Interpolation" title="Interpolation" tooltip ="Create an interpolation curve from points" icon="icons/Build/feature_interpolation.png"
-               auto_preview="false"  helpfile="interpolationFeature.html">
+               helpfile="interpolationFeature.html">
         <source path="interpolation_widget.xml"/>
       </feature>
       <feature id="Wire" title="Wire" tooltip ="Create a wire from sketch edges, edges and wires objects" icon="icons/Build/feature_wire.png"

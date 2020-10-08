@@ -141,6 +141,13 @@ public:
     static const std::string MY_VARIABLE_ID("variable");
     return MY_VARIABLE_ID;
   }
+
+  /// attribute of parameter name
+  inline static const std::string& VALUE_ID()
+  {
+    static const std::string MY_VALUE_ID("value");
+    return MY_VALUE_ID;
+  }
   
   /// attribute of parameter expression
   inline static const std::string& EXPRESSION_ID()
@@ -190,9 +197,12 @@ public:
 
   protected:
   /// Evaluates theExpression and returns its value.
-  double evaluate(const std::wstring& theExpression, std::string& theError);
+  void evaluate(std::string& theError);
 
-  bool updateExpression(double& result);
+  void updateCoods();
+
+  std::list<double> aCoodPoints[3];
+  std::string outErrorMessage;
 
 };
 

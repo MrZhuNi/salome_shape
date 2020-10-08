@@ -29,6 +29,8 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Events
                     ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomValidators
                     ${PROJECT_SOURCE_DIR}/src/SketchPlugin
+                    ${SUIT_INCLUDE}
+                    ${PYTHON_INCLUDE_DIR}
 )
 
 SET(PROJECT_HEADERS
@@ -48,6 +50,8 @@ SET(PROJECT_HEADERS
     BuildPlugin_SubShapes.h
     BuildPlugin_Filling.h
     BuildPlugin_Validators.h
+    BuildPlugin_EvalListener.h
+    BuildPlugin_PyInterp.h
 )
 
 SET(PROJECT_SOURCES
@@ -66,6 +70,8 @@ SET(PROJECT_SOURCES
     BuildPlugin_SubShapes.cpp
     BuildPlugin_Filling.cpp
     BuildPlugin_Validators.cpp
+    BuildPlugin_EvalListener.cpp
+    BuildPlugin_PyInterp.cpp
 )
 
 SET(XML_RESOURCES
@@ -99,6 +105,8 @@ SET(PROJECT_LIBRARIES
     GeomAPI
     GeomAlgoAPI
     GeomValidators
+    ${PyInterp}
+    ${PYTHON_LIBRARIES}
 )
 
 ADD_DEFINITIONS(-DBUILDPLUGIN_EXPORTS)
