@@ -1,7 +1,8 @@
 <source>
   <toolbox id="interpolation_method">
     <box id="by_selection" 
-         icon="icons/BuildPlugin/edge_by_points_32x32.png">
+         title="Curve by selection"
+         icon="icons/Build/feature_interpolation_by_selection.png">
       <multi_selector id="base_objects"
                       label="Points and vertices:"
                       tooltip="Select points or vertices objects."
@@ -31,12 +32,12 @@
           </shape_selector>
         </optionalbox>
       </optionalbox>
-      <validator id="GeomValidators_MinObjectsSelected" parameters="base_objects,2"/>
+      <!--JL_CGLB validator id="GeomValidators_MinObjectsSelected" parameters="base_objects,2"/-->
     </box>
     <box id="analytical"
-         title="Curve parameters"
+         title="Curve analytical"
          tooltip="???"
-         icon="icons/BuildPlugin/feature_edge.png">
+         icon="icons/Build/feature_interpolation_analytical.png">
       <stringvalue id="xt" label="X(t) equation" >
           <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
         </stringvalue>
@@ -50,13 +51,13 @@
                    label="Min t"
                    min="0"
                    default="0">
-        <validator id="GeomValidators_Positive"/>
+        <!--validator id="GeomValidators_Positive"/-->
       </doublevalue>
        <doublevalue id="maxt"
                    label="Max t"
                    min="0"
                    default="100">
-        <validator id="GeomValidators_Positive"/>
+        <!--validator id="GeomValidators_Positive"/-->
       </doublevalue>
        <integervalue id="numstep"
                    label="Number of steps"

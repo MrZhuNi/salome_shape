@@ -36,6 +36,9 @@
 #include <BuildPlugin_Filling.h>
 #include <BuildPlugin_Validators.h>
 
+#include <BuildPlugin_EvalListener.h>
+
+
 // the only created instance of this plugin
 static BuildPlugin_Plugin* MY_INSTANCE = new BuildPlugin_Plugin();
 
@@ -62,9 +65,11 @@ BuildPlugin_Plugin::BuildPlugin_Plugin()
   aFactory->registerValidator("BuildPlugin_ValidatorExpressionInterpolation",
                               new BuildPlugin_ValidatorExpressionInterpolation());
   
-
   // Register this plugin.
   ModelAPI_Session::get()->registerPlugin(this);
+
+  myEvalListener =
+    std::shared_ptr<BuildPlugin_EvalListener>(new BuildPlugin_EvalListener());
 }
 
 //=================================================================================================
