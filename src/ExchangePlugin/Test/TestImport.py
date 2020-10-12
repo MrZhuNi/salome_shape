@@ -54,10 +54,23 @@ def testImport(theType, theFile, theVolume, theDelta, theErrorExpected = False):
     aFeatureKind = "Import"
     anImportFeature = aPart.addFeature(aFeatureKind)
     assert anImportFeature, "{0}: Can not create a feature {1}".format(theType, aFeatureKind)
+    if theType == "STP" or theType == "STEP":
+        aFieldName = "step_file_path"  
+        file = anImportFeature.string(aFieldName)
+        assert file, "{0}: Can not receive string field {1}".format(theType, aFieldName)
+        file.setValue(theFile)
+        aFieldName = "step_scale_inter_units"
+        units = anImportFeature.boolean(aFieldName)
+        assert units, "{0}: Can not receive string field {1}".format(theType, aFieldName)
+        units.setValue(True)
     aFieldName = "file_path"
     file = anImportFeature.string(aFieldName)
     assert file, "{0}: Can not receive string field {1}".format(theType, aFieldName)
     file.setValue(theFile)
+    aFieldName = "ImportType"
+    type = anImportFeature.string(aFieldName)
+    assert type, "{0}: Can not receive string field {1}".format(theType, aFieldName)
+    type.setValue(theType)
     aSession.finishOperation()
 
     if theErrorExpected:
@@ -86,6 +99,9 @@ def testImportXAO():
     aSession.startOperation("Import XAO")
     anImportFeature = aPart.addFeature("Import")
     anImportFeature.string("file_path").setValue(getShapePath("Xao/box1.xao"))
+    aFieldName = "ImportType"
+    type = anImportFeature.string(aFieldName)
+    type.setValue("XAO")
     aSession.finishOperation()
 
     # Check results
