@@ -193,11 +193,6 @@ class ModelAPI_Feature : public ModelAPI_Object
   {
     return data()->intArray(theID);
   }
-  /// Returns the double array attribute by the identifier
-  inline std::shared_ptr<ModelAPI_AttributeDoubleArray> realArray(const std::string& theID)
-  {
-    return data()->realArray(theID);
-  }
   /// Returns the reference attribute by the identifier
   inline std::shared_ptr<ModelAPI_AttributeRefAttr> refattr(const std::string& theID)
   {

@@ -27,7 +27,6 @@
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeInteger.h>
 #include <ModelAPI_AttributeStringArray.h>
-#include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_ResultPart.h>
 #include <ModelAPI_Tools.h>
@@ -82,15 +81,8 @@ ExchangePlugin_Import::~ExchangePlugin_Import()
 void ExchangePlugin_Import::initAttributes()
 {
   data()->addAttribute(FILE_PATH_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(STEP_FILE_PATH_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(IMPORT_TYPE_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(TARGET_PART_ID(), ModelAPI_AttributeInteger::typeId());
   data()->addAttribute(TARGET_PARTS_LIST_ID(), ModelAPI_AttributeStringArray::typeId());
-  data()->addAttribute(STEP_TARGET_PART_ID(), ModelAPI_AttributeInteger::typeId());
-  data()->addAttribute(STEP_TARGET_PARTS_LIST_ID(), ModelAPI_AttributeStringArray::typeId());
-  data()->addAttribute(STEP_MATERIALS_ID(), ModelAPI_AttributeBoolean::typeId());
-  data()->addAttribute(STEP_COLORS_ID(), ModelAPI_AttributeBoolean::typeId());
-  data()->addAttribute(STEP_SCALE_INTER_UNITS_ID(), ModelAPI_AttributeBoolean::typeId());
 }
 
 /*
@@ -98,61 +90,26 @@ void ExchangePlugin_Import::initAttributes()
  */
 void ExchangePlugin_Import::execute()
 {
-  AttributeStringPtr aFormatAttr =
-      this->string(ExchangePlugin_Import::IMPORT_TYPE_ID());
-  std::string aFormat = aFormatAttr->value();
-
-  AttributeStringPtr aFilePathAttr;
-  std::string aFilePath;
-  AttributeStringArrayPtr aPartsAttr;
-  AttributeIntegerPtr aTargetAttr;
-  if (aFormat == "STEP" || aFormat == "STP")
-  {
-    aFilePathAttr = string(ExchangePlugin_Import::STEP_FILE_PATH_ID());
-    aFilePath = aFilePathAttr->value();    
-    // get the document where to import
-    aPartsAttr = stringArray(STEP_TARGET_PARTS_LIST_ID());
-    aTargetAttr = integer(STEP_TARGET_PART_ID());
-  }else{
-    aFilePathAttr = string(ExchangePlugin_Import::FILE_PATH_ID());
-    aFilePath = aFilePathAttr->value();
-    // get the document where to import
-    aPartsAttr = stringArray(TARGET_PARTS_LIST_ID());
-    aTargetAttr = integer(TARGET_PART_ID());
-  }
-
+  AttributeStringPtr aFilePathAttr = string(ExchangePlugin_Import::FILE_PATH_ID());
+  std::string aFilePath = aFilePathAttr->value();
   if (aFilePath.empty()) {
-      setError("File path is empty.");
-      return;
+    setError("File path is empty.");
+    return;
   }
+
+  // get the document where to import
+  AttributeStringArrayPtr aPartsAttr = stringArray(TARGET_PARTS_LIST_ID());
+  AttributeIntegerPtr aTargetAttr = integer(TARGET_PART_ID());
   SessionPtr aSession = ModelAPI_Session::get();
-  DocumentPtr aDoc = findDocument(aSession->moduleDocument(),
+  DocumentPtr aDoc =
+    findDocument(aSession->moduleDocument(),
       Locale::Convert::toWString(aPartsAttr->value(aTargetAttr->value())));
 
   if (aDoc.get()) {
     FeaturePtr aImportFeature = aDoc->addFeature(ExchangePlugin_ImportFeature::ID());
     DataPtr aData = aImportFeature->data();
-    AttributeStringPtr aPathAttr;
-    if (aFormat == "STEP" || aFormat == "STP")
-    {
-      aPathAttr = aData->string(ExchangePlugin_ImportFeature::STEP_FILE_PATH_ID());
-    }else
-    {
-      aPathAttr = aData->string(ExchangePlugin_ImportFeature::FILE_PATH_ID());
-    }
-    
-    AttributeStringPtr aImportTypeAttr = aData->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID());
-
-    aData->boolean(ExchangePlugin_ImportFeature::STEP_MATERIALS_ID())
-         ->setValue(boolean(ExchangePlugin_Import::STEP_MATERIALS_ID())->value());
-    aData->boolean(ExchangePlugin_ImportFeature::STEP_COLORS_ID())
-         ->setValue(boolean(ExchangePlugin_Import::STEP_COLORS_ID())->value());
-    aData->boolean(ExchangePlugin_ImportFeature::STEP_SCALE_INTER_UNITS_ID())
-         ->setValue(boolean(ExchangePlugin_Import::STEP_SCALE_INTER_UNITS_ID())->value());
-
+    AttributeStringPtr aPathAttr = aData->string(ExchangePlugin_ImportFeature::FILE_PATH_ID());
     aPathAttr->setValue(aFilePathAttr->value());
-    aImportTypeAttr->setValue(aFormat);
-
     aImportFeature->execute();
   }
 }
@@ -160,31 +117,14 @@ void ExchangePlugin_Import::execute()
 
 void ExchangePlugin_Import::attributeChanged(const std::string& theID)
 {
-  AttributeStringPtr aFilePathAttr;
-  AttributeStringArrayPtr aPartsAttr;
-  AttributeIntegerPtr aTargetAttr;
-
-  if (theID == FILE_PATH_ID() ||theID == STEP_FILE_PATH_ID() ) {
-    aFilePathAttr = string(FILE_PATH_ID());
-    if (theID == FILE_PATH_ID() && aFilePathAttr->value().empty())
-      return;
-    aPartsAttr = stringArray(TARGET_PARTS_LIST_ID());
-    aTargetAttr = integer(TARGET_PART_ID());
-
-    updatePart(aPartsAttr, aTargetAttr);
-
-    aFilePathAttr = string(STEP_FILE_PATH_ID());
-    if (theID == STEP_FILE_PATH_ID() && aFilePathAttr->value().empty())
+  if (theID == FILE_PATH_ID()) {
+    AttributeStringPtr aFilePathAttr = string(FILE_PATH_ID());
+    if (aFilePathAttr->value().empty())
       return;
 
-    aPartsAttr = stringArray(STEP_TARGET_PARTS_LIST_ID());
-    aTargetAttr = integer(STEP_TARGET_PART_ID());
-    updatePart(aPartsAttr, aTargetAttr);
-   } 
-}
+    AttributeStringArrayPtr aPartsAttr = stringArray(TARGET_PARTS_LIST_ID());
+    AttributeIntegerPtr aTargetAttr = integer(TARGET_PART_ID());
 
-void ExchangePlugin_Import::updatePart(AttributeStringArrayPtr &aPartsAttr, AttributeIntegerPtr &aTargetAttr)
-{
     // update the list of target parts
     SessionPtr aSession = ModelAPI_Session::get();
     DocumentPtr aDoc = document();
@@ -219,4 +159,5 @@ void ExchangePlugin_Import::updatePart(AttributeStringArrayPtr &aPartsAttr, Attr
         aTargetAttr->setValue(0);
       }
     }
+  }
 }
