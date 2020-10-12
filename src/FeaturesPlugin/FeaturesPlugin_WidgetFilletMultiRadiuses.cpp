@@ -492,36 +492,38 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onAdd()
 {
   QModelIndex index = myDataTbl->currentIndex();
   int i  = index.row();
-  if( i != -1
-    && myDataTbl->currentItem()->isSelected() && myDataTbl->rowCount() >2 )
-  {
-    myDataTbl->blockSignals(true);
+  if( i == -1 )
+    return false; 
 
-    if ( i == myDataTbl->rowCount() -1)
-      i = myDataTbl->rowCount() - 2;
+  if( !myDataTbl->currentItem()->isSelected() && myDataTbl->rowCount() >2 ) 
+     return false;
 
-    if ( i == 0)
-      i = 1;
-    else
-      i= i+1;
-    myDataTbl->model()->insertRow(i);
+  myDataTbl->blockSignals(true);
 
-    QTableWidgetItem* aItem =0;
+  if ( i == myDataTbl->rowCount() -1)
+    i = myDataTbl->rowCount() - 2;
 
-    aItem = myDataTbl->item( i, 0 );
-    aItem = new QTableWidgetItem( "" );
-    myDataTbl->setItem(i, 0, aItem);
+  if ( i == 0)
+    i = 1;
+  else
+    i= i+1;
+  myDataTbl->model()->insertRow(i);
 
-    aItem = new QTableWidgetItem("0.1");
-    myDataTbl->setItem(i, 1, aItem);
+  QTableWidgetItem* aItem =0;
 
-    aItem = new QTableWidgetItem("0.5");
-    myDataTbl->setItem(i, 2, aItem);
-    myDataTbl->blockSignals(false);
+  aItem = myDataTbl->item( i, 0 );
+  aItem = new QTableWidgetItem( "" );
+  myDataTbl->setItem(i, 0, aItem);
 
-    emit valuesChanged();
-    myDataTbl->setCurrentCell( i, 0);
-  }
+  aItem = new QTableWidgetItem("0.1");
+  myDataTbl->setItem(i, 1, aItem);
+
+  aItem = new QTableWidgetItem("0.5");
+  myDataTbl->setItem(i, 2, aItem);
+  myDataTbl->blockSignals(false);
+
+  emit valuesChanged();
+  myDataTbl->setCurrentCell( i, 0);
 }
 
 //**********************************************************************************
