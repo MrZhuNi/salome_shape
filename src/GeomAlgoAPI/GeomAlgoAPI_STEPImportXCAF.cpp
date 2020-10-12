@@ -63,7 +63,7 @@
 #include <TDocStd_Document.hxx>
 #include <XCAFDoc_ColorTool.hxx>
 #include <XCAFDoc_ShapeTool.hxx>
-#include <XCAFDoc_MaterialTool.hxx> 
+#include <XCAFDoc_MaterialTool.hxx>
 #include <Quantity_Color.hxx>
 #include <TopoDS.hxx>
 #include <STEPConstruct.hxx>
@@ -104,8 +104,10 @@ TopoDS_Shape GetShape(const Handle(Standard_Transient)        &theEnti,
 std::shared_ptr<GeomAPI_Shape> readAttributes( STEPCAFControl_Reader &reader,
                                                std::shared_ptr<ModelAPI_ResultBody> theResultBody,
                                                const bool  anMaterials,
-                                               std::map< std::wstring, std::list<std::wstring>> &theMaterialShape,
-                                               const std::string &format)
+                                               std::map< std::wstring,
+                                               std::list<std::wstring>> &theMaterialShape,
+                                               const std::string &format,
+                                               std::string& theError)
 {
   // dummy XCAF Application to handle the STEP XCAF Document
   Handle(XCAFApp_Application) dummy_app = XCAFApp_Application::GetApplication();
@@ -129,11 +131,10 @@ std::shared_ptr<GeomAPI_Shape> readAttributes( STEPCAFControl_Reader &reader,
   setShapeAttributes(shapeTool, colorTool, materialTool, mainLabel,
                      TopLoc_Location(),theResultBody,theMaterialShape,false);
 
-     
-  std::shared_ptr<GeomAPI_Shape> ageom =  setgeom(shapeTool,mainLabel);
- 
-  STEPControl_Reader aReader = reader.ChangeReader();   
-  
+  std::shared_ptr<GeomAPI_Shape> ageom =  setgeom(shapeTool,mainLabel,theError);
+
+  STEPControl_Reader aReader = reader.ChangeReader();
+
   // BEGIN: reading materials of sub-shapes from file
   if ( anMaterials )
   {
@@ -156,11 +157,12 @@ std::shared_ptr<GeomAPI_Shape> readAttributes( STEPCAFControl_Reader &reader,
     }
   }
 
-  return ageom;                                  
+  return ageom;
 }
 
 std::shared_ptr<GeomAPI_Shape> setgeom(const Handle(XCAFDoc_ShapeTool) &shapeTool,
-                                       const TDF_Label &label)
+                                       const TDF_Label &label,
+                                       std::string& theError)
 {
   BRep_Builder B;
   TopoDS_Compound compound;
@@ -181,7 +183,6 @@ std::shared_ptr<GeomAPI_Shape> setgeom(const Handle(XCAFDoc_ShapeTool) &shapeToo
   } else {
     for (Standard_Integer i=1; i<frshapes.Length(); i++) {
       TopoDS_Shape S = shapeTool->GetShape(frshapes.Value(i));
-
       TDF_Label aLabel = shapeTool->FindShape(S, Standard_False);
       if ( (!aLabel.IsNull()) && (shapeTool->IsShape(aLabel)) ) {
         if (shapeTool->IsFree(aLabel) ) {
@@ -189,12 +190,28 @@ std::shared_ptr<GeomAPI_Shape> setgeom(const Handle(XCAFDoc_ShapeTool) &shapeToo
             continue;
           }
           else {
-            B.Add(compound, S);
+            if (!shapeTool->IsReference(aLabel) ){
+              for(TDF_ChildIterator it(aLabel); it.More(); it.Next()) {
+                B.Add(compound, shapeTool->GetShape(it.Value()) );
+              }
+            }else{
+              B.Add(compound, S);
+            }
           }
         }
       }
     }
+
     TopoDS_Shape shape = compound;
+    // Check if any BRep entity has been read, there must be at least a vertex
+    if ( !TopExp_Explorer( shape, TopAbs_VERTEX ).More() )
+    {
+      theError = "No geometrical data in the imported file.";
+      std::shared_ptr<GeomAPI_Shape> aGeomShape(new GeomAPI_Shape);
+      aGeomShape->setImpl(new TopoDS_Shape());
+      return aGeomShape;
+    }
+
     aGeomShape->setImpl(new TopoDS_Shape(shape));
     return aGeomShape;
   }
@@ -206,7 +223,8 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
                                     const TDF_Label &label,
                                     const TopLoc_Location &loc,
                                     std::shared_ptr<ModelAPI_ResultBody> theResultBody,
-                                    std::map< std::wstring, std::list<std::wstring>> &theMaterialShape,
+                                    std::map< std::wstring,
+                                    std::list<std::wstring>> &theMaterialShape,
                                     bool isRef)
 {
   std::wstring shapeName;
@@ -217,7 +235,7 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
 
     shapeName =  Locale::Convert::toWString(TCollection_AsciiString(name).ToCString()) ;
   }
- 
+
   TopLoc_Location partLoc = loc;
   Handle(XCAFDoc_Location) l;
   if(label.FindAttribute(XCAFDoc_Location::GetID(), l)) {
@@ -233,7 +251,7 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
     setShapeAttributes( shapeTool, colorTool, materialTool, ref,
                         partLoc,theResultBody,theMaterialShape,true);
   }
- 
+
   if( shapeTool->IsSimpleShape(label) && (isRef || shapeTool->IsFree(label))) {
 
     TopoDS_Shape shape = shapeTool->GetShape(label);
@@ -263,11 +281,10 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
 
     if(materialTool->GetMaterial(label, matName, matDescription, matDensity,
                                  matDensName, matDensValType)) {
-      std::wstring nameMaterial = Locale::Convert::toWString(matName->ToCString()); 
-  
+      std::wstring nameMaterial = Locale::Convert::toWString(matName->ToCString());
+
       theMaterialShape[nameMaterial].push_back(shapeName);
     }
-
 
     Quantity_Color col;
     if(colorTool->GetColor(label, XCAFDoc_ColorGen, col)) {
@@ -295,7 +312,7 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
           double r = col.Red(), g = col.Green(), b = col.Blue();
           TopoDS_Face face = TopoDS::Face(xp2.Current());
           std::vector<int> ColRGB = {int(r*255),int(g*255),int(b*255)};
-          std::wstringstream aNameFace; 
+          std::wstringstream aNameFace;
           TopoDS_Shape shapeface = xp2.Current();
           if (!loc.IsIdentity()){
                   shapeface.Move(loc);
@@ -315,7 +332,7 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
            colorTool->GetColor(xp1.Current(), XCAFDoc_ColorCurv, col)) {
            double r = col.Red(), g = col.Green(), b = col.Blue();
            std::vector<int> ColRGB = {int(r*255),int(g*255),int(b*255)};
-           std::wstringstream aNameEdge; 
+           std::wstringstream aNameEdge;
            aNameEdge << L"Edge_"<< shapeName;
            aShapeGeom->setImpl(new TopoDS_Shape(xp1.Current() ));
            theResultBody->addShapeColor(
@@ -326,9 +343,9 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
     }
   }
   else {
-    int indiceChild = 1;  
+    int indiceChild = 1;
 
-    if (!shapeTool->IsReference(label)){
+    if (!shapeTool->IsReference(label) ){
       TopoDS_Shape shape = shapeTool->GetShape(label);
 
       std::shared_ptr<GeomAPI_Shape> aShapeGeom(new GeomAPI_Shape);
@@ -338,7 +355,7 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
       aShapeGeom->setImpl(new TopoDS_Shape(shape));
       shapeName = theResultBody->addShapeName(aShapeGeom, shapeName);
     }
-    for(TDF_ChildIterator it(label); it.More(); it.Next()) { 
+    for(TDF_ChildIterator it(label); it.More(); it.Next()) {
 
       setShapeAttributes( shapeTool, colorTool, materialTool,
                          it.Value(), partLoc,theResultBody,theMaterialShape, isRef);
@@ -428,7 +445,7 @@ void setShapeAttributes(const Handle(XCAFDoc_ShapeTool) &shapeTool,
                           std::shared_ptr<GeomAPI_Shape> aShapeGeom(new GeomAPI_Shape);
                           aShapeGeom->setImpl(new TopoDS_Shape(aSub));
                           std::wstring nom = theResultBody->findShapeName(aShapeGeom);
-                          std::wstring matName= Locale::Convert::toWString(aMatName->ToCString()); 
+                          std::wstring matName= Locale::Convert::toWString(aMatName->ToCString());
                           theMaterialShape[matName].push_back(nom);
 
                         }

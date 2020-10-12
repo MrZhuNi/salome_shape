@@ -55,7 +55,7 @@
 #include <TopoDS_Compound.hxx>
 #include <TopoDS_Iterator.hxx>
 
-
+//JL_CGLB
 #include <XCAFApp_Application.hxx>
 #include <XCAFDoc_DocumentTool.hxx>
 #include <OSD_Exception.hxx>
@@ -84,7 +84,7 @@ std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
 
   // Set "C" numeric locale to save numbers correctly
   // Kernel_Utils::Localizer loc;
- 
+
   STEPControl_Reader aReader;
 
   //VSR: 16/09/09: Convert to METERS
@@ -212,14 +212,15 @@ std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
 
 
 std::shared_ptr<GeomAPI_Shape>  STEPImportAttributs(const std::string& theFileName,
-                                                    std::shared_ptr<ModelAPI_ResultBody> theResultBody,
-                                                    const bool  anScalInterUnits,
-                                                    const bool  anMaterials,
-                                                    const bool  anColor,
-                                                    std::map< std::wstring, std::list<std::wstring>> &theMaterialShape,
-                                                    std::string& theError)
+                                              std::shared_ptr<ModelAPI_ResultBody> theResultBody,
+                                              const bool  anScalInterUnits,
+                                              const bool  anMaterials,
+                                              const bool  anColor,
+                                              std::map< std::wstring,
+                                              std::list<std::wstring>> &theMaterialShape,
+                                              std::string& theError)
 {
-  
+
   STEPControl_Reader aReader;
   std::shared_ptr<GeomAPI_Shape> aGeomShape(new GeomAPI_Shape);
   //VSR: 16/09/09: Convert to METERS
@@ -286,6 +287,11 @@ std::shared_ptr<GeomAPI_Shape>  STEPImportAttributs(const std::string& theFileNa
     return aGeomShape;
   }
 
-  return readAttributes(cafreader,theResultBody,anMaterials, theMaterialShape, "STEP-XCAF");
+  return readAttributes(cafreader,
+                        theResultBody,
+                        anMaterials,
+                        theMaterialShape,
+                        "STEP-XCAF",
+                        theError);
   }
 

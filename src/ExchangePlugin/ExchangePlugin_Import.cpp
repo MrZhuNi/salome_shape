@@ -109,7 +109,7 @@ void ExchangePlugin_Import::execute()
   if (aFormat == "STEP" || aFormat == "STP")
   {
     aFilePathAttr = string(ExchangePlugin_Import::STEP_FILE_PATH_ID());
-    aFilePath = aFilePathAttr->value();    
+    aFilePath = aFilePathAttr->value();
     // get the document where to import
     aPartsAttr = stringArray(STEP_TARGET_PARTS_LIST_ID());
     aTargetAttr = integer(STEP_TARGET_PART_ID());
@@ -140,8 +140,9 @@ void ExchangePlugin_Import::execute()
     {
       aPathAttr = aData->string(ExchangePlugin_ImportFeature::FILE_PATH_ID());
     }
-    
-    AttributeStringPtr aImportTypeAttr = aData->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID());
+
+    AttributeStringPtr aImportTypeAttr =
+                        aData->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID());
 
     aData->boolean(ExchangePlugin_ImportFeature::STEP_MATERIALS_ID())
          ->setValue(boolean(ExchangePlugin_Import::STEP_MATERIALS_ID())->value());
@@ -180,10 +181,11 @@ void ExchangePlugin_Import::attributeChanged(const std::string& theID)
     aPartsAttr = stringArray(STEP_TARGET_PARTS_LIST_ID());
     aTargetAttr = integer(STEP_TARGET_PART_ID());
     updatePart(aPartsAttr, aTargetAttr);
-   } 
+   }
 }
 
-void ExchangePlugin_Import::updatePart(AttributeStringArrayPtr &aPartsAttr, AttributeIntegerPtr &aTargetAttr)
+void ExchangePlugin_Import::updatePart(AttributeStringArrayPtr &aPartsAttr,
+                                       AttributeIntegerPtr &aTargetAttr)
 {
     // update the list of target parts
     SessionPtr aSession = ModelAPI_Session::get();

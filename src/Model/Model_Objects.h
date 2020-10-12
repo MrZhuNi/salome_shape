@@ -220,7 +220,7 @@ class Model_Objects
 
   //! Initializes the data fields of the feature
   void initData(ObjectPtr theObj, TDF_Label theLab, const int theTag);
-  
+
  //! Allows to store the result in the data tree of the document
   //! (attaches 'data' of result to tree)
   void storeResult(std::shared_ptr<ModelAPI_Data> theFeatureData,

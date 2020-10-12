@@ -1274,7 +1274,9 @@ std::shared_ptr<ModelAPI_ResultConstruction> Model_Objects::createConstruction(
 }
 
 std::shared_ptr<ModelAPI_ResultBody> Model_Objects::createBody(
-    const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex,const std::wstring& theNameShape )
+    const std::shared_ptr<ModelAPI_Data>& theFeatureData,
+    const int theIndex,
+    const std::wstring& theNameShape )
 {
   TDF_Label aLab = resultLabel(theFeatureData, theIndex);
   TDataStd_Comment::Set(aLab, ModelAPI_ResultBody::group().c_str());

@@ -51,10 +51,10 @@ public:
   EXCHANGEAPI_EXPORT
   ExchangeAPI_Import(const std::shared_ptr<ModelAPI_Feature> & theFeature,
                      const std::string & theFilePath,
-                     const bool  anScalInterUnits,
-                     const bool  anMaterials,
-                     const bool  anColor);
-                     
+                     const bool  theScalInterUnits,
+                     const bool  theMaterials,
+                     const bool  theColor);
+
   /// Destructor
   EXCHANGEAPI_EXPORT
   virtual ~ExchangeAPI_Import();
@@ -77,9 +77,9 @@ public:
   /// Set point values
   EXCHANGEAPI_EXPORT
   void setFilePath(const std::string & theFilePath);
-  
+
   EXCHANGEAPI_EXPORT
-  void setParameters(const std::string & theFilePath, 
+  void setParameters(const std::string & theFilePath,
                      const bool  anScalInterUnits,
                      const bool  anMaterials,
                      const bool  anColor);
@@ -108,7 +108,7 @@ ImportPtr addImportStep(const std::shared_ptr<ModelAPI_Document> & thePart,
                         const bool  anScalInterUnits,
                         const bool  anMaterials,
                         const bool  anColor);
-                    
+
 /** \ingroup CPPHighAPI
  *  \brief Import features from the file to the document after the current feature (or to the end).
  */

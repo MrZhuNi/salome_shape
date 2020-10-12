@@ -139,8 +139,7 @@ private:
   /// Loads Naming data structure to the document
   void loadNamingDS(std::shared_ptr<GeomAPI_Shape> theGeomShape,
                     std::shared_ptr<ModelAPI_ResultBody> theResultBody);
- 
-  // Set groups of color 
+  // Set groups of color
   void setColorGroups(std::shared_ptr<ModelAPI_ResultBody> theResultBody);
 
   // set a group of color
