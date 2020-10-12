@@ -971,7 +971,63 @@ bool FeaturesPlugin_ValidatorFilletSelection::isValid(const AttributePtr& theAtt
 
   return true;
 }
+//==================================================================================================
+bool FeaturesPlugin_ValidatorFilletSelectionEdge::isValid(const AttributePtr& theAttribute,
+                                                      const std::list<std::string>& theArguments,
+                                                      Events_InfoMessage& theError) const
+{
+  AttributeSelectionPtr anAttrSelection =
+    std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(theAttribute);
+  if(!anAttrSelection.get()) {
+// LCOV_EXCL_START
+    theError =
+      "Error: Empty attribute selection.";
+    return false;
+// LCOV_EXCL_STOP
+  }
 
+  FeaturePtr aFeature = std::dynamic_pointer_cast<ModelAPI_Feature>(theAttribute->owner());
+  // Check all selected entities are sub-shapes of single solid
+  GeomShapePtr aBaseSolid;
+  ResultPtr aContext = anAttrSelection->context();
+  if(!aContext.get()) {
+    FeaturePtr aContFeat = anAttrSelection->contextFeature();
+    if (!aContFeat.get() || !aContFeat->results().size() ||
+      aContFeat->firstResult()->groupName() != ModelAPI_ResultBody::group()) {
+      theError = "Error: Empty selection context.";
+      return false;
+    }
+    if (aContFeat->results().size() == 1)
+      aContext = aContFeat->firstResult();
+    else {
+       theError = "Error: Too many shapes selected.";
+      return false;
+    }
+  }
+
+  ResultBodyPtr aContextOwner = ModelAPI_Tools::bodyOwner(aContext, true);
+  GeomShapePtr anOwner = aContext->shape();
+  GeomShapePtr aTopLevelOwner = aContextOwner.get() ? aContextOwner->shape() : anOwner;
+
+  if (!anOwner) {
+    theError = "Error: wrong feature is selected.";
+    return false;
+  }
+
+  if (anOwner->shapeType() != GeomAPI_Shape::SOLID &&
+    anOwner->shapeType() != GeomAPI_Shape::COMPSOLID) {
+    theError = "Error: Not all selected shapes are sub-shapes of solids.";
+    return false;
+  }
+
+  if (!aBaseSolid)
+    aBaseSolid = aTopLevelOwner;
+  else if (!aBaseSolid->isEqual(aTopLevelOwner)) {
+    theError = "Error: Sub-shapes of different solids have been selected.";
+    return false;
+  }
+  return true;
+}
 
 //==================================================================================================
 bool FeaturesPlugin_ValidatorFillet1DSelection::isValid(const AttributePtr& theAttribute,

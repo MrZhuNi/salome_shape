@@ -112,6 +112,8 @@ FeaturesPlugin_Plugin::FeaturesPlugin_Plugin()
                               new FeaturesPlugin_ValidatorConcealedResult);
   aFactory->registerValidator("FeaturesPlugin_ValidatorFilletSelection",
                               new FeaturesPlugin_ValidatorFilletSelection);
+  aFactory->registerValidator("FeaturesPlugin_ValidatorFilletSelectionEdge",
+                              new FeaturesPlugin_ValidatorFilletSelectionEdge);
   aFactory->registerValidator("FeaturesPlugin_ValidatorFillet1DSelection",
                               new FeaturesPlugin_ValidatorFillet1DSelection);
   aFactory->registerValidator("FeaturesPlugin_ValidatorCircular",

@@ -186,15 +186,16 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
 
         if (!aShape.get()) {
           aShape = aContext->shape();
-        } 
+        }
         aPoints.push_back(aShape);
     }
+    myvalues()->setSize( aPoints.size() +2, 2 );
     std::list<ModelHighAPI_Double>::const_iterator aRowsRadiusIter = theRadius.begin();
-    ModelAPI_AttributeTables::Value aVal; 
+    ModelAPI_AttributeTables::Value aVal;
     aVal.myDouble = 0.0;
-    myvaluescurv()->setValue(aVal, 0, 0 );
-    aVal.myDouble = aRowsRadiusIter->value(); 
-    myvaluescurv()->setValue(aVal, 0, 1 );
+    myvalues()->setValue(aVal, 0, 0 );
+    aVal.myDouble = aRowsRadiusIter->value();
+    myvalues()->setValue(aVal, 0, 1 );
     aRowsRadiusIter++;
     int aRowIndex = 1;
     ListOfShape::const_iterator aPointsIt = aPoints.begin();
@@ -203,41 +204,43 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
       std::shared_ptr<GeomAPI_Pnt> aPntCurv = aCurve->project(aPnt);
       double res = (aPntCurv->distance(first) / taille);
        aVal.myDouble = res;
-      myvaluescurv()->setValue(aVal, aRowIndex, 0 );
-      aVal.myDouble = aRowsRadiusIter->value(); 
-      myvaluescurv()->setValue(aVal, aRowIndex, 1 );
+      myvalues()->setValue(aVal, aRowIndex, 0 );
+      aVal.myDouble = aRowsRadiusIter->value();
+      myvalues()->setValue(aVal, aRowIndex, 1 );
       aRowIndex++;
     }
     aVal.myDouble = 1.0;
-    myvaluescurv()->setValue(aVal, aRowIndex, 0 );
-    aVal.myDouble = aRowsRadiusIter->value(); 
-    myvaluescurv()->setValue(aVal, aRowIndex, 1 );
+    myvalues()->setValue(aVal, aRowIndex, 0 );
+    aVal.myDouble = aRowsRadiusIter->value();
+    myvalues()->setValue(aVal, aRowIndex, 1 );
     execIfBaseNotEmpty();
   }
 }
 
 FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                           const ModelHighAPI_Selection & theedgeselected,
+                                           const std::list<ModelHighAPI_Selection>& theBaseObjects,
                                            const std::list<ModelHighAPI_Double>& thepointCurvCood,
                                            const std::list<ModelHighAPI_Double>& theRadius)
   : FeaturesAPI_Fillet(theFeature)
 {
   if (initialize()) {
     fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES(), mycreationMethod);
-    fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_BY_CURVILEAR_ABSCISSA(), mycreationMethodmulti);
-    fillAttribute(theedgeselected, edgeselected());
+    fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_BY_CURVILEAR_ABSCISSA(),
+                  mycreationMethodmulti);
+    fillAttribute(theBaseObjects, mybaseObjects);
 
-    int aRowIndex = 0; 
-    myvaluescurv()->setSize( thepointCurvCood.size(), 2 );  
-    std::list<ModelHighAPI_Double>::const_iterator aRowsCoodIter = thepointCurvCood.begin(); 
-    std::list<ModelHighAPI_Double>::const_iterator aRowsRadiusIter = theRadius.begin(); 
-    for(; aRowsCoodIter != thepointCurvCood.end(); aRowsCoodIter++, aRowsRadiusIter++, aRowIndex++) { 
-      ModelAPI_AttributeTables::Value aVal; 
+    int aRowIndex = 0;
+    myvaluescurv()->setSize( thepointCurvCood.size(), 2 );
+    std::list<ModelHighAPI_Double>::const_iterator aRowsCoodIter = thepointCurvCood.begin();
+    std::list<ModelHighAPI_Double>::const_iterator aRowsRadiusIter = theRadius.begin();
+    for(; aRowsCoodIter != thepointCurvCood.end();
+          aRowsCoodIter++, aRowsRadiusIter++, aRowIndex++) {
+      ModelAPI_AttributeTables::Value aVal;
       aVal.myDouble = aRowsCoodIter->value();
       myvaluescurv()->setValue(aVal, aRowIndex, 0 );
-      aVal.myDouble = aRowsRadiusIter->value(); 
+      aVal.myDouble = aRowsRadiusIter->value();
       myvaluescurv()->setValue(aVal, aRowIndex, 1 );
-    } 
+    }
     execIfBaseNotEmpty();
   }
 }
@@ -255,7 +258,7 @@ void FeaturesAPI_Fillet2D::setBase(const std::list<ModelHighAPI_Selection>& theB
 }
 
 void FeaturesAPI_Fillet2D::setRadius(const ModelHighAPI_Double& theRadius)
-{ 
+{
   fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_SINGLE_RADIUS(), mycreationMethod);
   fillAttribute(theRadius, myradius);
 
@@ -264,7 +267,7 @@ void FeaturesAPI_Fillet2D::setRadius(const ModelHighAPI_Double& theRadius)
 
 void FeaturesAPI_Fillet2D::setRadius(const ModelHighAPI_Double& theRadius1,
                                      const ModelHighAPI_Double& theRadius2)
-{ 
+{
   fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_VARYING_RADIUS(), mycreationMethod);
   fillAttribute(theRadius1, mystartRadius);
   fillAttribute(theRadius2, myendRadius);
@@ -279,48 +282,52 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
 
   AttributeSelectionListPtr anAttrObjects =
     aBase->selectionList(FeaturesPlugin_Fillet::OBJECT_LIST_ID());
-  
 
-  if ( aBase->string(FeaturesPlugin_Fillet::CREATION_METHOD())->value() 
+
+  if ( aBase->string(FeaturesPlugin_Fillet::CREATION_METHOD())->value()
         == FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES() )
   {
     AttributeSelectionPtr anAttrEdgeSelec =
     aBase->selection(FeaturesPlugin_Fillet::EDGE_SELECTED_ID());
 
-    if( aBase->string(FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES())->value() 
+    if( aBase->string(FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES())->value()
           == FeaturesPlugin_Fillet::CREATION_METHOD_BY_POINTS() )
-    {        
+    {
+
       AttributeSelectionListPtr anAttrPoint =
           aBase->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
-      AttributeTablesPtr anAttrTable = 
+      AttributeTablesPtr anAttrTable =
           aBase->tables(FeaturesPlugin_Fillet::VALUES_ID());
-      theDumper << aBase << " = model.addFillet(" << aDocName << ", " << anAttrEdgeSelec;
-      theDumper << ", " << anAttrPoint << ", ";
+      theDumper << aBase << " = model.addFilletMultiRadiusByPoints(" << aDocName;
+      theDumper << ", " << anAttrEdgeSelec;
+      theDumper << ", " << anAttrPoint ;
       theDumper<<", [";
       for(int aRow = 0; aRow < myvalues()->rows(); aRow++) {
-        if (aRow != 0)
+        if (aRow != 0){
           theDumper<<", ";
+        }
         theDumper<<myvalues()->value(aRow, 1).myDouble;
       }
       theDumper<<"]";
 
     }else{
-      AttributeTablesPtr anAttrTable = 
+      AttributeTablesPtr anAttrTable =
           aBase->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
-      theDumper << aBase << " = model.addFillet(" << aDocName << ", " << anAttrEdgeSelec;
+      theDumper << aBase << " = model.addFilletMultiRadiusBycurvAbs(" << aDocName;
+      theDumper << ", " << anAttrObjects;
       theDumper << ", ";
       theDumper<<"[";
-      for(int aRow = 1; aRow < myvalues()->rows()-1; aRow++) {
-        if (aRow != 1)
+      for(int aRow = 0; aRow < myvaluescurv()->rows(); aRow++) {
+        if (aRow != 0)
           theDumper<<", ";
-        theDumper<<myvalues()->value(aRow, 0).myDouble;
+        theDumper<<myvaluescurv()->value(aRow, 0).myDouble;
       }
       theDumper<<"],";
       theDumper<<"[";
-      for(int aRow = 0; aRow < myvalues()->rows(); aRow++) {
+      for(int aRow = 0; aRow < myvaluescurv()->rows(); aRow++) {
         if (aRow != 0)
           theDumper<<", ";
-        theDumper<<myvalues()->value(aRow, 1).myDouble;
+        theDumper<<myvaluescurv()->value(aRow, 1).myDouble;
       }
       theDumper<<"]";
     }
@@ -378,7 +385,7 @@ FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
   return aFillet;
 }
 
-FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
+FilletPtr addFilletMultiRadiusByPoints(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Selection & theedgeselected,
                     const std::list<ModelHighAPI_Selection>& thepoint,
                     const std::list<ModelHighAPI_Double>& theRadius,
@@ -396,8 +403,8 @@ FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
   return aFillet;
 }
 
-FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
-                    const ModelHighAPI_Selection & theedgeselected,
+FilletPtr addFilletMultiRadiusBycurvAbs(const std::shared_ptr<ModelAPI_Document>& thePart,
+                    const std::list<ModelHighAPI_Selection>& theBaseObjects,
                     const std::list<ModelHighAPI_Double>& thepointCurvCood,
                     const std::list<ModelHighAPI_Double>& theRadius,
                     const bool keepSubResults)
@@ -409,7 +416,7 @@ FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
 
   FilletPtr aFillet;
 
-  aFillet.reset(new FeaturesAPI_Fillet2D(aFeature, theedgeselected, thepointCurvCood, theRadius));
+  aFillet.reset(new FeaturesAPI_Fillet2D(aFeature, theBaseObjects, thepointCurvCood, theRadius));
 
   return aFillet;
 }

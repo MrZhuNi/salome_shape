@@ -106,7 +106,6 @@ protected:
   /// \param theToValidate a validation of the values flag
   virtual bool setSelection(QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues,
                             const bool theToValidate);
-  
     /// Return the attribute values wrapped in a list of viewer presentations
   /// \return a list of viewer presentations, which contains an attribute result and
   /// a shape. If the attribute do not uses the shape, it is empty
@@ -140,7 +139,7 @@ private:
   /// \param theStrVal a string
   QString getValueText(ModelAPI_AttributeTables::Value& theVal) const;
 
-  /// Return a radii value from the name 
+  /// Return a radii value from the name
   /// \param theStrVal a string
   QString findRadius(QString thename) const;
 
@@ -153,14 +152,14 @@ private:
   /// Editor for table header
   QLineEdit* myHeaderEditor;
 
-  bool myTypeMethodeBypoint; 
+  bool myTypeMethodeBypoint;
 
-  bool mySetSelection; 
+  bool mySetSelection;
 
   DataArrayItemDelegate* myDelegate;
 
-  std::vector<QString> myfirstRowValue; 
-  std::vector<QString> myLastRowValue; 
+  std::vector<QString> myfirstRowValue;
+  std::vector<QString> myLastRowValue;
 
 };
 

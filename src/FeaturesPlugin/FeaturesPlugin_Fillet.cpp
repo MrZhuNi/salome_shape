@@ -76,6 +76,7 @@ void FeaturesPlugin_Fillet::initAttributes()
   data()->addAttribute(ARRAY_POINT_RADIUS_BY_POINTS(), ModelAPI_AttributeSelectionList::typeId());
 
   data()->addAttribute(CREATION_METHOD_BY_POINTS(), ModelAPI_AttributeString::typeId());
+  
   data()->addAttribute(CREATION_METHOD_BY_CURVILEAR_ABSCISSA(), ModelAPI_AttributeString::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), END_RADIUS_ID());
@@ -85,27 +86,53 @@ void FeaturesPlugin_Fillet::initAttributes()
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHOD_MULTIPLES_RADIUSES());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHOD_BY_CURVILEAR_ABSCISSA());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHOD_BY_POINTS());
+  tables(VALUES_ID())->setSize(2,2);
+  tables(VALUES_CURV_ID())->setSize(2,2);
+  ModelAPI_AttributeTables::Value aVar;
+  aVar.myDouble = 0.0;  
+  tables(VALUES_ID())->setValue(aVar,0,0);
+  tables(VALUES_CURV_ID())->setValue(aVar,0,0);
+  aVar.myDouble = 1;
+  tables(VALUES_ID())->setValue(aVar,0,1);
+  tables(VALUES_CURV_ID())->setValue(aVar,0,1);
+
+  tables(VALUES_ID())->setValue(aVar,1,0);
+  tables(VALUES_CURV_ID())->setValue(aVar,1,0);
+  aVar.myDouble = 2;
+  tables(VALUES_ID())->setValue(aVar,1,1);
+  tables(VALUES_CURV_ID())->setValue(aVar,1,1);
 
   initVersion(aSelectionList);
 }
 
 AttributePtr FeaturesPlugin_Fillet::objectsAttribute()
-{
+{ 
   return attribute(OBJECT_LIST_ID());
 }
 
 void FeaturesPlugin_Fillet::attributeChanged(const std::string& theID)
 {
   if (theID == EDGE_SELECTED_ID() 
-      && string(CREATION_METHOD())->value() == CREATION_METHOD_MULTIPLES_RADIUSES()) {
-    
+      && string(CREATION_METHOD())->value() == CREATION_METHOD_MULTIPLES_RADIUSES()
+      && string(CREATION_METHOD_MULTIPLES_RADIUSES())->value() == CREATION_METHOD_BY_POINTS()) {
+      
     AttributeSelectionPtr anEdges =
       std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(attribute(EDGE_SELECTED_ID()));
     AttributeSelectionListPtr array = selectionList(OBJECT_LIST_ID());
     if(array->isInitialized())
       array->clear();
-    array->append(anEdges->namingName() );
+    array->append(anEdges->context(), anEdges->value()); // anEdges->namingName() );
+
   }
+  if( theID == OBJECT_LIST_ID() && 
+          !(string(CREATION_METHOD())->value() == CREATION_METHOD_MULTIPLES_RADIUSES()
+            && string(CREATION_METHOD_MULTIPLES_RADIUSES())->value() == CREATION_METHOD_BY_POINTS() ) ){
+      
+      data()->selection(EDGE_SELECTED_ID())->setValue(ObjectPtr(),GeomShapePtr());
+
+  }
+
+  data()->execState(ModelAPI_StateMustBeUpdated);
 }
 
 const std::string& FeaturesPlugin_Fillet::modifiedShapePrefix() const
@@ -128,8 +155,6 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
   std::shared_ptr<GeomAlgoAPI_Fillet> aFilletBuilder;
   
   ListOfShape aFilletEdges = extractEdges(theEdges);
-
-  std::cout << "coucou aCreationMethod->value() = " <<  aCreationMethod->value()<< std::endl;
   if ( aCreationMethod->value() == CREATION_METHOD_MULTIPLES_RADIUSES() )
   {
 
@@ -153,7 +178,6 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
         aVal = aTablesAttr->value(k, 1);
         radiuses.push_back(aVal.myDouble);
     }
-
     aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, coodCurv,radiuses));
 
   }else
