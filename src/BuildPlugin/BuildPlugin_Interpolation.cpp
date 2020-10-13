@@ -136,8 +136,8 @@ void BuildPlugin_Interpolation::updateCoods()
     double scale = (aMaxt - aMint )/aNbrStep;
     string(VARIABLE_ID())->setValue("t");
 
-    tables(VALUE_ID())->setSize(aNbrStep,4);
-    for( int step = 0; step < aNbrStep; step++ ){
+    tables(VALUE_ID())->setSize(aNbrStep+1,4);
+    for( int step = 0; step <= aNbrStep; step++ ){
       ModelAPI_AttributeTables::Value aVal;
       aVal.myDouble = step * scale + aMint;
       tables(VALUE_ID())->setValue(aVal,step,0);
@@ -240,11 +240,11 @@ void BuildPlugin_Interpolation::execute()
         ||string( YT_ID())->value() == ""
         ||string( ZT_ID())->value() == ""
         ||tables(VALUE_ID())->rows()== 0  )
-      return;
+      return false;
 
     if (!outErrorMessage.empty()){
-      setError("Error: Python interpreter " + outErrorMessage);
-      return;
+      setError("Error: Python interpreter " );
+      return false;
     }
     AttributeTablesPtr table = tables( VALUE_ID() );
     std::list<std::vector<double> > aCoodPoints;
