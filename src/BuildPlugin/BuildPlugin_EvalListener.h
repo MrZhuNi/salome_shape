@@ -27,7 +27,6 @@ class ModelAPI_Attribute;
 class ModelAPI_Document;
 class ModelAPI_Feature;
 class ModelAPI_ResultParameter;
-// JL_CGLB n'existe pas class InitializationPlugin_Parameter;
 class BuildPlugin_PyInterp;
 
 /**
@@ -50,7 +49,7 @@ class BuildPlugin_EvalListener : public Events_Listener
 
  protected:
   /// Evaluates theExpression and returns its value.
-  double evaluate(std::wstring& theVariable, 
+  double evaluate(std::wstring& theVariable,
                   double theValueVariable,std::shared_ptr<ModelAPI_Feature> theParameter,
                   const std::wstring& theExpression, std::string& theError,
                   std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,

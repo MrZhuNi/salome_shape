@@ -34,7 +34,6 @@ void Events_Listener::groupWhileFlush(const std::shared_ptr<Events_Message>& the
     std::shared_ptr<Events_MessageGroup> aStored =
       std::dynamic_pointer_cast<Events_MessageGroup>(aMyGroup->second);
     aStored->Join(aGroup);
-    //std::cout<<"Add to group "<<theMessage->eventID().eventText()<<std::endl;
     return;
   }
 }

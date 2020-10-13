@@ -32,40 +32,42 @@
           </shape_selector>
         </optionalbox>
       </optionalbox>
-      <!--JL_CGLB validator id="GeomValidators_MinObjectsSelected" parameters="base_objects,2"/-->
+      <validator id="GeomValidators_MinObjectsSelected" parameters="base_objects,2"/>
     </box>
     <box id="analytical"
          title="Curve analytical"
          tooltip="???"
          icon="icons/Build/feature_interpolation_analytical.png">
-      <stringvalue id="xt" label="X(t) equation" >
+      <groupbox title="Curves parameters">
+        <stringvalue id="xt" label="X(t) equation" >
+            <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
+          </stringvalue>
+        <stringvalue id="yt" label="Y(t) equation" >
           <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
         </stringvalue>
-      <stringvalue id="yt" label="Y(t) equation" >
-        <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
-      </stringvalue>
-      <stringvalue id="zt" label="Z(t) equation" >
-        <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
-      </stringvalue>
-      <doublevalue id="mint"
-                   label="Min t"
-                   min="0"
-                   default="0">
-        <!--validator id="GeomValidators_Positive"/-->
-      </doublevalue>
-       <doublevalue id="maxt"
-                   label="Max t"
-                   min="0"
-                   default="100">
-        <!--validator id="GeomValidators_Positive"/-->
-      </doublevalue>
-       <integervalue id="numstep"
-                   label="Number of steps"
-                   tooltip="Fillet radius."
-                   min="0"
-                   default="10">
-        <validator id="GeomValidators_Positive"/>
-      </integervalue>
+        <stringvalue id="zt" label="Z(t) equation" >
+          <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
+        </stringvalue>
+        <doublevalue id="mint"
+                    label="Min t"
+                    min="0"
+                    default="0">
+          <!--validator id="GeomValidators_Positive"/-->
+        </doublevalue>
+        <doublevalue id="maxt"
+                    label="Max t"
+                    min="0"
+                    default="100">
+          <!--validator id="GeomValidators_Positive"/-->
+        </doublevalue>
+        <integervalue id="numstep"
+                    label="Number of steps"
+                    tooltip="Fillet radius."
+                    min="0"
+                    default="10">
+          <validator id="GeomValidators_Positive"/>
+        </integervalue>
+      </groupbox>
     </box>
   </toolbox>
 </source>

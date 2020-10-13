@@ -20,8 +20,10 @@
 #include <GeomValidators_MinObjectsSelected.h>
 
 #include <Events_InfoMessage.h>
+#include <BuildPlugin_Interpolation.h>
 
 #include <ModelAPI_AttributeInteger.h>
+#include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeSelectionList.h>
 
 //=================================================================================================
@@ -36,6 +38,15 @@ bool GeomValidators_MinObjectsSelected::isValid(const std::shared_ptr<ModelAPI_F
     return false;
 // LCOV_EXCL_STOP
   }
+  //"Interpolation"
+  if( theFeature->name().substr(0, 6) == L"Interp" )
+  {
+    AttributeStringPtr anAttr =theFeature->string(
+                                        BuildPlugin_Interpolation::CREATION_METHODE_ID());
+    if ( anAttr->isInitialized() )
+      if( anAttr->value() == BuildPlugin_Interpolation::CREATION_METHODE_ANALYTICAL_ID())
+        return true; 
+  } 
 
   std::string aSelectionListId = theArguments.front();
   AttributeSelectionListPtr anAttrSelList = theFeature->selectionList(aSelectionListId);

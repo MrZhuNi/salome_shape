@@ -59,7 +59,7 @@
 //=================================================================================================
 BuildPlugin_Interpolation::BuildPlugin_Interpolation()
 {
-   
+
 }
 
 //=================================================================================================
@@ -89,58 +89,63 @@ void BuildPlugin_Interpolation::initAttributes()
   data()->addAttribute(MINT_ID(), ModelAPI_AttributeDouble::typeId());
   data()->addAttribute(MAXT_ID(), ModelAPI_AttributeDouble::typeId());
   data()->addAttribute(NUMSTEP_ID(), ModelAPI_AttributeInteger::typeId());
-  
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHODE_ANALYTICAL_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHODE_BY_SELECTION_ID());
+
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
+                                                 CREATION_METHODE_ANALYTICAL_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
+                                                 CREATION_METHODE_BY_SELECTION_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), EXPRESSION_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VARIABLE_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VALUE_ID());
-
   data()->addAttribute(ARGUMENTS_ID(), ModelAPI_AttributeRefList::typeId());
   data()->reflist(ARGUMENTS_ID())->setIsArgument(false);
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), ARGUMENTS_ID());
 
+  string(XT_ID())->setValue("t");
+  string(YT_ID())->setValue("t");
+  string(ZT_ID())->setValue("t");
+  real(MINT_ID())->setValue(0);
+  real(MAXT_ID())->setValue(100);
+  integer(NUMSTEP_ID())->setValue(10);
+  updateCoods();
 }
 
 void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
-{ 
-  if( (theID == XT_ID() 
-    || theID == YT_ID() 
-    || theID == ZT_ID() 
+{
+  if( (theID == XT_ID()
+    || theID == YT_ID()
+    || theID == ZT_ID()
     || theID == MINT_ID()
     || theID == MAXT_ID()
     || theID == NUMSTEP_ID())
     && string(XT_ID())->value() !=""
     && string(YT_ID())->value() !=""
     && string(ZT_ID())->value() !=""
+    && string(CREATION_METHODE_ID())->value() == CREATION_METHODE_ANALYTICAL_ID()
     ){
     updateCoods();
   }
-    
 }
 
 void BuildPlugin_Interpolation::updateCoods()
-{ 
+{
     std::wstring exp;
-    double aMint = real(MINT_ID())->value(); 
+    double aMint = real(MINT_ID())->value();
     double aMaxt = real(MAXT_ID())->value();
-    int aNbrStep = integer(NUMSTEP_ID())->value(); 
-    double scale = (aMaxt - aMint )/aNbrStep; 
+    int aNbrStep = integer(NUMSTEP_ID())->value();
+    double scale = (aMaxt - aMint )/aNbrStep;
     string(VARIABLE_ID())->setValue("t");
 
     tables(VALUE_ID())->setSize(aNbrStep,4);
     for( int step = 0; step < aNbrStep; step++ ){
       ModelAPI_AttributeTables::Value aVal;
       aVal.myDouble = step * scale + aMint;
-      tables(VALUE_ID())->setValue(aVal,step,0);   
+      tables(VALUE_ID())->setValue(aVal,step,0);
     }
 
     outErrorMessage="";
-    
+
     evaluate(outErrorMessage);
-    if (!outErrorMessage.empty()){
-     std::cout << L"outErrorMessage= " << outErrorMessage << std::endl;
-    }
 }
 
 //=================================================================================================
@@ -233,61 +238,54 @@ void BuildPlugin_Interpolation::execute()
   {
     if(   string( XT_ID())->value() == ""
         ||string( YT_ID())->value() == ""
-        ||string( ZT_ID())->value() == "")
-      return; 
-    
+        ||string( ZT_ID())->value() == ""
+        ||tables(VALUE_ID())->rows()== 0  )
+      return;
+
     if (!outErrorMessage.empty()){
       setError("Error: Python interpreter " + outErrorMessage);
       return;
     }
-    AttributeTablesPtr table = tables( VALUE_ID() ); 
+    AttributeTablesPtr table = tables( VALUE_ID() );
     std::list<std::vector<double> > aCoodPoints;
     for( int step = 0; step < table->rows() ; step++ ){
-      std::vector<double> coodPoint; 
+      std::vector<double> coodPoint;
       ModelAPI_AttributeTables::Value value;
       //x
-      value = table->value(step, 1); 
-      coodPoint.push_back( value.myDouble ); 
+      value = table->value(step, 1);
+      coodPoint.push_back( value.myDouble );
       //y
-      value = table->value(step, 2); 
-      coodPoint.push_back( value.myDouble ); 
+      value = table->value(step, 2);
+      coodPoint.push_back( value.myDouble );
       //
-      value = table->value(step, 3); 
-      coodPoint.push_back( value.myDouble ); 
+      value = table->value(step, 3);
+      coodPoint.push_back( value.myDouble );
 
       aCoodPoints.push_back(coodPoint);
     }
-    
+
     std::list<GeomPointPtr> aPoints;
     std::list<GeomVertexPtr> aVertices;
     std::list<std::vector<double> >::const_iterator aItCoodPoints = aCoodPoints.begin();
- 
+
     for( ; aItCoodPoints != aCoodPoints.end(); ++aItCoodPoints ){
-      std::cout << "cood = " << "(" << (*aItCoodPoints)[0] << ", "<< 
-                                       (*aItCoodPoints)[1] << ", "<< 
-                                       (*aItCoodPoints)[2] << " ) "<<  std::endl;
-      GeomVertexPtr vertex = 
+
+      GeomVertexPtr vertex =
           GeomAlgoAPI_PointBuilder::vertex( (*aItCoodPoints)[0],
                                             (*aItCoodPoints)[1],
                                             (*aItCoodPoints)[2]);
-      aPoints.push_back (vertex->point()); 
+      aPoints.push_back (vertex->point());
       aVertices.push_back (vertex);
-    } 
-    /* 
-    GeomDirPtr aDirStart(new GeomAPI_Dir( aCoodPoints.front()[0],
-                                        aCoodPoints.front()[1], 
-                                        aCoodPoints.front()[2]));
-    GeomDirPtr aDirEnd(new GeomAPI_Dir( aCoodPoints.back()[0],
-                                        aCoodPoints.back()[1], 
-                                        aCoodPoints.back()[2]));*/
+    }
+
     // Create curve from points
     GeomEdgePtr anEdge =
-      GeomAlgoAPI_CurveBuilder::edge(aPoints, false, true,GeomDirPtr(),GeomDirPtr()); //aDirStart, aDirEnd);
+      GeomAlgoAPI_CurveBuilder::edge(aPoints, false, true,GeomDirPtr(),GeomDirPtr());
     if (!anEdge.get()) {
       setError("Error: Result curve is empty.");
       return;
     }
- 
+
     ResultBodyPtr aResultBody = document()->createBody(data());
     // Load the result
     aResultBody->store(anEdge);
@@ -297,9 +295,9 @@ void BuildPlugin_Interpolation::execute()
       aResultBody->generated(anExp.current(), aVertexName);
       aVertexIndex++;
     }
-   
+
     setResult(aResultBody);
-        
+
   }
 
 }
@@ -312,7 +310,6 @@ void  BuildPlugin_Interpolation::evaluate(std::string& theError)
 
   if (aProcessMessage->isProcessed()) {
     theError = aProcessMessage->error();
-    std::cout << "theError= " << theError << std::endl;
   } else { // error: python interpreter is not active
     theError = "Python interpreter is not available";
   }
