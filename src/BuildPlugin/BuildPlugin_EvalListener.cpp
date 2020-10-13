@@ -132,29 +132,45 @@ void BuildPlugin_EvalListener::processEvent(
     AttributeTablesPtr anValueAttr = aParam->tables(BuildPlugin_Interpolation::VALUE_ID());
     std::string anError;
     std::list<std::shared_ptr<ModelAPI_ResultParameter> > aParamsList;
-        
-    AttributeStringPtr anExprAttr; 
+
+    AttributeStringPtr anExprAttr;
     ModelAPI_AttributeTables::Value aVal;
     for(int step =0; step < anValueAttr->rows(); step++ ){
         anExprAttr = aParam->string(BuildPlugin_Interpolation::XT_ID());
         std::wstring anExp = anExprAttr->isUValue() ?
         Locale::Convert::toWString(anExprAttr->valueU()) :
         Locale::Convert::toWString(anExprAttr->value());
-        aVal.myDouble = evaluate(anVar,anValueAttr->value(step,0).myDouble,aParam, anExp, anError, aParamsList, true);
-        anValueAttr->setValue(aVal,step,1);     
-        
+        aVal.myDouble = evaluate(anVar,anValueAttr->value(step,0).myDouble,
+                                 aParam,
+                                 anExp,
+                                 anError,aParamsList,
+                                 true);
+        anValueAttr->setValue(aVal,step,1);
+
         anExprAttr = aParam->string(BuildPlugin_Interpolation::YT_ID());
         anExp = anExprAttr->isUValue() ?
         Locale::Convert::toWString(anExprAttr->valueU()) :
         Locale::Convert::toWString(anExprAttr->value());
-        aVal.myDouble = evaluate(anVar,anValueAttr->value(step,0).myDouble,aParam, anExp, anError, aParamsList, true);
+        aVal.myDouble = evaluate(anVar,
+                                anValueAttr->value(step,0).myDouble,
+                                aParam,
+                                anExp,
+                                anError,
+                                aParamsList,
+                                true);
         anValueAttr->setValue(aVal,step,2);
 
         anExprAttr = aParam->string(BuildPlugin_Interpolation::ZT_ID());
         anExp = anExprAttr->isUValue() ?
         Locale::Convert::toWString(anExprAttr->valueU()) :
         Locale::Convert::toWString(anExprAttr->value());
-        aVal.myDouble = evaluate(anVar,anValueAttr->value(step,0).myDouble,aParam, anExp, anError, aParamsList, true);
+        aVal.myDouble = evaluate(anVar,
+                                  anValueAttr->value(step,0).myDouble,
+                                  aParam,
+                                  anExp,
+                                  anError,
+                                  aParamsList,
+                                  true);
         anValueAttr->setValue(aVal,step,3);
     }
 
@@ -167,10 +183,10 @@ void BuildPlugin_EvalListener::processEvent(
 }
 
 double BuildPlugin_EvalListener::evaluate(
-  std::wstring& theVariable, 
+  std::wstring& theVariable,
   double theValueVariable,
   FeaturePtr theParameter,
-  const std::wstring& theExpression, 
+  const std::wstring& theExpression,
   std::string& theError,
   std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
   const bool theIsParameter)

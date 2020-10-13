@@ -148,7 +148,7 @@ public:
     static const std::string MY_VALUE_ID("value");
     return MY_VALUE_ID;
   }
-  
+
   /// attribute of parameter expression
   inline static const std::string& EXPRESSION_ID()
   {
@@ -192,7 +192,7 @@ public:
 
   /// Creates a new part document if needed.
   BUILDPLUGIN_EXPORT virtual void execute();
-  
+
   BUILDPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
   protected:

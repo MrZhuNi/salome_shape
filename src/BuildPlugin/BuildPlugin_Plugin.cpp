@@ -64,7 +64,7 @@ BuildPlugin_Plugin::BuildPlugin_Plugin()
                               new BuildPlugin_ValidatorBaseForVertex());
   aFactory->registerValidator("BuildPlugin_ValidatorExpressionInterpolation",
                               new BuildPlugin_ValidatorExpressionInterpolation());
-  
+
   // Register this plugin.
   ModelAPI_Session::get()->registerPlugin(this);
 
