@@ -299,6 +299,10 @@ void ExchangePlugin_ImportFeature::setColorGroup(std::shared_ptr<ModelAPI_Result
     }
   }
 
+  // Create the group in the document to be able to set its color
+  ResultPtr aGroup = document()->createGroup(aGroupFeature->data());
+  aGroupFeature->setResult(aGroup);
+
   ModelAPI_Tools::setColor(aGroupFeature->lastResult(),theColor);
 
   if (aSelectionList->size() == 0 ){
