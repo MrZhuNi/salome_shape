@@ -683,6 +683,7 @@ ADD_UNIT_TESTS(TestExtrusion.py
                TestFillet_MultiLevelCompound_v95_2.py
                TestFillet_MultiLevelCompound_v95_3.py
                TestFillet_MultiLevelCompound_v95_4.py
+               TestFillet_MultiRadius.py
                TestChamfer_MultiLevelCompound_v0_1.py
                TestChamfer_MultiLevelCompound_v0_2.py
                TestChamfer_MultiLevelCompound_v0_3.py

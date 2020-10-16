@@ -175,12 +175,10 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
 
   myDelegate = new DataArrayItemDelegate(myTypeMethodeBypoint);
 
-  //JL_CGLB myDataTbl->installEventFilter(this);
   myDataTbl->setItemDelegate(myDelegate);
 
   myDataTbl->verticalHeader()->hide();
   myDataTbl->setRowHeight(0, 25);
- //JL_CGLB  myDataTbl->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
   if(myTypeMethodeBypoint){
     myfirstRowValue.push_back("Start extremity");
@@ -210,7 +208,6 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
 
 
   myDataTbl->setHorizontalHeaderLabels(aHeaders);
-  //myDataTbl->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
   QTableWidgetItem* aItem;
   for(int j =0; j<3;j++)
@@ -492,38 +489,36 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onAdd()
 {
   QModelIndex index = myDataTbl->currentIndex();
   int i  = index.row();
-  if( i == -1 )
-    return false; 
+  if( i != -1 
+      && !(!myDataTbl->currentItem()->isSelected() && myDataTbl->rowCount() >2)) 
+  {
 
-  if( !myDataTbl->currentItem()->isSelected() && myDataTbl->rowCount() >2 ) 
-     return false;
+    myDataTbl->blockSignals(true);
 
-  myDataTbl->blockSignals(true);
+    if ( i == myDataTbl->rowCount() -1)
+      i = myDataTbl->rowCount() - 2;
 
-  if ( i == myDataTbl->rowCount() -1)
-    i = myDataTbl->rowCount() - 2;
+    if ( i == 0)
+      i = 1;
+    else
+      i= i+1;
+    myDataTbl->model()->insertRow(i);
 
-  if ( i == 0)
-    i = 1;
-  else
-    i= i+1;
-  myDataTbl->model()->insertRow(i);
+    QTableWidgetItem* aItem =0;
 
-  QTableWidgetItem* aItem =0;
+    aItem = myDataTbl->item( i, 0 );
+    aItem = new QTableWidgetItem( "" );
+    myDataTbl->setItem(i, 0, aItem);
+    aItem = new QTableWidgetItem("0.1");
+    myDataTbl->setItem(i, 1, aItem);
 
-  aItem = myDataTbl->item( i, 0 );
-  aItem = new QTableWidgetItem( "" );
-  myDataTbl->setItem(i, 0, aItem);
+    aItem = new QTableWidgetItem("0.5");
+    myDataTbl->setItem(i, 2, aItem);
+    myDataTbl->blockSignals(false);
 
-  aItem = new QTableWidgetItem("0.1");
-  myDataTbl->setItem(i, 1, aItem);
-
-  aItem = new QTableWidgetItem("0.5");
-  myDataTbl->setItem(i, 2, aItem);
-  myDataTbl->blockSignals(false);
-
-  emit valuesChanged();
-  myDataTbl->setCurrentCell( i, 0);
+    emit valuesChanged();
+    myDataTbl->setCurrentCell( i, 0);
+  }
 }
 
 //**********************************************************************************

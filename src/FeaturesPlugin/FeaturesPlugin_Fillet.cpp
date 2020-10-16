@@ -66,6 +66,9 @@ void FeaturesPlugin_Fillet::initAttributes()
   
   AttributePtr aSelectionList =
       data()->addAttribute(OBJECT_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
+
+  data()->addAttribute(EDGES_FACES_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
+
   data()->addAttribute(START_RADIUS_ID(), ModelAPI_AttributeDouble::typeId());
   data()->addAttribute(END_RADIUS_ID(), ModelAPI_AttributeDouble::typeId());
 
@@ -107,32 +110,26 @@ void FeaturesPlugin_Fillet::initAttributes()
 
 AttributePtr FeaturesPlugin_Fillet::objectsAttribute()
 { 
-  return attribute(OBJECT_LIST_ID());
+  if( string(CREATION_METHOD())->value() == CREATION_METHOD_MULTIPLES_RADIUSES() )
+  {
+    if( string(CREATION_METHOD_MULTIPLES_RADIUSES())->value() == CREATION_METHOD_BY_POINTS())
+    {
+      return attribute(EDGE_SELECTED_ID());
+    }else{
+      return attribute(EDGES_FACES_LIST_ID());
+    }
+  }else if ( string(CREATION_METHOD())->value() == CREATION_METHOD_VARYING_RADIUS() )
+  {
+       return attribute(EDGES_FACES_LIST_ID());
+
+  }
+
+ return attribute(OBJECT_LIST_ID());
+
 }
 
 void FeaturesPlugin_Fillet::attributeChanged(const std::string& theID)
 {
-  if (theID == EDGE_SELECTED_ID() 
-      && string(CREATION_METHOD())->value() == CREATION_METHOD_MULTIPLES_RADIUSES()
-      && string(CREATION_METHOD_MULTIPLES_RADIUSES())->value() == CREATION_METHOD_BY_POINTS()) {
-      
-    AttributeSelectionPtr anEdges =
-      std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(attribute(EDGE_SELECTED_ID()));
-    AttributeSelectionListPtr array = selectionList(OBJECT_LIST_ID());
-    if(array->isInitialized())
-      array->clear();
-    array->append(anEdges->context(), anEdges->value()); // anEdges->namingName() );
-
-  }
-  if( theID == OBJECT_LIST_ID() && 
-          !(string(CREATION_METHOD())->value() == CREATION_METHOD_MULTIPLES_RADIUSES()
-            && string(CREATION_METHOD_MULTIPLES_RADIUSES())->value() == CREATION_METHOD_BY_POINTS() ) ){
-      
-      data()->selection(EDGE_SELECTED_ID())->setValue(ObjectPtr(),GeomShapePtr());
-
-  }
-
-  data()->execState(ModelAPI_StateMustBeUpdated);
 }
 
 const std::string& FeaturesPlugin_Fillet::modifiedShapePrefix() const

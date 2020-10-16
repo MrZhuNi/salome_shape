@@ -127,7 +127,7 @@ public:
   /// Constructor with values.
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                const std::list<ModelHighAPI_Selection>& theBaseObjects,
+                                const std::list<ModelHighAPI_Selection>& theEdgesFaces,
                                 const ModelHighAPI_Double& theRadius1,
                                 const ModelHighAPI_Double& theRadius2);
 
@@ -141,14 +141,14 @@ public:
   /// Constructor with values.
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                const std::list<ModelHighAPI_Selection>& theBaseObjects,
+                                const std::list<ModelHighAPI_Selection>& theEdgesFaces,
                                 const std::list<ModelHighAPI_Double>& thepointCurvCood,
                                 const std::list<ModelHighAPI_Double>& theRadius);
   /// Destructor.
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_Fillet2D();
 
-  INTERFACE_10(FeaturesPlugin_Fillet::ID(),
+  INTERFACE_11(FeaturesPlugin_Fillet::ID(),
               creationMethod, FeaturesPlugin_Fillet::CREATION_METHOD(),
                               ModelAPI_AttributeString,
                               /** Creation method */,
@@ -160,10 +160,13 @@ public:
                            /** Base objects */,
               edgeselected, FeaturesPlugin_Fillet::EDGE_SELECTED_ID(),
                            ModelAPI_AttributeSelection,
-                           /** Base objects */,
+                           /** edge objects */,
+              edgesfacesselected, FeaturesPlugin_Fillet::EDGES_FACES_LIST_ID(),
+                           ModelAPI_AttributeSelectionList,
+                           /** edge and face objects */,
               arraypointradiusbypoint, FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS(),
                            ModelAPI_AttributeSelectionList,
-                           /** Base objects */,
+                           /** selection points  */,
               myvalues, FeaturesPlugin_Fillet::VALUES_ID(),
                            ModelAPI_AttributeTables,
                            /** table for methode multi-radiuses by point */,

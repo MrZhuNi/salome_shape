@@ -91,6 +91,12 @@ public:
     static const std::string MY_OBJECT_LIST_ID("main_objects");
     return MY_OBJECT_LIST_ID;
   }
+  /// Attribute name of main objects.
+  inline static const std::string& EDGES_FACES_LIST_ID()
+  {
+    static const std::string MY_EDGES_FACES_LIST_ID("edges_faces_seleted");
+    return MY_EDGES_FACES_LIST_ID;
+  }
 
   /// Attribute name of start radius.
   inline static const std::string& START_RADIUS_ID()

@@ -114,56 +114,75 @@ bool FeaturesPlugin_VersionedChFi::processAttribute(const AttributePtr& theAttri
 {
   bool isStoreFullHierarchy = data()->version() == CHAMFERFILLET_VERSION_1;
 
+  AttributeSelectionPtr anObject = 
+                    std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(theAttribute);
+
+  if( anObject.get() )
+  {
+    if ( !addShapeInHierarchy(anObject , theObjects, isStoreFullHierarchy) ) 
+      return false;
+    return true;
+  }
   AttributeSelectionListPtr anObjectsSelList =
       std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(theAttribute);
   for (int anObjectsIndex = 0; anObjectsIndex < anObjectsSelList->size(); ++anObjectsIndex) {
     AttributeSelectionPtr anObjectAttr = anObjectsSelList->value(anObjectsIndex);
-    GeomShapePtr anObject = anObjectAttr->value();
-    if (!anObject)
+
+    if ( !addShapeInHierarchy(anObjectAttr , theObjects, isStoreFullHierarchy) ) 
+       return false;
+  }
+  return true;
+}
+
+bool FeaturesPlugin_VersionedChFi::addShapeInHierarchy(const AttributeSelectionPtr& theAttribute,
+                                                       GeomAPI_ShapeHierarchy& theObjects,
+                                                       bool theIsStoreFullHierarchy)
+{
+  GeomShapePtr anObject = theAttribute->value();
+  if (!anObject)
+    return false;
+
+  ResultPtr aContext = theAttribute->context();
+  GeomShapePtr aParent;
+  if (aContext.get()) {
+    ResultBodyPtr aCtxOwner = ModelAPI_Tools::bodyOwner(aContext);
+    if (aCtxOwner && aCtxOwner->shape()->shapeType() == GeomAPI_Shape::COMPSOLID)
+    {
+      aContext = aCtxOwner;
+    }
+    aParent = aContext->shape();
+    if (!aParent)
       return false;
 
-    ResultPtr aContext = anObjectAttr->context();
-    GeomShapePtr aParent;
-    if (aContext.get()) {
-      ResultBodyPtr aCtxOwner = ModelAPI_Tools::bodyOwner(aContext);
-      if (aCtxOwner && aCtxOwner->shape()->shapeType() == GeomAPI_Shape::COMPSOLID)
-      {
-        aContext = aCtxOwner;
+    // store full shape hierarchy for the corresponding version only
+    if (anObject->shapeType() <= GeomAPI_Shape::SOLID)
+    {
+      ListOfShape anEdges;
+      collectSubs(aParent, anEdges, GeomAPI_Shape::EDGE);
+      for (ListOfShape::iterator anIt = anEdges.begin(); anIt != anEdges.end(); ++anIt) {
+        theObjects.addObject(*anIt);
+        theObjects.addParent(*anIt, aParent);
       }
-      aParent = aContext->shape();
+    }else
+    {
+      theObjects.addObject(anObject);
+      theObjects.addParent(anObject, aParent);
+    }
+    
+    if (theIsStoreFullHierarchy)
+      ModelAPI_Tools::fillShapeHierarchy(aParent, aContext, theObjects);
+  } else { // get it from a feature
+    FeaturePtr aFeature = theAttribute->contextFeature();
+    if (aFeature.get()) {
+      aParent = aFeature->firstResult()->shape();
       if (!aParent)
         return false;
 
-      // store full shape hierarchy for the corresponding version only
-      if (anObject->shapeType() <= GeomAPI_Shape::SOLID)
-      {
-        ListOfShape anEdges;
-        collectSubs(aParent, anEdges, GeomAPI_Shape::EDGE);
-        for (ListOfShape::iterator anIt = anEdges.begin(); anIt != anEdges.end(); ++anIt) {
-          theObjects.addObject(*anIt);
-          theObjects.addParent(*anIt, aParent);
-        }
-      }else
-      {
-        theObjects.addObject(anObject);
-        theObjects.addParent(anObject, aParent);
-      }
-      
-      if (isStoreFullHierarchy)
-        ModelAPI_Tools::fillShapeHierarchy(aParent, aContext, theObjects);
-    } else { // get it from a feature
-      FeaturePtr aFeature = anObjectAttr->contextFeature();
-      if (aFeature.get()) {
-        aParent = aFeature->firstResult()->shape();
-        if (!aParent)
-          return false;
-
-        ListOfShape anEdges;
-        collectSubs(aParent, anEdges, GeomAPI_Shape::EDGE);
-        for (ListOfShape::iterator anIt = anEdges.begin(); anIt != anEdges.end(); ++anIt) {
-          theObjects.addObject(*anIt);
-          theObjects.addParent(*anIt, aParent);
-        }
+      ListOfShape anEdges;
+      collectSubs(aParent, anEdges, GeomAPI_Shape::EDGE);
+      for (ListOfShape::iterator anIt = anEdges.begin(); anIt != anEdges.end(); ++anIt) {
+        theObjects.addObject(*anIt);
+        theObjects.addParent(*anIt, aParent);
       }
     }
   }

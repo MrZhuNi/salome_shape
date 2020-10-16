@@ -24,6 +24,7 @@
 
 #include <GeomAPI_Shape.h>
 #include <GeomAPI_ShapeHierarchy.h>
+#include <ModelAPI_AttributeSelection.h>
 
 #include <ModelAPI_Feature.h>
 
@@ -48,6 +49,11 @@ protected:
   /// Process SelectionList attribute and fill the objects hierarchy.
   bool processAttribute(const std::shared_ptr<ModelAPI_Attribute>& theAttribute,
                         GeomAPI_ShapeHierarchy& theObjects);
+  
+  // Add Shape in the object hierarchy 
+  bool addShapeInHierarchy(const AttributeSelectionPtr& theAttribute,
+                           GeomAPI_ShapeHierarchy& theObjects,
+                           bool theIsStoreFullHierarchy);
 
   /// Return attribute storing the selected objects of the operation.
   virtual std::shared_ptr<ModelAPI_Attribute> objectsAttribute() = 0;
