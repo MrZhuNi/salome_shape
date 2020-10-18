@@ -113,12 +113,6 @@ std::shared_ptr<GeomAPI_Shape> readAttributes( STEPCAFControl_Reader &reader,
   Handle(XCAFApp_Application) dummy_app = XCAFApp_Application::GetApplication();
   // XCAF Document to contain the STEP/IGES file itself
   Handle(TDocStd_Document) doc;
-   // check if a file is already open under this handle, if so, close it to
-  // prevent segfaults when trying to create a new document
-  if(dummy_app->NbDocuments() > 0) {
-    dummy_app->GetDocument(1, doc);
-    dummy_app->Close(doc);
-  }
 
   dummy_app->NewDocument( TCollection_ExtendedString("MDTV-CAF"), doc);
   // transfer STEP/IGES into the document, and get the main label
@@ -156,7 +150,6 @@ std::shared_ptr<GeomAPI_Shape> readAttributes( STEPCAFControl_Reader &reader,
       }
     }
   }
-
   return ageom;
 }
 
