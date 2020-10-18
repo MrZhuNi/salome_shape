@@ -21,7 +21,7 @@
 
 #include <BuildPlugin_EvalListener.h>
 #include <BuildPlugin_Interpolation.h>
-#include <BuildPlugin_PyInterp.h>
+#include <InitializationPlugin_PyInterp.h>
 
 #include <Events_InfoMessage.h>
 
@@ -74,7 +74,7 @@ BuildPlugin_EvalListener::BuildPlugin_EvalListener()
   aLoop->registerListener(this, ModelAPI_BuildEvalMessage::eventId(), NULL, true);
   aLoop->registerListener(this, ModelAPI_ComputePositionsMessage::eventId(), NULL, true);
 
-  myInterp = std::shared_ptr<BuildPlugin_PyInterp>(new BuildPlugin_PyInterp());
+  myInterp = std::shared_ptr<InitializationPlugin_PyInterp>(new InitializationPlugin_PyInterp());
   myInterp->initialize();
 }
 

@@ -149,13 +149,6 @@ public:
     return MY_VALUE_ID;
   }
 
-  /// attribute of parameter expression
-  inline static const std::string& EXPRESSION_ID()
-  {
-    static const std::string MY_EXPRESSION_ID("expression");
-    return MY_EXPRESSION_ID;
-  }
-
   /// attribute of parameter expression error
   inline static const std::string& EXPRESSION_ERROR_ID()
   {
