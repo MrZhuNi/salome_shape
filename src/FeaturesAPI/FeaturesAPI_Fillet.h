@@ -148,11 +148,11 @@ public:
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_Fillet2D();
 
-  INTERFACE_11(FeaturesPlugin_Fillet::ID(),
+  INTERFACE_12(FeaturesPlugin_Fillet::ID(),
               creationMethod, FeaturesPlugin_Fillet::CREATION_METHOD(),
                               ModelAPI_AttributeString,
                               /** Creation method */,
-              creationMethodmulti, FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES(),
+              creationMethodmulti, FeaturesPlugin_Fillet::CREATION_MULTI_RADIUS_METHODE(),
                               ModelAPI_AttributeString,
                               /** Creation method */,
               baseObjects, FeaturesPlugin_Fillet::OBJECT_LIST_ID(),
@@ -162,6 +162,9 @@ public:
                            ModelAPI_AttributeSelection,
                            /** edge objects */,
               edgesfacesselected, FeaturesPlugin_Fillet::EDGES_FACES_LIST_ID(),
+                           ModelAPI_AttributeSelectionList,
+                           /** edge and face objects */,
+              edgesfacesmultiselected, FeaturesPlugin_Fillet::EDGES_FACES_MULTI_LIST_ID(),
                            ModelAPI_AttributeSelectionList,
                            /** edge and face objects */,
               arraypointradiusbypoint, FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS(),

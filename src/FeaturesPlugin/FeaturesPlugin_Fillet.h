@@ -61,15 +61,26 @@ public:
     return MY_VARYING_RADIUS;
   }
 
-  inline static const std::string CREATION_METHOD_MULTIPLES_RADIUSES()
+  inline static const std::string METHOD_MULTIPLES_RADIUSES()
   {
     static std::string MY_METHOD_MULTIPLES_RADIUSES("multiple_radiuses");
     return MY_METHOD_MULTIPLES_RADIUSES;
   }
 
+  inline static const std::string CREATION_MULTI_RADIUS_METHODE()
+  {
+    static std::string MY_CREATION_MULTI_RADIUS_METHODE("multiple_radiuses_methode");
+    return MY_CREATION_MULTI_RADIUS_METHODE;
+  }
+
+  inline static const std::string CREATION_METHOD_BY_CURVILEAR_ABSCISSA()
+  {
+    static std::string MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA("by_curvilinear_abscissa_methode");
+    return MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA;
+  }
   inline static const std::string CREATION_METHOD_BY_POINTS()
   {
-    static std::string MY_CREATION_METHOD_BY_POINTS("by_point_method");
+    static std::string MY_CREATION_METHOD_BY_POINTS("by_points");
     return MY_CREATION_METHOD_BY_POINTS;
   }
 
@@ -79,11 +90,7 @@ public:
     return MY_ARRAY_POINT_RADIUS_BY_POINTS;
   }
 
-  inline static const std::string CREATION_METHOD_BY_CURVILEAR_ABSCISSA()
-  {
-    static std::string MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA("by_curvilinear_abscissa_methode");
-    return MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA;
-  }
+
 
   /// Attribute name of main objects.
   inline static const std::string& OBJECT_LIST_ID()
@@ -98,6 +105,13 @@ public:
     return MY_EDGES_FACES_LIST_ID;
   }
 
+  /// Attribute name of main objects.
+  inline static const std::string& EDGES_FACES_MULTI_LIST_ID()
+  {
+    static const std::string 
+                MY_EDGES_FACES_MULTI_LIST_ID("edges_faces_seleted_multi");
+    return MY_EDGES_FACES_MULTI_LIST_ID;
+  }
   /// Attribute name of start radius.
   inline static const std::string& START_RADIUS_ID()
   {

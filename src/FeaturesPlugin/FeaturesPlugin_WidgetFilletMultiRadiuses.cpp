@@ -158,7 +158,7 @@ FeaturesPlugin_WidgetFilletMultiRadiuses::
                                            const Config_WidgetAPI* theData,
                                            bool TypeMethodeBypoint):
 ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
- myTypeMethodeBypoint(TypeMethodeBypoint),mySetSelection(true)
+ myTypeMethodeBypoint(TypeMethodeBypoint),mySetSelection(true), mySortList(false)
 {
   QVBoxLayout* aMainLayout = new QVBoxLayout(this);
 
@@ -291,19 +291,8 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::eventFilter(QObject* theObject, Q
       }
     }
   }
-  else if (theEvent->type() == QEvent::Show ) {
-    DataPtr aData = myFeature->data();
-    if( myTypeMethodeBypoint )
-      aData->string(FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES())
-            ->setValue(FeaturesPlugin_Fillet::CREATION_METHOD_BY_POINTS() );
-    else
-      aData->string(FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES())
-          ->setValue(FeaturesPlugin_Fillet::CREATION_METHOD_BY_CURVILEAR_ABSCISSA() );
-  }
   return ModuleBase_WidgetSelector::eventFilter(theObject, theEvent);
 }
-
-
 
 //**********************************************************************************
 bool FeaturesPlugin_WidgetFilletMultiRadiuses::storeValueCustom()
@@ -329,6 +318,35 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::storeValueCustom()
       aTablesAttr->setValue( getValue( aTblVal ), i, j);
     }
   }
+  
+
+  if(myTypeMethodeBypoint && mySortList ){
+      AttributeSelectionListPtr aSelectionListAttr =
+          aData->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
+    if(  aSelectionListAttr->isInitialized() )
+    {
+      std::map<double,std::pair<QString,QString>>::iterator itValuesSort;
+      QList<std::shared_ptr<ModuleBase_ViewerPrs>> alist = getAttributeSelection();
+      aSelectionListAttr->clear();
+      itValuesSort = myValuesSort.begin();
+      for(;itValuesSort != myValuesSort.end();++itValuesSort)
+      {
+        std::pair<QString,QString> elem = itValuesSort->second;
+        ResultPtr aResult;
+        GeomShapePtr aShape;
+        foreach(ModuleBase_ViewerPrsPtr aPrs, alist) {
+          aResult = std::dynamic_pointer_cast<ModelAPI_Result>(aPrs->object());
+          aShape = aPrs->shape();
+          if (!aResult.get() && !aShape.get())
+            continue;
+          if (aResult->data()->name()== Locale::Convert::toWString(elem.first.toStdString())) {
+            aSelectionListAttr->append(aResult, aShape);
+            break;
+          }
+        }
+      }
+    }
+  }
 
   return true;
 }
@@ -350,13 +368,25 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
   else{
     aTablesAttr = aData->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
   }
+  
+  if( aTablesAttr->rows() == 0 )
+  {
+    aTablesAttr->setSize(2,2);
+    ModelAPI_AttributeTables::Value aVar;
+    aVar.myDouble = 0.0;
+    aTablesAttr->setValue(aVar,0,0);
+    aVar.myDouble = 1;
+    aTablesAttr->setValue(aVar,0,1);
+    aTablesAttr->setValue(aVar,1,0);
+    aVar.myDouble = 2;
+    aTablesAttr->setValue(aVar,1,1);
+  }
 
   AttributeSelectionPtr anEdges =
     std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(
       aData->attribute(FeaturesPlugin_Fillet::EDGE_SELECTED_ID()));
 
-  std::map<double,std::pair<QString,QString>> aValuesSort;
-
+  myValuesSort.clear();
   double res;
   int aRows = 0;
   std::map<double,std::pair<QString,QString>>::iterator itValuesSort;
@@ -402,16 +432,18 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
       res = (aPntCurv->distance(first) / taille);
       QString aName = QString::fromStdWString(attsel->namingName());
       QString aRad = findRadius( QString::number(res) );
-      if ( aValuesSort.find( res ) == aValuesSort.end() )
-        aValuesSort[ res ] = std::make_pair(aName, aRad );
+      if ( myValuesSort.find( res ) == myValuesSort.end() )
+        myValuesSort[ res ] = std::make_pair(aName, aRad );
       i++;
+      mySortList = true;
     }
 
     res = 0.0;
-    aValuesSort[ res ] = std::make_pair (myfirstRowValue[0], findRadius( QString::number(res) ));
+    myValuesSort[ res ] = std::make_pair (myfirstRowValue[0], findRadius( QString::number(res) ));
     res = 1.0;
-    aValuesSort[ res ] = std::make_pair (myLastRowValue[0], findRadius( QString::number(res) ));
-    aRows =  aValuesSort.size();
+    std::cout << "res =  restore = " << res << std::endl;
+    myValuesSort[ res ] = std::make_pair (myLastRowValue[0], findRadius( QString::number(res) )); 
+    aRows =  myValuesSort.size();
   }else{
 
     ModelAPI_AttributeTables::Value aVal;
@@ -419,16 +451,16 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
         for (int anIndex = 0; anIndex < aTablesAttr->rows(); ++anIndex) {
           aVal = aTablesAttr->value(anIndex,0);
           double curv = getValueText(aVal).toDouble();
-          if ( aValuesSort.find( curv ) == aValuesSort.end() )
-            aValuesSort[ curv ] = std::make_pair(getValueText(aVal),
-                                                 findRadius(getValueText(aVal)));
+          if ( myValuesSort.find( curv ) == myValuesSort.end() )
+            myValuesSort[ curv ] = std::make_pair(getValueText(aVal),
+                                                  findRadius(getValueText(aVal)));
         }
-        aRows = aValuesSort.size();
+        aRows = myValuesSort.size();
     }else{
       res = 0.0;
-      aValuesSort[ res ] = std::make_pair (myfirstRowValue[0], myfirstRowValue[2]);
+      myValuesSort[ res ] = std::make_pair (myfirstRowValue[0], myfirstRowValue[2]);
       res = 1.0;
-      aValuesSort[ res ] = std::make_pair (myLastRowValue[0], myLastRowValue[2]);
+      myValuesSort[ res ] = std::make_pair (myLastRowValue[0], myLastRowValue[2]);
       aRows = 2;
     }
 
@@ -445,7 +477,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
 
   myDataTbl->setRowCount(aRows);
 
-  itValuesSort = aValuesSort.begin();
+  itValuesSort = myValuesSort.begin();
 
   for (int k = 0; k < aRows; k++, ++itValuesSort ) {
 
@@ -603,6 +635,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::
   setSelection(QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues, const bool theToValidate)
 {
 
+  mySortList = false;
   if ( theValues.size() > 1 || !myTypeMethodeBypoint || theValues.size() == 0 )
   {
     mySetSelection = false;

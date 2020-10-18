@@ -151,8 +151,8 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
     fillAttribute(theEdgesFaces, myedgesfacesselected);
     fillAttribute(theRadius1, mystartRadius);
     fillAttribute(theRadius2, myendRadius);
-
-    execIfBaseNotEmpty();
+    if (myedgesfacesselected->size() > 0)
+      execute();
   }
 }
 
@@ -164,9 +164,9 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
   : FeaturesAPI_Fillet(theFeature)
 {
   if (initialize()) {
-    fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES(), mycreationMethod);
+    fillAttribute(FeaturesPlugin_Fillet::METHOD_MULTIPLES_RADIUSES(), mycreationMethod);
     fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_BY_POINTS(), mycreationMethodmulti);
-    fillAttribute(theedgeselected, edgeselected());
+    fillAttribute(theedgeselected, myedgeselected);
     fillAttribute(thepoint, myarraypointradiusbypoint);
 
     GeomEdgePtr anEdge = GeomEdgePtr(new GeomAPI_Edge( edgeselected()->value()));
@@ -213,7 +213,8 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
     myvalues()->setValue(aVal, aRowIndex, 0 );
     aVal.myDouble = aRowsRadiusIter->value();
     myvalues()->setValue(aVal, aRowIndex, 1 );
-    execIfBaseNotEmpty();
+ 
+    execute();
   }
 }
 
@@ -224,9 +225,9 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
   : FeaturesAPI_Fillet(theFeature)
 {
   if (initialize()) {
-    fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES(), mycreationMethod);
+    fillAttribute(FeaturesPlugin_Fillet::METHOD_MULTIPLES_RADIUSES(), mycreationMethod);
     fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_BY_CURVILEAR_ABSCISSA(), mycreationMethodmulti);
-    fillAttribute(theEdgesFaces, myedgesfacesselected);
+    fillAttribute(theEdgesFaces, myedgesfacesmultiselected);
 
     int aRowIndex = 0;
     myvaluescurv()->setSize( thepointCurvCood.size(), 2 );
@@ -239,8 +240,9 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
       myvaluescurv()->setValue(aVal, aRowIndex, 0 );
       aVal.myDouble = aRowsRadiusIter->value();
       myvaluescurv()->setValue(aVal, aRowIndex, 1 );
-    }
-    execIfBaseNotEmpty();
+    } 
+    if (myedgesfacesmultiselected->size() > 0)
+      execute();
   }
 }
 
@@ -284,12 +286,12 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
 
 
   if ( aBase->string(FeaturesPlugin_Fillet::CREATION_METHOD())->value()
-        == FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES() )
+        == FeaturesPlugin_Fillet::METHOD_MULTIPLES_RADIUSES() )
   {
     AttributeSelectionPtr anAttrEdgeSelec =
     aBase->selection(FeaturesPlugin_Fillet::EDGE_SELECTED_ID());
 
-    if( aBase->string(FeaturesPlugin_Fillet::CREATION_METHOD_MULTIPLES_RADIUSES())->value()
+    if( aBase->string(FeaturesPlugin_Fillet::CREATION_MULTI_RADIUS_METHODE())->value()
           == FeaturesPlugin_Fillet::CREATION_METHOD_BY_POINTS() )
     {
 
@@ -310,7 +312,7 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
 
     }else{
       AttributeSelectionListPtr anAttrEdgesFaces =
-                      aBase->selectionList(FeaturesPlugin_Fillet::EDGES_FACES_LIST_ID());
+                      aBase->selectionList(FeaturesPlugin_Fillet::EDGES_FACES_MULTI_LIST_ID());
       AttributeTablesPtr anAttrTable = aBase->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
       theDumper << aBase << " = model.addFilletMultiRadiusBycurvAbs(" << aDocName << ", " << anAttrEdgesFaces;
       theDumper << ", ";

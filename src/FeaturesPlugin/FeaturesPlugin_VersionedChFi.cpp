@@ -114,7 +114,7 @@ bool FeaturesPlugin_VersionedChFi::processAttribute(const AttributePtr& theAttri
 {
   bool isStoreFullHierarchy = data()->version() == CHAMFERFILLET_VERSION_1;
 
-  AttributeSelectionPtr anObject = 
+  AttributeSelectionPtr anObject =
                     std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(theAttribute);
 
   if( anObject.get() )
