@@ -39,26 +39,22 @@
          tooltip="???"
          icon="icons/Build/feature_interpolation_analytical.png">
       <groupbox title="Curves parameters">
-        <stringvalue id="xt" label="X(t) equation" >
+        <stringvalue id="xt" label="X(t) equation">
             <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
           </stringvalue>
-        <stringvalue id="yt" label="Y(t) equation" >
+        <stringvalue id="yt" label="Y(t) equation">
           <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
         </stringvalue>
-        <stringvalue id="zt" label="Z(t) equation" >
+        <stringvalue id="zt" label="Z(t) equation">
           <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
         </stringvalue>
         <doublevalue id="mint"
                     label="Min t"
-                    min="0"
                     default="0">
-          <!--validator id="GeomValidators_Positive"/-->
         </doublevalue>
         <doublevalue id="maxt"
                     label="Max t"
-                    min="0"
                     default="100">
-          <!--validator id="GeomValidators_Positive"/-->
         </doublevalue>
         <integervalue id="numstep"
                     label="Number of steps"

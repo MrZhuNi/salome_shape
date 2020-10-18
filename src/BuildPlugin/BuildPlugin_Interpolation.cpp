@@ -76,7 +76,6 @@ void BuildPlugin_Interpolation::initAttributes()
   data()->addAttribute(CREATION_METHODE_BY_SELECTION_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(CREATION_METHODE_ANALYTICAL_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(CREATION_METHODE_ANALYTICAL_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(EXPRESSION_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(EXPRESSION_ERROR_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(VARIABLE_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(VALUE_ID(), ModelAPI_AttributeTables::typeId());
@@ -94,20 +93,23 @@ void BuildPlugin_Interpolation::initAttributes()
                                                  CREATION_METHODE_ANALYTICAL_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
                                                  CREATION_METHODE_BY_SELECTION_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), EXPRESSION_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VARIABLE_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VALUE_ID());
   data()->addAttribute(ARGUMENTS_ID(), ModelAPI_AttributeRefList::typeId());
   data()->reflist(ARGUMENTS_ID())->setIsArgument(false);
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), ARGUMENTS_ID());
 
-  string(XT_ID())->setValue("t");
-  string(YT_ID())->setValue("t");
-  string(ZT_ID())->setValue("t");
-  real(MINT_ID())->setValue(0);
-  real(MAXT_ID())->setValue(100);
-  integer(NUMSTEP_ID())->setValue(10);
-  updateCoods();
+  if(  string( XT_ID())->value() == ""
+    && string( YT_ID())->value() == ""
+    && string( ZT_ID())->value() == "")
+    {
+      string(XT_ID())->setValue("t");
+      string(YT_ID())->setValue("t");
+      string(ZT_ID())->setValue("t");
+      real(MINT_ID())->setValue(0);
+      real(MAXT_ID())->setValue(100);
+      integer(NUMSTEP_ID())->setValue(10);
+    }
 }
 
 void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
@@ -133,6 +135,11 @@ void BuildPlugin_Interpolation::updateCoods()
     double aMint = real(MINT_ID())->value();
     double aMaxt = real(MAXT_ID())->value();
     int aNbrStep = integer(NUMSTEP_ID())->value();
+
+    if ( aMaxt < aMint ) {
+      setError("The minimum value of the parameter must be less than maximum value !!!" );
+    }
+
     double scale = (aMaxt - aMint )/aNbrStep;
     string(VARIABLE_ID())->setValue("t");
 
@@ -257,7 +264,7 @@ void BuildPlugin_Interpolation::execute()
       //y
       value = table->value(step, 2);
       coodPoint.push_back( value.myDouble );
-      //
+      //Z
       value = table->value(step, 3);
       coodPoint.push_back( value.myDouble );
 
@@ -280,7 +287,7 @@ void BuildPlugin_Interpolation::execute()
 
     // Create curve from points
     GeomEdgePtr anEdge =
-      GeomAlgoAPI_CurveBuilder::edge(aPoints, false, true,GeomDirPtr(),GeomDirPtr());
+      GeomAlgoAPI_CurveBuilder::edge(aPoints, false, false,GeomDirPtr(),GeomDirPtr());
     if (!anEdge.get()) {
       setError("Error: Result curve is empty.");
       return;

@@ -29,6 +29,7 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Events
                     ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomValidators
                     ${PROJECT_SOURCE_DIR}/src/SketchPlugin
+                    ${PROJECT_SOURCE_DIR}/src/InitializationPlugin
                     ${SUIT_INCLUDE}
                     ${PYTHON_INCLUDE_DIR}
 )
@@ -51,7 +52,6 @@ SET(PROJECT_HEADERS
     BuildPlugin_Filling.h
     BuildPlugin_Validators.h
     BuildPlugin_EvalListener.h
-    BuildPlugin_PyInterp.h
 )
 
 SET(PROJECT_SOURCES
@@ -71,7 +71,6 @@ SET(PROJECT_SOURCES
     BuildPlugin_Filling.cpp
     BuildPlugin_Validators.cpp
     BuildPlugin_EvalListener.cpp
-    BuildPlugin_PyInterp.cpp
 )
 
 SET(XML_RESOURCES

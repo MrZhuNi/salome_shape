@@ -27,7 +27,7 @@ class ModelAPI_Attribute;
 class ModelAPI_Document;
 class ModelAPI_Feature;
 class ModelAPI_ResultParameter;
-class BuildPlugin_PyInterp;
+class InitializationPlugin_PyInterp;
 
 /**
  * \class BuildPlugin_EvalListener
@@ -64,7 +64,7 @@ class BuildPlugin_EvalListener : public Events_Listener
   void processEvaluationEvent(const std::shared_ptr<Events_Message>& theMessage);
 
  private:
-  std::shared_ptr<BuildPlugin_PyInterp> myInterp;
+  std::shared_ptr<InitializationPlugin_PyInterp> myInterp;
 };
 
 #endif /* SRC_BUILDPLUGIN_EVALLISTENER_H_ */
