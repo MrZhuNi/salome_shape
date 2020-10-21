@@ -117,7 +117,7 @@ SET(PROJECT_SOURCES
 SET(PROJECT_LIBRARIES
     Config
     GeomAPI
-    Locale
+    ${OpenCASCADE_ApplicationFramework_LIBRARIES}
 )
 SET(CMAKE_SWIG_FLAGS -threads -w325,321,362,383,302,403,451,473)
 ADD_DEFINITIONS(-DMODELAPI_EXPORTS)
@@ -131,6 +131,10 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Config
                     ${PROJECT_SOURCE_DIR}/src/GeomAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomAlgoAPI
                     ${PROJECT_SOURCE_DIR}/src/Locale
+                    ${OpenCASCADE_INCLUDE_DIR}
+                    ${OpenCASCADE_DataExchange_LIBRARIES}
+                    ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
+                    ${OpenCASCADE_ApplicationFramework_LIBRARIES}
 )
 
 
@@ -172,16 +176,16 @@ ADD_UNIT_TESTS(${TEST_NAMES})
 if(${HAVE_SALOME})
   enable_testing()
   set(TEST_INSTALL_DIRECTORY "${SALOME_SHAPER_INSTALL_TESTS}/ModelAPI")
-  
+
   install(FILES CTestTestfileInstall.cmake
   DESTINATION ${TEST_INSTALL_DIRECTORY}
   RENAME CTestTestfile.cmake)
   install(FILES tests.set DESTINATION ${TEST_INSTALL_DIRECTORY})
-  
+
   set(TMP_TESTS_NAMES)
   foreach(tfile ${TEST_NAMES})
     list(APPEND TMP_TESTS_NAMES "Test/${tfile}")
   endforeach(tfile ${TEST_NAMES})
-  
+
   install(FILES ${TMP_TESTS_NAMES} DESTINATION ${TEST_INSTALL_DIRECTORY})
 endif(${HAVE_SALOME})
