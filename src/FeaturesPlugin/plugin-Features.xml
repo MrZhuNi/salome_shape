@@ -126,7 +126,7 @@
         <source path="fillet1d_widget.xml"/>
       </feature>
       <feature id="Fillet" title="Fillet" tooltip="Perform fillet on face or edge"
-               icon="icons/Features/fillet.png" auto_preview="true" helpfile="filletFeature.html">
+               icon="icons/Features/fillet.png" auto_preview="false" helpfile="filletFeature.html">
         <source path="fillet_widget.xml"/>
       </feature>
       <feature id="Chamfer" title="Chamfer" tooltip="Perform chamfer on face or edge"
@@ -134,7 +134,7 @@
         <source path="chamfer_widget.xml"/>
       </feature>
       <feature id="FusionFaces" title="Fuse Faces" tooltip="Performs fusion of connected faces"
-               icon="icons/Features/fusion_faces.png" auto_preview="true" helpfile="fuseFeatureFaces.html">
+               icon="icons/Features/fusion_faces.png" auto_preview="true" helpfile="FeaturesPlugin/fusionFacesFeature.html">
         <source path="fusion_faces_widget.xml"/>
       </feature>
       <feature id="Defeaturing" title="Defeaturing" tooltip="Perform removing faces from solid"
@@ -172,7 +172,12 @@
     </group>
   </workbench>
   <workbench id="Inspection">
-    <group id="Measurement">
+
+    <group id="Calculation">
+      <feature id="GeometryCalculation" title="Geometry Calculation" tooltip="Calculate properties of objects"
+               icon="icons/Features/basicproperties.png" helpfile="measurementFeature.html" abort_confirmation="false">
+        <source path="GeometryCalculation_widget.xml"/>
+      </feature>
       <feature id="Measurement" title="Measurement" tooltip="Calculate properties of objects"
                icon="icons/Features/measurement.png" helpfile="measurementFeature.html" abort_confirmation="false">
         <source path="measurement_widget.xml"/>
