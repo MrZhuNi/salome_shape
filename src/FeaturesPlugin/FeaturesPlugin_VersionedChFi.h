@@ -49,8 +49,8 @@ protected:
   /// Process SelectionList attribute and fill the objects hierarchy.
   bool processAttribute(const std::shared_ptr<ModelAPI_Attribute>& theAttribute,
                         GeomAPI_ShapeHierarchy& theObjects);
-  
-  // Add Shape in the object hierarchy 
+
+  // Add Shape in the object hierarchy
   bool addShapeInHierarchy(const AttributeSelectionPtr& theAttribute,
                            GeomAPI_ShapeHierarchy& theObjects,
                            bool theIsStoreFullHierarchy);

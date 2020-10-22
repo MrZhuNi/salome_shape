@@ -119,7 +119,7 @@ bool FeaturesPlugin_VersionedChFi::processAttribute(const AttributePtr& theAttri
 
   if( anObject.get() )
   {
-    if ( !addShapeInHierarchy(anObject , theObjects, isStoreFullHierarchy) ) 
+    if ( !addShapeInHierarchy(anObject , theObjects, isStoreFullHierarchy) )
       return false;
     return true;
   }
@@ -128,7 +128,7 @@ bool FeaturesPlugin_VersionedChFi::processAttribute(const AttributePtr& theAttri
   for (int anObjectsIndex = 0; anObjectsIndex < anObjectsSelList->size(); ++anObjectsIndex) {
     AttributeSelectionPtr anObjectAttr = anObjectsSelList->value(anObjectsIndex);
 
-    if ( !addShapeInHierarchy(anObjectAttr , theObjects, isStoreFullHierarchy) ) 
+    if ( !addShapeInHierarchy(anObjectAttr , theObjects, isStoreFullHierarchy) )
        return false;
   }
   return true;
@@ -168,7 +168,7 @@ bool FeaturesPlugin_VersionedChFi::addShapeInHierarchy(const AttributeSelectionP
       theObjects.addObject(anObject);
       theObjects.addParent(anObject, aParent);
     }
-    
+
     if (theIsStoreFullHierarchy)
       ModelAPI_Tools::fillShapeHierarchy(aParent, aContext, theObjects);
   } else { // get it from a feature

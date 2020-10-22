@@ -45,12 +45,18 @@ ModuleBase_ModelWidget* FeaturesPlugin_WidgetCreator::createWidgetByType(
     return aWidget;
 
   if (theType == "multiradius-panel") {
-    aWidget = new FeaturesPlugin_WidgetFilletMultiRadiuses(theParent, theWorkshop, theWidgetApi, true);
+    aWidget = new FeaturesPlugin_WidgetFilletMultiRadiuses(theParent,
+                                                           theWorkshop,
+                                                           theWidgetApi,
+                                                           true);
   }else if (theType == "multiradiuscurv-panel")
   {
-    aWidget = new FeaturesPlugin_WidgetFilletMultiRadiuses(theParent, theWorkshop, theWidgetApi, false);
+    aWidget = new FeaturesPlugin_WidgetFilletMultiRadiuses(theParent,
+                                                           theWorkshop,
+                                                           theWidgetApi,
+                                                           false);
   }
-  
+
 
   return aWidget;
 }

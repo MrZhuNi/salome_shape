@@ -108,7 +108,7 @@ public:
   /// Attribute name of main objects.
   inline static const std::string& EDGES_FACES_MULTI_LIST_ID()
   {
-    static const std::string 
+    static const std::string
                 MY_EDGES_FACES_MULTI_LIST_ID("edges_faces_seleted_multi");
     return MY_EDGES_FACES_MULTI_LIST_ID;
   }
@@ -132,7 +132,7 @@ public:
     static const std::string MY_VALUES_ID("values");
     return MY_VALUES_ID;
   }
-  
+
   /// attribute name of list of tables that contain deafult values (row 0) and the custom values
   inline static const std::string& VALUES_CURV_ID()
   {

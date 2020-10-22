@@ -121,11 +121,11 @@ void GeomAlgoAPI_Fillet::build(const GeomShapePtr& theBaseSolid,
   }
 
   TColgp_Array1OfPnt2d array(1, theRadiuses.size());
- 
+
   int i = 1;
   std::list<double>::const_iterator itCurv = theCurvCoord.begin();
   std::list<double>::const_iterator itRadius = theRadiuses.begin();
-  
+
   for( ; itCurv != theCurvCoord.end(); ++itCurv, ++itRadius )
   {
     array.SetValue(i, gp_Pnt2d( (*itCurv) , (*itRadius)));

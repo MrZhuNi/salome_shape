@@ -68,32 +68,32 @@ const char* MYFalse = "False";
 
 class TextFieldDoubleValidator : public QDoubleValidator {
 public:
-       TextFieldDoubleValidator (QObject * parent = 0) : QDoubleValidator(parent) {}
-       TextFieldDoubleValidator (double bottom, double top, int decimals, QObject * parent) :
-       QDoubleValidator(bottom, top, decimals, parent) {}
+  TextFieldDoubleValidator (QObject * parent = 0) : QDoubleValidator(parent) {}
+  TextFieldDoubleValidator (double bottom, double top, int decimals, QObject * parent) :
+  QDoubleValidator(bottom, top, decimals, parent) {}
 
-       QValidator::State validate(QString & s, int & pos) const {
-           if (s.isEmpty() || s.startsWith("0.") || s == "0" ){//|| s.startsWith("-")) {
-               // allow empty field or minus sign
-               return QValidator::Intermediate;
-           }
-           // check length of decimal places
-           QChar point = locale().decimalPoint();
-           if(s.indexOf(point) != -1) {
-               int lengthDecimals = s.length() - s.indexOf(point) - 1;
-               if (lengthDecimals > decimals()) {
-                   return QValidator::Invalid;
-               }
-           }
+  QValidator::State validate(QString & s, int & pos) const {
+      if (s.isEmpty() || s.startsWith("0.") || s == "0" ){
+          // allow empty field or minus sign
+          return QValidator::Intermediate;
+      }
+      // check length of decimal places
+      QChar point = locale().decimalPoint();
+      if(s.indexOf(point) != -1) {
+          int lengthDecimals = s.length() - s.indexOf(point) - 1;
+          if (lengthDecimals > decimals()) {
+              return QValidator::Invalid;
+          }
+      }
 
-           // check range of value
-           bool isNumber;
-           double value = locale().toDouble(s, &isNumber);
-           if (isNumber && bottom() <= value && value <= top()) {
-               return QValidator::Acceptable;
-           }
-           return QValidator::Invalid;
-       }
+      // check range of value
+      bool isNumber;
+      double value = locale().toDouble(s, &isNumber);
+      if (isNumber && bottom() <= value && value <= top()) {
+          return QValidator::Acceptable;
+      }
+      return QValidator::Invalid;
+  }
 
 };
 
@@ -318,7 +318,6 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::storeValueCustom()
       aTablesAttr->setValue( getValue( aTblVal ), i, j);
     }
   }
-  
 
   if(myTypeMethodeBypoint && mySortList ){
       AttributeSelectionListPtr aSelectionListAttr =
@@ -368,7 +367,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
   else{
     aTablesAttr = aData->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
   }
-  
+
   if( aTablesAttr->rows() == 0 )
   {
     aTablesAttr->setSize(2,2);
@@ -441,8 +440,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
     res = 0.0;
     myValuesSort[ res ] = std::make_pair (myfirstRowValue[0], findRadius( QString::number(res) ));
     res = 1.0;
-    std::cout << "res =  restore = " << res << std::endl;
-    myValuesSort[ res ] = std::make_pair (myLastRowValue[0], findRadius( QString::number(res) )); 
+    myValuesSort[ res ] = std::make_pair (myLastRowValue[0], findRadius( QString::number(res) ));
     aRows =  myValuesSort.size();
   }else{
 
@@ -521,8 +519,8 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onAdd()
 {
   QModelIndex index = myDataTbl->currentIndex();
   int i  = index.row();
-  if( i != -1 
-      && !(!myDataTbl->currentItem()->isSelected() && myDataTbl->rowCount() >2)) 
+  if( i != -1
+      && !(!myDataTbl->currentItem()->isSelected() && myDataTbl->rowCount() >2))
   {
 
     myDataTbl->blockSignals(true);

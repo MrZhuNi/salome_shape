@@ -213,7 +213,7 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
     myvalues()->setValue(aVal, aRowIndex, 0 );
     aVal.myDouble = aRowsRadiusIter->value();
     myvalues()->setValue(aVal, aRowIndex, 1 );
- 
+
     execute();
   }
 }
@@ -226,7 +226,8 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
 {
   if (initialize()) {
     fillAttribute(FeaturesPlugin_Fillet::METHOD_MULTIPLES_RADIUSES(), mycreationMethod);
-    fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_BY_CURVILEAR_ABSCISSA(), mycreationMethodmulti);
+    fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_BY_CURVILEAR_ABSCISSA(),
+                                                                 mycreationMethodmulti);
     fillAttribute(theEdgesFaces, myedgesfacesmultiselected);
 
     int aRowIndex = 0;
@@ -240,7 +241,7 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
       myvaluescurv()->setValue(aVal, aRowIndex, 0 );
       aVal.myDouble = aRowsRadiusIter->value();
       myvaluescurv()->setValue(aVal, aRowIndex, 1 );
-    } 
+    }
     if (myedgesfacesmultiselected->size() > 0)
       execute();
   }
@@ -299,7 +300,8 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
           aBase->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
       AttributeTablesPtr anAttrTable =
           aBase->tables(FeaturesPlugin_Fillet::VALUES_ID());
-      theDumper << aBase << " = model.addFilletMultiRadiusByPoints(" << aDocName << ", " << anAttrEdgeSelec;
+      theDumper << aBase << " = model.addFilletMultiRadiusByPoints("
+                         << aDocName << ", " << anAttrEdgeSelec;
       theDumper << ", " << anAttrPoint ;
       theDumper<<", [";
       for(int aRow = 0; aRow < myvalues()->rows(); aRow++) {
@@ -314,7 +316,8 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
       AttributeSelectionListPtr anAttrEdgesFaces =
                       aBase->selectionList(FeaturesPlugin_Fillet::EDGES_FACES_MULTI_LIST_ID());
       AttributeTablesPtr anAttrTable = aBase->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
-      theDumper << aBase << " = model.addFilletMultiRadiusBycurvAbs(" << aDocName << ", " << anAttrEdgesFaces;
+      theDumper << aBase << " = model.addFilletMultiRadiusBycurvAbs("
+                         << aDocName << ", " << anAttrEdgesFaces;
       theDumper << ", ";
       theDumper<<"[";
       for(int aRow = 0; aRow < myvaluescurv()->rows(); aRow++) {
@@ -332,7 +335,7 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
       theDumper<<"]";
     }
   }else
-  { 
+  {
 
     std::string aCreationMethod = aBase->string(FeaturesPlugin_Fillet::CREATION_METHOD())->value();
 

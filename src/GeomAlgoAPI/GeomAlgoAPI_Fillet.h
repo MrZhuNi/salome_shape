@@ -49,7 +49,7 @@ public:
                                         const ListOfShape&  theFilletEdges,
                                         const double        theStartRadius,
                                         const double        theEndRadius);
-  
+
   /// Run fillet operation with variable radius.
   /// \param theBaseSolid    a changing solid
   /// \param theFilletEdges  list of edges the fillet is performed on
@@ -77,8 +77,8 @@ private:
   /// \param theBaseSolid    a changing solid
   /// \param theFilletEdges  list of edges the fillet is performed on
   /// \param theCurvCoord    the coordinate of a point defines a relative parameter on the edge
-  /// \param theRadiuses     the corresponding value of the radius, and the radius evolves 
-  //                         between the first and last vertices of the contour of index 
+  /// \param theRadiuses     the corresponding value of the radius, and the radius evolves
+  //                         between the first and last vertices of the contour of index
   void build(const GeomShapePtr& theBaseSolid,
              const ListOfShape&  theFilletEdges,
              const std::list<double>& theCurvCoord,
