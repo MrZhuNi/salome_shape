@@ -87,18 +87,13 @@ void ExchangeAPI_Import::setParameters(const std::string & theFilePath,
 void ExchangeAPI_Import::setFilePath(const std::string & theFilePath)
 {
   fillAttribute(theFilePath, myfilePath);
-  std::string aFrom = "\\";
-  std::string aTo = "\\\\";
-  std::string aFilePath = theFilePath;
-  for(std::size_t aPos = aFilePath.find(aFrom);
-      aPos != std::string::npos;
-      aPos = aFilePath.find(aFrom, aPos)) {
-    aFilePath.replace(aPos, aFrom.size(), aTo);
-    aPos += aTo.size();
+  std::string anExtension = GeomAlgoAPI_Tools::File_Tools::extension(theFilePath);
+  if (anExtension == "STEP" || anExtension == "STP") {
+    setParameters(theFilePath,true,false,false);
+  }else{
+    fillAttribute(anExtension, feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
+    execute();
   }
-  std::string anExtension = GeomAlgoAPI_Tools::File_Tools::extension(aFilePath);
-  fillAttribute(anExtension, feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
-  execute();
 }
 
 //--------------------------------------------------------------------------------------
