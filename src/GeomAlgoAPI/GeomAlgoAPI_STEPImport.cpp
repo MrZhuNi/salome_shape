@@ -76,7 +76,7 @@
 
 std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
                                           const std::string& theFormatName,
-                                          const bool  anScalInterUnits,
+                                          const bool theScalInterUnits,
                                           std::string& theError)
 {
 
@@ -104,7 +104,7 @@ std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
     if (status == IFSelect_RetDone) {
 
       // Regard or not the model units
-      if (!anScalInterUnits) {
+      if (!theScalInterUnits) {
         // set UnitFlag to units from file
         TColStd_SequenceOfAsciiString anUnitLengthNames;
         TColStd_SequenceOfAsciiString anUnitAngleNames;
@@ -213,9 +213,9 @@ std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
 
 std::shared_ptr<GeomAPI_Shape>  STEPImportAttributs(const std::string& theFileName,
                                               std::shared_ptr<ModelAPI_ResultBody> theResultBody,
-                                              const bool  anScalInterUnits,
-                                              const bool  anMaterials,
-                                              const bool  anColor,
+                                              const bool  theScalInterUnits,
+                                              const bool  theMaterials,
+                                              const bool  theColor,
                                               std::map< std::wstring,
                                               std::list<std::wstring>> &theMaterialShape,
                                               std::string& theError)
@@ -236,7 +236,7 @@ std::shared_ptr<GeomAPI_Shape>  STEPImportAttributs(const std::string& theFileNa
     if (status == IFSelect_RetDone) {
 
       // Regard or not the model units
-      if (!anScalInterUnits) {
+      if (!theScalInterUnits) {
         // set UnitFlag to units from file
         TColStd_SequenceOfAsciiString anUnitLengthNames;
         TColStd_SequenceOfAsciiString anUnitAngleNames;
@@ -275,23 +275,22 @@ std::shared_ptr<GeomAPI_Shape>  STEPImportAttributs(const std::string& theFileNa
     return aGeomShape;
   }
 
-  STEPCAFControl_Reader cafreader;
-  cafreader.SetColorMode(true);
-  cafreader.SetNameMode(true);
-  cafreader.SetMatMode(true);
+  STEPCAFControl_Reader aCafreader;
+  aCafreader.SetColorMode(true);
+  aCafreader.SetNameMode(true);
+  aCafreader.SetMatMode(true);
 
-  if(cafreader.ReadFile(theFileName.c_str()) != IFSelect_RetDone) {
+  if(aCafreader.ReadFile(theFileName.c_str()) != IFSelect_RetDone) {
     theError = "Wrong format of the imported file. Can't import file.";
     std::shared_ptr<GeomAPI_Shape> aGeomShape(new GeomAPI_Shape);
     aGeomShape->setImpl(new TopoDS_Shape());
     return aGeomShape;
   }
 
-  return readAttributes(cafreader,
+  return readAttributes(aCafreader,
                         theResultBody,
-                        anMaterials,
+                        theMaterials,
                         theMaterialShape,
-                        "STEP-XCAF",
                         theError);
-  }
+}
 

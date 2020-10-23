@@ -83,7 +83,7 @@ class ExchangePlugin_ImportFeature : public ModelAPI_CompositeFeature
   /// attribute name of step colors
   inline static const std::string& STEP_COLORS_ID()
   {
-    static const std::string MY_STEP_COLORS_ID("step_colours");
+    static const std::string MY_STEP_COLORS_ID("step_colors");
     return MY_STEP_COLORS_ID;
   }
   /// Default constructor

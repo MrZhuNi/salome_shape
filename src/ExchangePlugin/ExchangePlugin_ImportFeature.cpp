@@ -106,7 +106,6 @@ void ExchangePlugin_ImportFeature::initAttributes()
       getKind(), ExchangePlugin_ImportFeature::STEP_FILE_PATH_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(
       getKind(), ExchangePlugin_ImportFeature::FILE_PATH_ID());
-      
 }
 
 /*
@@ -133,11 +132,11 @@ void ExchangePlugin_ImportFeature::execute()
 }
 
 std::shared_ptr<ModelAPI_ResultBody> ExchangePlugin_ImportFeature::createResultBody(
-                        std::shared_ptr<GeomAPI_Shape> aGeomShape)
+                        std::shared_ptr<GeomAPI_Shape> theGeomShape)
 {
   std::shared_ptr<ModelAPI_ResultBody> aResultBody = document()->createBody(data());
   //LoadNamingDS of the imported shape
-  loadNamingDS(aGeomShape, aResultBody);
+  loadNamingDS(theGeomShape, aResultBody);
   return aResultBody;
 }
 
@@ -160,7 +159,7 @@ void ExchangePlugin_ImportFeature::importFile(const std::string& theFileName)
   std::string anObjectName = GeomAlgoAPI_Tools::File_Tools::name(theFileName);
   data()->setName(Locale::Convert::toWString(anObjectName));
 
-  ResultBodyPtr result = document()->createBody(data());
+  ResultBodyPtr aResult = document()->createBody(data());
 
   bool anColorGroupSelected = boolean(ExchangePlugin_ImportFeature::STEP_COLORS_ID())->value();
   bool anMaterialsGroupSelected =
@@ -174,7 +173,7 @@ void ExchangePlugin_ImportFeature::importFile(const std::string& theFileName)
 
     try{
 
-      result->clearShapeNameAndColor();
+      aResult->clearShapeNameAndColor();
       // Process groups/fields
       std::shared_ptr<ModelAPI_AttributeRefList> aRefListOfGroups =
       std::dynamic_pointer_cast<ModelAPI_AttributeRefList>(data()->attribute(FEATURES_ID()));
@@ -188,14 +187,14 @@ void ExchangePlugin_ImportFeature::importFile(const std::string& theFileName)
         document()->removeFeature(aFeature);
       }
 
-      aGeomShape = STEPImportAttributs(theFileName, result, anScalInterUnits,
+      aGeomShape = STEPImportAttributs(theFileName, aResult, anScalInterUnits,
                                        anMaterialsGroupSelected, anColorGroupSelected,
                                        theMaterialShape,anError);
 
     }
     catch (OSD_Exception& e) {
-        //Try to load STEP file without colors...
-        aGeomShape = STEPImport(theFileName, anExtension,anScalInterUnits,anError);
+      //Try to load STEP file without colors...
+      aGeomShape = STEPImport(theFileName, anExtension,anScalInterUnits,anError);
     }
   } else if (anExtension == "IGES" || anExtension == "IGS") {
     aGeomShape = IGESImport(theFileName, anExtension, anError);
@@ -211,20 +210,20 @@ void ExchangePlugin_ImportFeature::importFile(const std::string& theFileName)
 
   // Pass the results into the model
 
-  loadNamingDS(aGeomShape, result);
+  loadNamingDS(aGeomShape, aResult);
 
   // create color group
   if (anColorGroupSelected)
   {
-    setColorGroups(result);
+    setColorGroups(aResult);
   }
 
   // create Materiel group
   if (anMaterialsGroupSelected){
-    setMaterielGroup(result,theMaterialShape);
+    setMaterielGroup(aResult,theMaterialShape);
   }
 
-  setResult(result);
+  setResult(aResult);
 
 }
 
@@ -232,16 +231,15 @@ void ExchangePlugin_ImportFeature::setColorGroups(
                                     std::shared_ptr<ModelAPI_ResultBody> theResultBody)
 {
   std::vector<int> aColor;
-  int indice = 1;
+  int anIndice = 1;
   std::list< std::vector<int> > aColorsRead;
-
 
   ModelAPI_Tools::getColor(theResultBody, aColor);
   if (!aColor.empty() ){
-    std::wstringstream colorName;
-    colorName<<L"Color_"<<indice;
-    setColorGroup( theResultBody, aColor, colorName.str());
-    indice++;
+    std::wstringstream aColorName;
+    aColorName <<L"Color_"<< anIndice;
+    setColorGroup( theResultBody, aColor, aColorName.str());
+    anIndice++;
     aColorsRead.push_back(aColor);
   }
 
@@ -252,19 +250,20 @@ void ExchangePlugin_ImportFeature::setColorGroups(
     if (!aColor.empty() ){
         auto it = std::find(aColorsRead.begin(), aColorsRead.end(), aColor);
         if ( it == aColorsRead.end() ){
-             std::wstringstream colorName;
-            colorName<<L"Color_"<<indice;
-            setColorGroup(theResultBody, aColor, colorName.str());
-            indice++;
+             std::wstringstream aColorName;
+            aColorName<<L"Color_"<< anIndice;
+            setColorGroup(theResultBody, aColor, aColorName.str());
+            anIndice++;
             aColorsRead.push_back(aColor);
         }
     }
   }
 }
 
-void ExchangePlugin_ImportFeature::setColorGroup(std::shared_ptr<ModelAPI_ResultBody> theResultBody,
-                                                 std::vector<int> &theColor,
-                                                 const std::wstring& theName )
+void ExchangePlugin_ImportFeature::setColorGroup(
+                                        std::shared_ptr<ModelAPI_ResultBody> theResultBody,
+                                        std::vector<int> &theColor,
+                                        const std::wstring& theName )
 {
   std::vector<int> aColor;
   std::shared_ptr<ModelAPI_Feature> aGroupFeature = addFeature("Group");
@@ -311,17 +310,15 @@ void ExchangePlugin_ImportFeature::setColorGroup(std::shared_ptr<ModelAPI_Result
 }
 
 void ExchangePlugin_ImportFeature::setMaterielGroup(
-                                      std::shared_ptr<ModelAPI_ResultBody> theResultBody,
-                                      std::map< std::wstring,
-                                      std::list<std::wstring>> &theMaterialShape)
+                                std::shared_ptr<ModelAPI_ResultBody> theResultBody,
+                                std::map< std::wstring,std::list<std::wstring>> &theMaterialShape)
 {
-  int indice = 1;
-  std::map< std::wstring, std::list<std::wstring>>::iterator it;
-  for( it = theMaterialShape.begin(); it != theMaterialShape.end(); ++it) {
+  std::map< std::wstring, std::list<std::wstring>>::iterator anIt;
+  for( anIt = theMaterialShape.begin(); anIt != theMaterialShape.end(); ++anIt) {
 
     std::shared_ptr<ModelAPI_Feature> aGroupFeature = addFeature("Group");
     // group name
-    aGroupFeature->data()->setName((*it).first);
+    aGroupFeature->data()->setName((*anIt).first);
 
     // fill selection
     AttributeSelectionListPtr aSelectionList = aGroupFeature->selectionList("group_list");
@@ -332,8 +329,8 @@ void ExchangePlugin_ImportFeature::setMaterielGroup(
     for(std::list<ResultPtr>::iterator aRes = allRes.begin(); aRes != allRes.end(); ++aRes) {
 
       GeomShapePtr aShape = (*aRes)->shape();
-      for(std::list<std::wstring>::iterator aResMat = it->second.begin();
-                                 aResMat != it->second.end(); ++aResMat) {
+      for(std::list<std::wstring>::iterator aResMat = anIt->second.begin();
+                                 aResMat != anIt->second.end(); ++aResMat) {
         if( aRes->get() && ((*aRes)->data()->name() == (*aResMat)))
         {
           aSelectionList->append(theResultBody,aShape);

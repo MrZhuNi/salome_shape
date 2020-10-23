@@ -29,7 +29,6 @@
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Tools.h>
 #include <GeomAlgoAPI_Tools.h>
-
 //--------------------------------------------------------------------------------------
 #include <algorithm>
 
@@ -68,17 +67,17 @@ ExchangeAPI_Import::~ExchangeAPI_Import()
 
 //--------------------------------------------------------------------------------------
 void ExchangeAPI_Import::setParameters(const std::string & theFilePath,
-                                       const bool  anScalInterUnits,
-                                       const bool  anMaterials,
-                                       const bool  anColor)
+                                       const bool  theScalInterUnits,
+                                       const bool  theMaterials,
+                                       const bool  theColor)
 {
   fillAttribute(theFilePath, mystepfilePath);
   fillAttribute("STEP", feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
-  fillAttribute(anScalInterUnits,
+  fillAttribute(theScalInterUnits,
                 feature()->boolean(ExchangePlugin_ImportFeature::STEP_SCALE_INTER_UNITS_ID()));
-  fillAttribute(anMaterials,
+  fillAttribute(theMaterials,
                 feature()->boolean(ExchangePlugin_ImportFeature::STEP_MATERIALS_ID()));
-  fillAttribute(anColor,
+  fillAttribute(theColor,
                 feature()->boolean(ExchangePlugin_ImportFeature::STEP_COLORS_ID()));
   execute();
 }
@@ -88,12 +87,8 @@ void ExchangeAPI_Import::setFilePath(const std::string & theFilePath)
 {
   fillAttribute(theFilePath, myfilePath);
   std::string anExtension = GeomAlgoAPI_Tools::File_Tools::extension(theFilePath);
-  if (anExtension == "STEP" || anExtension == "STP") {
-    setParameters(theFilePath,true,false,false);
-  }else{
-    fillAttribute(anExtension, feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
-    execute();
-  }
+  fillAttribute(anExtension, feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
+  execute();
 }
 
 //--------------------------------------------------------------------------------------
@@ -161,13 +156,13 @@ ImportPtr addImport(
 ImportPtr addImportStep(
     const std::shared_ptr<ModelAPI_Document> & thePart,
     const std::string & theFilePath,
-    const bool  anScalInterUnits,
-    const bool  anMaterials,
-    const bool  anColor )
+    const bool  theScalInterUnits,
+    const bool  theMaterials,
+    const bool  theColor )
 {
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(ExchangeAPI_Import::ID());
   return ImportPtr(new ExchangeAPI_Import(aFeature, theFilePath,
-                                          anScalInterUnits, anMaterials, anColor));
+                                          theScalInterUnits, theMaterials, theColor));
 }
 
 void importPart(const std::shared_ptr<ModelAPI_Document> & thePart,

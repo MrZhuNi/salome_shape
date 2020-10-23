@@ -30,8 +30,8 @@
                 <boolvalue id="step_materials"
                           label="Materials"
                           default="false"/>
-                <boolvalue id="step_colours"
-                          label="Colours"
+                <boolvalue id="step_colors"
+                          label="Colors"
                           default="false"/>
               </groupbox>
             </groupbox>
