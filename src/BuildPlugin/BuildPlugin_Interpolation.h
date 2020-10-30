@@ -40,23 +40,23 @@ public:
     return MY_ID;
   }
   /// Attribute name of creation method.
-  inline static const std::string& CREATION_METHODE_ID()
+  inline static const std::string& CREATION_METHOD_ID()
   {
-    static const std::string MY_CREATION_METHODE_ID("interpolation_method");
-    return MY_CREATION_METHODE_ID;
+    static const std::string MY_CREATION_METHOD_ID("interpolation_method");
+    return MY_CREATION_METHOD_ID;
   }
   /// Attribute name of creation method by selection
-  inline static const std::string& CREATION_METHODE_BY_SELECTION_ID()
+  inline static const std::string& CREATION_METHOD_BY_SELECTION_ID()
   {
-    static const std::string MY_CREATION_METHODE_BY_SELECTION_ID("by_selection");
-    return MY_CREATION_METHODE_BY_SELECTION_ID;
+    static const std::string MY_CREATION_METHOD_BY_SELECTION_ID("by_selection");
+    return MY_CREATION_METHOD_BY_SELECTION_ID;
   }
 
   /// Attribute name of creation method analytical
-  inline static const std::string& CREATION_METHODE_ANALYTICAL_ID()
+  inline static const std::string& CREATION_METHOD_ANALYTICAL_ID()
   {
-    static const std::string MY_CREATION_METHODE_ANALYTICAL_ID("analytical");
-    return MY_CREATION_METHODE_ANALYTICAL_ID;
+    static const std::string MY_CREATION_METHOD_ANALYTICAL_ID("analytical");
+    return MY_CREATION_METHOD_ANALYTICAL_ID;
   }
 
   /// Attribute name of base objects.
@@ -189,12 +189,12 @@ public:
   BUILDPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
   protected:
-  /// Evaluates theExpression and returns its value.
+  /// Evaluates the expression x(t), y(t),z(t) in value table.
   void evaluate(std::string& theError);
 
-  void updateCoods();
+  //Update coordinates x,y,z
+  void updateCoordinates();
 
-  std::list<double> aCoodPoints[3];
   std::string outErrorMessage;
 
 };

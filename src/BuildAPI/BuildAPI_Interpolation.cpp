@@ -39,7 +39,7 @@ BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
 : ModelHighAPI_Interface(theFeature)
 {
   if(initialize()) {
-    fillAttribute(BuildPlugin_Interpolation::CREATION_METHODE_BY_SELECTION_ID(),mycreationmethod);
+    fillAttribute(BuildPlugin_Interpolation::CREATION_METHOD_BY_SELECTION_ID(),mycreationmethod);
     setUseTangents(true);
     setTangents(theStartTangent, theEndTangent);
     setClosed(theIsClosed);
@@ -49,14 +49,15 @@ BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
 }
 
 //==================================================================================================
-BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
-  const std::list<ModelHighAPI_Selection>& theBaseObjects,
-  const bool theIsClosed,
-  const bool theIsToReorder)
+BuildAPI_Interpolation::BuildAPI_Interpolation(
+                                  const FeaturePtr& theFeature,
+                                  const std::list<ModelHighAPI_Selection>& theBaseObjects,
+                                  const bool theIsClosed,
+                                  const bool theIsToReorder)
   : ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
-    fillAttribute(BuildPlugin_Interpolation::CREATION_METHODE_BY_SELECTION_ID(),mycreationmethod);
+    fillAttribute(BuildPlugin_Interpolation::CREATION_METHOD_BY_SELECTION_ID(),mycreationmethod);
     setClosed(theIsClosed);
     setReorder(theIsToReorder);
     setUseTangents(false);
@@ -65,16 +66,16 @@ BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
 }
 
 BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
-                                    const std::string & theXTexpression,
-                                    const std::string & theYTexpression,
-                                    const std::string & theZTexpression,
-                                    const ModelHighAPI_Double& theMinT,
-                                    const ModelHighAPI_Double& theMaxT,
-                                    const ModelHighAPI_Integer& theNbStep) 
+                                               const std::string & theXTexpression,
+                                               const std::string & theYTexpression,
+                                               const std::string & theZTexpression,
+                                               const ModelHighAPI_Double& theMinT,
+                                               const ModelHighAPI_Double& theMaxT,
+                                               const ModelHighAPI_Integer& theNbStep)
 : ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
-    fillAttribute(BuildPlugin_Interpolation::CREATION_METHODE_ANALYTICAL_ID(),mycreationmethod);
+    fillAttribute(BuildPlugin_Interpolation::CREATION_METHOD_ANALYTICAL_ID(),mycreationmethod);
     fillAttribute(theXTexpression, myxt);
     fillAttribute(theYTexpression, myyt);
     fillAttribute(theZTexpression, myzt);
@@ -136,8 +137,8 @@ void BuildAPI_Interpolation::dump(ModelHighAPI_Dumper& theDumper) const
   FeaturePtr aBase = feature();
   std::string aPartName = theDumper.name(aBase->document());
 
-  if( aBase->string(BuildPlugin_Interpolation::CREATION_METHODE_ID())->value() == 
-            BuildPlugin_Interpolation::CREATION_METHODE_BY_SELECTION_ID() )
+  if( aBase->string(BuildPlugin_Interpolation::CREATION_METHOD_ID())->value() ==
+            BuildPlugin_Interpolation::CREATION_METHOD_BY_SELECTION_ID() )
   {
     AttributeSelectionListPtr anAttrBaseObjects =
       aBase->selectionList(BuildPlugin_Interpolation::BASE_OBJECTS_ID());
@@ -159,7 +160,7 @@ void BuildAPI_Interpolation::dump(ModelHighAPI_Dumper& theDumper) const
     theDumper << closed() << ", " << reorder() << ")" << std::endl;
   }else{
 
-    theDumper << aBase << " = model.addInterpolation(" << aPartName ; 
+    theDumper << aBase << " = model.addInterpolation(" << aPartName ;
     AttributeStringPtr XtAttr = xt();
     std::string xt = XtAttr->value();
     AttributeStringPtr YtAttr = yt();

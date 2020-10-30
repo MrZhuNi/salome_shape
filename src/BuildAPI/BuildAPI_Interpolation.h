@@ -96,7 +96,7 @@ public:
               ModelAPI_AttributeDouble, /** zt expression*/,
               numstep, BuildPlugin_Interpolation::NUMSTEP_ID(),
               ModelAPI_AttributeInteger, /** zt expression*/,
-              creationmethod, BuildPlugin_Interpolation::CREATION_METHODE_ID(),
+              creationmethod, BuildPlugin_Interpolation::CREATION_METHOD_ID(),
               ModelAPI_AttributeString, /** zt expression*/)
 
   /// Modify base attribute of the feature.

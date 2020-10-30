@@ -72,10 +72,9 @@ void BuildPlugin_Interpolation::initAttributes()
   data()->addAttribute(TANGENT_START_ID(), ModelAPI_AttributeSelection::typeId());
   data()->addAttribute(TANGENT_END_ID(), ModelAPI_AttributeSelection::typeId());
 
-  data()->addAttribute(CREATION_METHODE_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(CREATION_METHODE_BY_SELECTION_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(CREATION_METHODE_ANALYTICAL_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(CREATION_METHODE_ANALYTICAL_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(CREATION_METHOD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(CREATION_METHOD_BY_SELECTION_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(CREATION_METHOD_ANALYTICAL_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(EXPRESSION_ERROR_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(VARIABLE_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(VALUE_ID(), ModelAPI_AttributeTables::typeId());
@@ -90,9 +89,9 @@ void BuildPlugin_Interpolation::initAttributes()
   data()->addAttribute(NUMSTEP_ID(), ModelAPI_AttributeInteger::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
-                                                 CREATION_METHODE_ANALYTICAL_ID());
+                                                 CREATION_METHOD_ANALYTICAL_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
-                                                 CREATION_METHODE_BY_SELECTION_ID());
+                                                 CREATION_METHOD_BY_SELECTION_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VARIABLE_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VALUE_ID());
   data()->addAttribute(ARGUMENTS_ID(), ModelAPI_AttributeRefList::typeId());
@@ -123,13 +122,13 @@ void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
     && string(XT_ID())->value() !=""
     && string(YT_ID())->value() !=""
     && string(ZT_ID())->value() !=""
-    && string(CREATION_METHODE_ID())->value() == CREATION_METHODE_ANALYTICAL_ID()
+    && string(CREATION_METHOD_ID())->value() == CREATION_METHOD_ANALYTICAL_ID()
     ){
-    updateCoods();
+    updateCoordinates();
   }
 }
 
-void BuildPlugin_Interpolation::updateCoods()
+void BuildPlugin_Interpolation::updateCoordinates()
 {
     std::wstring exp;
     double aMint = real(MINT_ID())->value();
@@ -140,13 +139,13 @@ void BuildPlugin_Interpolation::updateCoods()
       setError("The minimum value of the parameter must be less than maximum value !!!" );
     }
 
-    double scale = (aMaxt - aMint )/aNbrStep;
+    double aScale = (aMaxt - aMint )/aNbrStep;
     string(VARIABLE_ID())->setValue("t");
 
     tables(VALUE_ID())->setSize(aNbrStep+1,4);
     for( int step = 0; step <= aNbrStep; step++ ){
       ModelAPI_AttributeTables::Value aVal;
-      aVal.myDouble = step * scale + aMint;
+      aVal.myDouble = step * aScale + aMint;
       tables(VALUE_ID())->setValue(aVal,step,0);
     }
 
@@ -180,7 +179,7 @@ static GeomDirPtr selectionToDir(const AttributeSelectionPtr& theSelection)
 //=================================================================================================
 void BuildPlugin_Interpolation::execute()
 {
-  if( string(CREATION_METHODE_ID())->value() == CREATION_METHODE_BY_SELECTION_ID() )
+  if( string(CREATION_METHOD_ID())->value() == CREATION_METHOD_BY_SELECTION_ID() )
   {
     // Get closed flag value
     bool isClosed = boolean(CLOSED_ID())->value();
@@ -250,39 +249,39 @@ void BuildPlugin_Interpolation::execute()
       return false;
 
     if (!outErrorMessage.empty()){
-      setError("Error: Python interpreter " );
+      setError("Error: Python interpreter " );//+ outErrorMessage);
       return false;
     }
-    AttributeTablesPtr table = tables( VALUE_ID() );
-    std::list<std::vector<double> > aCoodPoints;
-    for( int step = 0; step < table->rows() ; step++ ){
-      std::vector<double> coodPoint;
+    AttributeTablesPtr aTable = tables( VALUE_ID() );
+    std::list<std::vector<double> > aCoordPoints;
+    for( int step = 0; step < aTable->rows() ; step++ ){
+      std::vector<double> aCoordPoint;
       ModelAPI_AttributeTables::Value value;
       //x
-      value = table->value(step, 1);
-      coodPoint.push_back( value.myDouble );
+      value = aTable->value(step, 1);
+      aCoordPoint.push_back( value.myDouble );
       //y
-      value = table->value(step, 2);
-      coodPoint.push_back( value.myDouble );
-      //Z
-      value = table->value(step, 3);
-      coodPoint.push_back( value.myDouble );
+      value = aTable->value(step, 2);
+      aCoordPoint.push_back( value.myDouble );
+      //
+      value = aTable->value(step, 3);
+      aCoordPoint.push_back( value.myDouble );
 
-      aCoodPoints.push_back(coodPoint);
+      aCoordPoints.push_back(aCoordPoint);
     }
 
     std::list<GeomPointPtr> aPoints;
     std::list<GeomVertexPtr> aVertices;
-    std::list<std::vector<double> >::const_iterator aItCoodPoints = aCoodPoints.begin();
+    std::list<std::vector<double> >::const_iterator anItCoordPoints = aCoordPoints.begin();
 
-    for( ; aItCoodPoints != aCoodPoints.end(); ++aItCoodPoints ){
+    for( ; anItCoordPoints != aCoordPoints.end(); ++anItCoordPoints ){
 
-      GeomVertexPtr vertex =
-          GeomAlgoAPI_PointBuilder::vertex( (*aItCoodPoints)[0],
-                                            (*aItCoodPoints)[1],
-                                            (*aItCoodPoints)[2]);
-      aPoints.push_back (vertex->point());
-      aVertices.push_back (vertex);
+      GeomVertexPtr aVertex =
+          GeomAlgoAPI_PointBuilder::vertex( (*anItCoordPoints)[0],
+                                            (*anItCoordPoints)[1],
+                                            (*anItCoordPoints)[2]);
+      aPoints.push_back (aVertex->point());
+      aVertices.push_back (aVertex);
     }
 
     // Create curve from points
@@ -302,11 +301,8 @@ void BuildPlugin_Interpolation::execute()
       aResultBody->generated(anExp.current(), aVertexName);
       aVertexIndex++;
     }
-
     setResult(aResultBody);
-
   }
-
 }
 
 void  BuildPlugin_Interpolation::evaluate(std::string& theError)

@@ -365,7 +365,7 @@ class ModelAPI_BuildEvalMessage : public Events_Message
   /// Static. Returns EventID of the message.
   MODELAPI_EXPORT static Events_ID& eventId()
   {
-    static const char * MY_BUILD_EVALUATION_EVENT_ID("ParameterEvaluationRequest");
+    static const char * MY_BUILD_EVALUATION_EVENT_ID("BuildEvaluationRequest");
     static Events_ID anId = Events_Loop::eventByName(MY_BUILD_EVALUATION_EVENT_ID);
     return anId;
   }

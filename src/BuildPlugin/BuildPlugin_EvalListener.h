@@ -27,6 +27,7 @@ class ModelAPI_Attribute;
 class ModelAPI_Document;
 class ModelAPI_Feature;
 class ModelAPI_ResultParameter;
+
 class InitializationPlugin_PyInterp;
 
 /**

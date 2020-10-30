@@ -3,7 +3,7 @@
 Interpolation
 =============
 
-Interpolation feature creates a curve (edge) using vertices already existing in other objects.
+Interpolation feature creates an interpolated curve (edge) based on existing points/vertices or based on analytical mathematical expression.
 
 To create an interpolation in the active part:
 
@@ -11,6 +11,29 @@ To create an interpolation in the active part:
 #. click |feature_interpolation.icon| **Interpolation** button in the toolbar
 
 The following property panel will be opened:
+
+.. figure:: images/Interpolation.png
+  :align: center
+
+  Create an interpolation
+
+There are two creation modes of an interpolation:
+
+.. figure:: images/feature_interpolation_by_selection.png   
+   :align: left
+   :height: 24px
+
+Interpolation by selection
+
+.. figure:: images/feature_interpolation_analytical.png   
+   :align: left
+   :height: 24px
+
+interpolation analytical
+
+Interpolation by selection
+""""""""""""""""""""""""""
+The  property panel is shown below.
 
 .. figure:: images/Interpolation.png
   :align: center
@@ -60,3 +83,55 @@ The result of the operation will be a curve created from the selected shapes:
   Result of the operation.
 
 **See Also** a sample TUI Script of :ref:`tui_create_interpolation` operation.
+
+Interpolation analytical
+""""""""""""""""""""""""
+
+The  property panel is shown below.
+
+.. figure:: images/InterpolationAnalitycal.png
+  :align: center
+
+  Create an interpolation analytical
+
+Select one or several vertices or points in the viewer.
+
+- **Curves parameters** panel allows to define the mathematical expression for creating the interpolated curve.
+   - **X(t) equation** define the expression of X with t variable.
+   - **Y(t) equation** define the expression of Y with t variable.
+   - **Z(t) equation** define the expression of Z with t variable.
+
+- **Min t** define the minimun of t.
+
+- **Max t** define the maximum of t.
+
+- **Number of steps** define the number of steps.
+
+**Apply** button creates an interpolation.
+
+**Cancel** button cancels the operation. 
+
+**TUI Commands**:
+
+.. py:function:: model.addInterpolation(Part_doc, xt, yt, zt, mint, maxt, nbSteps)
+
+    :param part: The current part object.
+    :param xt: Expression of x.
+    :param yt: Expression of y.
+    :param zt: Expression of z.
+    :param mint: Minimum value of t
+    :param maxt: Maximum value of t.
+    :param nbSteps: Number of steps. 
+    :return: Result object.
+
+Result
+""""""
+
+The result of the operation will be a curve created from analytical expressions for x,y and z as functions of variable t:
+
+.. figure:: images/CreateInterpolationanalitycal.png
+  :align: center
+
+  Result of the operation.
+
+**See Also** a sample TUI Script of :ref:`tui_create_interpolation_analytical` operation.
