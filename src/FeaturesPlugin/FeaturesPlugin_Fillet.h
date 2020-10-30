@@ -67,15 +67,15 @@ public:
     return MY_METHOD_MULTIPLES_RADIUSES;
   }
 
-  inline static const std::string CREATION_MULTI_RADIUS_METHODE()
+  inline static const std::string CREATION_MULTI_RADIUS_METHOD()
   {
-    static std::string MY_CREATION_MULTI_RADIUS_METHODE("multiple_radiuses_methode");
+    static std::string MY_CREATION_MULTI_RADIUS_METHODE("multiple_radiuses_method");
     return MY_CREATION_MULTI_RADIUS_METHODE;
   }
 
   inline static const std::string CREATION_METHOD_BY_CURVILEAR_ABSCISSA()
   {
-    static std::string MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA("by_curvilinear_abscissa_methode");
+    static std::string MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA("by_curvilinear_abscissa_method");
     return MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA;
   }
   inline static const std::string CREATION_METHOD_BY_POINTS()
@@ -89,8 +89,6 @@ public:
     static std::string MY_ARRAY_POINT_RADIUS_BY_POINTS("array_point_radius_by_point");
     return MY_ARRAY_POINT_RADIUS_BY_POINTS;
   }
-
-
 
   /// Attribute name of main objects.
   inline static const std::string& OBJECT_LIST_ID()

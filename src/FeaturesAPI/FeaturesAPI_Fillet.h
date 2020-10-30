@@ -127,21 +127,21 @@ public:
   /// Constructor with values.
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                const std::list<ModelHighAPI_Selection>& theEdgesFaces,
+                                const std::list<ModelHighAPI_Selection>& theBaseObjects,
                                 const ModelHighAPI_Double& theRadius1,
                                 const ModelHighAPI_Double& theRadius2);
 
   /// Constructor with values.
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                const ModelHighAPI_Selection& theedgeselected,
-                                const std::list<ModelHighAPI_Selection>& thepoint,
+                                const ModelHighAPI_Selection& theEdgeSelected,
+                                const std::list<ModelHighAPI_Selection>& thePoint,
                                 const std::list<ModelHighAPI_Double>& theRadius);
 
   /// Constructor with values.
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                const std::list<ModelHighAPI_Selection>& theEdgesFaces,
+                                const std::list<ModelHighAPI_Selection>& theBaseObjects,
                                 const std::list<ModelHighAPI_Double>& thepointCurvCood,
                                 const std::list<ModelHighAPI_Double>& theRadius);
   /// Destructor.
@@ -152,7 +152,7 @@ public:
               creationMethod, FeaturesPlugin_Fillet::CREATION_METHOD(),
                               ModelAPI_AttributeString,
                               /** Creation method */,
-              creationMethodmulti, FeaturesPlugin_Fillet::CREATION_MULTI_RADIUS_METHODE(),
+              creationMethodmulti, FeaturesPlugin_Fillet::CREATION_MULTI_RADIUS_METHOD(),
                               ModelAPI_AttributeString,
                               /** Creation method */,
               baseObjects, FeaturesPlugin_Fillet::OBJECT_LIST_ID(),
@@ -220,8 +220,8 @@ FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
 /// \brief Create Fillet feature.
 FEATURESAPI_EXPORT
 FilletPtr addFilletMultiRadiusByPoints(const std::shared_ptr<ModelAPI_Document>& thePart,
-                    const ModelHighAPI_Selection & theedgeselected,
-                    const std::list<ModelHighAPI_Selection>& thepoint,
+                    const ModelHighAPI_Selection & theEdgeSelected,
+                    const std::list<ModelHighAPI_Selection>& thePoint,
                     const std::list<ModelHighAPI_Double>& theRadius,
                     const bool keepSubResults= false);
 
@@ -231,7 +231,7 @@ FilletPtr addFilletMultiRadiusByPoints(const std::shared_ptr<ModelAPI_Document>&
 FEATURESAPI_EXPORT
 FilletPtr addFilletMultiRadiusBycurvAbs( const std::shared_ptr<ModelAPI_Document>& thePart,
                      const std::list<ModelHighAPI_Selection>& theBaseObjects,
-                     const std::list<ModelHighAPI_Double>& thepointCurvCood,
+                     const std::list<ModelHighAPI_Double>& thePointCurvCood,
                      const std::list<ModelHighAPI_Double>& theRadius,
                      const bool keepSubResults= false);
 

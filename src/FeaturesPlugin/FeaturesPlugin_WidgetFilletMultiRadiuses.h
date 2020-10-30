@@ -41,7 +41,7 @@ class DataArrayItemDelegate : public QStyledItemDelegate
 {
  Q_OBJECT
 public:
-  DataArrayItemDelegate(bool theTypeMethode);
+  DataArrayItemDelegate(bool theTypeMethod);
 
   virtual QWidget* createEditor(QWidget* theParent,
                                 const QStyleOptionViewItem & theOption,
@@ -51,7 +51,7 @@ private slots:
   void onEditItem(const QString& theText);
 
 private:
-  bool myTypeMethodePoint;
+  bool myTypeMethodPoint;
 };
 
 
@@ -66,7 +66,7 @@ public:
   FeaturesPlugin_WidgetFilletMultiRadiuses(QWidget* theParent,
                                            ModuleBase_IWorkshop* theWorkshop,
                                            const Config_WidgetAPI* theData,
-                                           bool TypeMethodeBypoint);
+                                           bool TypeMethodBypoint);
 
   virtual ~FeaturesPlugin_WidgetFilletMultiRadiuses() {}
 
@@ -81,7 +81,15 @@ public:
   /// \return a boolean value
   virtual bool isValidSelectionCustom(const std::shared_ptr<ModuleBase_ViewerPrs>& theValue);
 
+  /// Returns values which should be highlighted when the whidget is active
+  /// \param theValues a list of presentations
+  virtual void getHighlighted(QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues);
+
 protected:
+  /// The methiod called when widget is activated
+  virtual void activateCustom();
+
+
   /// Saves the internal parameters to the given feature
   /// \return True in success
   virtual bool storeValueCustom();
@@ -112,6 +120,16 @@ protected:
   /// a shape. If the attribute do not uses the shape, it is empty
   virtual QList<std::shared_ptr<ModuleBase_ViewerPrs>> getAttributeSelection() const;
 
+   /// Returns attribute indices selected in the widget selection list
+  /// \param theIndices a list of indices
+  void getSelectedAttributeIndices(std::set<int>& theIndices);
+
+  /// Gets the feature attribute and fill a list of viewer presentation for the attribute
+  /// indices. If the the container of indices is empty, it returns all objects.
+  /// \param theAttributeIds indices in attribute list to be returned
+  /// \param theValues the result presentations, filled with object and shape of an attribute item
+  void convertIndicesToViewerSelection(std::set<int> theAttributeIds,
+                            QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues) const;
 private slots:
 
   /// Slot called on add a row
@@ -129,6 +147,8 @@ private slots:
   /// \param theCol a column of the cell
   void onTableEdited(int theRow, int theCol);
 
+  /// Slot is called on selection of list of selected items
+  void onListSelection();
 
 private:
 
@@ -153,16 +173,20 @@ private:
   /// Editor for table header
   QLineEdit* myHeaderEditor;
 
-  bool myTypeMethodeBypoint;
+  // Choice of the method
+  bool myTypeMethodBypoint;
 
+  //Sort the selection
   bool mySetSelection;
 
   bool mySortList;
 
   DataArrayItemDelegate* myDelegate;
 
+  // Label for first and last row
   std::vector<QString> myfirstRowValue;
   std::vector<QString> myLastRowValue;
+  // map to sort
   std::map<double,std::pair<QString,QString>> myValuesSort;
 
 };

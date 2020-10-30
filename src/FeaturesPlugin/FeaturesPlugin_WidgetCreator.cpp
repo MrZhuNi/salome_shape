@@ -57,6 +57,5 @@ ModuleBase_ModelWidget* FeaturesPlugin_WidgetCreator::createWidgetByType(
                                                            false);
   }
 
-
   return aWidget;
 }

@@ -75,7 +75,7 @@ void FeaturesPlugin_Fillet::initAttributes()
       data()->addAttribute(EDGE_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
 
   data()->addAttribute(CREATION_METHOD(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(CREATION_MULTI_RADIUS_METHODE(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(CREATION_MULTI_RADIUS_METHOD(), ModelAPI_AttributeString::typeId());
 
   data()->addAttribute(START_RADIUS_ID(), ModelAPI_AttributeDouble::typeId());
   data()->addAttribute(END_RADIUS_ID(), ModelAPI_AttributeDouble::typeId());
@@ -85,13 +85,17 @@ void FeaturesPlugin_Fillet::initAttributes()
 
   data()->addAttribute(ARRAY_POINT_RADIUS_BY_POINTS(), ModelAPI_AttributeSelectionList::typeId());
 
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), END_RADIUS_ID());
-  ModelAPI_Session::get()->validators()->
-                          registerNotObligatory(getKind(), ARRAY_POINT_RADIUS_BY_POINTS());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VALUES_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VALUES_CURV_ID());
-  ModelAPI_Session::get()->validators()->
-                          registerNotObligatory(getKind(), CREATION_MULTI_RADIUS_METHODE());
+
+  ModelAPI_Session::get()->validators()
+                          ->registerNotObligatory(getKind(), END_RADIUS_ID());
+  ModelAPI_Session::get()->validators()
+                          ->registerNotObligatory(getKind(), ARRAY_POINT_RADIUS_BY_POINTS());
+  ModelAPI_Session::get()->validators()
+                          ->registerNotObligatory(getKind(), VALUES_ID());
+  ModelAPI_Session::get()->validators()
+                          ->registerNotObligatory(getKind(), VALUES_CURV_ID());
+  ModelAPI_Session::get()->validators()
+                          ->registerNotObligatory(getKind(), CREATION_MULTI_RADIUS_METHOD());
 
   initVersion(aSelectionEdgeSelected);
   initVersion(aSelectionEdgesFacesMultiList);
@@ -104,18 +108,17 @@ AttributePtr FeaturesPlugin_Fillet::objectsAttribute()
 {
   if( string(CREATION_METHOD())->value() == METHOD_MULTIPLES_RADIUSES() )
   {
-    if( string(CREATION_MULTI_RADIUS_METHODE())->value() == CREATION_METHOD_BY_POINTS())
+    if( string(CREATION_MULTI_RADIUS_METHOD())->value() == CREATION_METHOD_BY_POINTS())
     {
       return attribute(EDGE_SELECTED_ID());
     }else{
-     return attribute(EDGES_FACES_MULTI_LIST_ID());
+      return attribute(EDGES_FACES_MULTI_LIST_ID());
     }
   }else if ( string(CREATION_METHOD())->value() == CREATION_METHOD_VARYING_RADIUS() )
   {
        return attribute(EDGES_FACES_LIST_ID());
 
   }
-
  return attribute(OBJECT_LIST_ID());
 
 }
@@ -144,6 +147,7 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
   std::shared_ptr<GeomAlgoAPI_Fillet> aFilletBuilder;
 
   ListOfShape aFilletEdges = extractEdges(theEdges);
+
   if ( aCreationMethod->value() == METHOD_MULTIPLES_RADIUSES())
   {
 
@@ -151,7 +155,8 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
     std::list<double> aRadiuses;
     AttributeTablesPtr aTablesAttr;
 
-    if( string(CREATION_MULTI_RADIUS_METHODE())->value() == CREATION_METHOD_BY_POINTS() )
+
+    if( string(CREATION_MULTI_RADIUS_METHOD())->value() == CREATION_METHOD_BY_POINTS() )
     {
       aTablesAttr =  tables(VALUES_ID());
 
@@ -167,6 +172,8 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
         aVal = aTablesAttr->value(k, 1);
         aRadiuses.push_back(aVal.myDouble);
     }
+
+
     aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, aCoodCurv,aRadiuses));
 
   }else

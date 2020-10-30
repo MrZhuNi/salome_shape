@@ -971,7 +971,26 @@
       <translation>Rayon du congé au point final.</translation>
     </message>
   </context>
-
+  <context>
+    <name>Fillet:multiple_radiuses</name>
+    <message>
+      <source>Radii</source>
+      <translation>Rayons</translation>
+    </message>
+    <message>
+      <source>Radius</source>
+      <translation>Rayon</translation>
+    </message>
+    <message>
+      <source>Curvilinear \n Abscissa</source>
+      <translation>Abscisse \n curviligne</translation>
+    </message>
+    <message>
+      <source>Edges or/and faces</source>
+      <translation>Arêtes et/ou faces</translation>
+    </message>
+  </context>
+  
   <!-- 1D-fillet -->
   <context>
     <name>Fillet1D</name>

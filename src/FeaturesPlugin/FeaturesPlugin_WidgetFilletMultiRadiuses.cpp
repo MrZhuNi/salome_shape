@@ -68,42 +68,37 @@ const char* MYFalse = "False";
 
 class TextFieldDoubleValidator : public QDoubleValidator {
 public:
-  TextFieldDoubleValidator (QObject * parent = 0) : QDoubleValidator(parent) {}
-  TextFieldDoubleValidator (double bottom, double top, int decimals, QObject * parent) :
-  QDoubleValidator(bottom, top, decimals, parent) {}
+  TextFieldDoubleValidator (QObject * theParent = 0) : QDoubleValidator(theParent) {}
+  TextFieldDoubleValidator (double theBottom, double theTop, int theDecimals, QObject * theParent) :
+  QDoubleValidator(theBottom, theTop, theDecimals, theParent) {}
 
-  QValidator::State validate(QString & s, int & pos) const {
-      if (s.isEmpty() || s.startsWith("0.") || s == "0" ){
+  QValidator::State validate(QString & theS, int & thePos) const {
+      if (theS.isEmpty() || theS.startsWith("0.") || theS == "0" ){//|| s.startsWith("-")) {
           // allow empty field or minus sign
           return QValidator::Intermediate;
       }
       // check length of decimal places
       QChar point = locale().decimalPoint();
-      if(s.indexOf(point) != -1) {
-          int lengthDecimals = s.length() - s.indexOf(point) - 1;
-          if (lengthDecimals > decimals()) {
+      if(theS.indexOf(point) != -1) {
+          int alengthDecimals = theS.length() - theS.indexOf(point) - 1;
+          if (alengthDecimals > decimals()) {
               return QValidator::Invalid;
           }
       }
-
       // check range of value
       bool isNumber;
-      double value = locale().toDouble(s, &isNumber);
-      if (isNumber && bottom() <= value && value <= top()) {
+      double aValue = locale().toDouble(theS, &isNumber);
+      if (isNumber && bottom() <= aValue && aValue <= top()) {
           return QValidator::Acceptable;
       }
       return QValidator::Invalid;
   }
-
 };
 
-
-
-DataArrayItemDelegate::DataArrayItemDelegate(bool theTypeMethode)
-  : QStyledItemDelegate(), myTypeMethodePoint(theTypeMethode)
+DataArrayItemDelegate::DataArrayItemDelegate(bool theTypeMethod)
+  : QStyledItemDelegate(), myTypeMethodPoint(theTypeMethod)
 {
 }
-
 
 QWidget* DataArrayItemDelegate::createEditor(QWidget* theParent,
                                              const QStyleOptionViewItem & theOption,
@@ -124,7 +119,7 @@ QWidget* DataArrayItemDelegate::createEditor(QWidget* theParent,
     if (aLineEdt) {
       if( theIndex.column() == 1 ){
         TextFieldDoubleValidator* doubleVal =
-                    new TextFieldDoubleValidator(0.00001 , 0.99, 6, aLineEdt);
+                            new TextFieldDoubleValidator(0.00001 , 0.99, 6, aLineEdt);
         doubleVal->setNotation(TextFieldDoubleValidator::StandardNotation);
         aLineEdt->setValidator(doubleVal);
       }
@@ -148,17 +143,14 @@ void DataArrayItemDelegate::onEditItem(const QString& theText)
   commitData(aWgt);
 }
 
-
-//**********************************************************************************
-//**********************************************************************************
 //**********************************************************************************
 FeaturesPlugin_WidgetFilletMultiRadiuses::
   FeaturesPlugin_WidgetFilletMultiRadiuses(QWidget* theParent,
                                            ModuleBase_IWorkshop* theWorkshop,
                                            const Config_WidgetAPI* theData,
-                                           bool TypeMethodeBypoint):
+                                           bool theTypeMethodBypoint):
 ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
- myTypeMethodeBypoint(TypeMethodeBypoint),mySetSelection(true), mySortList(false)
+ myTypeMethodBypoint(theTypeMethodBypoint),mySetSelection(true)
 {
   QVBoxLayout* aMainLayout = new QVBoxLayout(this);
 
@@ -173,14 +165,12 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
 
   myDataTbl = new QTableWidget(2, 3, aRadiusesFrame);
 
-  myDelegate = new DataArrayItemDelegate(myTypeMethodeBypoint);
-
+  myDelegate = new DataArrayItemDelegate(myTypeMethodBypoint);
   myDataTbl->setItemDelegate(myDelegate);
-
   myDataTbl->verticalHeader()->hide();
   myDataTbl->setRowHeight(0, 25);
 
-  if(myTypeMethodeBypoint){
+  if(myTypeMethodBypoint){
     myfirstRowValue.push_back("Start extremity");
     myfirstRowValue.push_back("0");
     myfirstRowValue.push_back("1");
@@ -196,7 +186,7 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
     myLastRowValue.push_back("2");
   }
 
-  if(myTypeMethodeBypoint)
+  if(myTypeMethodBypoint)
     myDataTbl->hideColumn(1);
   else
     myDataTbl->hideColumn(0);
@@ -206,20 +196,19 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
   aHeaders << "Curvilinear \n Abscissa";
   aHeaders << "Radius";
 
-
   myDataTbl->setHorizontalHeaderLabels(aHeaders);
 
-  QTableWidgetItem* aItem;
+  QTableWidgetItem* anItem;
   for(int j =0; j<3;j++)
   {
-    aItem = new QTableWidgetItem(myfirstRowValue[j]);
+    anItem = new QTableWidgetItem(myfirstRowValue[j]);
     if(j==0 || j== 1)
-      aItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-    myDataTbl->setItem(0, j, aItem);
-    aItem = new QTableWidgetItem(myLastRowValue[j]);
+      anItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+    myDataTbl->setItem(0, j, anItem);
+    anItem = new QTableWidgetItem(myLastRowValue[j]);
     if(j==0 || j== 1)
-      aItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-    myDataTbl->setItem(1, j, aItem);
+      anItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+    myDataTbl->setItem(1, j, anItem);
   }
 
   connect(myDataTbl, SIGNAL(cellChanged(int, int)), SLOT(onTableEdited(int, int)));
@@ -235,16 +224,16 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
   aBtnLayout->setContentsMargins(0, 0, 0, 0);
 
   QPushButton* aAddBtn = new QPushButton(tr("+"), aBtnWgt);
-  QFont font = aAddBtn->font();
-  font.setPointSize(12);
-  aAddBtn->setFont(font);
+  QFont aFont = aAddBtn->font();
+  aFont.setPointSize(12);
+  aAddBtn->setFont(aFont);
   aBtnLayout->addWidget(aAddBtn);
   aBtnLayout->addStretch(1);
 
   myRemoveBtn = new QPushButton(tr("-"), aBtnWgt);
-  font = myRemoveBtn->font();
-  font.setPointSize(12);
-  myRemoveBtn->setFont(font);
+  aFont = myRemoveBtn->font();
+  aFont.setPointSize(12);
+  myRemoveBtn->setFont(aFont);
   aBtnLayout->addWidget(myRemoveBtn);
 
   aRadiusesFrame->setLayout(aRadiusesLayout ) ;
@@ -252,7 +241,8 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
 
   connect(aAddBtn, SIGNAL(clicked(bool)), SLOT(onAdd()));
   connect(myRemoveBtn, SIGNAL(clicked(bool)), SLOT(onRemove()));
-  connect(qApp, SIGNAL(focusChanged(QWidget*, QWidget*)), SLOT(onFocusChanged(QWidget*, QWidget*)));
+  connect(qApp,SIGNAL(focusChanged(QWidget*, QWidget*)),SLOT(onFocusChanged(QWidget*,QWidget*)));
+  connect(myDataTbl, SIGNAL(itemSelectionChanged()), SLOT(onListSelection()));
 }
 
 QList<QWidget*> FeaturesPlugin_WidgetFilletMultiRadiuses::getControls() const
@@ -275,33 +265,31 @@ QIntList FeaturesPlugin_WidgetFilletMultiRadiuses::shapeTypes() const
 //**********************************************************************************
 void FeaturesPlugin_WidgetFilletMultiRadiuses::deactivate()
 {
+
+  myWorkshop->module()->enableCustomModes();
+
   ModuleBase_WidgetSelector::deactivate();
+
+  myWorkshop->module()->deactivateCustomPrs(ModuleBase_IModule::CustomizeHighlightedObjects, true);
+
   storeValueCustom();
 }
 
 //**********************************************************************************
 bool FeaturesPlugin_WidgetFilletMultiRadiuses::eventFilter(QObject* theObject, QEvent* theEvent)
 {
-  if (theEvent->type() == QEvent::FocusIn) {
-    QTableWidget* aTable = dynamic_cast<QTableWidget*>(theObject);
-    if (aTable) {
-      ModuleBase_IPropertyPanel* aPanel = myWorkshop->propertyPanel();
-      if (aPanel->activeWidget() != this) {
-        aPanel->activateWidget(this, false);
-      }
-    }
-  }
   return ModuleBase_WidgetSelector::eventFilter(theObject, theEvent);
 }
 
 //**********************************************************************************
 bool FeaturesPlugin_WidgetFilletMultiRadiuses::storeValueCustom()
 {
+
   DataPtr aData = myFeature->data();
 
   AttributeTablesPtr aTablesAttr;
 
-  if(myTypeMethodeBypoint)
+  if(myTypeMethodBypoint)
     aTablesAttr = aData->tables(FeaturesPlugin_Fillet::VALUES_ID());
   else
     aTablesAttr = aData->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
@@ -319,18 +307,18 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::storeValueCustom()
     }
   }
 
-  if(myTypeMethodeBypoint && mySortList ){
+  if(myTypeMethodBypoint && mySortList ){
       AttributeSelectionListPtr aSelectionListAttr =
           aData->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
     if(  aSelectionListAttr->isInitialized() )
     {
-      std::map<double,std::pair<QString,QString>>::iterator itValuesSort;
+      std::map<double,std::pair<QString,QString>>::iterator anItValuesSort;
       QList<std::shared_ptr<ModuleBase_ViewerPrs>> alist = getAttributeSelection();
       aSelectionListAttr->clear();
-      itValuesSort = myValuesSort.begin();
-      for(;itValuesSort != myValuesSort.end();++itValuesSort)
+      anItValuesSort = myValuesSort.begin();
+      for(;anItValuesSort != myValuesSort.end();++anItValuesSort)
       {
-        std::pair<QString,QString> elem = itValuesSort->second;
+        std::pair<QString,QString> elem = anItValuesSort->second;
         ResultPtr aResult;
         GeomShapePtr aShape;
         foreach(ModuleBase_ViewerPrsPtr aPrs, alist) {
@@ -346,13 +334,13 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::storeValueCustom()
       }
     }
   }
-
   return true;
 }
 
 //**********************************************************************************
 bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
 {
+
   if ( !mySetSelection) {
     mySetSelection = true;
     return false;
@@ -361,7 +349,7 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
 
   AttributeTablesPtr aTablesAttr;
 
-  if(myTypeMethodeBypoint){
+  if(myTypeMethodBypoint){
     aTablesAttr = aData->tables(FeaturesPlugin_Fillet::VALUES_ID());
   }
   else{
@@ -369,41 +357,41 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
   }
 
   if( aTablesAttr->rows() == 0 )
-  {
-    aTablesAttr->setSize(2,2);
-    ModelAPI_AttributeTables::Value aVar;
-    aVar.myDouble = 0.0;
-    aTablesAttr->setValue(aVar,0,0);
-    aVar.myDouble = 1;
-    aTablesAttr->setValue(aVar,0,1);
-    aTablesAttr->setValue(aVar,1,0);
-    aVar.myDouble = 2;
-    aTablesAttr->setValue(aVar,1,1);
-  }
+    {
+      aTablesAttr->setSize(2,2);
+      ModelAPI_AttributeTables::Value aVar;
+      aVar.myDouble = 0.0;
+      aTablesAttr->setValue(aVar,0,0);
+      aVar.myDouble = 1;
+      aTablesAttr->setValue(aVar,0,1);
+      aTablesAttr->setValue(aVar,1,0);
+      aVar.myDouble = 2;
+      aTablesAttr->setValue(aVar,1,1);
+    }
 
   AttributeSelectionPtr anEdges =
-    std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(
-      aData->attribute(FeaturesPlugin_Fillet::EDGE_SELECTED_ID()));
+    std::dynamic_pointer_cast<ModelAPI_AttributeSelection>
+                (aData->attribute(FeaturesPlugin_Fillet::EDGE_SELECTED_ID()));
 
   myValuesSort.clear();
-  double res;
+  double aRes;
   int aRows = 0;
-  std::map<double,std::pair<QString,QString>>::iterator itValuesSort;
-  if(myTypeMethodeBypoint)
+  std::map<double,std::pair<QString,QString>>::iterator anItValuesSort;
+  if(myTypeMethodBypoint)
   {
     if( !anEdges->isInitialized() )
       return false;
 
     GeomEdgePtr anEdge = GeomEdgePtr(new GeomAPI_Edge( anEdges->value()));
-    GeomPointPtr first =  anEdge->firstPoint();
-    GeomPointPtr last  =  anEdge->lastPoint();
-    double taille = first->distance(last);
+    GeomPointPtr aFirst =  anEdge->firstPoint();
+    GeomPointPtr aLast  =  anEdge->lastPoint();
+    double taille = aFirst->distance(aLast);
 
     std::shared_ptr<GeomAPI_Curve> aCurve(new GeomAPI_Curve(anEdges->value()));
 
     // Load points
     AttributeSelectionListPtr aSelectionListAttr =
-        aData->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
+            aData->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
     AttributeDoubleArrayPtr aArrayAttr;
     ListOfShape aPoints;
 
@@ -421,93 +409,95 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
 
         aPoints.push_back(aShape);
     }
-    int i =0;
+
+    int anI =0;
 
     ListOfShape::const_iterator aPointsIt = aPoints.begin();
     for (; aPointsIt != aPoints.end(); ++aPointsIt) {
-      AttributeSelectionPtr attsel = aSelectionListAttr->value(i);
+      AttributeSelectionPtr attsel = aSelectionListAttr->value(anI);
       std::shared_ptr<GeomAPI_Pnt> aPnt = GeomAlgoAPI_PointBuilder::point(*aPointsIt);
       std::shared_ptr<GeomAPI_Pnt> aPntCurv = aCurve->project(aPnt);
-      res = (aPntCurv->distance(first) / taille);
+      aRes = (aPntCurv->distance(aFirst) / taille);
       QString aName = QString::fromStdWString(attsel->namingName());
-      QString aRad = findRadius( QString::number(res) );
-      if ( myValuesSort.find( res ) == myValuesSort.end() )
-        myValuesSort[ res ] = std::make_pair(aName, aRad );
-      i++;
+      QString aRad = findRadius( QString::number(aRes) );
+      if ( myValuesSort.find( aRes ) == myValuesSort.end() )
+        myValuesSort[ aRes ] = std::make_pair(aName, aRad );
+      anI++;
       mySortList = true;
     }
 
-    res = 0.0;
-    myValuesSort[ res ] = std::make_pair (myfirstRowValue[0], findRadius( QString::number(res) ));
-    res = 1.0;
-    myValuesSort[ res ] = std::make_pair (myLastRowValue[0], findRadius( QString::number(res) ));
+    aRes = 0.0;
+    myValuesSort[ aRes ] = std::make_pair (myfirstRowValue[0], findRadius( QString::number(aRes)));
+    aRes = 1.0;
+    myValuesSort[ aRes ] = std::make_pair (myLastRowValue[0], findRadius( QString::number(aRes)));
     aRows =  myValuesSort.size();
   }else{
 
     ModelAPI_AttributeTables::Value aVal;
     if (aTablesAttr->isInitialized()){
+
         for (int anIndex = 0; anIndex < aTablesAttr->rows(); ++anIndex) {
           aVal = aTablesAttr->value(anIndex,0);
-          double curv = getValueText(aVal).toDouble();
-          if ( myValuesSort.find( curv ) == myValuesSort.end() )
-            myValuesSort[ curv ] = std::make_pair(getValueText(aVal),
-                                                  findRadius(getValueText(aVal)));
+          double aCurv = getValueText(aVal).toDouble();
+          if ( myValuesSort.find( aCurv ) == myValuesSort.end() )
+            myValuesSort[ aCurv ] =
+                          std::make_pair(getValueText(aVal),findRadius(getValueText(aVal)));
         }
         aRows = myValuesSort.size();
     }else{
-      res = 0.0;
-      myValuesSort[ res ] = std::make_pair (myfirstRowValue[0], myfirstRowValue[2]);
-      res = 1.0;
-      myValuesSort[ res ] = std::make_pair (myLastRowValue[0], myLastRowValue[2]);
+      aRes = 0.0;
+      myValuesSort[ aRes ] = std::make_pair (myfirstRowValue[0], myfirstRowValue[2]) ;
+      aRes = 1.0;
+      myValuesSort[ aRes ] = std::make_pair (myLastRowValue[0], myLastRowValue[2]) ;
       aRows = 2;
     }
 
   }
 
-  QTableWidgetItem* aItem = 0;
+  QTableWidgetItem* anItem = 0;
   myDataTbl->blockSignals(true);
-  aItem = myDataTbl->item( myDataTbl->rowCount() -1, 0 );
-  aItem->setFlags(Qt::NoItemFlags
-                | Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
-  aItem = myDataTbl->item( myDataTbl->rowCount() -1, 1 );
-  aItem->setFlags(Qt::NoItemFlags | Qt::ItemIsSelectable
-                | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+  anItem = myDataTbl->item( myDataTbl->rowCount() -1, 0 );
+  anItem->setFlags(Qt::NoItemFlags | Qt::ItemIsSelectable
+                 | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+  anItem = myDataTbl->item( myDataTbl->rowCount() -1, 1 );
+  anItem->setFlags(Qt::NoItemFlags | Qt::ItemIsSelectable
+                 | Qt::ItemIsEnabled | Qt::ItemIsEditable);
 
   myDataTbl->setRowCount(aRows);
 
-  itValuesSort = myValuesSort.begin();
+  anItValuesSort = myValuesSort.begin();
 
-  for (int k = 0; k < aRows; k++, ++itValuesSort ) {
+  for (int k = 0; k < aRows; k++, ++anItValuesSort ) {
 
-    std::pair<QString,QString> elem = itValuesSort->second;
-    QString aCurv = QString::number(itValuesSort->first);
+    std::pair<QString,QString> elem = anItValuesSort->second;
+    QString aCurv = QString::number(anItValuesSort->first);
 
-    aItem = myDataTbl->item(k, 0);
-    if (aItem) {
-          aItem->setText( elem.first);
+    anItem = myDataTbl->item(k, 0);
+    if (anItem) {
+          anItem->setText( elem.first);
     } else {
-          aItem = new QTableWidgetItem(elem.first);
-          myDataTbl->setItem(k, 0, aItem);
+          anItem = new QTableWidgetItem(elem.first);
+          myDataTbl->setItem(k, 0, anItem);
     }
-    aItem = myDataTbl->item(k, 1);
-    if (aItem) {
-          aItem->setText( aCurv);
+    anItem = myDataTbl->item(k, 1);
+    if (anItem) {
+          anItem->setText( aCurv);
     } else {
-          aItem = new QTableWidgetItem(aCurv);
-          myDataTbl->setItem(k, 1, aItem);
+          anItem = new QTableWidgetItem(aCurv);
+          myDataTbl->setItem(k, 1, anItem);
     }
-    aItem = myDataTbl->item(k, 2);
-    if (aItem) {
-          aItem->setText( elem.second);
+    anItem = myDataTbl->item(k, 2);
+    if (anItem) {
+          anItem->setText( elem.second);
     } else {
-          aItem = new QTableWidgetItem(elem.second);
-          myDataTbl->setItem(k, 2, aItem);
+          anItem = new QTableWidgetItem(elem.second);
+          myDataTbl->setItem(k, 2, anItem);
     }
   }
-  aItem = myDataTbl->item(myDataTbl->rowCount()-1, 0 );
-  aItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled );
-  aItem = myDataTbl->item(myDataTbl->rowCount()-1, 1 );
-  aItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled );
+  anItem = myDataTbl->item(myDataTbl->rowCount()-1, 0 );
+  anItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled );
+  anItem = myDataTbl->item(myDataTbl->rowCount()-1, 1 );
+  anItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled );
   myDataTbl->blockSignals(false);
 
   return true;
@@ -517,8 +507,8 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::restoreValueCustom()
 //**********************************************************************************
 void FeaturesPlugin_WidgetFilletMultiRadiuses::onAdd()
 {
-  QModelIndex index = myDataTbl->currentIndex();
-  int i  = index.row();
+  QModelIndex anIndex = myDataTbl->currentIndex();
+   int i  = anIndex.row();
   if( i != -1
       && !(!myDataTbl->currentItem()->isSelected() && myDataTbl->rowCount() >2))
   {
@@ -532,18 +522,18 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onAdd()
       i = 1;
     else
       i= i+1;
+
     myDataTbl->model()->insertRow(i);
 
-    QTableWidgetItem* aItem =0;
+    QTableWidgetItem* anItem =0;
 
-    aItem = myDataTbl->item( i, 0 );
-    aItem = new QTableWidgetItem( "" );
-    myDataTbl->setItem(i, 0, aItem);
-    aItem = new QTableWidgetItem("0.1");
-    myDataTbl->setItem(i, 1, aItem);
-
-    aItem = new QTableWidgetItem("0.5");
-    myDataTbl->setItem(i, 2, aItem);
+    anItem = myDataTbl->item( i, 0 );
+    anItem = new QTableWidgetItem( "" );
+    myDataTbl->setItem(i, 0, anItem);
+    anItem = new QTableWidgetItem("0.1");
+    myDataTbl->setItem(i, 1, anItem);
+    anItem = new QTableWidgetItem("0.5");
+    myDataTbl->setItem(i, 2, anItem);
     myDataTbl->blockSignals(false);
 
     emit valuesChanged();
@@ -554,31 +544,30 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onAdd()
 //**********************************************************************************
 void FeaturesPlugin_WidgetFilletMultiRadiuses::onRemove()
 {
-  QModelIndex index = myDataTbl->currentIndex();
+  QModelIndex anIndex = myDataTbl->currentIndex();
 
   if( myDataTbl->currentItem()->isSelected() && myDataTbl->rowCount() >2
-    && index.row() != -1
-    && index.row() != 0
-    && index.row() != myDataTbl->rowCount() -1){
+    && anIndex.row() != -1
+    && anIndex.row() != 0
+    && anIndex.row() != myDataTbl->rowCount() -1){
 
     myDataTbl->blockSignals(true);
-    if (myTypeMethodeBypoint)
+    if (myTypeMethodBypoint)
     {
-      QString aName = myDataTbl->item( index.row() , 0 )->text();
+      QString aName = myDataTbl->item( anIndex.row() , 0 )->text();
       AttributeSelectionListPtr aSelList =
-              myFeature->data()
-                      ->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
+          myFeature->data()->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
 
-      AttributeSelectionPtr aAttr;
+      AttributeSelectionPtr anAttr;
       for (int i = 0; i < aSelList->size(); i++) {
-          aAttr = aSelList->value(i);
-          if( aName == QString::fromStdWString( aAttr->namingName()) )
+          anAttr = aSelList->value(i);
+          if( aName == QString::fromStdWString( anAttr->namingName()) )
           {
             aSelList->remove({i});
           }
       }
     }
-    myDataTbl->model()->removeRow(index.row());
+    myDataTbl->model()->removeRow(anIndex.row());
     myDataTbl->blockSignals(false);
 
     emit valuesChanged();
@@ -602,7 +591,7 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onTableEdited(int theRow, int the
 
     AttributeTablesPtr aTablesAttr;
 
-    if(myTypeMethodeBypoint)
+    if(myTypeMethodBypoint)
       aTablesAttr = myFeature->data()->tables(FeaturesPlugin_Fillet::VALUES_ID());
     else
       aTablesAttr = myFeature->data()->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
@@ -632,9 +621,8 @@ bool FeaturesPlugin_WidgetFilletMultiRadiuses::processEnter()
 bool FeaturesPlugin_WidgetFilletMultiRadiuses::
   setSelection(QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues, const bool theToValidate)
 {
-
   mySortList = false;
-  if ( theValues.size() > 1 || !myTypeMethodeBypoint || theValues.size() == 0 )
+  if ( theValues.size() > 1 || !myTypeMethodBypoint || theValues.size() == 0 )
   {
     mySetSelection = false;
     return false;
@@ -705,7 +693,7 @@ QString FeaturesPlugin_WidgetFilletMultiRadiuses::findRadius(QString thename) co
 {
   AttributeTablesPtr aTablesAttr;
 
-  if(myTypeMethodeBypoint)
+  if(myTypeMethodBypoint)
     aTablesAttr = myFeature->data()->tables(FeaturesPlugin_Fillet::VALUES_ID());
   else
     aTablesAttr = myFeature->data()->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
@@ -724,8 +712,71 @@ QString FeaturesPlugin_WidgetFilletMultiRadiuses::findRadius(QString thename) co
 
 //**********************************************************************************
 QString FeaturesPlugin_WidgetFilletMultiRadiuses::
-                         getValueText(ModelAPI_AttributeTables::Value& theVal) const
+                          getValueText(ModelAPI_AttributeTables::Value& theVal) const
 {
-
     return QString::number(theVal.myDouble);
+}
+
+//********************************************************************
+void FeaturesPlugin_WidgetFilletMultiRadiuses::
+                              getHighlighted(QList<ModuleBase_ViewerPrsPtr>& theValues)
+{
+  std::set<int> anAttributeIds;
+  getSelectedAttributeIndices(anAttributeIds);
+  if (!anAttributeIds.empty())
+    convertIndicesToViewerSelection(anAttributeIds, theValues);
+}
+
+//********************************************************************
+void FeaturesPlugin_WidgetFilletMultiRadiuses::
+                            getSelectedAttributeIndices(std::set<int>& theAttributeIds)
+{
+  QModelIndexList indexList = myDataTbl->selectionModel()->selectedIndexes();
+  int aRow;
+  foreach (QModelIndex index, indexList) {
+    aRow = index.row();
+    theAttributeIds.insert(aRow-1);
+  }
+}
+
+void FeaturesPlugin_WidgetFilletMultiRadiuses::
+            convertIndicesToViewerSelection(std::set<int> theAttributeIds,
+                                            QList<ModuleBase_ViewerPrsPtr>& theValues) const
+{
+  if(myFeature.get() == NULL)
+    return;
+
+  DataPtr aData = myFeature->data();
+  AttributePtr anAttribute =
+                    aData->attribute(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
+
+  AttributeSelectionListPtr aSelectionListAttr =
+                    aData->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
+  for (int i = 0; i < aSelectionListAttr->size(); i++) {
+    // filter by attribute indices only if the container is not empty otherwise return all items
+    if (!theAttributeIds.empty() && theAttributeIds.find(i) == theAttributeIds.end())
+      continue;
+    AttributeSelectionPtr anAttr = aSelectionListAttr->value(i);
+    ObjectPtr anObject = anAttr->contextObject();
+    if (anObject.get())
+      theValues.append(std::shared_ptr<ModuleBase_ViewerPrs>(
+              new ModuleBase_ViewerPrs(anObject, anAttr->value(), NULL)));
+  }
+}
+
+//********************************************************************
+void FeaturesPlugin_WidgetFilletMultiRadiuses::onListSelection()
+{
+  myWorkshop->module()->customizeFeature(myFeature,ModuleBase_IModule::CustomizeHighlightedObjects,
+                                         true);
+}
+
+//********************************************************************
+void FeaturesPlugin_WidgetFilletMultiRadiuses::activateCustom()
+{
+  ModuleBase_WidgetSelector::activateCustom();
+
+  ModuleBase_IModule* aModule = myWorkshop->module();
+  aModule->activateCustomPrs(myFeature,
+                            ModuleBase_IModule::CustomizeHighlightedObjects, true);
 }

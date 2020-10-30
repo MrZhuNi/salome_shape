@@ -176,6 +176,7 @@ INCLUDE_DIRECTORIES(
   ../GeomAlgoImpl
   ../ModelAPI
   ../XAO
+  ${PROJECT_SOURCE_DIR}/src/Locale
   ${OpenCASCADE_INCLUDE_DIR}
 )
 

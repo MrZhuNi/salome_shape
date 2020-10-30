@@ -55,8 +55,8 @@
          title="Multiple radiuses"
          tooltip="Fillet with multiple radiuses"
          icon="icons/Features/fillet_var_multiple_radiuses.png">
-      <toolbox id="multiple_radiuses_methode">
-         <box id="by_curvilinear_abscissa_methode"
+      <toolbox id="multiple_radiuses_method">
+         <box id="by_curvilinear_abscissa_method"
          title="By curvilinear abscissa"
          tooltip="Fillet with multiple radiuses by curvilinear abscissa"
          icon="icons/Features/fillet_multiradius_by_curv.png">
