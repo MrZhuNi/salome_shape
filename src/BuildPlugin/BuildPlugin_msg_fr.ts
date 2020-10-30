@@ -827,7 +827,29 @@
       <translation>Tangentes</translation>
     </message>
   </context>
-
+  <context>
+  <name>Interpolation:analytical</name>
+  <message>
+    <source>Curves parameters</source>
+    <translation>Paramètres de la courbe</translation>
+  </message>
+  <message>
+    <source>X(t) equation</source>
+    <translation>Équation X(t)</translation>
+  </message>
+  <message>
+    <source>Y(t) equation</source>
+    <translation>Équation Y(t)</translation>
+  </message>
+  <message>
+    <source>Z(t) equation</source>
+    <translation>Équation Z(t)</translation>
+  </message>
+  <message>
+    <source>Number of steps</source>
+    <translation>Nombre de pas</translation>
+  </message>
+  </context>
   <context>
     <name>Polyline:base_objects</name>
     <message>

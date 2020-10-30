@@ -42,9 +42,9 @@ bool GeomValidators_MinObjectsSelected::isValid(const std::shared_ptr<ModelAPI_F
   if( theFeature->name().substr(0, 6) == L"Interp" )
   {
     AttributeStringPtr anAttr =theFeature->string(
-                                        BuildPlugin_Interpolation::CREATION_METHODE_ID());
+                                        BuildPlugin_Interpolation::CREATION_METHOD_ID());
     if ( anAttr->isInitialized() )
-      if( anAttr->value() == BuildPlugin_Interpolation::CREATION_METHODE_ANALYTICAL_ID())
+      if( anAttr->value() == BuildPlugin_Interpolation::CREATION_METHOD_ANALYTICAL_ID())
         return true; 
   } 
 
