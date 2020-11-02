@@ -21,6 +21,7 @@
 
 #include <ModelAPI_Attribute.h>
 #include <ModelAPI_AttributeBoolean.h>
+#include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeString.h>
 
@@ -72,11 +73,18 @@ FiltersAPI_Filter::FiltersAPI_Filter(const std::string& theName,
       continue;
     }
 
+    AttributeDoublePtr aDouble = std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(*anArgIt);
+    if (aDouble) {
+      myFilterArguments.push_back(FiltersAPI_Argument(aDouble->value()));
+      continue;
+    }
+
     AttributeBooleanPtr aBoolean = std::dynamic_pointer_cast<ModelAPI_AttributeBoolean>(*anArgIt);
     if (aBoolean) {
       myFilterArguments.push_back(FiltersAPI_Argument(aBoolean->value()));
       continue;
     }
+
   }
 }
 

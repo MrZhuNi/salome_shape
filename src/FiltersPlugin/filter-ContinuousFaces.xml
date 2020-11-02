@@ -1,0 +1,14 @@
+<filter id="ContinuousFaces">
+  <doublevalue id="ContinuousFaces__value"
+      label="Angle"
+      min="0"
+      step="0.1"
+      default="5">
+  </doublevalue>
+  <multi_selector id="ContinuousFaces__faces"
+                  label="Faces:"
+                  tooltip="Select face."
+                  shape_types="faces">
+    <validator id="GeomValidators_ShapeType" parameters="face"/>
+  </multi_selector>
+</filter>

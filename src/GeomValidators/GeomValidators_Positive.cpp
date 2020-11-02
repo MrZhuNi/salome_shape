@@ -44,7 +44,7 @@ bool GeomValidators_Positive::isValid(const AttributePtr& theAttribute,
                                       const std::list<std::string>& theArguments,
                                       Events_InfoMessage& theError) const
 {
-  double aMinValue = 1.e-5;
+  double aMinValue = 1.e-12;
   if(theArguments.size() == 1) {
     std::list<std::string>::const_iterator anIt = theArguments.begin();
     double aValue = Config_PropManager::stringToDouble((*anIt).c_str());
