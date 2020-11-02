@@ -57,6 +57,30 @@ By default, the result of Selection feature all selectable entities from all Sha
 - **Argument:** Any result object, multiple OR selection accepted
 - **Algorithm:** Returns only shapes that belong to selected results.
 
+**Edge size**
+
+- **Result type:** Edge
+- **Argument:** 
+    - **Comparator:** <, <=, >, >=, is between, is strickly between
+    - **Comparator argument:** **Size** or  **Min size** and **Max size**
+- **Algorithm:** Returns all edges whose lenght respect comparator rules.
+
+**Face size**
+
+- **Result type:** Face
+- **Argument:** 
+    - **Comparator:** <, <=, >, >=, is between, is strickly between
+    - **Comparator argument:** **Size** or  **Min size** and **Max size**
+- **Algorithm:** Returns all faces whose area respect comparator rules.
+
+**Volume size**
+
+- **Result type:** Solid
+- **Argument:** 
+    - **Comparator:** <, <=, >, >=, is between, is strickly between
+    - **Comparator argument:** **Size** or  **Min size** and **Max size**
+- **Algorithm:** Returns all solids whose volume respect comparator rules.
+
 **On a plane**
 
 - **Result type:** Vertex, Edge, Face

@@ -139,6 +139,80 @@
       <translation>Sélectionner des objets pour limiter la sélection</translation>
     </message>
   </context>
+  <!-- Edge size -->
+  <context>
+    <name>EdgeSize</name>
+    <message>
+      <source>Size</source>
+      <translation>Longueur</translation>
+    </message>
+    <message>
+      <source>Min size</source>
+      <translation>Longueur Min</translation>
+    </message>
+    <message>
+      <source>Max size</source>
+      <translation>Longueur Max</translation>
+    </message>
+    <message>
+      <source>is between</source>
+      <translation>est compris entre</translation>
+    </message>
+    <message>
+      <source>is strickly between</source>
+      <translation>est compris strictement entre</translation>
+    </message>
+  </context>
+  
+  <!-- Face size -->
+  <context>
+    <name>FaceSize</name>
+    <message>
+      <source>Size</source>
+      <translation>Longueur</translation>
+    </message>
+    <message>
+      <source>Min size</source>
+      <translation>Longueur Min</translation>
+    </message>
+    <message>
+      <source>Max size</source>
+      <translation>Longueur Max</translation>
+    </message>
+    <message>
+      <source>is between</source>
+      <translation>est compris entre</translation>
+    </message>
+    <message>
+      <source>is strickly between</source>
+      <translation>est compris strictement entre</translation>
+    </message>
+  </context>
+
+  <!-- Volume size -->
+  <context>
+    <name>VolumeSize</name>
+    <message>
+      <source>Size</source>
+      <translation>Longueur</translation>
+    </message>
+    <message>
+      <source>Min size</source>
+      <translation>Longueur Min</translation>
+    </message>
+    <message>
+      <source>Max size</source>
+      <translation>Longueur Max</translation>
+    </message>
+    <message>
+      <source>is between</source>
+      <translation>est compris entre</translation>
+    </message>
+    <message>
+      <source>is strickly between</source>
+      <translation>est compris strictement entre</translation>
+    </message>
+  </context>
 
   <!-- OnGeometry -->
   <context>
