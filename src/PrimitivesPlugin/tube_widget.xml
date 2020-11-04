@@ -1,0 +1,81 @@
+<source>
+  <toolbox id="CreationMethod">
+    <box id="SimpleTube" title="Simple tube" icon="">
+      <doublevalue
+        id="rmin"
+        label="rmin"
+        step="1."
+        default="3."
+        min="0."
+        tooltip="Enter the inner radius">
+      </doublevalue>
+      <doublevalue
+        id="rmax"
+        label="rmax"
+        step="1."
+        default="5."
+        min="0."
+        tooltip="Enter the outer radius">
+        <validator id="GeomValidators_Positive"/>
+      </doublevalue>
+      <doublevalue
+        id="z"
+        label="z"
+        step="1."
+        default="12."
+        min="0."
+        tooltip="Enter the height">
+      <validator id="GeomValidators_Positive"/>
+    </doublevalue>
+    </box>
+    <box id="SegmentTube" title="Segment tube" icon="">
+      <groupbox title="Section">
+        <doublevalue
+          id="rmin"
+          label="rmin"
+          step="1."
+          default="3."
+          min="0."
+          tooltip="Enter the inner radius">
+        </doublevalue>
+        <doublevalue
+          id="rmax"
+          label="rmax"
+          step="1."
+          default="5."
+          min="0."
+          tooltip="Enter the outer radius">
+          <validator id="GeomValidators_Positive"/>
+        </doublevalue>
+      </groupbox>
+      <groupbox title="Crop">
+        <doublevalue
+          id="z"
+          label="z"
+          step="1."
+          default="12."
+          min="0."
+          tooltip="Enter the height">
+          <validator id="GeomValidators_Positive"/>
+        </doublevalue>
+        <doublevalue
+          id="startphi"
+          label="startphi"
+          step="15."
+          default="30."
+          tooltip="Enter the starting angle">
+        </doublevalue>
+        <doublevalue
+          id="deltaphi"
+          label="deltaphi"
+          step="15."
+          default="270."
+          min="0."
+          max="360."
+          tooltip="Enter the revolution angle">
+          <validator id="GeomValidators_Positive"/>
+        </doublevalue>
+      </groupbox>
+    </box>
+  </toolbox>
+</source>

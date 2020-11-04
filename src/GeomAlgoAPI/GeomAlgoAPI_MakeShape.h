@@ -28,6 +28,8 @@
 #include <map>
 #include <string>
 
+#define ANGULAR_PRECISION Precision::Angular() * 180. / M_PI
+
 /// \class GeomAlgoAPI_MakeShape
 /// \ingroup DataAlgo
 /// \brief Interface to the root class of all topological shapes constructions
