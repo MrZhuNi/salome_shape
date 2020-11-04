@@ -2558,29 +2558,8 @@ void XGUI_Workshop::changeAutoColor(const QObjectPtrList& theObjects)
     std::stringstream streamColor;
     streamColor<< aColor[0] <<","<< aColor[1] <<"," <<aColor[2];
 
-    /*Config_PropManager::registerProp("Visualization", "result_group_color", "Group color",
-                                                          Config_Prop::Color, streamColor.str());*/
-
     aProp->setValue(streamColor.str());
 
-    /* set the value to all results
-    foreach(ObjectPtr anObj, theObjects) {
-      ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(anObj);
-      if (aResult.get() != NULL) {
-        //aResult->setAutocolor(true); 
-        //ResultBodyPtr aBodyResult = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aResult);
-        ResultBodyPtr aBodyResult = ModelAPI_Tools::bodyOwner(aResult,true);
-        if (aBodyResult.get() != NULL) { // change colors for all sub-solids
-          std::list<ResultPtr> allRes;
-          ModelAPI_Tools::allSubs(aBodyResult, allRes);
-          for(std::list<ResultPtr>::iterator aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
-            //(*aRes)->setAutocolor(true); 
-            ModelAPI_Tools::setColor(*aRes,  aColor);
-          }
-        }
-        ModelAPI_Tools::setColor(aResult, aColor);
-      }
-    }*/
     Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
     aMgr->finishOperation();
     updateCommandStatus();
