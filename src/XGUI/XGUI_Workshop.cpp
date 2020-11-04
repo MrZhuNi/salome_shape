@@ -154,6 +154,7 @@
 #include <QSpinBox>
 #include <QDialogButtonBox>
 
+#include <sstream>
 #include <iterator>
 
 #ifdef TINSPECTOR
@@ -1740,6 +1741,8 @@ void XGUI_Workshop::onContextMenuCommand(const QString& theId, bool isChecked)
     moveObjects(theId == "MOVE_SPLIT_CMD");
   else if (theId == "COLOR_CMD")
     changeColor(aObjects);
+  else if (theId == "AUTOCOLOR_CMD")
+    changeAutoColor(aObjects);
   else if (theId == "ISOLINES_CMD")
     changeIsoLines(aObjects);
   else if (theId == "SHOW_ISOLINES_CMD") {
@@ -2429,6 +2432,15 @@ bool XGUI_Workshop::canChangeProperty(const QString& theActionName) const
 
     return hasResults(aObjects, aTypes);
   }
+  if (theActionName == "AUTOCOLOR_CMD") {
+
+    QObjectPtrList aObjects = mySelector->selection()->selectedObjects();
+
+    std::set<std::string> aTypes;
+    aTypes.insert(ModelAPI_ResultGroup::group());
+
+    return hasResults(aObjects, aTypes);
+  }
   return false;
 }
 
@@ -2519,6 +2531,62 @@ void XGUI_Workshop::changeColor(const QObjectPtrList& theObjects)
   aMgr->finishOperation();
   updateCommandStatus();
   myViewerProxy->update();
+}
+
+//**************************************************************
+void XGUI_Workshop::changeAutoColor(const QObjectPtrList& theObjects)
+{
+  if (!abortAllOperations())
+  return;
+
+  std::vector<int> aColor = XGUI_ColorDialog::randomColor();
+
+  // abort the previous operation and start a new one
+  SessionPtr aMgr = ModelAPI_Session::get();
+  QString aDescription = contextMenuMgr()->action("AUTOCOLOR_CMD")->text();
+  aMgr->startOperation(aDescription.toStdString());
+
+  Config_Prop* aProp = Config_PropManager::findProp("Visualization", "result_group_color");
+
+  if( aDescription == tr("Disable auto color"))
+  {
+     contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Auto color") );
+
+    aProp->setValue(ModelAPI_ResultGroup::DEFAULT_COLOR());
+
+  }else{
+    std::stringstream streamColor;
+    streamColor<< aColor[0] <<","<< aColor[1] <<"," <<aColor[2];
+
+    /*Config_PropManager::registerProp("Visualization", "result_group_color", "Group color",
+                                                          Config_Prop::Color, streamColor.str());*/
+
+    aProp->setValue(streamColor.str());
+
+    /* set the value to all results
+    foreach(ObjectPtr anObj, theObjects) {
+      ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(anObj);
+      if (aResult.get() != NULL) {
+        //aResult->setAutocolor(true); 
+        //ResultBodyPtr aBodyResult = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aResult);
+        ResultBodyPtr aBodyResult = ModelAPI_Tools::bodyOwner(aResult,true);
+        if (aBodyResult.get() != NULL) { // change colors for all sub-solids
+          std::list<ResultPtr> allRes;
+          ModelAPI_Tools::allSubs(aBodyResult, allRes);
+          for(std::list<ResultPtr>::iterator aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
+            //(*aRes)->setAutocolor(true); 
+            ModelAPI_Tools::setColor(*aRes,  aColor);
+          }
+        }
+        ModelAPI_Tools::setColor(aResult, aColor);
+      }
+    }*/
+    Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
+    aMgr->finishOperation();
+    updateCommandStatus();
+    myViewerProxy->update();
+    contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Disable auto color") );
+  }
 }
 
 //**************************************************************

@@ -189,3 +189,10 @@ std::vector<int> XGUI_ColorDialog::getRandomColor() const
   }
   return aValues;
 }
+
+std::vector<int> XGUI_ColorDialog::randomColor()
+{
+  std::vector<int> aValues;
+  findRandomColor(aValues);
+  return aValues;
+}
