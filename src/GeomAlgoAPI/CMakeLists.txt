@@ -33,6 +33,7 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Prism.h
     GeomAlgoAPI_Revolution.h
     GeomAlgoAPI_Boolean.h
+    GeomAlgoAPI_DuplicatedFaces.h
     GeomAlgoAPI_ThroughAll.h
     GeomAlgoAPI_Rotation.h
     GeomAlgoAPI_Translation.h
@@ -82,6 +83,21 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Fillet1D.h
     GeomAlgoAPI_SortListOfShapes.h
     GeomAlgoAPI_Filling.h
+    GeomAlgoAPI_GlueDetector.h
+    GeomAlgoAPI_GluerAlgo.h
+    GeomAlgoAPI_Algo.h
+    GEOMAlgo_BndSphereTree.hxx
+    GEOMAlgo_BndSphere.hxx
+    GEOMAlgo_BndSphere.lxx
+    GEOMAlgo_IndexedDataMapOfShapeBndSphere.hxx
+    GEOMAlgo_IndexedDataMapOfIntegerShape.hxx
+    GEOMAlgo_PassKeyShape.hxx
+    GEOMAlgo_IndexedDataMapOfPassKeyShapeListOfShape.hxx
+    GEOMAlgo_PassKeyShapeMapHasher.hxx
+    GEOMAlgo_CoupleOfShapes.hxx
+    GEOMAlgo_IndexedDataMapOfShapeIndexedMapOfShape.hxx
+    GEOMAlgo_ListOfCoupleOfShapes.hxx
+    GEOMAlgo_AlgoTools.hxx
     GeomAlgoAPI_CurveBuilder.h
     GeomAlgoAPI_NExplode.h
     GeomAlgoAPI_Offset.h
@@ -104,6 +120,7 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Prism.cpp
     GeomAlgoAPI_Revolution.cpp
     GeomAlgoAPI_Boolean.cpp
+    GeomAlgoAPI_DuplicatedFaces.cpp
     GeomAlgoAPI_ThroughAll.cpp
     GeomAlgoAPI_Rotation.cpp
     GeomAlgoAPI_Translation.cpp
@@ -153,6 +170,15 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Fillet1D.cpp
     GeomAlgoAPI_SortListOfShapes.cpp
     GeomAlgoAPI_Filling.cpp
+    GeomAlgoAPI_GlueDetector.cpp
+    GeomAlgoAPI_GluerAlgo.cpp
+    GeomAlgoAPI_Algo.cpp
+    GEOMAlgo_BndSphereTree.cxx
+    GEOMAlgo_BndSphere.cxx
+    GEOMAlgo_PassKeyShapeMapHasher.cxx
+    GEOMAlgo_CoupleOfShapes.cxx
+    GEOMAlgo_PassKeyShape.cxx
+    GEOMAlgo_AlgoTools.cxx
     GeomAlgoAPI_CurveBuilder.cpp
     GeomAlgoAPI_NExplode.cpp
     GeomAlgoAPI_Offset.cpp

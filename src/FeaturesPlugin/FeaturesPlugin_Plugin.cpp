@@ -19,52 +19,53 @@
 
 #include <FeaturesPlugin_Plugin.h>
 
-#include <FeaturesPlugin_BooleanCut.h>
-#include <FeaturesPlugin_BooleanFuse.h>
 #include <FeaturesPlugin_BooleanCommon.h>
-#include <FeaturesPlugin_BooleanSmash.h>
+#include <FeaturesPlugin_BooleanCut.h>
 #include <FeaturesPlugin_BooleanFill.h>
+#include <FeaturesPlugin_BooleanFuse.h>
+#include <FeaturesPlugin_BooleanSmash.h>
 #include <FeaturesPlugin_BoundingBox.h>
 #include <FeaturesPlugin_Chamfer.h>
+#include <FeaturesPlugin_Copy.h>
 #include <FeaturesPlugin_Defeaturing.h>
-#include <FeaturesPlugin_Extrusion.h>
+#include <FeaturesPlugin_DuplicatedFaces.h>
 #include <FeaturesPlugin_ExtrusionCut.h>
 #include <FeaturesPlugin_ExtrusionFuse.h>
-#include <FeaturesPlugin_Fillet.h>
+#include <FeaturesPlugin_Extrusion.h>
 #include <FeaturesPlugin_Fillet1D.h>
+#include <FeaturesPlugin_Fillet.h>
+#include <FeaturesPlugin_FusionFaces.h>
 #include <FeaturesPlugin_GeometryCalculation.h>
+#include <FeaturesPlugin_GroupDuplicatedFaces.h>
+#include <FeaturesPlugin_ImportResult.h>
 #include <FeaturesPlugin_InspectBoundingBox.h>
 #include <FeaturesPlugin_InspectNormalToFace.h>
 #include <FeaturesPlugin_Intersection.h>
 #include <FeaturesPlugin_Measurement.h>
-#include <FeaturesPlugin_PointCoordinates.h>
 #include <FeaturesPlugin_MultiRotation.h>
 #include <FeaturesPlugin_MultiTranslation.h>
 #include <FeaturesPlugin_NormalToFace.h>
 #include <FeaturesPlugin_Partition.h>
 #include <FeaturesPlugin_Pipe.h>
 #include <FeaturesPlugin_Placement.h>
+#include <FeaturesPlugin_PointCoordinates.h>
 #include <FeaturesPlugin_Recover.h>
+#include <FeaturesPlugin_RemoveResults.h>
 #include <FeaturesPlugin_RemoveSubShapes.h>
-#include <FeaturesPlugin_Revolution.h>
 #include <FeaturesPlugin_RevolutionCut.h>
 #include <FeaturesPlugin_RevolutionFuse.h>
+#include <FeaturesPlugin_Revolution.h>
 #include <FeaturesPlugin_Rotation.h>
 #include <FeaturesPlugin_Scale.h>
 #include <FeaturesPlugin_Symmetry.h>
 #include <FeaturesPlugin_Translation.h>
 #include <FeaturesPlugin_Union.h>
-#include <FeaturesPlugin_FusionFaces.h>
-#include <FeaturesPlugin_RemoveResults.h>
-#include <FeaturesPlugin_Copy.h>
-#include <FeaturesPlugin_ImportResult.h>
-#include <FeaturesPlugin_ValidatorTransform.h>
 #include <FeaturesPlugin_Validators.h>
+#include <FeaturesPlugin_ValidatorTransform.h>
 
 #include <ModelAPI_Session.h>
 
 #include <string>
-
 #include <memory>
 
 // the only created instance of this plugin
@@ -193,6 +194,10 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
     return FeaturePtr(new FeaturesPlugin_Fillet1D);
   } else if (theFeatureID == FeaturesPlugin_Measurement::ID()) {
     return FeaturePtr(new FeaturesPlugin_Measurement);
+  } else if (theFeatureID == FeaturesPlugin_DuplicatedFaces::ID()) {
+    return FeaturePtr(new FeaturesPlugin_DuplicatedFaces);
+  } else if (theFeatureID == FeaturesPlugin_GroupDuplicatedFaces::ID()) {
+    return FeaturePtr(new FeaturesPlugin_GroupDuplicatedFaces);
   } else if (theFeatureID == FeaturesPlugin_RemoveResults::ID()) {
     return FeaturePtr(new FeaturesPlugin_RemoveResults);
   } else if (theFeatureID == FeaturesPlugin_Chamfer::ID()) {
@@ -216,7 +221,6 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
   } else if (theFeatureID == FeaturesPlugin_NormalToFace::ID()) {
     return FeaturePtr(new FeaturesPlugin_NormalToFace);
   }
-
 
   // feature of such kind is not found
   return FeaturePtr();

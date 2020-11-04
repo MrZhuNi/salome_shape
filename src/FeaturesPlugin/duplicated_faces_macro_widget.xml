@@ -1,0 +1,40 @@
+<source>
+  <shape_selector id="main_object"
+                  label="Object"
+                  tooltip="Select a object"
+                  shape_types="compsolid compsolid object"
+                  default=""
+                  geometrical_selection="true">
+    <validator id="PartSet_DifferentObjects"/>
+    <validator id="GeomValidators_ShapeType" parameters="compsolid,compound"/>
+  </shape_selector>
+  <groupbox title="Duplicated faces">
+    <label id="number_duplicated_faces" label="Number of duplicated faces : " />
+    <multi_selector id="group_list"
+                      label="List of faces :"
+                      icon=""
+                      shape_types="faces"
+                      Block_selection = "true"
+                      use_choice="false">
+      <validator id="PartSet_DifferentObjects"/>
+      <validator id="GeomValidators_ShapeType" parameters="faces"/>
+    </multi_selector>
+  </groupbox>
+  <integervalue id="transparency"
+                    label="Transparency"
+                    min="0"
+                    max="100"
+                    step="10"
+                    default="50">
+  </integervalue>
+  <doublevalue id="tolerance"
+                    label="Tolerance"
+                    min="0"
+                    step="0.00001"
+                    default="1e-7">
+  </doublevalue>
+  <optionalbox id="create_group" title="Create group" show_title="true">
+    <stringvalue id="group_name" label="Group name"/>
+    <label/>
+  </optionalbox>
+</source>
