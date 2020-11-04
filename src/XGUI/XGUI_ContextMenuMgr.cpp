@@ -112,6 +112,9 @@ void XGUI_ContextMenuMgr::createActions()
   aAction = ModuleBase_Tools::createAction(QIcon(":pictures/color.png"), tr("Color..."), aDesktop);
   addAction("COLOR_CMD", aAction);
 
+  aAction = ModuleBase_Tools::createAction(QIcon(""), tr("Auto color"), aDesktop);
+  addAction("AUTOCOLOR_CMD", aAction);
+
   aAction = ModuleBase_Tools::createAction(QIcon(""), tr("Deflection..."), aDesktop);
   addAction("DEFLECTION_CMD", aAction);
 
@@ -502,6 +505,8 @@ void XGUI_ContextMenuMgr::updateObjectBrowserMenu()
   action("COLOR_CMD")->setEnabled(myWorkshop->canChangeProperty("COLOR_CMD"));
   action("DEFLECTION_CMD")->setEnabled(myWorkshop->canChangeProperty("DEFLECTION_CMD"));
   action("TRANSPARENCY_CMD")->setEnabled(myWorkshop->canChangeProperty("TRANSPARENCY_CMD"));
+  action("AUTOCOLOR_CMD")->setEnabled(myWorkshop->canChangeProperty("AUTOCOLOR_CMD"));
+
   #ifdef _DEBUG
     #ifdef TINSPECTOR
       action("TINSPECTOR_VIEW")->setEnabled(true);
@@ -681,10 +686,31 @@ void XGUI_ContextMenuMgr::buildObjBrowserMenu()
   aList.append(action("DELETE_CMD"));
   myObjBrowserMenus[ModelAPI_ResultBody::group()] = aList;
   // Group menu
-  myObjBrowserMenus[ModelAPI_ResultGroup::group()] = aList;
   myObjBrowserMenus[ModelAPI_ResultField::group()] = aList;
   // Result part menu
   myObjBrowserMenus[ModelAPI_ResultPart::group()] = aList;
+
+  aList.clear();
+  aList.append(action("WIREFRAME_CMD"));
+  aList.append(action("SHADING_CMD"));
+  aList.append(mySeparator1); // this separator is not shown as this action is added after show only
+  // qt list container contains only one instance of the same action
+  aList.append(action("SHOW_CMD"));
+  aList.append(action("HIDE_CMD"));
+  aList.append(action("SHOW_ONLY_CMD"));
+  aList.append(mySeparator2);
+  aList.append(action("AUTOCOLOR_CMD"));
+  aList.append(action("RENAME_CMD"));
+  aList.append(action("COLOR_CMD"));
+  aList.append(action("DEFLECTION_CMD"));
+  aList.append(action("TRANSPARENCY_CMD"));
+  aList.append(action("SHOW_ISOLINES_CMD"));
+  aList.append(action("ISOLINES_CMD"));
+  aList.append(action("SHOW_FEATURE_CMD"));
+  aList.append(mySeparator3);
+  aList.append(action("DELETE_CMD"));
+  // Group menu
+  myObjBrowserMenus[ModelAPI_ResultGroup::group()] = aList;
   //-------------------------------------
   // Feature menu
   aList.clear();

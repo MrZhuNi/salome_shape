@@ -203,6 +203,11 @@ Q_OBJECT
   /// theObjects a list of selected objects
   void changeColor(const QObjectPtrList& theObjects);
 
+  /// Change Autocolor of the results if it is possible
+  /// The operation is available for group results
+  /// theObjects a list of selected objects
+  void changeAutoColor(const QObjectPtrList& theObjects);
+
   /// Change deflection of the results if it is possible
   /// The operation is available for construction, body and group results
   /// theObjects a list of selected objects
