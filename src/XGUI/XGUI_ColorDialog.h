@@ -64,6 +64,12 @@ public:
   /// \return a vector of values
   std::vector<int> getRandomColor() const;
 
+  /// Returns a container with the current color value.
+  /// These are tree int values for RGB definition.
+  /// It returns the next random color.
+  /// \return a vector of values
+  static std::vector<int> randomColor();
+
 private:
   QButtonGroup* myButtonGroup; /// a group, contained random and certain color radio button choice
   QtxColorButton* myColorButton; /// a control to select a color
