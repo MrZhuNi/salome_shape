@@ -202,9 +202,13 @@ PartSet_Module::PartSet_Module(ModuleBase_IWorkshop* theWshop)
   Config_PropManager::registerProp("Visualization", "result_group_color", "Group color",
     Config_Prop::Color, ModelAPI_ResultGroup::DEFAULT_COLOR());
 
-  Config_PropManager::registerProp("Visualization",
-    ModelAPI_ResultConstruction::RESULT_COLOR_NAME(),
-    "Construction color", Config_Prop::Color, ModelAPI_ResultConstruction::DEFAULT_COLOR());
+  Config_PropManager::registerProp("Visualization", "result_group_Auto_color", "Auto color",
+    Config_Prop::Boolean, "false");
+
+  Config_PropManager::registerProp("Visualization", "result_construction_color",
+    "Construction color",
+    Config_Prop::Color,
+    ModelAPI_ResultConstruction::DEFAULT_COLOR());
 
   Config_PropManager::registerProp("Visualization", "result_part_color", "Part color",
     Config_Prop::Color, ModelAPI_ResultPart::DEFAULT_COLOR());
@@ -1700,7 +1704,7 @@ void PartSet_Module::processEvent(const std::shared_ptr<Events_Message>& theMess
     CompositeFeaturePtr aSketch = mySketchMgr->activeSketch();
     if (aSketch.get()) {
       ModuleBase_Operation* anOperation = myWorkshop->currentOperation();
-      if (PartSet_SketcherMgr::isSketchOperation(anOperation) &&
+      if (PartSet_SketcherMgr::isSketchOperation(anOperation)&&
         mySketchMgr->previewSketchPlane()->isDisplayed())
         mySketchMgr->previewSketchPlane()->createSketchPlane(aSketch, myWorkshop);
     }
