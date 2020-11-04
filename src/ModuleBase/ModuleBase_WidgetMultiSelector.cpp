@@ -114,7 +114,7 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
                                                                const Config_WidgetAPI* theData)
 : ModuleBase_WidgetSelector(theParent, theWorkshop, theData),
   myIsSetSelectionBlocked(false), myCurrentHistoryIndex(-1),
-  myIsFirst(true), myFiltersWgt(0), myShowOnlyBtn(0)
+  myIsFirst(true), myFiltersWgt(0), myShowOnlyBtn(0),myIsSetSelectionAlwaysBlocked(false)
 {
   std::string aPropertyTypes = theData->getProperty("shape_types");
   QString aTypesStr = aPropertyTypes.c_str();
@@ -127,7 +127,8 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
 
   myMainLayout = new QVBoxLayout(this);
   ModuleBase_Tools::adjustMargins(myMainLayout);
-
+ 
+  myIsSetSelectionAlwaysBlocked = theData->getBooleanAttribute("Block_selection", false);
 
   QStringList aIconsList;
   std::string aIcons = theData->getProperty("type_icons");
@@ -186,7 +187,7 @@ ModuleBase_WidgetMultiSelector::ModuleBase_WidgetMultiSelector(QWidget* theParen
 
   QString aToolTip = translate(theData->widgetTooltip());
   QString anObjName = QString::fromStdString(attributeID());
-  myListView = new ModuleBase_ListView(this, anObjName, aToolTip);
+  myListView = new ModuleBase_ListView(this, anObjName, aToolTip,!myIsSetSelectionAlwaysBlocked);
   connect(myListView->getControl(), SIGNAL(itemSelectionChanged()), SLOT(onListSelection()));
   connect(myListView, SIGNAL(deleteActionClicked()), SLOT(onDeleteItem()));
   connect(myListView, SIGNAL(listActivated()), SLOT(onListActivated()));
@@ -352,7 +353,7 @@ bool ModuleBase_WidgetMultiSelector::restoreValueCustom()
     if (aSelectionType.empty())
       aSelectionListAttr->setSelectionType(myDefMode);
     else {
-      setCurrentShapeType(aSelectionType.c_str());
+      setCurrentShapeType(ModuleBase_Tools::shapeType(aSelectionType.c_str()));
       myDefMode = aSelectionType;
       myIsFirst = false;
     }
@@ -367,6 +368,9 @@ bool ModuleBase_WidgetMultiSelector::restoreValueCustom()
 bool ModuleBase_WidgetMultiSelector::setSelection(QList<ModuleBase_ViewerPrsPtr>& theValues,
                                                   const bool theToValidate)
 {
+  if( myIsSetSelectionAlwaysBlocked)
+    return false;
+    
   if (myIsSetSelectionBlocked)
     return false;
 
@@ -752,28 +756,23 @@ QIntList ModuleBase_WidgetMultiSelector::shapeTypes() const
   QIntList aShapeTypes;
 
   if (myShapeTypes.length() > 1 && myIsUseChoice) {
-    QStringList aTypes = myTypeCtrl->textValue().split("|", QString::SkipEmptyParts);
-    for(QString aType: aTypes) {
-      aShapeTypes.append(ModuleBase_Tools::shapeType(aType));
-    }
+    aShapeTypes.append(ModuleBase_Tools::shapeType(myTypeCtrl->textValue()));
   }
   else {
     foreach (QString aType, myShapeTypes) {
-      QStringList aSubTypes = aType.split("|", QString::SkipEmptyParts);
-      for(QString aSubType: aSubTypes) {
-        aShapeTypes.append(ModuleBase_Tools::shapeType(aSubType));
-      }
+      aShapeTypes.append(ModuleBase_Tools::shapeType(aType));
     }
   }
   return aShapeTypes;
 }
 
 //********************************************************************
-void ModuleBase_WidgetMultiSelector::setCurrentShapeType(const QString& theShapeType)
+void ModuleBase_WidgetMultiSelector::setCurrentShapeType(const int theShapeType)
 {
   int idx = 0;
   foreach (QString aShapeTypeName, myShapeTypes) {
-    if(aShapeTypeName == theShapeType && idx != myTypeCtrl->value()) {
+    int aRefType = ModuleBase_Tools::shapeType(aShapeTypeName);
+    if(aRefType == theShapeType && idx != myTypeCtrl->value()) {
       updateSelectionModesAndFilters(false);
       bool isBlocked = myTypeCtrl->blockSignals(true);
       myTypeCtrl->setValue(idx);

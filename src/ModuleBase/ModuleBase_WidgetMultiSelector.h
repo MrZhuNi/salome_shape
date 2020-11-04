@@ -182,7 +182,7 @@ protected:
   virtual QIntList shapeTypes() const;
 
   /// Set current shape type for selection
-  void setCurrentShapeType(const QString& theShapeType);
+  void setCurrentShapeType(const int theShapeType);
 
   /// Return the attribute values wrapped in a list of viewer presentations
   /// \return a list of viewer presentations, which contains an attribute result and
@@ -249,6 +249,9 @@ protected:
 
   /// A flag to block set selection perform if the method is in process
   bool myIsSetSelectionBlocked;
+  
+  /// A flag to block set selection perform always
+  bool myIsSetSelectionAlwaysBlocked;
 
   /// A container of selected objects
   QList<QList<std::shared_ptr<ModuleBase_ViewerPrs> > > mySelectedHistoryValues;

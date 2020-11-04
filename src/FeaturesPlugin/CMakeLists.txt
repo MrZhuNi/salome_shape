@@ -19,6 +19,17 @@
 
 INCLUDE(Common)
 INCLUDE(UnitTest)
+INCLUDE(UseQtExt)
+
+# additional include directories
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
+                     ${PROJECT_SOURCE_DIR}/src/Locale
+                     ${PROJECT_SOURCE_DIR}/src/PrimitivesPlugin
+                     ${QT_INCLUDES})
+
+# additional preprocessor / compiler flags
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
 
 SET(PROJECT_HEADERS
     FeaturesPlugin.h
@@ -59,6 +70,7 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_Fillet.h
     FeaturesPlugin_Fillet1D.h
     FeaturesPlugin_Measurement.h
+    FeaturesPlugin_SharedFaces.h
     FeaturesPlugin_FusionFaces.h
     FeaturesPlugin_RemoveResults.h
     FeaturesPlugin_Chamfer.h
@@ -66,6 +78,7 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_ImportResult.h
     FeaturesPlugin_Defeaturing.h
     FeaturesPlugin_VersionedChFi.h
+
 )
 
 SET(PROJECT_SOURCES
@@ -106,6 +119,7 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_Fillet.cpp
     FeaturesPlugin_Fillet1D.cpp
     FeaturesPlugin_Measurement.cpp
+    FeaturesPlugin_SharedFaces.cpp
     FeaturesPlugin_FusionFaces.cpp
     FeaturesPlugin_RemoveResults.cpp
     FeaturesPlugin_Chamfer.cpp
@@ -144,6 +158,7 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
+  sharedFaces_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml
@@ -157,6 +172,12 @@ SET(TEXT_RESOURCES
     FeaturesPlugin_msg_ru.ts
 )
 
+# sources / moc wrappings
+QT_WRAP_MOC(PROJECT_AUTOMOC ${PROJECT_MOC_HEADERS})
+
+#QT5_ADD_TRANSLATION(QM_RESOURCES ${TEXT_RESOURCES})
+
+SOURCE_GROUP ("Generated Files" FILES ${PROJECT_AUTOMOC} ${PROJECT_COMPILED_RESOURCES} ${QM_RESOURCES})
 SOURCE_GROUP ("XML Files" FILES ${XML_RESOURCES})
 SOURCE_GROUP ("Resource Files" FILES ${TEXT_RESOURCES})
 
@@ -166,6 +187,7 @@ INCLUDE_DIRECTORIES(
   ../GeomAPI
   ../GeomAlgoAPI
   ../GeomValidators
+  ../ModuleBase
   ../Events
   ../Config
   ${OpenCASCADE_INCLUDE_DIR}
@@ -182,7 +204,12 @@ SET(PROJECT_LIBRARIES
 )
 
 ADD_DEFINITIONS(-DFEATURESPLUGIN_EXPORTS)
-ADD_LIBRARY(FeaturesPlugin MODULE ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${XML_RESOURCES} ${TEXT_RESOURCES})
+ADD_LIBRARY(FeaturesPlugin MODULE 
+            ${PROJECT_SOURCES} 
+            ${PROJECT_HEADERS} 
+            ${XML_RESOURCES} 
+            ${TEXT_RESOURCES}
+            ${PROJECT_AUTOMOC})
 TARGET_LINK_LIBRARIES(FeaturesPlugin ${PROJECT_LIBRARIES})
 
 INSTALL(TARGETS FeaturesPlugin DESTINATION ${SHAPER_INSTALL_PLUGIN_FILES})
@@ -682,6 +709,4 @@ ADD_UNIT_TESTS(TestExtrusion.py
                TestFillet1D_Wire_3.py
                TestFillet1D_Wire_4.py
                TestFillet1D_Wire_5.py
-               Test19931.py
-               Test20027.py
 )

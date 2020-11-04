@@ -34,25 +34,27 @@ const int ATTRIBUTE_SELECTION_INDEX_ROLE = Qt::UserRole + 1;
 
 //********************************************************************
 ModuleBase_ListView::ModuleBase_ListView(QWidget* theParent, const QString& theObjectName,
-  const QString& theToolTip)
+  const QString& theToolTip, bool theAllowCopyDelete)
+: myAllowCopyDelete(theAllowCopyDelete)
 {
   myListControl = new CustomListWidget(theParent);
 
   myListControl->setObjectName(theObjectName);
   myListControl->setToolTip(theToolTip);
   myListControl->setSelectionMode(QAbstractItemView::ExtendedSelection);
-
-  myCopyAction = ModuleBase_Tools::createAction(QIcon(":pictures/copy.png"), tr("Copy"),
+ if(myAllowCopyDelete)
+  {
+    
+    myCopyAction = ModuleBase_Tools::createAction(QIcon(":pictures/copy.png"), tr("Copy"),
                           theParent, this, SLOT(onCopyItem()));
-  myCopyAction->setShortcut(QKeySequence::Copy);
-  myCopyAction->setEnabled(false);
-  myListControl->addAction(myCopyAction);
-
-  myDeleteAction = ModuleBase_Tools::createAction(QIcon(":pictures/delete.png"), tr("Delete"),
+    myCopyAction->setShortcut(QKeySequence::Copy);
+    myCopyAction->setEnabled(false);
+    myListControl->addAction(myCopyAction);
+    myDeleteAction = ModuleBase_Tools::createAction(QIcon(":pictures/delete.png"), tr("Delete"),
                           theParent, this, SIGNAL(deleteActionClicked()));
-  myDeleteAction->setEnabled(false);
-  myListControl->addAction(myDeleteAction);
-
+    myDeleteAction->setEnabled(false);
+    myListControl->addAction(myDeleteAction);
+  }
   myListControl->setContextMenuPolicy(Qt::ActionsContextMenu);
   connect(myListControl, SIGNAL(itemSelectionChanged()), SLOT(onListSelection()));
   connect(myListControl, SIGNAL(activated()), this, SIGNAL(listActivated()));
@@ -148,8 +150,12 @@ void ModuleBase_ListView::onCopyItem()
 void ModuleBase_ListView::onListSelection()
 {
   QList<QListWidgetItem*> aItems = myListControl->selectedItems();
-  myCopyAction->setEnabled(!aItems.isEmpty());
-  myDeleteAction->setEnabled(!aItems.isEmpty());
+  
+  if( myAllowCopyDelete )
+  {
+    myCopyAction->setEnabled(!aItems.isEmpty());
+    myDeleteAction->setEnabled(!aItems.isEmpty());
+  }
 }
 
 //********************************************************************
