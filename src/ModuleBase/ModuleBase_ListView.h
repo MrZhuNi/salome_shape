@@ -97,7 +97,7 @@ Q_OBJECT
 public:
   /// Constructor
   ModuleBase_ListView(QWidget* theParent = 0, const QString& theObjectName = QString(),
-    const QString& theToolTip = QString());
+    const QString& theToolTip = QString(), bool theAllowCopyDelete = true);
   /// Destructor
   virtual ~ModuleBase_ListView() {}
 
@@ -155,6 +155,7 @@ protected:
 
   QAction* myCopyAction; ///< A copy action for pop-up menu in a list control
   QAction* myDeleteAction; ///< A delete action for pop-up menu in a list control
+  bool myAllowCopyDelete; // Allow copy or delet items
 };
 
 #endif
