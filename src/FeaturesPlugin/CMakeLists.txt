@@ -19,6 +19,16 @@
 
 INCLUDE(Common)
 INCLUDE(UnitTest)
+INCLUDE(UseQtExt)
+
+# additional include directories
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
+                     ${PROJECT_SOURCE_DIR}/src/Locale
+                     ${QT_INCLUDES})
+
+# additional preprocessor / compiler flags
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
 
 
 SET(PROJECT_HEADERS
@@ -60,6 +70,9 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_Fillet.h
     FeaturesPlugin_Fillet1D.h
     FeaturesPlugin_Measurement.h
+    FeaturesPlugin_DuplicatedFaces.h
+    FeaturesPlugin_CommonDuplicatedFaces.h
+    FeaturesPlugin_GroupDuplicatedFaces.h
     FeaturesPlugin_FusionFaces.h
     FeaturesPlugin_RemoveResults.h
     FeaturesPlugin_Chamfer.h
@@ -114,6 +127,9 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_Fillet.cpp
     FeaturesPlugin_Fillet1D.cpp
     FeaturesPlugin_Measurement.cpp
+    FeaturesPlugin_DuplicatedFaces.cpp
+    FeaturesPlugin_CommonDuplicatedFaces.cpp
+    FeaturesPlugin_GroupDuplicatedFaces.cpp
     FeaturesPlugin_FusionFaces.cpp
     FeaturesPlugin_RemoveResults.cpp
     FeaturesPlugin_Chamfer.cpp
@@ -159,6 +175,8 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
+  duplicated_faces_widget.xml
+  duplicated_faces_macro_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml
@@ -178,6 +196,12 @@ SET(TEXT_RESOURCES
     FeaturesPlugin_msg_ru.ts
 )
 
+# sources / moc wrappings
+QT_WRAP_MOC(PROJECT_AUTOMOC ${PROJECT_MOC_HEADERS})
+
+#QT5_ADD_TRANSLATION(QM_RESOURCES ${TEXT_RESOURCES})
+
+SOURCE_GROUP ("Generated Files" FILES ${PROJECT_AUTOMOC} ${PROJECT_COMPILED_RESOURCES} ${QM_RESOURCES})
 SOURCE_GROUP ("XML Files" FILES ${XML_RESOURCES})
 SOURCE_GROUP ("Resource Files" FILES ${TEXT_RESOURCES})
 
@@ -204,7 +228,12 @@ SET(PROJECT_LIBRARIES
 )
 
 ADD_DEFINITIONS(-DFEATURESPLUGIN_EXPORTS)
-ADD_LIBRARY(FeaturesPlugin MODULE ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${XML_RESOURCES} ${TEXT_RESOURCES})
+ADD_LIBRARY(FeaturesPlugin MODULE
+            ${PROJECT_SOURCES}
+            ${PROJECT_HEADERS}
+            ${XML_RESOURCES}
+            ${TEXT_RESOURCES}
+            ${PROJECT_AUTOMOC})
 TARGET_LINK_LIBRARIES(FeaturesPlugin ${PROJECT_LIBRARIES})
 
 INSTALL(TARGETS FeaturesPlugin DESTINATION ${SHAPER_INSTALL_PLUGIN_FILES})
@@ -221,16 +250,16 @@ ADD_UNIT_TESTS(
 IF(${HAVE_SALOME})
   enable_testing()
   set(TEST_INSTALL_DIRECTORY "${SALOME_SHAPER_INSTALL_TESTS}/FeaturesPlugin")
-  
+
   install(FILES CTestTestfileInstall.cmake
   DESTINATION ${TEST_INSTALL_DIRECTORY}
   RENAME CTestTestfile.cmake)
   install(FILES tests.set DESTINATION ${TEST_INSTALL_DIRECTORY})
-  
+
   set(TMP_TESTS_NAMES)
   foreach(tfile ${TEST_NAMES})
     list(APPEND TMP_TESTS_NAMES "Test/${tfile}")
   endforeach(tfile ${TEST_NAMES})
-  
+
   install(FILES ${TMP_TESTS_NAMES} DESTINATION ${TEST_INSTALL_DIRECTORY})
 ENDIF(${HAVE_SALOME})

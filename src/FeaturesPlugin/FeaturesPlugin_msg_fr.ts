@@ -144,6 +144,10 @@
       <translation>Rotation</translation>
     </message>
     <message>
+      <source>Check duplicated faces</source>
+      <translation>Vérifier les faces dupliquées</translation>
+    </message>
+    <message>
       <source>Symmetry</source>
       <translation>Symétrie</translation>
     </message>
@@ -4963,6 +4967,138 @@
     <message>
       <source>The result is empty</source>
       <translation>Le résultat est vide</translation>
+    </message>
+  </context>
+
+  <!-- Check duplicated faces -->
+  <context>
+    <name>Duplicated_faces_macro</name>
+    <message>
+      <source>Check duplicated faces</source>
+      <translation>Vérifier les faces dupliquées</translation>
+    </message>
+    <message>
+      <source>Duplicated faces</source>
+      <translation>Faces dupliquées</translation>
+    </message>
+    <message>
+      <source>Number of duplicated faces : </source>
+      <translation>Nombre de faces dupliquées : </translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces_macro:create_group</name>
+    <message>
+      <source>Create group</source>
+      <translation>Créer un groupe</translation>
+    </message>
+  </context>
+  <context>
+      <name>Duplicated_faces_macro:group_name</name>
+    <message>
+      <source>Group name</source>
+      <translation>Nom du groupe</translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces_macro:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+    <message>
+      <source>Duplicated faces</source>
+      <translation>Faces dupliquées</translation>
+    </message>
+  </context>
+  <context>
+      <name>Duplicated_faces_macro:group_list</name>
+    <message>
+      <source>Duplicated faces</source>
+      <translation>Faces dupliquées</translation>
+    </message>   
+    <message>
+      <source>List of faces :</source>
+      <translation>Liste des faces :</translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces_macro:transparency</name>
+    <message>
+      <source>Transparency</source>
+      <translation>Transparence</translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces_macro:tolerance</name>
+    <message>
+      <source>Tolerance</source>
+      <translation>Tolérance</translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces</name>
+    <message>
+      <source>Check duplicated faces</source>
+      <translation>Vérifier les faces dupliquées</translation>
+    </message>
+    <message>
+      <source>Duplicated faces</source>
+      <translation>Faces dupliquées</translation>
+    </message>
+    <message>
+      <source>Number of duplicated faces : </source>
+      <translation>Nombre de faces dupliquées : </translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces:create_group</name>
+    <message>
+      <source>Create group</source>
+      <translation>Créer un groupe</translation>
+    </message>
+  </context>
+  <context>
+      <name>Duplicated_faces:group_name</name>
+    <message>
+      <source>Group name</source>
+      <translation>Nom du groupe</translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+    <message>
+      <source>Duplicated faces</source>
+      <translation>Faces dupliquées</translation>
+    </message>
+  </context>
+  <context>
+      <name>Duplicated_faces:group_list</name>
+    <message>
+      <source>Duplicatedfaces</source>
+      <translation>Faces dupliquées</translation>
+    </message>   
+    <message>
+      <source>List of faces :</source>
+      <translation>Liste des faces :</translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces:transparency</name>
+    <message>
+      <source>Transparency</source>
+      <translation>Transparence</translation>
+    </message>
+  </context>
+  <context>
+    <name>Duplicated_faces:tolerance</name>
+    <message>
+      <source>Tolerance</source>
+      <translation>Tolérance</translation>
     </message>
   </context>
 
