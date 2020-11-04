@@ -49,8 +49,8 @@ class ModuleBase_FilterStarter;
 * Implementation of widget for shapes selection. This widget provides selection of several shapes.
 * It can be defined in XML file as following:
 * \code
-* <multi_selector id="group_list" 
-*    tooltip="Select a set of objects" 
+* <multi_selector id="group_list"
+*    tooltip="Select a set of objects"
 *    shape_types="Vertices Edges Faces Solids" />
 * \endcode
 * It uses following parameters:
