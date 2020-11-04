@@ -33,6 +33,7 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Prism.h
     GeomAlgoAPI_Revolution.h
     GeomAlgoAPI_Boolean.h
+    GeomAlgoAPI_SharedFaces.h
     GeomAlgoAPI_ThroughAll.h
     GeomAlgoAPI_Rotation.h
     GeomAlgoAPI_Translation.h
@@ -105,6 +106,7 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Prism.cpp
     GeomAlgoAPI_Revolution.cpp
     GeomAlgoAPI_Boolean.cpp
+    GeomAlgoAPI_SharedFaces.cpp
     GeomAlgoAPI_ThroughAll.cpp
     GeomAlgoAPI_Rotation.cpp
     GeomAlgoAPI_Translation.cpp
