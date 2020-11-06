@@ -158,11 +158,11 @@ The file name and path can be defined in **Export file**  field by direct input 
 
     :param part: The current part object
     :param string: The file name
-    :param selectedShape: An exporting object
-    :param relative: value of the relative deflection
-    :param absolute: value of the absolute deflection
-    :param isRelative: indicate if use deflection relative
-    :param isASCII: indicate if the file is in ASCII type 
+    :param object: An exporting object
+    :param real: value of the relative deflection
+    :param real: value of the absolute deflection
+    :param boolean: indicate if use deflection relative
+    :param boolean: indicate if the file is in ASCII type 
 
 Result
 """"""
