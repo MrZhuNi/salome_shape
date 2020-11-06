@@ -119,7 +119,7 @@ In this case, the following property panel will be opened:
 
 The file name and path can be defined in **Import file** field by direct input or browsing with ‘…’ button, which opens **Import file** dialog box.
 The **Import to** combobox provides the list of destinations (one of existing Parts or a new Part).
-**STEP options** provide the possibility to **Scale to International System Units** as well as to create groups from **Materials** and/or **Colours** if defined in assemblies of the file to import.
+**STEP options** provide the possibility to **Scale to International System Units** as well as to create groups from **Materials** and/or **Colors** if defined in assemblies of the file to import.
 
 **Apply** button imports the file.
   
