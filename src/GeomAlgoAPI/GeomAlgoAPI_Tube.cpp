@@ -23,6 +23,7 @@
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_MakeWire.hxx>
+#include <BRepBuilderAPI_Transform.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
 #include <BRepPrimAPI_MakeRevol.hxx>
 
@@ -153,7 +154,17 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_Tube::buildSimpleTube()
   
   // Construct the tube
   gp_Vec aVec(aNormal);
-  BRepPrimAPI_MakePrism* aPrismBuilder = new BRepPrimAPI_MakePrism(aFace, aVec * myZ);
+  gp_Trsf aTrsf;
+  aTrsf.SetTranslation(aVec * -myZ/2);
+  BRepBuilderAPI_Transform* aTransformBuilder =
+      new BRepBuilderAPI_Transform(aFace, aTrsf);
+  if (!aTransformBuilder || !aTransformBuilder->IsDone()) {
+    return;
+  }
+//   this->appendAlgo(std::shared_ptr<GeomAlgoAPI_MakeShape>(
+//       new GeomAlgoAPI_MakeShape(aTransformBuilder)));
+  TopoDS_Shape aMovedBase = aTransformBuilder->Shape();
+  BRepPrimAPI_MakePrism* aPrismBuilder = new BRepPrimAPI_MakePrism(aMovedBase, aVec * myZ);
   
   setImpl(aPrismBuilder);
   setBuilderType(OCCT_BRepBuilderAPI_MakeShape);
