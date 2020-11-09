@@ -57,7 +57,8 @@ public:
   ///
   GEOMALGOAPI_EXPORT void BuildVolume(const std::string theName, 
                                       const std::string theGeometryName,
-                                      const std::string theMediumName);
+                                      const std::string theMediumName,
+                                      std::vector<std::string> theListMedium);
   
   /// Build the end of file
   GEOMALGOAPI_EXPORT void buildEnd(const std::string theName, const std::string theExportName);

@@ -23,6 +23,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 
 //=================================================================================================
@@ -93,10 +94,15 @@ void GeomAlgoAPI_ROOTExport::buildMatAndMedium(
 //=================================================================================================
 void GeomAlgoAPI_ROOTExport::BuildVolume(const std::string theName,
                                          const std::string theGeometryName,
-                                         const std::string theMediumName)
+                                         const std::string theMediumName,
+                                         std::vector<std::string> theListMedium)
 {
-  myContent += "TGeoVolume *" + theGeometryName + " = new TGeoVolume(\"" + theName;
-  myContent += "\"," + theGeometryName + "_tmp," + theMediumName + ");\n";
+  bool aFound = (std::find(theListMedium.begin(), theListMedium.end(), theMediumName) 
+                != theListMedium.end());
+  if (aFound) {
+    myContent += "TGeoVolume *" + theGeometryName + " = new TGeoVolume(\"" + theName;
+    myContent += "\"," + theGeometryName + "_tmp," + theMediumName + ");\n";
+  }
 }
 
 //=================================================================================================
