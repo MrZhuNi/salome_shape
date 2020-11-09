@@ -638,10 +638,22 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
         anAlgo->buildTranslation(anObjectName, aDx, aDy, aDz);
         aListNamesOfFeatures.push_back(anObjectName);
         aListNamesOfFeatures.push_back(aCurFeature->data()->name());
+      } else if (aCurFeature->getKind() == "Partition") {
+        //std::cout<<"ToDo PARTITION"<<std::endl;
+        std::string anObjectName = aCurFeature->firstResult()->data()->name();
+        aListNamesOfFeatures.push_back(anObjectName);
+        aListNamesOfFeatures.push_back(aCurFeature->data()->name());
       }
   }
   
   // Add all groups in the file
+  std::map<std::string, std::vector<std::string> >::const_iterator anIt = aMedium.begin(),
+                                                                   aLast = aMedium.end();
+  std::vector<std::string> aListMedium;
+  for (; anIt != aLast; anIt++) {
+    aListMedium.push_back(anIt->first);
+  }
+    
   itExport = theExport.begin();
   for (; itExport != theExport.end(); ++itExport)
   {
@@ -654,7 +666,7 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
         //for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
         for (std::vector<std::string>::iterator it = aListNames.begin(); it != aListNames.end(); it++) {
           std::string aName = anObjectName + "_" + *it;
-          anAlgo->BuildVolume(aName, *it, anObjectName);
+          anAlgo->BuildVolume(aName, *it, anObjectName, aListMedium);
         }
       }
   }
