@@ -1,4 +1,5 @@
 from salome.shaper import model
+import os
 
 model.begin()
 file_path = os.path.join(os.getenv("DATA_DIR"), "test.stl")
