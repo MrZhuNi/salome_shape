@@ -72,7 +72,8 @@ def testFillet_constant_radius_onsolids():
     Fillet_1 = model.addFillet(Part_1_doc, [model.selection("SOLID", "Box_1_1")], 2)
 
     ### Create Export
-    Export_1 = model.exportToXAO(Part_1_doc, '/tmp/shaper_exp_cglb.xao', model.selection("SOLID", "Fillet_1_1"), 'XAO')
+    file_path = os.path.join(os.getenv("DATA_DIR"), "shaper_exp.xao")
+    Export_1 = model.exportToXAO(Part_1_doc, file_path, model.selection("SOLID", "Fillet_1_1"), 'XAO')
 
     model.end()
 
@@ -89,7 +90,8 @@ def testFillet_constant_radius_onsolids():
     OZ = geompy.MakeVectorDXDYDZ(0, 0, 1)
     
     # where we import the fillet from SHAPER and get its basic properties
-    (imported, Fillet_1_1, [], [], []) = geompy.ImportXAO("/tmp/shaper_exp_cglb.xao")
+    file_path = os.path.join(os.getenv("DATA_DIR"), "shaper_exp.xao")
+    (imported, Fillet_1_1, [], [], []) = geompy.ImportXAO(file_path)
     geompy.addToStudy( O, 'O' )
     geompy.addToStudy( OX, 'OX' )
     geompy.addToStudy( OY, 'OY' )
