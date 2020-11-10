@@ -126,9 +126,10 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
   initialize();
 }
 
-FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                           const std::list<ModelHighAPI_Selection>& theBaseObjects,
-                                           const ModelHighAPI_Double& theRadius)
+FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(
+                          const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                          const std::list<ModelHighAPI_Selection>& theBaseObjects,
+                          const ModelHighAPI_Double& theRadius)
   : FeaturesAPI_Fillet(theFeature)
 {
   if (initialize()) {
@@ -141,14 +142,14 @@ FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Featur
 }
 
 FeaturesAPI_Fillet2D::FeaturesAPI_Fillet2D(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                           const std::list<ModelHighAPI_Selection>& theBaseObjects,
+                                           const std::list<ModelHighAPI_Selection>& theEdgesFaces,
                                            const ModelHighAPI_Double& theRadius1,
                                            const ModelHighAPI_Double& theRadius2)
   : FeaturesAPI_Fillet(theFeature)
 {
   if (initialize()) {
     fillAttribute(FeaturesPlugin_Fillet::CREATION_METHOD_VARYING_RADIUS(), mycreationMethod);
-    fillAttribute(theBaseObjects, mybaseObjects);
+    fillAttribute(theEdgesFaces, myedgesfacesselected);
     fillAttribute(theRadius1, mystartRadius);
     fillAttribute(theRadius2, myendRadius);
 
@@ -300,7 +301,7 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
           aBase->selectionList(FeaturesPlugin_Fillet::ARRAY_POINT_RADIUS_BY_POINTS());
       AttributeTablesPtr anAttrTable =
           aBase->tables(FeaturesPlugin_Fillet::VALUES_ID());
-      theDumper << aBase << " = model.addFilletMultiRadiusByPoints("
+      theDumper << aBase << " = model.addFilletMultiRadius("
                 << aDocName << ", " << anAttrEdgeSelec;
       theDumper << ", " << anAttrPoint ;
       theDumper<<", [";
@@ -316,7 +317,7 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
       AttributeSelectionListPtr anAttrEdgesFaces =
                       aBase->selectionList(FeaturesPlugin_Fillet::EDGES_FACES_MULTI_LIST_ID());
       AttributeTablesPtr anAttrTable = aBase->tables(FeaturesPlugin_Fillet::VALUES_CURV_ID());
-      theDumper << aBase << " = model.addFilletMultiRadiusBycurvAbs("
+      theDumper << aBase << " = model.addFilletMultiRadius("
                 << aDocName << ", " << anAttrEdgesFaces;
       theDumper << ", ";
       theDumper<<"[";
@@ -352,10 +353,9 @@ void FeaturesAPI_Fillet2D::dump(ModelHighAPI_Dumper& theDumper) const
       AttributeDoublePtr anAttrRadius2 = aBase->real(FeaturesPlugin_Fillet::END_RADIUS_ID());
       theDumper << ", " << anAttrRadius1 << ", " << anAttrRadius2;
     }
+    if (!aBase->data()->version().empty())
+      theDumper << ", keepSubResults = True";
   }
-
-  if (!aBase->data()->version().empty())
-    theDumper << ", keepSubResults = True";
 
   theDumper << ")" << std::endl;
 }
@@ -391,16 +391,14 @@ FilletPtr addFillet(const std::shared_ptr<ModelAPI_Document>& thePart,
   return aFillet;
 }
 
-FilletPtr addFilletMultiRadiusByPoints(const std::shared_ptr<ModelAPI_Document>& thePart,
-                                       const ModelHighAPI_Selection & theEdgeSelected,
-                                       const std::list<ModelHighAPI_Selection>& thePoint,
-                                       const std::list<ModelHighAPI_Double>& theRadius,
-                                       const bool keepSubResults)
+FilletPtr addFilletMultiRadius(const std::shared_ptr<ModelAPI_Document>& thePart,
+                               const ModelHighAPI_Selection & theEdgeSelected,
+                               const std::list<ModelHighAPI_Selection>& thePoint,
+                               const std::list<ModelHighAPI_Double>& theRadius)
 {
 
   FeaturePtr aFeature = thePart->addFeature(FeaturesAPI_Fillet2D::ID());
-  if (!keepSubResults)
-    aFeature->data()->setVersion("");
+  aFeature->data()->setVersion("");
 
   FilletPtr aFillet;
 
@@ -409,16 +407,14 @@ FilletPtr addFilletMultiRadiusByPoints(const std::shared_ptr<ModelAPI_Document>&
   return aFillet;
 }
 
-FilletPtr addFilletMultiRadiusBycurvAbs(const std::shared_ptr<ModelAPI_Document>& thePart,
+FilletPtr addFilletMultiRadius(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const std::list<ModelHighAPI_Selection>& theBaseObjects,
                     const std::list<ModelHighAPI_Double>& thePointCurvCood,
-                    const std::list<ModelHighAPI_Double>& theRadius,
-                    const bool keepSubResults)
+                    const std::list<ModelHighAPI_Double>& theRadius)
 {
 
   FeaturePtr aFeature = thePart->addFeature(FeaturesAPI_Fillet2D::ID());
-  if (!keepSubResults)
-    aFeature->data()->setVersion("");
+  aFeature->data()->setVersion("");
 
   FilletPtr aFillet;
 

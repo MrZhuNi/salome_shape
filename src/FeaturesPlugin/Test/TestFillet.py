@@ -80,6 +80,8 @@ assert(aFillet1.error() == ""), "FAILED: Fillet reports error \"{}\"".format(aFi
 #=========================================================================
 aSession.startOperation()
 aFillet1.string("creation_method").setValue("variable_radius")
+anObjects = aFillet1.selectionList("edges_faces_seleted")
+anObjects.append("[Box_1_1/Left][Box_1_1/Top]", "edge")
 aFillet1.real("radius1").setValue(5)
 aFillet1.real("radius2").setValue(1)
 aSession.finishOperation()

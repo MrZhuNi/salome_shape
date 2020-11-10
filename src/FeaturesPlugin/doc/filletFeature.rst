@@ -88,12 +88,12 @@ Input fields:
 
 **TUI Command**:
 
-.. py:function:: model.addFillet(Part_doc, shapes, R1, R2)
+.. py:function:: model.addFillet(Part_doc,[face,edge], R1, R2)
 
     :param document Part_doc: The current part object.
-    :param list shapes: A list of faces and edges subject to fillet operation in format *model.selection(TYPE, shape)*.
-    :param double R1: Start radius value.
-    :param double R2: End radius value.
+    :param list: A list of faces and edges subject to fillet operation in format *model.selection(TYPE, shape)*.
+    :param number: Start radius value.
+    :param number: End radius value.
     :return: Created object.
 
 Result
@@ -150,12 +150,12 @@ Input fields:
 
 **TUI Command**:
 
-.. py:function:: model.addFilletMultiRadiusBycurvAbs(Part_doc, shapes, listAbsc, listRadius)
+.. py:function:: model.addFilletMultiRadius(Part_doc, [face,edge], [absc1,absc2,...], [r1,r2,...])
 
     :param document Part_doc: The current part object.
-    :param list shapes: A list of faces and edges subject to fillet operation in format *model.selection(TYPE, shape)*.
-    :param listAbsc: list of curvilinea abscissa.
-    :param listRadius: list of radius value.
+    :param list: A list of faces and edges subject to fillet operation in format *model.selection(TYPE, shape)*.
+    :param list number: list of curvilinea abscissa.
+    :param list number: list of radius value.
     :return: Created object.
 
 Result
@@ -188,12 +188,12 @@ Input fields:
 
 **TUI Command**:
 
-.. py:function:: model.addFilletMultiRadiusByPoints(Part_doc, edge, Points, ListRadius)
+.. py:function:: model.addFilletMultiRadius(Part_doc, edge, [point],[r1,r2,...])
 
     :param document Part_doc: The current part object.
     :param edge: An edge subject to fillet operation in format *model.selection(TYPE, shape)*.
-    :param Points: list of point in format *model.selection(TYPE, shape)*.
-    :param ListRadius: list of radius value.
+    :param list: list of point in format *model.selection(TYPE, shape)*.
+    :param list number: list of radius value.
     :return: Created object.
 
 Result

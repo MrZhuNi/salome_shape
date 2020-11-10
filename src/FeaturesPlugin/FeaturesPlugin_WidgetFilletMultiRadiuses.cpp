@@ -197,6 +197,7 @@ ModuleBase_WidgetSelector(theParent, theWorkshop, theData), myHeaderEditor(0),
   aHeaders << "Radius";
 
   myDataTbl->setHorizontalHeaderLabels(aHeaders);
+  myDataTbl->installEventFilter(this);
 
   QTableWidgetItem* anItem;
   for(int j =0; j<3;j++)
@@ -278,6 +279,12 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::deactivate()
 //**********************************************************************************
 bool FeaturesPlugin_WidgetFilletMultiRadiuses::eventFilter(QObject* theObject, QEvent* theEvent)
 {
+  if (theEvent->type() == QEvent::KeyPress) {
+    QKeyEvent* akey = static_cast<QKeyEvent*>(theEvent);
+    if ( (akey->key()==Qt::Key_Enter) || (akey->key()==Qt::Key_Return) ) {
+        updateObject(myFeature);
+    }
+  }
   return ModuleBase_WidgetSelector::eventFilter(theObject, theEvent);
 }
 
@@ -569,8 +576,8 @@ void FeaturesPlugin_WidgetFilletMultiRadiuses::onRemove()
     }
     myDataTbl->model()->removeRow(anIndex.row());
     myDataTbl->blockSignals(false);
-
     emit valuesChanged();
+    updateObject(myFeature);
   }
 }
 

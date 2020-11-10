@@ -203,6 +203,7 @@ SET(PROJECT_LIBRARIES
     GeomAlgoAPI
     GeomValidators
     Config
+    ModuleBase
     ${OpenCASCADE_Visualization_LIBRARIES}
 )
 
