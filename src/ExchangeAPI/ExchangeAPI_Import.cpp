@@ -72,23 +72,25 @@ void ExchangeAPI_Import::setParameters(const std::string & theFilePath,
                                        const bool  theColor)
 {
   fillAttribute(theFilePath, mystepfilePath);
-  fillAttribute("STEP", feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
-  fillAttribute(theScalInterUnits,
-                feature()->boolean(ExchangePlugin_ImportFeature::STEP_SCALE_INTER_UNITS_ID()));
-  fillAttribute(theMaterials,
-                feature()->boolean(ExchangePlugin_ImportFeature::STEP_MATERIALS_ID()));
-  fillAttribute(theColor,
-                feature()->boolean(ExchangePlugin_ImportFeature::STEP_COLORS_ID()));
+  fillAttribute("STEP", myimporttype);
+  fillAttribute(theScalInterUnits, myscalinterunits);
+  fillAttribute(theMaterials,mymaterials);
+  fillAttribute(theColor,mycolors);
   execute();
 }
 
 //--------------------------------------------------------------------------------------
 void ExchangeAPI_Import::setFilePath(const std::string & theFilePath)
 {
-  fillAttribute(theFilePath, myfilePath);
+  
   std::string anExtension = GeomAlgoAPI_Tools::File_Tools::extension(theFilePath);
-  fillAttribute(anExtension, feature()->string(ExchangePlugin_ImportFeature::IMPORT_TYPE_ID()));
-  execute();
+  if (anExtension == "STEP" || anExtension == "STP") {
+    setParameters(theFilePath,true,false,false);
+  }else{
+    fillAttribute(theFilePath, myfilePath);
+    fillAttribute(anExtension, myimporttype);
+    execute();
+  }
 }
 
 //--------------------------------------------------------------------------------------

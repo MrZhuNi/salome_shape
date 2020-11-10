@@ -131,9 +131,9 @@ The **Import to** combobox provides the list of destinations (one of existing Pa
 
     :param part: The current part object
     :param string: A file name string.
-    :param scalInterUnits: True if scale to UIS
-    :param materials: True to create groups from materials
-    :param colors: True to create groups from colors
+    :param boolean: True if scale to UIS
+    :param boolean: True to create groups from materials
+    :param boolean: True to create groups from colors
 
 Result
 """"""

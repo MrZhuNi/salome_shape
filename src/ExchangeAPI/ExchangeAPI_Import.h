@@ -62,7 +62,7 @@ public:
   INTERFACE_6(ExchangePlugin_ImportFeature::ID(),
               filePath, ExchangePlugin_ImportFeature::FILE_PATH_ID(),
               ModelAPI_AttributeString, /** File path */,
-              stepimporttype, ExchangePlugin_ImportFeature::IMPORT_TYPE_ID(),
+              importtype, ExchangePlugin_ImportFeature::IMPORT_TYPE_ID(),
               ModelAPI_AttributeString, /**import type */,
               stepfilePath, ExchangePlugin_ImportFeature::STEP_FILE_PATH_ID(),
               ModelAPI_AttributeString, /**step File path */,
