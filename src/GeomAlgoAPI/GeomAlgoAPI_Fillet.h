@@ -24,7 +24,6 @@
 #include <GeomAlgoAPI_MakeShape.h>
 
 #include <GeomAPI_Shape.h>
-#include <vector>
 
 /// \class GeomAlgoAPI_Fillet
 /// \ingroup DataAlgo
@@ -49,16 +48,6 @@ public:
                                         const ListOfShape&  theFilletEdges,
                                         const double        theStartRadius,
                                         const double        theEndRadius);
-  
-  /// Run fillet operation with variable radius.
-  /// \param theBaseSolid    a changing solid
-  /// \param theFilletEdges  list of edges the fillet is performed on
-  /// \param theRadiuses  theradius of the fillet
-  GEOMALGOAPI_EXPORT GeomAlgoAPI_Fillet(const GeomShapePtr& theBaseSolid,
-                                        const ListOfShape&  theFilletEdges,
-                                        const std::list<double>& theCurvCoord,
-                                        const std::list<double>& theRadiuses);
-
 
 private:
   /// Perform fillet operation.
@@ -71,18 +60,6 @@ private:
              const ListOfShape&  theFilletEdges,
              const double        theStartRadius,
              const double        theEndRadius = -1.0);
-
-  /// Perform fillet operation.
-  /// If theEndRadius is less than 0., the fixed radius fillet will be built.
-  /// \param theBaseSolid    a changing solid
-  /// \param theFilletEdges  list of edges the fillet is performed on
-  /// \param theCurvCoord    the coordinate of a point defines a relative parameter on the edge
-  /// \param theRadiuses     the corresponding value of the radius, and the radius evolves 
-  //                         between the first and last vertices of the contour of index 
-  void build(const GeomShapePtr& theBaseSolid,
-             const ListOfShape&  theFilletEdges,
-             const std::list<double>& theCurvCoord,
-             const std::list<double>& theRadiuses);
 };
 
 #endif

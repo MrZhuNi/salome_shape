@@ -5,10 +5,10 @@
          tooltip="Fillet with fixed radius"
          icon="icons/Features/fillet_fixed_radius.png">
       <multi_selector id="main_objects"
-                      label="Faces, edges or/and solids"
+                      label="Faces or/and edges"
                       icon=""
                       tooltip="Select objects"
-                      shape_types="edges faces solids"
+                      shape_types="edges faces"
                       use_choice="false"
                       concealment="true">
         <validator id="PartSet_DifferentObjects"/>
@@ -50,51 +50,6 @@
                    default="2">
         <validator id="GeomValidators_Positive"/>
       </doublevalue>
-    </box>
-    <box id="multiple_radiuses"
-         title="Multiple radiuses"
-         tooltip="Fillet with multiple radiuses"
-         icon="icons/Features/fillet_var_multiple_radiuses.png">
-      <toolbox id="by_point_method">
-        <box id="by_points"
-         title="By points"
-         tooltip="Fillet with multiple radiuses by points"
-         icon="icons/Features/fillet_multiradius_by_point.png">
-          <shape_selector id="edge_selected"
-                        icon="icons/Features/edge.png"
-                        label="Start"
-                        tooltip="Select edge"
-                        shape_types="edge"
-                        use_choice="false"
-                        concealment="true">
-           <validator id="GeomValidators_ShapeType" parameters="empty,line"/>
-           <!--validator id="FeaturesPlugin_ValidatorFilletSelection"/-->
-          </shape_selector>
-          <multiradius-panel id="array_point_radius_by_point"
-            filter_points="false">
-            <validator id="GeomValidators_ShapeType" parameters="empty,vertex"/>
-          </multiradius-panel>
-        </box>
-        <box id="by_curvilinear_abscissa_methode"
-         title="By curvilinear abscissa"
-         tooltip="Fillet with multiple radiuses by curvilinear abscissa"
-         icon="icons/Features/fillet_multiradius_by_curv.png">
-          <multi_selector id="main_objects"
-                      label="Faces, edges or/and solids"
-                      icon=""
-                      tooltip="Select objects"
-                      shape_types="edges faces solids"
-                      use_choice="false"
-                      concealment="true">
-          <validator id="PartSet_DifferentObjects"/>
-          <validator id="FeaturesPlugin_ValidatorFilletSelection"/>
-          </multi_selector>
-          <multiradiuscurv-panel id="array_point_radius_by_point"
-            filter_points="false">
-            <validator id="GeomValidators_ShapeType" parameters="empty,vertex"/>
-          </multiradiuscurv-panel>
-        </box>
-      </toolbox>
     </box>
   </toolbox>
 </source>

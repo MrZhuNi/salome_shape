@@ -1226,8 +1226,7 @@ bool Model_Objects::hasCustomName(DataPtr theFeatureData,
 
 void Model_Objects::storeResult(std::shared_ptr<ModelAPI_Data> theFeatureData,
                                 std::shared_ptr<ModelAPI_Result> theResult,
-                                const int theResultIndex,
-                                const std::wstring& theNameShape)
+                                const int theResultIndex)
 {
   theResult->init();
   theResult->setDoc(myDoc);
@@ -1241,15 +1240,11 @@ void Model_Objects::storeResult(std::shared_ptr<ModelAPI_Data> theFeatureData,
       theResult->data()->setName(L"");
     } else {
       std::wstringstream aName;
-      if( theNameShape != L"" ){
-        aName << theNameShape;
-      }else{
-        aName << aNewName;
-        // if there are several results (issue #899: any number of result),
-        // add unique prefix starting from second
-        if (theResultIndex > 0 || theResult->groupName() == ModelAPI_ResultBody::group())
-          aName << "_" << theResultIndex + 1;
-      }
+      aName << aNewName;
+      // if there are several results (issue #899: any number of result),
+      // add unique prefix starting from second
+      if (theResultIndex > 0 || theResult->groupName() == ModelAPI_ResultBody::group())
+        aName << "_" << theResultIndex + 1;
       aNewName = aName.str();
     }
     theResult->data()->setName(aNewName);
@@ -1274,7 +1269,7 @@ std::shared_ptr<ModelAPI_ResultConstruction> Model_Objects::createConstruction(
 }
 
 std::shared_ptr<ModelAPI_ResultBody> Model_Objects::createBody(
-    const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex,const std::wstring& theNameShape )
+    const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex)
 {
   TDF_Label aLab = resultLabel(theFeatureData, theIndex);
   TDataStd_Comment::Set(aLab, ModelAPI_ResultBody::group().c_str());
@@ -1285,7 +1280,7 @@ std::shared_ptr<ModelAPI_ResultBody> Model_Objects::createBody(
   }
   if (!aResult.get()) {
     aResult = std::shared_ptr<ModelAPI_ResultBody>(new Model_ResultBody);
-    storeResult(theFeatureData, aResult, theIndex,theNameShape);
+    storeResult(theFeatureData, aResult, theIndex);
   }
   return aResult;
 }

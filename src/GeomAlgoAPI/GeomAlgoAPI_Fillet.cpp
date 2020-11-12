@@ -21,8 +21,6 @@
 #include <GeomAlgoAPI_DFLoader.h>
 
 #include <BRepFilletAPI_MakeFillet.hxx>
-#include <TColgp_Array1OfPnt2d.hxx>
-#include <gp_Pnt2d.hxx>
 
 //=================================================================================================
 GeomAlgoAPI_Fillet::GeomAlgoAPI_Fillet(const GeomShapePtr& theBaseSolid,
@@ -41,17 +39,6 @@ GeomAlgoAPI_Fillet::GeomAlgoAPI_Fillet(const GeomShapePtr& theBaseSolid,
   if (theEndRadius < 0.)
     return;
   build(theBaseSolid, theFilletEdges, theStartRadius, theEndRadius);
-}
-
-//=================================================================================================
-GeomAlgoAPI_Fillet::GeomAlgoAPI_Fillet(const GeomShapePtr& theBaseSolid,
-                                       const ListOfShape&  theFilletEdges,
-                                       const std::list<double>& theCurvCoord,
-                                       const std::list<double>& theRadiuses)
-{
-  if (theRadiuses.size()== 0 )
-    return;
-  build(theBaseSolid, theFilletEdges,theCurvCoord, theRadiuses);
 }
 
 //=================================================================================================
@@ -84,57 +71,6 @@ void GeomAlgoAPI_Fillet::build(const GeomShapePtr& theBaseSolid,
       aFilletBuilder->SetRadius(theStartRadius, ind, 1);
     else
       aFilletBuilder->SetRadius(theStartRadius, theEndRadius, ind, 1);
-  }
-
-  // build and get result
-  aFilletBuilder->Build();
-  if (!aFilletBuilder->IsDone())
-    return;
-  TopoDS_Shape aResult = GeomAlgoAPI_DFLoader::refineResult(aFilletBuilder->Shape());
-
-  std::shared_ptr<GeomAPI_Shape> aShape(new GeomAPI_Shape());
-  aShape->setImpl(new TopoDS_Shape(aResult));
-  setShape(aShape);
-  setDone(true);
-}
-
-//=================================================================================================
-void GeomAlgoAPI_Fillet::build(const GeomShapePtr& theBaseSolid,
-                               const ListOfShape&  theFilletEdges,
-                               const std::list<double>& theCurvCoord,
-                               const std::list<double>& theRadiuses)
-{
-  if (!theBaseSolid || theFilletEdges.empty() || theRadiuses.size() == 0)
-    return;
-
-  // create fillet builder
-  BRepFilletAPI_MakeFillet* aFilletBuilder =
-      new BRepFilletAPI_MakeFillet(theBaseSolid->impl<TopoDS_Shape>());
-  setImpl(aFilletBuilder);
-  setBuilderType(OCCT_BRepBuilderAPI_MakeShape);
-
-  // assign filleting edges
-  for (ListOfShape::const_iterator anIt = theFilletEdges.begin();
-       anIt != theFilletEdges.end(); ++anIt) {
-    if ((*anIt)->isEdge())
-      aFilletBuilder->Add( (*anIt)->impl<TopoDS_Edge>() );
-  }
-
-  TColgp_Array1OfPnt2d array(1, theRadiuses.size());
- 
-  int i = 1;
-  std::list<double>::const_iterator itCurv = theCurvCoord.begin();
-  std::list<double>::const_iterator itRadius = theRadiuses.begin();
-  
-  for( ; itCurv != theCurvCoord.end(); ++itCurv, ++itRadius )
-  {
-    array.SetValue(i, gp_Pnt2d( (*itCurv) , (*itRadius)));
-    i++;
-  }
-  // assign fillet radii for each contour of filleting edges
-  int aNbContours = aFilletBuilder->NbContours();
-  for (int ind = 1; ind <= aNbContours; ++ind) {
-    aFilletBuilder->SetRadius(array, ind, 1);
   }
 
   // build and get result

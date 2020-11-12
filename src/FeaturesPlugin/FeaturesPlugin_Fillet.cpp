@@ -22,9 +22,6 @@
 #include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeString.h>
-#include <ModelAPI_AttributeDoubleArray.h>
-#include <ModelAPI_AttributeTables.h>
-
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
 
@@ -33,16 +30,6 @@
 #include <GeomAlgoAPI_Tools.h>
 
 #include <GeomAPI_ShapeExplorer.h>
-#include <GeomAPI_Pnt.h>
-#include <GeomAPI_Edge.h>
-
-#include <GeomDataAPI_Point.h>
-#include <iostream>
-#include <Locale_Convert.h>
-#include <GeomAlgoAPI_PointBuilder.h>
-#include <GeomAPI_Vertex.h>
-#include <math.h>
-
 
 // Extract edges from the list
 static ListOfShape extractEdges(const ListOfShape& theShapes)
@@ -62,29 +49,12 @@ FeaturesPlugin_Fillet::FeaturesPlugin_Fillet()
 void FeaturesPlugin_Fillet::initAttributes()
 {
   data()->addAttribute(CREATION_METHOD(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(CREATION_METHOD_MULTIPLES_RADIUSES(), ModelAPI_AttributeString::typeId());
-  
   AttributePtr aSelectionList =
       data()->addAttribute(OBJECT_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
   data()->addAttribute(START_RADIUS_ID(), ModelAPI_AttributeDouble::typeId());
   data()->addAttribute(END_RADIUS_ID(), ModelAPI_AttributeDouble::typeId());
 
-  data()->addAttribute(VALUES_ID(), ModelAPI_AttributeTables::typeId());
-  data()->addAttribute(VALUES_CURV_ID(), ModelAPI_AttributeTables::typeId());
-  data()->addAttribute(EDGE_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
-
-  data()->addAttribute(ARRAY_POINT_RADIUS_BY_POINTS(), ModelAPI_AttributeSelectionList::typeId());
-
-  data()->addAttribute(CREATION_METHOD_BY_POINTS(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(CREATION_METHOD_BY_CURVILEAR_ABSCISSA(), ModelAPI_AttributeString::typeId());
-
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), END_RADIUS_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), ARRAY_POINT_RADIUS_BY_POINTS());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VALUES_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VALUES_CURV_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHOD_MULTIPLES_RADIUSES());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHOD_BY_CURVILEAR_ABSCISSA());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATION_METHOD_BY_POINTS());
 
   initVersion(aSelectionList);
 }
@@ -92,20 +62,6 @@ void FeaturesPlugin_Fillet::initAttributes()
 AttributePtr FeaturesPlugin_Fillet::objectsAttribute()
 {
   return attribute(OBJECT_LIST_ID());
-}
-
-void FeaturesPlugin_Fillet::attributeChanged(const std::string& theID)
-{
-  if (theID == EDGE_SELECTED_ID() 
-      && string(CREATION_METHOD())->value() == CREATION_METHOD_MULTIPLES_RADIUSES()) {
-    
-    AttributeSelectionPtr anEdges =
-      std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(attribute(EDGE_SELECTED_ID()));
-    AttributeSelectionListPtr array = selectionList(OBJECT_LIST_ID());
-    if(array->isInitialized())
-      array->clear();
-    array->append(anEdges->namingName() );
-  }
 }
 
 const std::string& FeaturesPlugin_Fillet::modifiedShapePrefix() const
@@ -118,65 +74,31 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
                                                          const ListOfShape& theEdges)
 {
   AttributeStringPtr aCreationMethod = string(CREATION_METHOD());
+  if (!aCreationMethod)
+    return GeomMakeShapePtr();
+
+  bool isFixedRadius = aCreationMethod->value() == CREATION_METHOD_SINGLE_RADIUS();
+  double aRadius1 = 0.0, aRadius2 = 0.0;
+  if (isFixedRadius)
+    aRadius1 = real(RADIUS_ID())->value();
+  else {
+    aRadius1 = real(START_RADIUS_ID())->value();
+    aRadius2 = real(END_RADIUS_ID())->value();
+  }
+
+  // Perform fillet operation
+  std::shared_ptr<GeomAlgoAPI_Fillet> aFilletBuilder;
   std::string anError;
 
-  if (!aCreationMethod){
+  ListOfShape aFilletEdges = extractEdges(theEdges);
+  if (isFixedRadius)
+    aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, aRadius1));
+  else
+    aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, aRadius1, aRadius2));
+
+  if (GeomAlgoAPI_Tools::AlgoError::isAlgorithmFailed(aFilletBuilder, getKind(), anError)) {
     setError(anError);
     return GeomMakeShapePtr();
   }
-   
-  std::shared_ptr<GeomAlgoAPI_Fillet> aFilletBuilder;
-  
-  ListOfShape aFilletEdges = extractEdges(theEdges);
-
-  std::cout << "coucou aCreationMethod->value() = " <<  aCreationMethod->value()<< std::endl;
-  if ( aCreationMethod->value() == CREATION_METHOD_MULTIPLES_RADIUSES() )
-  {
-
-    std::list<double> coodCurv; 
-    std::list<double> radiuses;
-    AttributeTablesPtr aTablesAttr;
-
-    if( string(CREATION_METHOD_MULTIPLES_RADIUSES())->value() == CREATION_METHOD_BY_POINTS() )
-    {
-      aTablesAttr =  tables(VALUES_ID());
-  
-    }else{
-      aTablesAttr =  tables(VALUES_CURV_ID());
-    }
-
-    int aRows = aTablesAttr->rows();
-    ModelAPI_AttributeTables::Value aVal;
-    for (int k = 0; k < aRows; k++) { 
-        aVal = aTablesAttr->value(k, 0);
-        coodCurv.push_back(aVal.myDouble);
-        aVal = aTablesAttr->value(k, 1);
-        radiuses.push_back(aVal.myDouble);
-    }
-
-    aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, coodCurv,radiuses));
-
-  }else
-  {
-    bool isFixedRadius = aCreationMethod->value() == CREATION_METHOD_SINGLE_RADIUS();
-    double aRadius1 = 0.0, aRadius2 = 0.0;
-    if (isFixedRadius)
-      aRadius1 = real(RADIUS_ID())->value();
-    else {
-      aRadius1 = real(START_RADIUS_ID())->value();
-      aRadius2 = real(END_RADIUS_ID())->value();
-    }
-
-    if (isFixedRadius)
-      aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, aRadius1));
-    else
-      aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, aRadius1, aRadius2));
-  }
-
-  if (GeomAlgoAPI_Tools::AlgoError::isAlgorithmFailed(aFilletBuilder, getKind(), anError)) {
-      setError(anError);
-      return GeomMakeShapePtr();
-  }
   return aFilletBuilder;
 }
-

@@ -17,19 +17,26 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef GEOMALGOAPI_STEPIMPORT_H_
-#define GEOMALGOAPI_STEPIMPORT_H_
+#ifndef GeomAlgoAPI_BasicProperties_H_
+#define GeomAlgoAPI_BasicProperties_H_
 
 #include <GeomAlgoAPI.h>
-
-#include <string>
-
 #include <GeomAPI_Shape.h>
+#include <Standard_TypeDef.hxx>
 
-/// Implementation of the import STEP files algorithms
+/// Run chamfer operation with two distances or with a distance and an angle .
+  /// \param theShape      the shape
+  /// \param theTolerance  tolerance desirated
+  /// \param theLength     lenght calculated
+  /// \param theSurfArea   Surface Area calculated
+  /// \param theVolume     Volume calculated
+  /// \param theError      error
 GEOMALGOAPI_EXPORT
-std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
-                                          const std::string& theFormatName,
-                                          std::string& theError);
+bool GetBasicProperties(  const std::shared_ptr<GeomAPI_Shape>& theShape,
+                          const Standard_Real theTolerance,
+                          Standard_Real& theLength,
+                          Standard_Real& theSurfArea,
+                          Standard_Real& theVolume,
+                          std::string& theError);
 
-#endif /* GEOMALGOAPI_STEPIMPORT_H_ */
+#endif

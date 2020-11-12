@@ -55,10 +55,6 @@
 #include <FeaturesPlugin_ValidatorTransform.h>
 #include <FeaturesPlugin_Validators.h>
 
-#include <ModuleBase_WidgetCreatorFactory.h>
-
-#include "FeaturesPlugin_WidgetCreator.h"
-
 #include <ModelAPI_Session.h>
 
 #include <string>
@@ -70,13 +66,7 @@ static FeaturesPlugin_Plugin* MY_FEATURES_INSTANCE = new FeaturesPlugin_Plugin()
 
 FeaturesPlugin_Plugin::FeaturesPlugin_Plugin()
 {
-
-  WidgetCreatorFactoryPtr aWidgetCreatorFactory = ModuleBase_WidgetCreatorFactory::get();
-  aWidgetCreatorFactory->registerCreator(
-   std::shared_ptr<FeaturesPlugin_WidgetCreator>(new FeaturesPlugin_WidgetCreator()));
-
   SessionPtr aMgr = ModelAPI_Session::get();
-
   ModelAPI_ValidatorsFactory* aFactory = aMgr->validators();
   aFactory->registerValidator("FeaturesPlugin_ValidatorTransform",
                               new FeaturesPlugin_ValidatorTransform);

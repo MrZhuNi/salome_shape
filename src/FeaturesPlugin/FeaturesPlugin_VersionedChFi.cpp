@@ -27,7 +27,6 @@
 
 #include <GeomAPI_ShapeExplorer.h>
 
-#include <iostream>
 
 static const std::string CHAMFERFILLET_VERSION_1("v9.5");
 
@@ -82,7 +81,6 @@ void FeaturesPlugin_VersionedChFi::execute()
 
     anOriginalSolids.push_back(aSolid);
     anEdges.insert(anEdges.end(), aSubs.begin(), aSubs.end());
-
   }
 
   // Build results of the operaion.
@@ -127,28 +125,14 @@ bool FeaturesPlugin_VersionedChFi::processAttribute(const AttributePtr& theAttri
     if (aContext.get()) {
       ResultBodyPtr aCtxOwner = ModelAPI_Tools::bodyOwner(aContext);
       if (aCtxOwner && aCtxOwner->shape()->shapeType() == GeomAPI_Shape::COMPSOLID)
-      {
         aContext = aCtxOwner;
-      }
       aParent = aContext->shape();
       if (!aParent)
         return false;
 
       // store full shape hierarchy for the corresponding version only
-      if (anObject->shapeType() <= GeomAPI_Shape::SOLID)
-      {
-        ListOfShape anEdges;
-        collectSubs(aParent, anEdges, GeomAPI_Shape::EDGE);
-        for (ListOfShape::iterator anIt = anEdges.begin(); anIt != anEdges.end(); ++anIt) {
-          theObjects.addObject(*anIt);
-          theObjects.addParent(*anIt, aParent);
-        }
-      }else
-      {
-        theObjects.addObject(anObject);
-        theObjects.addParent(anObject, aParent);
-      }
-      
+      theObjects.addObject(anObject);
+      theObjects.addParent(anObject, aParent);
       if (isStoreFullHierarchy)
         ModelAPI_Tools::fillShapeHierarchy(aParent, aContext, theObjects);
     } else { // get it from a feature
