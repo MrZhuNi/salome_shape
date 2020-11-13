@@ -57,8 +57,8 @@ ExchangeAPI_Export::ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& 
 ExchangeAPI_Export::ExchangeAPI_Export(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                        const std::string & theFilePath,
                                        const ModelHighAPI_Selection& theSelectedShape,
-                                       double theDeflectionRelative,
-                                       double theDeflectionAbsolute,
+                                       const ModelHighAPI_Double& theDeflectionRelative,
+                                       const ModelHighAPI_Double& theDeflectionAbsolute,
                                        const bool theIsRelative,
                                        const bool theIsASCII)
   : ModelHighAPI_Interface(theFeature)
@@ -257,8 +257,8 @@ ExportPtr exportToXAO(const std::shared_ptr<ModelAPI_Document> & thePart,
 ExportPtr exportToSTL(const std::shared_ptr<ModelAPI_Document> & thePart,
       const std::string & theFilePath,
       const ModelHighAPI_Selection& theSelectedShape,
-      double  theDeflectionRelative,
-      double  theDeflectionAbsolute,
+      const ModelHighAPI_Double&  theDeflectionRelative,
+      const ModelHighAPI_Double&  theDeflectionAbsolute,
       const bool theIsRelative,
       const bool theIsASCII)
 {
