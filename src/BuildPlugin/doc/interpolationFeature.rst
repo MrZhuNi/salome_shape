@@ -116,12 +116,12 @@ Select one or several vertices or points in the viewer.
 .. py:function:: model.addInterpolation(Part_doc, xt, yt, zt, mint, maxt, nbSteps)
 
     :param part: The current part object.
-    :param xt: Expression of x.
-    :param yt: Expression of y.
-    :param zt: Expression of z.
-    :param mint: Minimum value of t
-    :param maxt: Maximum value of t.
-    :param nbSteps: Number of steps. 
+    :param string: Expression of x.
+    :param string: Expression of y.
+    :param string: Expression of z.
+    :param number: Minimum value of t.
+    :param number: Maximum value of t.
+    :param number: Number of steps. 
     :return: Result object.
 
 Result

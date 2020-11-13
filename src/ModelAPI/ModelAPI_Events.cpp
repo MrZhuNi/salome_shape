@@ -207,18 +207,12 @@ void ModelAPI_BuildEvalMessage::setParameter(FeaturePtr theParam)
 }
 
 void ModelAPI_BuildEvalMessage::setResults(
-    const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
-    const double theResult, const std::string& theError)
+            const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
+            const std::string& theError)
 {
   myParamsList = theParamsList;
-  myResult = theResult;
   myError = theError;
   myIsProcessed = true;
-}
-
-bool ModelAPI_BuildEvalMessage::isProcessed()
-{
-  return myIsProcessed;
 }
 
 const std::list<std::shared_ptr<ModelAPI_ResultParameter> >&
@@ -227,9 +221,9 @@ const std::list<std::shared_ptr<ModelAPI_ResultParameter> >&
   return myParamsList;
 }
 
-const double& ModelAPI_BuildEvalMessage::result() const
+bool ModelAPI_BuildEvalMessage::isProcessed()
 {
-  return myResult;
+  return myIsProcessed;
 }
 
 const std::string& ModelAPI_BuildEvalMessage::error() const

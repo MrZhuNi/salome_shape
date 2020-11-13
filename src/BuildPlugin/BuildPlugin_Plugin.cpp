@@ -36,7 +36,7 @@
 #include <BuildPlugin_Filling.h>
 #include <BuildPlugin_Validators.h>
 
-#include <BuildPlugin_EvalListener.h>
+
 
 
 // the only created instance of this plugin
@@ -68,8 +68,6 @@ BuildPlugin_Plugin::BuildPlugin_Plugin()
   // Register this plugin.
   ModelAPI_Session::get()->registerPlugin(this);
 
-  myEvalListener =
-    std::shared_ptr<BuildPlugin_EvalListener>(new BuildPlugin_EvalListener());
 }
 
 //=================================================================================================

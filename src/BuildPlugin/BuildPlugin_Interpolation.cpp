@@ -108,6 +108,7 @@ void BuildPlugin_Interpolation::initAttributes()
       real(MINT_ID())->setValue(0);
       real(MAXT_ID())->setValue(100);
       integer(NUMSTEP_ID())->setValue(10);
+      updateCoordinates();
     }
 }
 
@@ -246,12 +247,16 @@ void BuildPlugin_Interpolation::execute()
         ||string( YT_ID())->value() == ""
         ||string( ZT_ID())->value() == ""
         ||tables(VALUE_ID())->rows()== 0  )
-      return false;
+      return;
 
     if (!outErrorMessage.empty()){
-      setError("Error: Python interpreter " );//+ outErrorMessage);
-      return false;
+      setError("Error Python interpreter :" + outErrorMessage, false );
+      return;
     }
+    bool aWasBlocked = data()->blockSendAttributeUpdated(true);
+    updateCoordinates();
+    data()->blockSendAttributeUpdated(aWasBlocked, false);
+
     AttributeTablesPtr aTable = tables( VALUE_ID() );
     std::list<std::vector<double> > aCoordPoints;
     for( int step = 0; step < aTable->rows() ; step++ ){
@@ -313,9 +318,16 @@ void  BuildPlugin_Interpolation::evaluate(std::string& theError)
 
   if (aProcessMessage->isProcessed()) {
     theError = aProcessMessage->error();
+
+    const std::list<ResultParameterPtr>& aParamsList = aProcessMessage->params();
+    //store the list of parameters to store if changed
+    AttributeRefListPtr aParams = reflist(ARGUMENTS_ID());
+    aParams->clear();
+    std::list<ResultParameterPtr>::const_iterator aNewIter = aParamsList.begin();
+    for(; aNewIter != aParamsList.end(); aNewIter++) {
+      aParams->append(*aNewIter);
+    }
   } else { // error: python interpreter is not active
     theError = "Python interpreter is not available";
   }
 }
-
-
