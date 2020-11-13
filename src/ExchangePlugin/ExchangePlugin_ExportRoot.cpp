@@ -119,7 +119,7 @@ void ExchangePlugin_ExportRoot::computeBox(FeaturePtr theCurFeature,
   } else if (aMethodName == "BoxByOnePointAndDims") {
     DX = theCurFeature->data()->real(PrimitivesPlugin_Box::HALF_DX_ID())->value();
     DY = theCurFeature->data()->real(PrimitivesPlugin_Box::HALF_DY_ID())->value();
-    DY = theCurFeature->data()->real(PrimitivesPlugin_Box::HALF_DZ_ID())->value();
+    DZ = theCurFeature->data()->real(PrimitivesPlugin_Box::HALF_DZ_ID())->value();
     OX = theCurFeature->data()->real(PrimitivesPlugin_Box::OX_ID())->value();
     OY = theCurFeature->data()->real(PrimitivesPlugin_Box::OY_ID())->value();
     OZ = theCurFeature->data()->real(PrimitivesPlugin_Box::OZ_ID())->value();

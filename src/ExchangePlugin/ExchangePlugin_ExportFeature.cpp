@@ -71,6 +71,9 @@
 #include <ExchangePlugin_Tools.h>
 
 #include <PrimitivesPlugin_Box.h>
+// ToDo : a supprimer
+#include <FeaturesPlugin_Partition.h>
+#include <FeaturesPlugin_Translation.h>
 
 #ifdef WIN32
 # define _separator_ '\\'
@@ -619,6 +622,7 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
   std::list<FeaturePtr> theExport = document()->allFeatures();
   std::list<FeaturePtr>::iterator itExport = theExport.begin();
   std::vector<std::string> aListNamesOfFeatures;
+  std::map<std::string,std::string> aMapFeatureObject;
   for (; itExport != theExport.end(); ++itExport)
   {
       FeaturePtr aCurFeature = *itExport;
@@ -629,18 +633,6 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
         //std::cout<<"BOX EN COURS (Result) :: "<<aCurFeature->firstResult()->data()->name()<<std::endl;
         std::string anObjectName = aCurFeature->firstResult()->data()->name();
         anAlgo->buildBox(anObjectName, anOx, anOy, anOz, aDx, aDy, aDz);
-        aListNamesOfFeatures.push_back(anObjectName);
-        aListNamesOfFeatures.push_back(aCurFeature->data()->name());
-      } else if (aCurFeature->getKind() == "Translation") {
-        double aDx, aDy, aDz;
-        std::string anObjectName = aCurFeature->firstResult()->data()->name();
-        ExchangePlugin_ExportRoot::computeTranslation(aCurFeature, aDx, aDy, aDz);
-        anAlgo->buildTranslation(anObjectName, aDx, aDy, aDz);
-        aListNamesOfFeatures.push_back(anObjectName);
-        aListNamesOfFeatures.push_back(aCurFeature->data()->name());
-      } else if (aCurFeature->getKind() == "Partition") {
-        //std::cout<<"ToDo PARTITION"<<std::endl;
-        std::string anObjectName = aCurFeature->firstResult()->data()->name();
         aListNamesOfFeatures.push_back(anObjectName);
         aListNamesOfFeatures.push_back(aCurFeature->data()->name());
       }
@@ -654,11 +646,14 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
     aListMedium.push_back(anIt->first);
   }
     
+  std::cout<<"ETRANGE"<<std::endl;
   itExport = theExport.begin();
   for (; itExport != theExport.end(); ++itExport)
   {
+      std::cout<<"ETRANGE une fois"<<std::endl;
       FeaturePtr aCurFeature = *itExport;
       if (aCurFeature->getKind() == "Group") {
+        std::cout<<"ETRANGE deux fois"<<std::endl;
         std::vector<std::string> aListNames;
         std::string anObjectName = aCurFeature->firstResult()->data()->name();
         ExchangePlugin_ExportRoot::computeGroup(aCurFeature, aListNames);
@@ -666,8 +661,55 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
         //for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
         for (std::vector<std::string>::iterator it = aListNames.begin(); it != aListNames.end(); it++) {
           std::string aName = anObjectName + "_" + *it;
-          anAlgo->BuildVolume(aName, *it, anObjectName, aListMedium);
+          anAlgo->buildVolume(aName, *it, anObjectName, aListMedium);
         }
+      }
+  }
+    
+  itExport = theExport.begin();
+  for (; itExport != theExport.end(); ++itExport)
+  {
+      FeaturePtr aCurFeature = *itExport;
+      if (aCurFeature->getKind() == "Translation") {
+        double aDx, aDy, aDz;
+        std::string anObjectName = aCurFeature->firstResult()->data()->name();
+        ExchangePlugin_ExportRoot::computeTranslation(aCurFeature, aDx, aDy, aDz);
+        anAlgo->buildTranslation(anObjectName, aDx, aDy, aDz);
+        aListNamesOfFeatures.push_back(anObjectName);
+        aListNamesOfFeatures.push_back(aCurFeature->data()->name());
+        // ToDo dans computeTranslation
+        AttributeSelectionListPtr anObjectsSelList = aCurFeature->data()->
+          selectionList(FeaturesPlugin_Translation::OBJECTS_LIST_ID());
+        for(int anObjectsIndex = 0; anObjectsIndex < anObjectsSelList->size(); anObjectsIndex++) {
+          std::shared_ptr<ModelAPI_AttributeSelection> anObjectAttr =
+            anObjectsSelList->value(anObjectsIndex);
+          ObjectPtr anObject = anObjectAttr->contextObject();
+          std::string aName = anObject->data()->name();
+          std::cout<<anObjectName<<" et "<<aName<<std::endl;
+          aMapFeatureObject[anObjectName]=aName;
+        }
+      } else if (aCurFeature->getKind() == "Partition") {
+        std::string anObjectName = aCurFeature->firstResult()->data()->name();
+        // ToDo dans computePartition
+        int index = 0;
+        std::string aMainName = "";
+        AttributeSelectionListPtr anObjectsSelList = aCurFeature->data()->
+          selectionList(FeaturesPlugin_Partition::BASE_OBJECTS_ID());
+        for(int anObjectsIndex = 0; anObjectsIndex < anObjectsSelList->size(); anObjectsIndex++) {
+          std::shared_ptr<ModelAPI_AttributeSelection> anObjectAttr =
+            anObjectsSelList->value(anObjectsIndex);
+          ObjectPtr anObject = anObjectAttr->contextObject();
+          std::string aName = anObject->data()->name();
+          if (index == 0) {
+            aMainName = aName;
+          } else {
+            std::cout<<aMainName<<"AA  AA "<<aMapFeatureObject[aName]<<" BB  BB "<<aName<<std::endl;
+            anAlgo->buildPartition(aMainName, aMapFeatureObject[aName], aName, index);
+          }
+          index++;
+        }
+        aListNamesOfFeatures.push_back(anObjectName);
+        aListNamesOfFeatures.push_back(aCurFeature->data()->name());
       }
   }
 

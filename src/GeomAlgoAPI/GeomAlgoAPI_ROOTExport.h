@@ -48,6 +48,12 @@ public:
   GEOMALGOAPI_EXPORT void buildTranslation(const std::string& theObjectName,
                                            const double theDX, const double theDY,
                                            const double theDZ);
+  
+  /// Build partition
+  GEOMALGOAPI_EXPORT void buildPartition(const std::string& theMainName,
+                                         const std::string theObjectName,
+                                         const std::string theOperationName,
+                                         const int theIndex);
 
   /// Build mat and medium
   GEOMALGOAPI_EXPORT void buildMatAndMedium(
@@ -55,7 +61,7 @@ public:
       const std::map<std::string, std::vector<std::string> > theMedium);
   
   ///
-  GEOMALGOAPI_EXPORT void BuildVolume(const std::string theName, 
+  GEOMALGOAPI_EXPORT void buildVolume(const std::string theName, 
                                       const std::string theGeometryName,
                                       const std::string theMediumName,
                                       std::vector<std::string> theListMedium);
@@ -66,6 +72,10 @@ public:
   /// Write the file
   GEOMALGOAPI_EXPORT bool write();
   
+  ///
+  GEOMALGOAPI_EXPORT const std::string intToString(const int& value);
+  
+  ///
   GEOMALGOAPI_EXPORT const std::string doubleToString(const double& value);
 
 private:

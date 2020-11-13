@@ -44,6 +44,7 @@ void GeomAlgoAPI_ROOTExport::buildHead(const std::string& theMethodName,
   myContent += tmp;
   tmp = "TGeoManager *geom = new TGeoManager(\"" + theName + "\",\"" + theTitle +"\");\n";
   myContent += tmp;
+  myContent += "\n";
 }
 
 //=================================================================================================
@@ -56,6 +57,7 @@ void GeomAlgoAPI_ROOTExport::buildBox(const std::string& theObjectName,
   myContent += "TGeoBBox *" + theObjectName + "_tmp = new TGeoBBox(\"" +theObjectName + "_tmp\",";
   myContent += doubleToString(theDX)+","+doubleToString(theDY)+","+doubleToString(theDZ)+",point_";
   myContent += theObjectName + ");\n";
+  myContent += "\n";
 }
 
 //=================================================================================================
@@ -64,9 +66,22 @@ void GeomAlgoAPI_ROOTExport::buildTranslation(const std::string& theObjectName,
                                               const double theDZ)
 {
   myContent += "TGeoTranslation *" + theObjectName;
-  myContent += "_tmp = new TGeoTranslation(\"" + theObjectName + "_tmp\",";
+  myContent += " = new TGeoTranslation(\"" + theObjectName + "\",";
   myContent += doubleToString(theDX) + "," + doubleToString(theDY) + ",";
   myContent += doubleToString(theDZ) + ");\n";
+  myContent += "\n";
+}
+
+//=================================================================================================
+void GeomAlgoAPI_ROOTExport::buildPartition(const std::string& theMainName,
+                                            const std::string theObjectName,
+                                            const std::string theOperationName,
+                                            const int theIndex)
+{
+  myContent += theMainName + "->AddNode(";
+  myContent += theObjectName + ", " + intToString(theIndex) + ", ";
+  myContent += theOperationName + ");\n";
+  myContent += "\n";
 }
 
 //=================================================================================================
@@ -89,10 +104,11 @@ void GeomAlgoAPI_ROOTExport::buildMatAndMedium(
     myContent += "TGeoMedium *" + anIt2->first + " = new TGeoMedium(\"";
     myContent += aValues[1] + "\"," + aValues[2] + "," + aValues[3] + ") ;\n";
   }
+  myContent += "\n";
 }
 
 //=================================================================================================
-void GeomAlgoAPI_ROOTExport::BuildVolume(const std::string theName,
+void GeomAlgoAPI_ROOTExport::buildVolume(const std::string theName,
                                          const std::string theGeometryName,
                                          const std::string theMediumName,
                                          std::vector<std::string> theListMedium)
@@ -102,6 +118,7 @@ void GeomAlgoAPI_ROOTExport::BuildVolume(const std::string theName,
   if (aFound) {
     myContent += "TGeoVolume *" + theGeometryName + " = new TGeoVolume(\"" + theName;
     myContent += "\"," + theGeometryName + "_tmp," + theMediumName + ");\n";
+    myContent += "\n";
   }
 }
 
@@ -132,6 +149,14 @@ bool GeomAlgoAPI_ROOTExport::write()
   aFile << myContent << std::endl;
   aFile.close();
   return true;
+}
+
+//=================================================================================================
+const std::string GeomAlgoAPI_ROOTExport::intToString(const int& value)
+{
+    std::ostringstream str;
+    str << value;
+    return str.str();
 }
 
 //=================================================================================================
