@@ -154,5 +154,4 @@ class BuildPlugin_ValidatorExpressionInterpolation
                        Events_InfoMessage& theError) const;
 };
 
-
 #endif
