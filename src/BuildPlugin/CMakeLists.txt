@@ -51,7 +51,6 @@ SET(PROJECT_HEADERS
     BuildPlugin_SubShapes.h
     BuildPlugin_Filling.h
     BuildPlugin_Validators.h
-    BuildPlugin_EvalListener.h
 )
 
 SET(PROJECT_SOURCES
@@ -70,7 +69,6 @@ SET(PROJECT_SOURCES
     BuildPlugin_SubShapes.cpp
     BuildPlugin_Filling.cpp
     BuildPlugin_Validators.cpp
-    BuildPlugin_EvalListener.cpp
 )
 
 SET(XML_RESOURCES

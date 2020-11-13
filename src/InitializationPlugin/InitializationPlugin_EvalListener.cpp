@@ -21,6 +21,7 @@
 
 #include <InitializationPlugin_EvalListener.h>
 #include <ParametersPlugin_Parameter.h>
+#include <BuildPlugin_Interpolation.h>
 #include <InitializationPlugin_PyInterp.h>
 
 #include <Events_InfoMessage.h>
@@ -32,6 +33,7 @@
 #include <ModelAPI_AttributeRefList.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeValidator.h>
+#include <ModelAPI_AttributeTables.h>
 #include <ModelAPI_Document.h>
 #include <ModelAPI_Events.h>
 #include <ModelAPI_ResultParameter.h>
@@ -44,6 +46,8 @@
 #include <string>
 #include <set>
 #include <sstream>
+#include <iostream>
+#include <algorithm>
 
 //------------------------------------------------------------------------------
 // Tools
@@ -71,6 +75,7 @@ InitializationPlugin_EvalListener::InitializationPlugin_EvalListener()
 
   aLoop->registerListener(this, ModelAPI_AttributeEvalMessage::eventId(), NULL, true);
   aLoop->registerListener(this, ModelAPI_ParameterEvalMessage::eventId(), NULL, true);
+  aLoop->registerListener(this, ModelAPI_BuildEvalMessage::eventId(), NULL, true);
   aLoop->registerListener(this, ModelAPI_ComputePositionsMessage::eventId(), NULL, true);
 
   myInterp = std::shared_ptr<InitializationPlugin_PyInterp>(new InitializationPlugin_PyInterp());
@@ -105,8 +110,109 @@ void InitializationPlugin_EvalListener::processEvent(
     std::shared_ptr<ModelAPI_ComputePositionsMessage> aMsg =
       std::dynamic_pointer_cast<ModelAPI_ComputePositionsMessage>(theMessage);
     aMsg->setPositions(myInterp->positions(aMsg->expression(), aMsg->parameter()));
+  }if (theMessage->eventID() == ModelAPI_BuildEvalMessage::eventId()) {
+    std::shared_ptr<ModelAPI_BuildEvalMessage> aMsg =
+      std::dynamic_pointer_cast<ModelAPI_BuildEvalMessage>(theMessage);
+    FeaturePtr aParam = aMsg->parameter();
+
+    AttributeStringPtr anVariableAttr = aParam->string(BuildPlugin_Interpolation::VARIABLE_ID());
+    std::wstring anVar = anVariableAttr->isUValue() ?
+        Locale::Convert::toWString(anVariableAttr->valueU()) :
+        Locale::Convert::toWString(anVariableAttr->value());
+    AttributeTablesPtr anValueAttr = aParam->tables(BuildPlugin_Interpolation::VALUE_ID());
+    std::string anError;
+
+    std::list<std::shared_ptr<ModelAPI_ResultParameter> > aParamsList;
+
+    AttributeStringPtr anExprAttr;
+    ModelAPI_AttributeTables::Value aVal;
+    bool anIsFirstTime = true;
+    for(int step =0; step < anValueAttr->rows(); step++ ){
+        anExprAttr = aParam->string(BuildPlugin_Interpolation::XT_ID());
+        std::wstring anExp = anExprAttr->isUValue() ?
+        Locale::Convert::toWString(anExprAttr->valueU()) :
+        Locale::Convert::toWString(anExprAttr->value());
+        aVal.myDouble = evaluate(anVar,
+                                 anValueAttr->value(step,0).myDouble,
+                                 aParam,
+                                 anExp,
+                                 anError,
+                                 aParamsList,
+                                 anIsFirstTime);
+        anValueAttr->setValue(aVal,step,1);
+        if( !anError.empty()) break;
+        anExprAttr = aParam->string(BuildPlugin_Interpolation::YT_ID());
+        anExp = anExprAttr->isUValue() ?
+        Locale::Convert::toWString(anExprAttr->valueU()) :
+        Locale::Convert::toWString(anExprAttr->value());
+        aVal.myDouble = evaluate(anVar,
+                                anValueAttr->value(step,0).myDouble,
+                                aParam,
+                                anExp,
+                                anError,
+                                aParamsList,
+                                anIsFirstTime);
+        anValueAttr->setValue(aVal,step,2);
+        if( !anError.empty()) break;
+        anExprAttr = aParam->string(BuildPlugin_Interpolation::ZT_ID());
+        anExp = anExprAttr->isUValue() ?
+        Locale::Convert::toWString(anExprAttr->valueU()) :
+        Locale::Convert::toWString(anExprAttr->value());
+        aVal.myDouble = evaluate(anVar,
+                                 anValueAttr->value(step,0).myDouble,
+                                 aParam,
+                                 anExp,
+                                 anError,
+                                 aParamsList,
+                                 anIsFirstTime);
+        if( !anError.empty()) break;
+        anValueAttr->setValue(aVal,step,3);
+        if ( anIsFirstTime )
+            anIsFirstTime = false;
+    }
+
+    aMsg->setResults(aParamsList, anError);
   }
 }
+
+double InitializationPlugin_EvalListener::evaluate(
+  std::wstring& theVariable,
+  double theValueVariable,
+  FeaturePtr theParameter,
+  const std::wstring& theExpression,
+  std::string& theError,
+  std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
+  bool theIsFirstTime)
+{
+  std::list<std::wstring> anExprParams = myInterp->compile(theExpression);
+  // find expression's params in the model
+  std::list<std::wstring> aContext;
+  std::list<std::wstring>::iterator it = anExprParams.begin();
+  for ( ; it != anExprParams.end(); it++) {
+    double aValue;
+    ResultParameterPtr aParamRes;
+    // If variable does not exist python interpreter will generate an error.
+    if (!ModelAPI_Tools::findVariable(FeaturePtr(),
+                           *it, aValue, aParamRes, theParameter->document()))
+      continue;
+
+    if( theIsFirstTime )
+    {
+      std::list<ResultParameterPtr>::iterator anIter =
+                          std::find(theParamsList.begin(),theParamsList.end(), aParamRes );
+      if(anIter == theParamsList.end())
+        theParamsList.push_back(aParamRes);
+    }
+
+    aContext.push_back(*it + L"=" + toString(aValue));
+  }
+  aContext.push_back(theVariable + L"=" + toString(theValueVariable));
+  myInterp->extendLocalContext(aContext);
+  double result = myInterp->evaluate(theExpression, theError);
+  myInterp->clearLocalContext();
+  return result;
+}
+
 
 double InitializationPlugin_EvalListener::evaluate(FeaturePtr theParameter,
   const std::wstring& theExpression, std::string& theError,
