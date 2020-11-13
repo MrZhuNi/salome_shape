@@ -139,8 +139,8 @@ void InitializationPlugin_EvalListener::processEvent(
                                  anError,
                                  aParamsList,
                                  anIsFirstTime);
+        if(!anError.empty()) break;
         anValueAttr->setValue(aVal,step,1);
-        if( !anError.empty()) break;
         anExprAttr = aParam->string(BuildPlugin_Interpolation::YT_ID());
         anExp = anExprAttr->isUValue() ?
         Locale::Convert::toWString(anExprAttr->valueU()) :
@@ -152,8 +152,8 @@ void InitializationPlugin_EvalListener::processEvent(
                                 anError,
                                 aParamsList,
                                 anIsFirstTime);
+        if(!anError.empty()) break;
         anValueAttr->setValue(aVal,step,2);
-        if( !anError.empty()) break;
         anExprAttr = aParam->string(BuildPlugin_Interpolation::ZT_ID());
         anExp = anExprAttr->isUValue() ?
         Locale::Convert::toWString(anExprAttr->valueU()) :
@@ -165,7 +165,7 @@ void InitializationPlugin_EvalListener::processEvent(
                                  anError,
                                  aParamsList,
                                  anIsFirstTime);
-        if( !anError.empty()) break;
+        if(!anError.empty()) break;     
         anValueAttr->setValue(aVal,step,3);
         if ( anIsFirstTime )
             anIsFirstTime = false;

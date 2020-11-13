@@ -123,8 +123,7 @@ void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
     && string(XT_ID())->value() !=""
     && string(YT_ID())->value() !=""
     && string(ZT_ID())->value() !=""
-    && string(CREATION_METHOD_ID())->value() == CREATION_METHOD_ANALYTICAL_ID()
-    ){
+    && string(CREATION_METHOD_ID())->value() == CREATION_METHOD_ANALYTICAL_ID()){
     updateCoordinates();
   }
 }
@@ -151,8 +150,12 @@ void BuildPlugin_Interpolation::updateCoordinates()
     }
 
     outErrorMessage="";
-
     evaluate(outErrorMessage);
+    data()->string(EXPRESSION_ERROR_ID())->setValue(outErrorMessage);
+    if (!outErrorMessage.empty()){
+      setError("Error: Python interpreter "); //+ outErrorMessage );
+      return;
+    }
 }
 
 //=================================================================================================
@@ -249,10 +252,6 @@ void BuildPlugin_Interpolation::execute()
         ||tables(VALUE_ID())->rows()== 0  )
       return;
 
-    if (!outErrorMessage.empty()){
-      setError("Error Python interpreter :" + outErrorMessage, false );
-      return;
-    }
     bool aWasBlocked = data()->blockSendAttributeUpdated(true);
     updateCoordinates();
     data()->blockSendAttributeUpdated(aWasBlocked, false);
