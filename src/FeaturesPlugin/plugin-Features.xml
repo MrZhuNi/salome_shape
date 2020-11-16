@@ -175,7 +175,7 @@
 
     <group id="Calculation">
       <feature id="GeometryCalculation" title="Geometry Calculation" tooltip="Calculate properties of objects"
-               icon="icons/Features/basicproperties.png" helpfile="measurementFeature.html" abort_confirmation="false">
+               icon="icons/Features/basicproperties.png" helpfile="geometryCalculationFeature.html" abort_confirmation="false">
         <source path="GeometryCalculation_widget.xml"/>
       </feature>
       <feature id="Measurement" title="Measurement" tooltip="Calculate properties of objects"

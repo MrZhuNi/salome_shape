@@ -91,7 +91,7 @@ public:
   FEATURESPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
   /// Reimplemented from ModelAPI_Feature::isMacro(). Returns true.
-  virtual bool isMacro() const { return true; }
+  FEATURESPLUGIN_EXPORT virtual bool isMacro() const { return true; }
 
   /// Use plugin manager for features creation
   FeaturesPlugin_GeometryCalculation();
