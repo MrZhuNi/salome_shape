@@ -71,9 +71,9 @@ void ExchangeAPI_Import::setParameters(const std::string & theFilePath,
                                        const bool  theMaterials,
                                        const bool  theColor)
 {
-  fillAttribute(theFilePath, mystepfilePath);
-  fillAttribute("STEP", myimporttype);
-  fillAttribute(theScalInterUnits, myscalinterunits);
+  fillAttribute(theFilePath, mystepFilePath);
+  fillAttribute("STEP", myimportType);
+  fillAttribute(theScalInterUnits, myscalInterUnits);
   fillAttribute(theMaterials,mymaterials);
   fillAttribute(theColor,mycolors);
   execute();
@@ -88,7 +88,7 @@ void ExchangeAPI_Import::setFilePath(const std::string & theFilePath)
     setParameters(theFilePath,true,false,false);
   }else{
     fillAttribute(theFilePath, myfilePath);
-    fillAttribute(anExtension, myimporttype);
+    fillAttribute(anExtension, myimportType);
     execute();
   }
 }
@@ -123,7 +123,7 @@ void ExchangeAPI_Import::dump(ModelHighAPI_Dumper& theDumper) const
       theDumper << aBase << " = model.addImportStep(" << aPartName << ", \""
                 << aFilePath << "\"" ;
 
-      theDumper << ", " << scalinterunits()->value()
+      theDumper << ", " << scalInterUnits()->value()
                 << ", " << materials()->value()
                 << ", " << colors()->value() << ")"<< std::endl;
   }else{
