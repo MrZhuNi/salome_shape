@@ -34,6 +34,7 @@
 #include <FeaturesPlugin_Intersection.h>
 #include <FeaturesPlugin_Measurement.h>
 #include <FeaturesPlugin_NormalToFace.h>
+#include <FeaturesPlugin_CreateNormalToFace.h>
 #include <FeaturesPlugin_MultiRotation.h>
 #include <FeaturesPlugin_MultiTranslation.h>
 #include <FeaturesPlugin_Partition.h>
@@ -189,7 +190,9 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
   } else if (theFeatureID == FeaturesPlugin_Measurement::ID()) {
     return FeaturePtr(new FeaturesPlugin_Measurement);
   } else if (theFeatureID == FeaturesPlugin_NormalToFace::ID()) {
-    return FeaturePtr(new FeaturesPlugin_NormalToFace);  
+    return FeaturePtr(new FeaturesPlugin_NormalToFace);
+  } else if (theFeatureID == FeaturesPlugin_CreateNormalToFace::ID()) {
+    return FeaturePtr(new FeaturesPlugin_CreateNormalToFace);
   } else if (theFeatureID == FeaturesPlugin_RemoveResults::ID()) {
     return FeaturePtr(new FeaturesPlugin_RemoveResults);
   } else if (theFeatureID == FeaturesPlugin_Chamfer::ID()) {

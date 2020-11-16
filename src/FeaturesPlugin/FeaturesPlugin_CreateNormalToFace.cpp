@@ -17,7 +17,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "FeaturesPlugin_NormalToFace.h"
+#include "FeaturesPlugin_CreateNormalToFace.h"
 
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeDoubleArray.h>
@@ -26,7 +26,7 @@
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
-
+#include <PrimitivesPlugin_Box.h>
 #include <GeomAlgoAPI_PointBuilder.h>
 #include <GeomAPI_Vertex.h>
 #include <GeomAPI_Edge.h>
@@ -40,30 +40,27 @@
 #include <GeomAlgoAPI_EdgeBuilder.h>
 #include <ModelAPI_ResultConstruction.h>
 
-#include <FeaturesPlugin_CreateNormalToFace.h>
-
 #include <iomanip>
 #include <sstream>
 #include <iostream>
 
-FeaturesPlugin_NormalToFace::FeaturesPlugin_NormalToFace()
+FeaturesPlugin_CreateNormalToFace::FeaturesPlugin_CreateNormalToFace()
 {
 }
 
-void FeaturesPlugin_NormalToFace::initAttributes()
+void FeaturesPlugin_CreateNormalToFace::initAttributes()
 {
   // attribute for object selected
   data()->addAttribute(OBJECTS_LIST_ID(), ModelAPI_AttributeSelection::typeId());
   data()->addAttribute(VERTEX_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
   // attributes for result message and values
-  data()->addAttribute(CREATENORMAL_ID(), ModelAPI_AttributeBoolean::typeId());
   data()->addAttribute(VERTEX_OPTION_ID(), ModelAPI_AttributeString::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VERTEX_SELECTED_ID());
 
 }
 
-void FeaturesPlugin_NormalToFace::execute()
+void FeaturesPlugin_CreateNormalToFace::execute()
 {
 AttributeSelectionPtr aSelectionFace = selection(OBJECTS_LIST_ID());
 AttributeSelectionPtr aSelectionPoint = selection(VERTEX_SELECTED_ID());
@@ -112,59 +109,10 @@ if (aShape){
     aConstr->setShape(anEdge);
     setResult(aConstr);
   }
-  
-  if(boolean(CREATENORMAL_ID())->value())
-  {
-    if( !myCreateFeature.get() )
-      createNormal();
-    updateNormal();
-  }else{
-    if( myCreateFeature.get() )
-    {
-      myCreateFeature->eraseResults();
-      SessionPtr aSession = ModelAPI_Session::get();
-      DocumentPtr aDoc =  aSession->activeDocument();
-      aDoc->removeFeature(myCreateFeature);
-      myCreateFeature.reset();
-    }
-  }
 }
 
-void FeaturesPlugin_NormalToFace::attributeChanged(const std::string& theID)
+void FeaturesPlugin_CreateNormalToFace::attributeChanged(const std::string& theID)
 {
-   if (theID == OBJECTS_LIST_ID()) {
-    if( myCreateFeature.get() )
-      updateNormal();
-  }
 }
 
-//=================================================================================================
-void FeaturesPlugin_NormalToFace::createNormal()
-{
-  SessionPtr aSession = ModelAPI_Session::get();
-  
-  DocumentPtr aDoc =  aSession->activeDocument();
 
-  if (aDoc.get()) {
-    myCreateFeature = aDoc->addFeature(FeaturesPlugin_CreateNormalToFace::ID());
-  }
-}
-
-void FeaturesPlugin_NormalToFace::updateNormal()
-{
-  myCreateFeature->selection(FeaturesPlugin_CreateNormalToFace::OBJECTS_LIST_ID())
-                        ->setValue( selection(OBJECTS_LIST_ID())->context() ,
-                                    selection(OBJECTS_LIST_ID())->value() );
-
-  myCreateFeature->string(FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID())
-                        ->setValue( string(VERTEX_OPTION_ID())->value());
-
-  if(!string(VERTEX_OPTION_ID())->value().empty())
-  {
-    myCreateFeature->selection(FeaturesPlugin_CreateNormalToFace::VERTEX_SELECTED_ID())
-                        ->setValue( selection(VERTEX_SELECTED_ID())->context() ,
-                                    selection(VERTEX_SELECTED_ID())->value() );
-  }
-
-  myCreateFeature->execute();
-}

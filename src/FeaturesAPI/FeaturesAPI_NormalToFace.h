@@ -22,7 +22,7 @@
 
 #include "FeaturesAPI.h"
 
-#include <FeaturesPlugin_NormalToFace.h>
+#include <FeaturesPlugin_CreateNormalToFace.h>
 
 #include <ModelHighAPI_Interface.h>
 #include <ModelHighAPI_Macro.h>
@@ -52,14 +52,14 @@ public:
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_NormalToFace();
 
-    INTERFACE_3(FeaturesPlugin_NormalToFace::ID(),
-              faceselected, FeaturesPlugin_NormalToFace::OBJECTS_LIST_ID(),
+    INTERFACE_3(FeaturesPlugin_CreateNormalToFace::ID(),
+              faceSelected, FeaturesPlugin_CreateNormalToFace::OBJECTS_LIST_ID(),
                               ModelAPI_AttributeSelection,
                               /** base face */,
-              vertexselected, FeaturesPlugin_NormalToFace::VERTEX_SELECTED_ID(),
+              vertexSelected, FeaturesPlugin_CreateNormalToFace::VERTEX_SELECTED_ID(),
                               ModelAPI_AttributeSelection,
                               /** vetex option */,
-              vertexoption, FeaturesPlugin_NormalToFace::VERTEX_OPTION_ID(),
+              vertexOption, FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID(),
                            ModelAPI_AttributeString,
                            /** option */)
 

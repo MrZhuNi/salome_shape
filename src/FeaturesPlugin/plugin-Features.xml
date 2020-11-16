@@ -179,9 +179,13 @@
       </feature>
     </group>
     <group id="Face">
-      <feature id="Normal" title="Normal to a face" tooltip="Calculate the normal to a face" auto_preview="true"
+      <feature id="NormalMacro" title="Normal to a face" tooltip="Calculate the normal to a face" auto_preview="true"
                icon="icons/Features/normale.png" helpfile="measurementFeature.html"> 
         <source path="NormalToFace_widget.xml"/>
+      </feature>
+      <feature id="Normal" title="Normal to a face" tooltip="Calculate the normal to a face" auto_preview="true"
+               icon="icons/Features/axis.png" helpfile="measurementFeature.html" internal="1"> 
+        <source path="CreateNormalToFace_widget.xml"/>
       </feature>
     </group>
   </workbench>

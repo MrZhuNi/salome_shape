@@ -17,8 +17,8 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef FeaturesPlugin_NormalToFace_H_
-#define FeaturesPlugin_NormalToFace_H_
+#ifndef FeaturesPlugin_CreateNormalToFace_H_
+#define FeaturesPlugin_CreateNormalToFace_H_
 
 #include "FeaturesPlugin.h"
 #include <ModelAPI_Feature.h>
@@ -27,16 +27,16 @@
 #include <GeomAPI_IScreenParams.h>
 #include <GeomAlgoAPI_Box.h>
 
-/// \class FeaturesPlugin_NormalToFace
+/// \class FeaturesPlugin_CreateNormalToFace
 /// \ingroup Plugins
 /// \brief Feature for construct normal to face
 
-class FeaturesPlugin_NormalToFace : public ModelAPI_Feature
+class FeaturesPlugin_CreateNormalToFace : public ModelAPI_Feature
 {
 public:
    inline static const std::string& ID()
   {
-    static const std::string MY_ID("NormalMacro");
+    static const std::string MY_ID("Normal");
     return MY_ID;
   }
 
@@ -60,13 +60,6 @@ public:
     return MY_VERTEX_SELECTED_ID;
   }
 
-   /// Attribute name for checkbox create box.
-  inline static const std::string& CREATENORMAL_ID()
-  {
-    static const std::string MY_CREATENORMAL_ID("createnormal");
-    return MY_CREATENORMAL_ID;
-  }
-
   /// Attribute name of vertex option.
   inline static const std::string& VERTEX_OPTION_ID()
   {
@@ -84,17 +77,8 @@ public:
   /// \param theID identifier of changed attribute
   FEATURESPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
-  /// Reimplemented from ModelAPI_Feature::isMacro(). Returns true.
-  FEATURESPLUGIN_EXPORT virtual bool isMacro() const { return true; }
-
   /// Use plugin manager for features creation
-  FeaturesPlugin_NormalToFace();
-
-  private:
-
-  void createNormal(); 
-  void updateNormal();
-  FeaturePtr myCreateFeature;
+  FeaturesPlugin_CreateNormalToFace();
 
 };
 

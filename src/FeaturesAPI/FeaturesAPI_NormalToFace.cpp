@@ -19,6 +19,7 @@
 
 #include "FeaturesAPI_NormalToFace.h"
 
+#include <FeaturesPlugin_CreateNormalToFace.h>
 
 #include <ModelHighAPI_Dumper.h>
 #include <ModelHighAPI_Selection.h>
@@ -39,9 +40,9 @@ FeaturesAPI_NormalToFace::FeaturesAPI_NormalToFace(
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
-    fillAttribute(theBaseFace, myfaceselected);
-    fillAttribute(theOptionnelPoint, myvertexselected);
-    feature()->string(FeaturesPlugin_NormalToFace::VERTEX_OPTION_ID())->setValue("true");
+    fillAttribute(theBaseFace, myfaceSelected);
+    fillAttribute(theOptionnelPoint, myvertexSelected);
+    feature()->string(FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID())->setValue("true");
     execute();
   }
 }
@@ -52,8 +53,8 @@ FeaturesAPI_NormalToFace::FeaturesAPI_NormalToFace(
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
-    fillAttribute(theBaseFace, myfaceselected);
-    feature()->string(FeaturesPlugin_NormalToFace::VERTEX_OPTION_ID())->setValue("");
+    fillAttribute(theBaseFace, myfaceSelected);
+    feature()->string(FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID())->setValue("");
     execute();
   }
 }
@@ -68,20 +69,17 @@ void FeaturesAPI_NormalToFace::dump(ModelHighAPI_Dumper& theDumper) const
   const std::string& aDocName = theDumper.name(aBase->document());
 
   AttributeSelectionPtr anAttrObject;
-    anAttrObject = aBase->selection(FeaturesPlugin_NormalToFace::OBJECTS_LIST_ID());
+    anAttrObject = aBase->selection(FeaturesPlugin_CreateNormalToFace::OBJECTS_LIST_ID());
 
   theDumper << aBase << " = model.getNormal(" << aDocName << ", " << anAttrObject;
 
-  if ( !aBase->string(FeaturesPlugin_NormalToFace::VERTEX_OPTION_ID())->value().empty()){
+  if ( !aBase->string(FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID())->value().empty()){
 
     AttributeSelectionPtr anAttrVertex =
-            aBase->selection(FeaturesPlugin_NormalToFace::VERTEX_SELECTED_ID());
+            aBase->selection(FeaturesPlugin_CreateNormalToFace::VERTEX_SELECTED_ID());
 
     theDumper << ", " << anAttrVertex;
   }
-
-  //if (!aBase->data()->version().empty())
-  //  theDumper << ", keepSubResults = True";
 
   theDumper << ")" << std::endl;
 }
@@ -94,7 +92,7 @@ NormalPtr getNormal(const std::shared_ptr<ModelAPI_Document>& thePart,
 {
 
   FeaturePtr aFeature =
-      thePart->addFeature(FeaturesAPI_NormalToFace::ID());
+      thePart->addFeature(FeaturesPlugin_CreateNormalToFace::ID());
 
   NormalPtr aNormalToface;
 
@@ -108,7 +106,7 @@ NormalPtr getNormal(const std::shared_ptr<ModelAPI_Document>& thePart,
 {
 
   FeaturePtr aFeature =
-      thePart->addFeature(FeaturesAPI_NormalToFace::ID());
+      thePart->addFeature(FeaturesPlugin_CreateNormalToFace::ID());
 
   NormalPtr aNormalToface;
 
