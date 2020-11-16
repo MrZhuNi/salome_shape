@@ -33,7 +33,9 @@
 #include <FeaturesPlugin_Fillet1D.h>
 #include <FeaturesPlugin_Intersection.h>
 #include <FeaturesPlugin_Measurement.h>
+#include <FeaturesPlugin_GeometryCalculation.h>
 #include <FeaturesPlugin_BoundingBox.h>
+#include <FeaturesPlugin_CreateBoundingBox.h>
 #include <FeaturesPlugin_MultiRotation.h>
 #include <FeaturesPlugin_MultiTranslation.h>
 #include <FeaturesPlugin_Partition.h>
@@ -187,9 +189,12 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
   } else if (theFeatureID == FeaturesPlugin_Fillet1D::ID()) {
     return FeaturePtr(new FeaturesPlugin_Fillet1D);
   } else if (theFeatureID == FeaturesPlugin_Measurement::ID()) {
-    return FeaturePtr(new FeaturesPlugin_Measurement);
+  } else if (theFeatureID == FeaturesPlugin_GeometryCalculation::ID()) {
+    return FeaturePtr(new FeaturesPlugin_GeometryCalculation);
   } else if (theFeatureID == FeaturesPlugin_BoundingBox::ID()) {
-    return FeaturePtr(new FeaturesPlugin_BoundingBox); 
+    return FeaturePtr(new FeaturesPlugin_BoundingBox);
+  } else if (theFeatureID == FeaturesPlugin_CreateBoundingBox::ID()) {
+    return FeaturePtr(new FeaturesPlugin_CreateBoundingBox);
   } else if (theFeatureID == FeaturesPlugin_RemoveResults::ID()) {
     return FeaturePtr(new FeaturesPlugin_RemoveResults);
   } else if (theFeatureID == FeaturesPlugin_Chamfer::ID()) {

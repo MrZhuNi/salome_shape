@@ -17,8 +17,8 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef FeaturesPlugin_BoundingBox_H_
-#define FeaturesPlugin_BoundingBox_H_
+#ifndef FeaturesPlugin_CreateBoundingBox_H_
+#define FeaturesPlugin_CreateBoundingBox_H_
 
 #include "FeaturesPlugin.h"
 #include <ModelAPI_Feature.h>
@@ -31,12 +31,12 @@
 /// \ingroup Plugins
 /// \brief Feature to view the Bounding Box.
 
-class FeaturesPlugin_BoundingBox : public ModelAPI_Feature
+class FeaturesPlugin_CreateBoundingBox : public ModelAPI_Feature
 {
 public:
    inline static const std::string& ID()
   {
-    static const std::string MY_ID("BoundingBoxMacro");
+    static const std::string MY_ID("BoundingBox");
     return MY_ID;
   }
 
@@ -95,13 +95,6 @@ public:
     return MY_Z_MAX_COOD_ID;
   }
 
-   /// Attribute name for checkbox create box.
-  inline static const std::string& CREATEBOX_ID()
-  {
-    static const std::string MY_CREATEBOX_ID("createbox");
-    return MY_CREATEBOX_ID;
-  }
-
    /// Attribute name for values of result.
   inline static const std::string& RESULT_VALUES_ID()
   {
@@ -119,17 +112,14 @@ public:
   /// \param theID identifier of changed attribute
   FEATURESPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
-  /// Reimplemented from ModelAPI_Feature::isMacro(). Returns true.
-  FEATURESPLUGIN_EXPORT virtual bool isMacro() const { return true; }
-
   /// Use plugin manager for features creation
-  FeaturesPlugin_BoundingBox();
+  FeaturesPlugin_CreateBoundingBox();
 
   private:
   void updateValues();
-  void createBox();
-  void updateBox();
-  FeaturePtr myCreateFeature;
+  void createBoxByTwoPoints();
+  void loadNamingDS(std::shared_ptr<GeomAlgoAPI_Box> theBoxAlgo,
+                    std::shared_ptr<ModelAPI_ResultBody> theResultBox);
 
 };
 

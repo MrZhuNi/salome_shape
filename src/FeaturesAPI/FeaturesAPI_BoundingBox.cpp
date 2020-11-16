@@ -19,7 +19,7 @@
 
 #include "FeaturesAPI_BoundingBox.h"
 
-#include <FeaturesPlugin_BoundingBox.h>
+#include <FeaturesPlugin_CreateBoundingBox.h>
 #include <ModelAPI_AttributeDoubleArray.h>
 #include <ModelHighAPI_Services.h>
 #include <ModelHighAPI_Tools.h>
@@ -58,12 +58,9 @@ void FeaturesAPI_BoundingBox::dump(ModelHighAPI_Dumper& theDumper) const
   const std::string& aDocName = theDumper.name(aBase->document());
 
   AttributeSelectionPtr anAttrObject;
-    anAttrObject = aBase->selection(FeaturesPlugin_BoundingBox::OBJECTS_LIST_ID());
+    anAttrObject = aBase->selection(FeaturesPlugin_CreateBoundingBox::OBJECTS_LIST_ID());
 
   theDumper << aBase << " = model.getBoundingBox(" << aDocName << ", " << anAttrObject;
-
-  //if (!aBase->data()->version().empty())
-  //  theDumper << ", keepSubResults = True";
 
   theDumper << ")" << std::endl;
 }
@@ -71,10 +68,9 @@ void FeaturesAPI_BoundingBox::dump(ModelHighAPI_Dumper& theDumper) const
 BoundingBoxPtr getBoundingBox(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Selection& theobject)
 {
-  FeaturePtr aBoundingBoxFeat = thePart->addFeature(FeaturesPlugin_BoundingBox::ID());
 
   FeaturePtr aFeature =
-      thePart->addFeature(FeaturesAPI_BoundingBox::ID());
+      thePart->addFeature(FeaturesPlugin_CreateBoundingBox::ID());
 
   BoundingBoxPtr aBoundingBox;
 

@@ -17,11 +17,12 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "FeaturesPlugin_BoundingBox.h"
+#include "FeaturesPlugin_CreateBoundingBox.h"
 
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeDoubleArray.h>
 #include <ModelAPI_AttributeBoolean.h>
+#include <ModelAPI_AttributeDouble.h>
 #include <GeomAlgoAPI_BoundingBox.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_Data.h>
@@ -31,18 +32,19 @@
 #include <GeomAPI_Vertex.h>
 #include <Config_PropManager.h>
 #include <ModelAPI_ResultBody.h>
+#include <GeomAlgoAPI_ShapeTools.h>
 
-#include <FeaturesPlugin_CreateBoundingBox.h>
+#include <PrimitivesPlugin_Box.h>
 
 #include <iomanip>
 #include <sstream>
 #include <iostream>
 
-FeaturesPlugin_BoundingBox::FeaturesPlugin_BoundingBox()
+FeaturesPlugin_CreateBoundingBox::FeaturesPlugin_CreateBoundingBox()
 {
 }
 
-void FeaturesPlugin_BoundingBox::initAttributes()
+void FeaturesPlugin_CreateBoundingBox::initAttributes()
 {
   // attribute for object selected
   data()->addAttribute(OBJECTS_LIST_ID(), ModelAPI_AttributeSelection::typeId());
@@ -53,7 +55,6 @@ void FeaturesPlugin_BoundingBox::initAttributes()
   data()->addAttribute(X_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(Y_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(Z_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(CREATEBOX_ID(), ModelAPI_AttributeBoolean::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), X_MIN_COOD_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Y_MIN_COOD_ID());
@@ -61,7 +62,6 @@ void FeaturesPlugin_BoundingBox::initAttributes()
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), X_MAX_COOD_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Y_MAX_COOD_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Z_MAX_COOD_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), CREATEBOX_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), RESULT_VALUES_ID());
 
   data()->addAttribute(RESULT_VALUES_ID(), ModelAPI_AttributeDoubleArray::typeId());
@@ -70,36 +70,20 @@ void FeaturesPlugin_BoundingBox::initAttributes()
 
 }
 
-void FeaturesPlugin_BoundingBox::execute()
+void FeaturesPlugin_CreateBoundingBox::execute()
 {
-  updateValues();
-  if(boolean(CREATEBOX_ID())->value())
-  {
-    if( !myCreateFeature.get() )
-      createBox();
-    updateBox();
-  }else{
-    if( myCreateFeature.get() )
-    {
-      myCreateFeature->eraseResults();
-      SessionPtr aSession = ModelAPI_Session::get();
-      DocumentPtr aDoc =  aSession->activeDocument();
-      aDoc->removeFeature(myCreateFeature);
-      myCreateFeature.reset();
-    }
-  }
+    updateValues();
+    createBoxByTwoPoints();
 }
 
-void FeaturesPlugin_BoundingBox::attributeChanged(const std::string& theID)
+void FeaturesPlugin_CreateBoundingBox::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECTS_LIST_ID()) {
     updateValues();
-    if( myCreateFeature.get() )
-      updateBox();
   }
 }
 
-void FeaturesPlugin_BoundingBox::updateValues()
+void FeaturesPlugin_CreateBoundingBox::updateValues()
 {
   AttributeSelectionPtr aSelection = selection(OBJECTS_LIST_ID());
   AttributeDoubleArrayPtr aValues =
@@ -150,22 +134,79 @@ void FeaturesPlugin_BoundingBox::updateValues()
 }
 
 //=================================================================================================
-void FeaturesPlugin_BoundingBox::createBox()
+void FeaturesPlugin_CreateBoundingBox::createBoxByTwoPoints()
 {
+  AttributeDoubleArrayPtr aValues =
+      std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(attribute(RESULT_VALUES_ID()));
+
   SessionPtr aSession = ModelAPI_Session::get();
 
   DocumentPtr aDoc =  aSession->activeDocument();
 
-  if (aDoc.get()) {
-    myCreateFeature = aDoc->addFeature(FeaturesPlugin_CreateBoundingBox::ID());
+  GeomVertexPtr vertexFirst =
+          GeomAlgoAPI_PointBuilder::vertex( aValues->value(0),
+                                            aValues->value(2),
+                                            aValues->value(4));
+
+  GeomVertexPtr  vertexSecond =
+          GeomAlgoAPI_PointBuilder::vertex( aValues->value(1),
+                                            aValues->value(3),
+                                            aValues->value(5));
+
+
+  std::shared_ptr<GeomAlgoAPI_Box> aBoxAlgo;
+
+
+  aBoxAlgo = std::shared_ptr<GeomAlgoAPI_Box>(
+                          new GeomAlgoAPI_Box(vertexFirst->point(),vertexSecond->point()));
+
+
+  // These checks should be made to the GUI for the feature but
+  // the corresponding validator does not exist yet.
+  if (!aBoxAlgo->check()) {
+    setError(aBoxAlgo->getError());
+    return;
+  }
+
+  // Build the box
+  aBoxAlgo->build();
+
+  // Check if the creation of the box
+  if(!aBoxAlgo->isDone()) {
+    // The error is not displayed in a popup window. It must be in the message console.
+    setError(aBoxAlgo->getError());
+    return;
+  }
+  if(!aBoxAlgo->checkValid("Box builder with two points")) {
+    // The error is not displayed in a popup window. It must be in the message console.
+    setError(aBoxAlgo->getError());
+    return;
+  }
+
+  int aResultIndex = 0;
+  ResultBodyPtr aResultBox = document()->createBody(data(), aResultIndex);
+  loadNamingDS(aBoxAlgo, aResultBox);
+  setResult(aResultBox, aResultIndex);
+}
+
+//=================================================================================================
+void FeaturesPlugin_CreateBoundingBox::loadNamingDS(std::shared_ptr<GeomAlgoAPI_Box> theBoxAlgo,
+                                        std::shared_ptr<ModelAPI_ResultBody> theResultBox)
+{
+  // Load the result
+  theResultBox->store(theBoxAlgo->shape());
+
+  // Prepare the naming
+  theBoxAlgo->prepareNamingFaces();
+
+  // Insert to faces
+  std::map< std::string, std::shared_ptr<GeomAPI_Shape> > listOfFaces =
+    theBoxAlgo->getCreatedFaces();
+  for (std::map< std::string, std::shared_ptr<GeomAPI_Shape> >::iterator it = listOfFaces.begin();
+       it != listOfFaces.end();
+       ++it)
+  {
+    theResultBox->generated((*it).second, (*it).first);
   }
 }
 
-void FeaturesPlugin_BoundingBox::updateBox()
-{
-    myCreateFeature->selection(FeaturesPlugin_CreateBoundingBox::OBJECTS_LIST_ID())
-                          ->setValue( selection(OBJECTS_LIST_ID())->context() ,
-                                      selection(OBJECTS_LIST_ID())->value() );
-
-    myCreateFeature->execute();
-}

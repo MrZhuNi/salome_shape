@@ -22,7 +22,7 @@
 
 #include "FeaturesAPI.h"
 
-#include "FeaturesPlugin_BoundingBox.h"
+#include "FeaturesPlugin_CreateBoundingBox.h"
 
 #include <ModelHighAPI_Interface.h>
 #include <ModelHighAPI_Macro.h>
@@ -50,8 +50,8 @@ public:
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_BoundingBox();
 
-    INTERFACE_1(FeaturesPlugin_BoundingBox::ID(),
-              objectselected, FeaturesPlugin_BoundingBox::OBJECTS_LIST_ID(),
+    INTERFACE_1(FeaturesPlugin_CreateBoundingBox::ID(),
+              objectselected, FeaturesPlugin_CreateBoundingBox::OBJECTS_LIST_ID(),
                               ModelAPI_AttributeSelection,
                               /** object selected*/)
 

@@ -70,7 +70,9 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_Fillet.h
     FeaturesPlugin_Fillet1D.h
     FeaturesPlugin_Measurement.h
+    FeaturesPlugin_GeometryCalculation.h
     FeaturesPlugin_BoundingBox.h
+    FeaturesPlugin_CreateBoundingBox.h
     FeaturesPlugin_FusionFaces.h
     FeaturesPlugin_RemoveResults.h
     FeaturesPlugin_Chamfer.h
@@ -118,7 +120,9 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_Fillet.cpp
     FeaturesPlugin_Fillet1D.cpp
     FeaturesPlugin_Measurement.cpp
+    FeaturesPlugin_GeometryCalculation.cpp
     FeaturesPlugin_BoundingBox.cpp
+    FeaturesPlugin_CreateBoundingBox.cpp
     FeaturesPlugin_FusionFaces.cpp
     FeaturesPlugin_RemoveResults.cpp
     FeaturesPlugin_Chamfer.cpp
@@ -157,7 +161,9 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
+  GeometryCalculation_widget.xml
   BoundingBox_widget.xml
+  CreateBoundingBox_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml
@@ -701,4 +707,5 @@ ADD_UNIT_TESTS(TestExtrusion.py
                TestFillet1D_Wire_3.py
                TestFillet1D_Wire_4.py
                TestFillet1D_Wire_5.py
+               TestBoundingBox.py
 )

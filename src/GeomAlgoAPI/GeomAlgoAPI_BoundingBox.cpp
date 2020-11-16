@@ -355,7 +355,7 @@ bool GetBoundingBox(  const std::shared_ptr<GeomAPI_Shape>& theShape,
   #endif
 
   if (!theShape.get()) {
-    theError = "GetBasicProperties : An invalid argument";
+    theError = "GetBoundingBox : An invalid argument";
     return false;
   }
 

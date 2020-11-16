@@ -17,26 +17,25 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef FeaturesPlugin_BoundingBox_H_
-#define FeaturesPlugin_BoundingBox_H_
+#ifndef FeaturesPlugin_GeometryCalculation_H_
+#define FeaturesPlugin_GeometryCalculation_H_
 
 #include "FeaturesPlugin.h"
 #include <ModelAPI_Feature.h>
 
 #include <GeomAPI_IPresentable.h>
 #include <GeomAPI_IScreenParams.h>
-#include <GeomAlgoAPI_Box.h>
 
-/// \class FeaturesPlugin_BoundingBox
+/// \class FeaturesPlugin_GeometryCalculation
 /// \ingroup Plugins
-/// \brief Feature to view the Bounding Box.
+/// \brief Feature for geometry calculation.
 
-class FeaturesPlugin_BoundingBox : public ModelAPI_Feature
+class FeaturesPlugin_GeometryCalculation : public ModelAPI_Feature
 {
 public:
    inline static const std::string& ID()
   {
-    static const std::string MY_ID("BoundingBoxMacro");
+    static const std::string MY_ID("GeometryCalculation");
     return MY_ID;
   }
 
@@ -47,59 +46,31 @@ public:
   }
 
   /// Attribute name for object selected.
-  inline static const std::string& OBJECTS_LIST_ID()
+  inline static const std::string& OBJECT_SELECTED_ID()
   {
-    static const std::string MY_OBJECTS_LIST_ID("main_objects");
-    return MY_OBJECTS_LIST_ID;
+    static const std::string MY_OBJECT_SELECTED_ID("main_object");
+    return MY_OBJECT_SELECTED_ID;
   }
 
-  /// Attribute name for x coodinate.
-  inline static const std::string& X_MIN_COOD_ID()
+  /// Attribute name for lenght
+  inline static const std::string& LENGHT_ID()
   {
-    static const std::string MY_X_MIN_COOD_ID("xmincoordinate");
-    return MY_X_MIN_COOD_ID;
+    static const std::string MY_LENGHT_ID("lenght");
+    return MY_LENGHT_ID;
   }
 
-  /// Attribute name for y coodinate.
-  inline static const std::string& Y_MIN_COOD_ID()
+  /// Attribute name for area
+  inline static const std::string& AREA_ID()
   {
-    static const std::string MY_Y_MIN_COOD_ID("ymincoordinate");
-    return MY_Y_MIN_COOD_ID;
+    static const std::string MY_AREA_ID("area");
+    return MY_AREA_ID;
   }
 
-  /// Attribute name for z coodinate.
-  inline static const std::string& Z_MIN_COOD_ID()
+  /// Attribute name for volume.
+  inline static const std::string& VOLUME_ID()
   {
-    static const std::string MY_Z_MIN_COOD_ID("zmincoordinate");
-    return MY_Z_MIN_COOD_ID;
-  }
-
-    /// Attribute name for x max coodinate.
-  inline static const std::string& X_MAX_COOD_ID()
-  {
-    static const std::string MY_X_MAX_COOD_ID("xmaxcoordinate");
-    return MY_X_MAX_COOD_ID;
-  }
-
-  /// Attribute name for y max coodinate.
-  inline static const std::string& Y_MAX_COOD_ID()
-  {
-    static const std::string MY_Y_MAX_COOOD_ID("ymaxcoordinate");
-    return MY_Y_MAX_COOOD_ID;
-  }
-
-  /// Attribute name for z max coodinate.
-  inline static const std::string& Z_MAX_COOD_ID()
-  {
-    static const std::string MY_Z_MAX_COOD_ID("zmaxcoordinate");
-    return MY_Z_MAX_COOD_ID;
-  }
-
-   /// Attribute name for checkbox create box.
-  inline static const std::string& CREATEBOX_ID()
-  {
-    static const std::string MY_CREATEBOX_ID("createbox");
-    return MY_CREATEBOX_ID;
+    static const std::string MY_VOLUME_ID("volume");
+    return MY_VOLUME_ID;
   }
 
    /// Attribute name for values of result.
@@ -123,13 +94,7 @@ public:
   FEATURESPLUGIN_EXPORT virtual bool isMacro() const { return true; }
 
   /// Use plugin manager for features creation
-  FeaturesPlugin_BoundingBox();
-
-  private:
-  void updateValues();
-  void createBox();
-  void updateBox();
-  FeaturePtr myCreateFeature;
+  FeaturesPlugin_GeometryCalculation();
 
 };
 
