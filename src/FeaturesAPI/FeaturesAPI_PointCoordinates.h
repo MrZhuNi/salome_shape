@@ -29,9 +29,9 @@ class ModelAPI_Document;
 class ModelHighAPI_Selection;
 
 /// \ingroup CPPHighAPI
-/// \brief ???
+/// \brief  Get the point coordinates.
 FEATURESAPI_EXPORT
-std::list<double> pointCoordinates(const std::shared_ptr<ModelAPI_Document>& thePart,
-                                   const ModelHighAPI_Selection& thePoint);
+std::list<double> getPointCoordinates(const std::shared_ptr<ModelAPI_Document>& thePart,
+                                      const ModelHighAPI_Selection& thePoint);
 
 #endif // FeaturesAPI_PointCoordinates_H_
