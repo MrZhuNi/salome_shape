@@ -127,48 +127,54 @@ void InitializationPlugin_EvalListener::processEvent(
     AttributeStringPtr anExprAttr;
     ModelAPI_AttributeTables::Value aVal;
     bool anIsFirstTime = true;
+    anExprAttr = aParam->string(BuildPlugin_Interpolation::XT_ID());
+    std::wstring anExpX = anExprAttr->isUValue() ?
+    Locale::Convert::toWString(anExprAttr->valueU()) :
+    Locale::Convert::toWString(anExprAttr->value());
+    anExpX.erase(std::remove(anExpX.begin(), anExpX.end(), ' '), anExpX.end());
+    anExprAttr = aParam->string(BuildPlugin_Interpolation::YT_ID());
+    std::wstring anExpY = anExprAttr->isUValue() ?
+    Locale::Convert::toWString(anExprAttr->valueU()) :
+    Locale::Convert::toWString(anExprAttr->value());
+    anExpY.erase(std::remove(anExpY.begin(), anExpY.end(), ' '), anExpY.end());
+    anExprAttr = aParam->string(BuildPlugin_Interpolation::ZT_ID());
+    std::wstring anExpZ = anExprAttr->isUValue() ?
+    Locale::Convert::toWString(anExprAttr->valueU()) :
+    Locale::Convert::toWString(anExprAttr->value());
+    anExpZ.erase(std::remove(anExpZ.begin(),anExpZ.end(), ' '), anExpZ.end());
+
     for(int step =0; step < anValueAttr->rows(); step++ ){
-        anExprAttr = aParam->string(BuildPlugin_Interpolation::XT_ID());
-        std::wstring anExp = anExprAttr->isUValue() ?
-        Locale::Convert::toWString(anExprAttr->valueU()) :
-        Locale::Convert::toWString(anExprAttr->value());
-        aVal.myDouble = evaluate(anVar,
-                                 anValueAttr->value(step,0).myDouble,
-                                 aParam,
-                                 anExp,
-                                 anError,
-                                 aParamsList,
-                                 anIsFirstTime);
-        if(!anError.empty()) break;
-        anValueAttr->setValue(aVal,step,1);
-        anExprAttr = aParam->string(BuildPlugin_Interpolation::YT_ID());
-        anExp = anExprAttr->isUValue() ?
-        Locale::Convert::toWString(anExprAttr->valueU()) :
-        Locale::Convert::toWString(anExprAttr->value());
-        aVal.myDouble = evaluate(anVar,
+      aVal.myDouble = evaluate(anVar,
                                 anValueAttr->value(step,0).myDouble,
                                 aParam,
-                                anExp,
+                                anExpX,
                                 anError,
                                 aParamsList,
                                 anIsFirstTime);
-        if(!anError.empty()) break;
-        anValueAttr->setValue(aVal,step,2);
-        anExprAttr = aParam->string(BuildPlugin_Interpolation::ZT_ID());
-        anExp = anExprAttr->isUValue() ?
-        Locale::Convert::toWString(anExprAttr->valueU()) :
-        Locale::Convert::toWString(anExprAttr->value());
-        aVal.myDouble = evaluate(anVar,
-                                 anValueAttr->value(step,0).myDouble,
-                                 aParam,
-                                 anExp,
-                                 anError,
-                                 aParamsList,
-                                 anIsFirstTime);
-        if(!anError.empty()) break;     
-        anValueAttr->setValue(aVal,step,3);
-        if ( anIsFirstTime )
-            anIsFirstTime = false;
+      if(!anError.empty()) break;
+      anValueAttr->setValue(aVal,step,1);
+      
+      aVal.myDouble = evaluate(anVar,
+                              anValueAttr->value(step,0).myDouble,
+                              aParam,
+                              anExpY,
+                              anError,
+                              aParamsList,
+                              anIsFirstTime);
+      if(!anError.empty()) break;
+      anValueAttr->setValue(aVal,step,2);
+      
+      aVal.myDouble = evaluate(anVar,
+                                anValueAttr->value(step,0).myDouble,
+                                aParam,
+                                anExpZ,
+                                anError,
+                                aParamsList,
+                                anIsFirstTime);
+      if(!anError.empty()) break;
+      anValueAttr->setValue(aVal,step,3);
+      if ( anIsFirstTime )
+          anIsFirstTime = false;
     }
 
     aMsg->setResults(aParamsList, anError);
@@ -184,9 +190,14 @@ double InitializationPlugin_EvalListener::evaluate(
   std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
   bool theIsFirstTime)
 {
+  std::list<std::wstring> aContext;
+  aContext.push_back(theVariable + L"=" + toString(theValueVariable));
+  myInterp->extendLocalContext(aContext);
+  aContext.clear();
+
   std::list<std::wstring> anExprParams = myInterp->compile(theExpression);
   // find expression's params in the model
-  std::list<std::wstring> aContext;
+  
   std::list<std::wstring>::iterator it = anExprParams.begin();
   for ( ; it != anExprParams.end(); it++) {
     double aValue;
@@ -206,7 +217,6 @@ double InitializationPlugin_EvalListener::evaluate(
 
     aContext.push_back(*it + L"=" + toString(aValue));
   }
-  aContext.push_back(theVariable + L"=" + toString(theValueVariable));
   myInterp->extendLocalContext(aContext);
   double result = myInterp->evaluate(theExpression, theError);
   myInterp->clearLocalContext();
