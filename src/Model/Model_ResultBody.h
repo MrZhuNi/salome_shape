@@ -117,7 +117,7 @@ protected:
   /// Makes a body on the given feature
   Model_ResultBody();
 
-/// Updates the sub-bodies if shape of this object is composite-solid
+  /// Updates the sub-bodies if shape of this object is composite-solid
   void updateSubs(const std::shared_ptr<GeomAPI_Shape>& theThisShape,
                   const bool theShapeChanged = true);
 
@@ -126,7 +126,7 @@ protected:
     const GeomShapePtr& theThisShape, const std::list<GeomShapePtr>& theOlds,
     const std::shared_ptr<GeomAlgoAPI_MakeShape> theMakeShape, const bool isGenerated);
 
-  // Checks the state of children and parents to send events of creation/erase when needed
+  /// Checks the state of children and parents to send events of creation/erase when needed
   void updateConcealment();
 
   /// Adds to theOldForSub only old shapes that where used for theSub creation
@@ -135,23 +135,23 @@ protected:
 
   friend class Model_Objects;
 
-  // Add shape Name for read shape in step file
+  /// Add shape Name for read shape in step file
   std::wstring addShapeName(std::shared_ptr<GeomAPI_Shape>,const std::wstring& theName) override;
-  // Add color for shape Name read shape in step file
+  /// Add color for shape Name read shape in step file
   void addShapeColor( const std::wstring& theName,std::vector<int>& color) override;
-  // Set the map of name and color read shape in step file
+  /// Set the map of name and color read shape in step file
   void setShapeName(std::map< std::wstring,
                               std::shared_ptr<GeomAPI_Shape> > &theshapename,
                               std::map< std::wstring,
                               std::vector<int>> & theColorsShape) override;
-  // find the name of shapp read in step file
+  /// find the name of shapp read in step file
   std::wstring findShapeName(std::shared_ptr<GeomAPI_Shape> theshape) override;
-  // Clear the map of name and color read shape in step file
+  /// Clear the map of name and color read shape in step file
   void clearShapeNameAndColor() override;
 
-  // map with the name read in step file and shape
+  /// map with the name read in step file and shape
   std::map< std::wstring, std::shared_ptr<GeomAPI_Shape> > myNamesShape;
-  // map with the name contruct and color read
+  /// map with the name contruct and color read
   std::map< std::wstring, std::vector<int>> myColorsShape;
 
 };

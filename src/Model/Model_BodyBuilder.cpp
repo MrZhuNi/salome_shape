@@ -186,12 +186,12 @@ void Model_BodyBuilder::store(const GeomShapePtr& theShape,
     if (aShape.IsNull())
       return;  // null shape inside
 
-    if(!theIsStoreSameShapes) {
+    if (!theIsStoreSameShapes) {
       Handle(TNaming_NamedShape) aNS;
       if (TNaming_Tool::HasLabel(aShapeLab, aShape))
         aNS = TNaming_Tool::NamedShape(aShape, aShapeLab);
       // the last condition is for the issue 2751 : existing shape may be found in compound-NS
-      if(!aNS.IsNull() && !aNS->IsEmpty() && aNS->Get().IsSame(aShape)) {
+      if (!aNS.IsNull() && !aNS->IsEmpty() && aNS->Get().IsSame(aShape)) {
         // This shape is already in document, store reference instead of shape;
         const TDF_Label aFoundLabel = aNS->Label();
         TDF_Reference::Set(aShapeLab, aFoundLabel);
@@ -203,11 +203,11 @@ void Model_BodyBuilder::store(const GeomShapePtr& theShape,
     aBuilder.Generated(aShape);
     // register name
     aShapeLab.ForgetAttribute(TDF_Reference::GetID());
-    if(!aBuilder.NamedShape()->IsEmpty()) {
+    if (!aBuilder.NamedShape()->IsEmpty()) {
       Handle(TDataStd_Name) anAttr;
-      if(aBuilder.NamedShape()->Label().FindAttribute(TDataStd_Name::GetID(),anAttr)) {
+      if (aBuilder.NamedShape()->Label().FindAttribute(TDataStd_Name::GetID(),anAttr)) {
         std::wstring aName = Locale::Convert::toWString(anAttr->Get().ToExtString());
-        if(!aName.empty()) {
+        if (!aName.empty()) {
           std::shared_ptr<Model_Document> aDoc =
             std::dynamic_pointer_cast<Model_Document>(document());
           aDoc->addNamingName(aBuilder.NamedShape()->Label(), aName);
@@ -255,11 +255,11 @@ void Model_BodyBuilder::storeGenerated(const GeomShapePtr& theFromShape,
     }
 
     // register name
-    if(!aBuilder->NamedShape()->IsEmpty()) {
+    if (!aBuilder->NamedShape()->IsEmpty()) {
       Handle(TDataStd_Name) anAttr;
-      if(aBuilder->NamedShape()->Label().FindAttribute(TDataStd_Name::GetID(),anAttr)) {
+      if (aBuilder->NamedShape()->Label().FindAttribute(TDataStd_Name::GetID(),anAttr)) {
         std::wstring aName = Locale::Convert::toWString(anAttr->Get().ToExtString());
-        if(!aName.empty()) {
+        if (!aName.empty()) {
           std::shared_ptr<Model_Document> aDoc =
             std::dynamic_pointer_cast<Model_Document>(document());
           aDoc->addNamingName(aBuilder->NamedShape()->Label(), aName);
@@ -369,11 +369,11 @@ void Model_BodyBuilder::storeModified(const GeomShapePtr& theOldShape,
       storeExternalReference(anOriginalLabel, aBuilder->NamedShape()->Label());
     }
 
-    if(!aBuilder->NamedShape()->IsEmpty()) {
+    if (!aBuilder->NamedShape()->IsEmpty()) {
       Handle(TDataStd_Name) anAttr;
-      if(aBuilder->NamedShape()->Label().FindAttribute(TDataStd_Name::GetID(), anAttr)) {
+      if (aBuilder->NamedShape()->Label().FindAttribute(TDataStd_Name::GetID(), anAttr)) {
         std::wstring aName = Locale::Convert::toWString(anAttr->Get().ToExtString());
-        if(!aName.empty()) {
+        if (!aName.empty()) {
           std::shared_ptr<Model_Document> aDoc =
             std::dynamic_pointer_cast<Model_Document>(document());
           aDoc->addNamingName(aBuilder->NamedShape()->Label(), aName);
@@ -504,8 +504,7 @@ bool Model_BodyBuilder::generated(const GeomShapePtr& theNewShape,
       if (anIndexTags.index == 2) {
         buildName(anIndexTags.tags.front(), theName + "_1");
       }
-    }
-    else {
+    } else {
       IndexTags anIndexTags;
       anIndexTags.index = 1;
       anIndexTags.tags.push_back(myFreePrimitiveTag);
@@ -806,7 +805,7 @@ void loadGeneratedDangleShapes(
 void Model_BodyBuilder::loadNextLevels(GeomShapePtr theShape,
                                        const std::string& theName)
 {
-  if(theShape->isNull()) return;
+  if (theShape->isNull()) return;
   TopoDS_Shape aShape = theShape->impl<TopoDS_Shape>();
   std::string aName;
   if (aShape.ShapeType() == TopAbs_SOLID) {
@@ -850,7 +849,7 @@ void Model_BodyBuilder::loadNextLevels(GeomShapePtr theShape,
         TopTools_ListIteratorOfListOfShape anIter(aLL);
         const TopoDS_Face& aFace = TopoDS::Face(anIter.Value());
         anIter.Next();
-        if(aFace.IsEqual(anIter.Value())) {
+        if (aFace.IsEqual(anIter.Value())) {
           builder(myFreePrimitiveTag)->Generated(anEdgeAndNeighbourFaces.FindKey(i));
           TCollection_AsciiString aStr(myFreePrimitiveTag - PRIMITIVES_START_TAG + 1);
           aName = theName + "_" + aStr.ToCString();
@@ -994,7 +993,7 @@ void Model_BodyBuilder::loadFirstLevel(GeomShapePtr theShape, const std::string&
     loadNextLevels(itrShape, theName);
   }
   TopTools_ListOfShape   aList;
-  if(findAmbiguities(aShape, aList)) {
+  if (findAmbiguities(aShape, aList)) {
     TopTools_ListIteratorOfListOfShape it(aList);
     for (; it.More(); it.Next(), ++myFreePrimitiveTag) {
       builder(myFreePrimitiveTag)->Generated(it.Value());

@@ -127,7 +127,7 @@ The **Import to** combobox provides the list of destinations (one of existing Pa
 
 **TUI Command**:
 
-.. py:function:: model.addImportStep(Part_doc, FileNameString,scalInterUnits,materials,colors)
+.. py:function:: model.addImportSTEP(Part_doc, FileNameString,scalInterUnits,materials,colors)
 
     :param part: The current part object
     :param string: A file name string.

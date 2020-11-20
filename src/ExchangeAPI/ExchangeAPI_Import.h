@@ -103,7 +103,7 @@ ImportPtr addImport(const std::shared_ptr<ModelAPI_Document> & thePart,
  * \brief Create Import Step feature
  */
 EXCHANGEAPI_EXPORT
-ImportPtr addImportStep(const std::shared_ptr<ModelAPI_Document> & thePart,
+ImportPtr addImportSTEP(const std::shared_ptr<ModelAPI_Document> & thePart,
                         const std::string & theFilePath,
                         const bool  anScalInterUnits,
                         const bool  anMaterials,

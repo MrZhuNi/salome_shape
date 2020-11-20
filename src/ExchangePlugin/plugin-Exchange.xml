@@ -40,16 +40,13 @@
       </feature>
       <feature id="Import" title="Import" tooltip="Import a file" icon="icons/Exchange/import.png"
                helpfile="importFeature.html" internal="1">
-        <!--file_selector id="file_path" title="Import file" path="">
-          <validator id="ExchangePlugin_ImportFormat" parameters="BREP|BRP:BREP,STEP|STP:STEP,IGES|IGS:IGES,XAO:XAO" />
-        </file_selector-->
         <switch id="ImportType">
-        <case id="Regular" title="BREP, XAO, IGES">
-          <file_selector id="file_path" title="Import file" path="">
-              <validator id="ExchangePlugin_ImportFormat" parameters="BREP|BRP:BREP,IGES|IGS:IGES,XAO:XAO" />
-          </file_selector>
-        </case>
-        <case id="STEP" title="STEP">
+          <case id="Regular" title="BREP, XAO, IGES">
+            <file_selector id="file_path" title="Import file" path="">
+                <validator id="ExchangePlugin_ImportFormat" parameters="BREP|BRP:BREP,IGES|IGS:IGES,XAO:XAO" />
+            </file_selector>
+          </case>
+          <case id="STEP" title="STEP">
             <file_selector id="step_file_path" title="Import file" path="">
               <validator id="ExchangePlugin_ImportFormat" parameters="STEP|STP:STEP" />
             </file_selector>

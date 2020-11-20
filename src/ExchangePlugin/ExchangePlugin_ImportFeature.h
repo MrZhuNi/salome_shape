@@ -139,15 +139,15 @@ private:
   /// Loads Naming data structure to the document
   void loadNamingDS(std::shared_ptr<GeomAPI_Shape> theGeomShape,
                     std::shared_ptr<ModelAPI_ResultBody> theResultBody);
-  // Set groups of color
+  /// Set groups of color
   void setColorGroups(std::shared_ptr<ModelAPI_ResultBody> theResultBody);
 
-  // set a group of color
+  /// set a group of color
   void setColorGroup(std::shared_ptr<ModelAPI_ResultBody> theResultBody,
                      std::vector<int> &aColor,
                      const std::wstring& theName );
 
-  // set Materiel group of color
+  /// set Materiel group of color
   void setMaterielGroup(std::shared_ptr<ModelAPI_ResultBody> theResultBody,
                         std::map< std::wstring, std::list<std::wstring>> &theMaterialShape);
 

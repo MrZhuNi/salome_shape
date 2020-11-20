@@ -18,6 +18,7 @@
 //
 
 #include <GeomAlgoAPI_STEPImport.h>
+#include <GeomAlgoAPI_STEPImportXCAF.h>
 
 #include <TDF_ChildIDIterator.hxx>
 #include <TDF_Label.hxx>
@@ -31,6 +32,8 @@
 #include <Interface_Graph.hxx>
 #include <Interface_InterfaceModel.hxx>
 #include <Interface_Static.hxx>
+
+#include <STEPCAFControl_Reader.hxx>
 #include <STEPControl_Reader.hxx>
 #include <StepBasic_Product.hxx>
 #include <StepBasic_ProductDefinition.hxx>
@@ -55,25 +58,10 @@
 #include <TopoDS_Compound.hxx>
 #include <TopoDS_Iterator.hxx>
 
-//JL_CGLB
-#include <XCAFApp_Application.hxx>
-#include <XCAFDoc_DocumentTool.hxx>
-#include <OSD_Exception.hxx>
-#include <STEPCAFControl_Reader.hxx>
-#include <TDocStd_Document.hxx>
-#include <XCAFDoc_ColorTool.hxx>
-#include <XCAFDoc_ShapeTool.hxx>
-#include <GeomAlgoAPI_STEPImportXCAF.h>
-#include <Quantity_Color.hxx>
-
-#include <TColStd_SequenceOfAsciiString.hxx>
-#include <TCollection_ExtendedString.hxx>
-
-#include <Standard_Failure.hxx>
 #include <Standard_ErrorHandler.hxx> // CAREFUL ! position of this file is critic : see Lucien PIGNOLONI / OCC
 
-// ----------------------------------------------------------------------------
 
+//==================================================================================================
 std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
                                           const std::string& theFormatName,
                                           const bool theScalInterUnits,
@@ -210,20 +198,20 @@ std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
   return aGeomShape;
 }
 
-
-std::shared_ptr<GeomAPI_Shape>  STEPImportAttributs(const std::string& theFileName,
-                                              std::shared_ptr<ModelAPI_ResultBody> theResultBody,
-                                              const bool  theScalInterUnits,
-                                              const bool  theMaterials,
-                                              const bool  theColor,
-                                              std::map< std::wstring,
-                                              std::list<std::wstring>> &theMaterialShape,
-                                              std::string& theError)
+//==================================================================================================
+GeomShapePtr STEPImportAttributs(const std::string& theFileName,
+                                 std::shared_ptr<ModelAPI_ResultBody> theResultBody,
+                                 const bool  theScalInterUnits,
+                                 const bool  theMaterials,
+                                 const bool  theColor,
+                                 std::map< std::wstring,
+                                 std::list<std::wstring>> &theMaterialShape,
+                                 std::string& theError)
 {
 
   STEPControl_Reader aReader;
   std::shared_ptr<GeomAPI_Shape> aGeomShape(new GeomAPI_Shape);
-  //VSR: 16/09/09: Convert to METERS
+
   Interface_Static::SetCVal("xstep.cascade.unit","M");
   Interface_Static::SetIVal("read.step.ideas", 1);
   Interface_Static::SetIVal("read.step.nonmanifold", 1);
@@ -293,4 +281,3 @@ std::shared_ptr<GeomAPI_Shape>  STEPImportAttributs(const std::string& theFileNa
                         theMaterialShape,
                         theError);
 }
-

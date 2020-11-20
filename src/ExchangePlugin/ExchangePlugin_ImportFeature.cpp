@@ -119,7 +119,7 @@ void ExchangePlugin_ImportFeature::execute()
   if (aFormat == "STEP" || aFormat == "STP")
   {
     aFilePathAttr = string(ExchangePlugin_ImportFeature::STEP_FILE_PATH_ID());
-  }else{
+  } else {
     aFilePathAttr = string(ExchangePlugin_ImportFeature::FILE_PATH_ID());
   }
   std::string aFilePath = aFilePathAttr->value();
@@ -248,14 +248,14 @@ void ExchangePlugin_ImportFeature::setColorGroups(
   for(std::list<ResultPtr>::iterator aRes = allRes.begin(); aRes != allRes.end(); ++aRes) {
     ModelAPI_Tools::getColor(*aRes, aColor);
     if (!aColor.empty() ){
-        auto it = std::find(aColorsRead.begin(), aColorsRead.end(), aColor);
-        if ( it == aColorsRead.end() ){
-             std::wstringstream aColorName;
-            aColorName<<L"Color_"<< anIndice;
-            setColorGroup(theResultBody, aColor, aColorName.str());
-            anIndice++;
-            aColorsRead.push_back(aColor);
-        }
+      auto it = std::find(aColorsRead.begin(), aColorsRead.end(), aColor);
+      if ( it == aColorsRead.end() ){
+        std::wstringstream aColorName;
+        aColorName<<L"Color_"<< anIndice;
+        setColorGroup(theResultBody, aColor, aColorName.str());
+        anIndice++;
+        aColorsRead.push_back(aColor);
+      }
     }
   }
 }
@@ -276,7 +276,7 @@ void ExchangePlugin_ImportFeature::setColorGroup(
 
   ModelAPI_Tools::getColor(theResultBody, aColor);
   if (!aColor.empty() ){
-    if( aColor == theColor ) {
+    if (aColor == theColor ) {
       GeomShapePtr aShape = theResultBody->shape();
       aSelectionList->setSelectionType(aShape->shapeTypeStr() );
       aSelectionList->append(theResultBody,aShape);
@@ -291,9 +291,9 @@ void ExchangePlugin_ImportFeature::setColorGroup(
     GeomShapePtr aShape = (*aRes)->shape();
 
     if (!aColor.empty() ){
-      if( aRes->get() &&  aColor == theColor ) {
-          aSelectionList->setSelectionType(aShape->shapeTypeStr() );
-          aSelectionList->append(theResultBody,aShape);
+      if (aRes->get() &&  aColor == theColor ) {
+        aSelectionList->setSelectionType(aShape->shapeTypeStr() );
+        aSelectionList->append(theResultBody,aShape);
       }
     }
   }
@@ -331,7 +331,7 @@ void ExchangePlugin_ImportFeature::setMaterielGroup(
       GeomShapePtr aShape = (*aRes)->shape();
       for(std::list<std::wstring>::iterator aResMat = anIt->second.begin();
                                  aResMat != anIt->second.end(); ++aResMat) {
-        if( aRes->get() && ((*aRes)->data()->name() == (*aResMat)))
+        if (aRes->get() && ((*aRes)->data()->name() == (*aResMat)))
         {
           aSelectionList->append(theResultBody,aShape);
           aSelectionList->setSelectionType(aShape->shapeTypeStr() );

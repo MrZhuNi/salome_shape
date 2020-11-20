@@ -82,11 +82,11 @@ void ExchangeAPI_Import::setParameters(const std::string & theFilePath,
 //--------------------------------------------------------------------------------------
 void ExchangeAPI_Import::setFilePath(const std::string & theFilePath)
 {
-  
+
   std::string anExtension = GeomAlgoAPI_Tools::File_Tools::extension(theFilePath);
   if (anExtension == "STEP" || anExtension == "STP") {
     setParameters(theFilePath,true,false,false);
-  }else{
+  } else {
     fillAttribute(theFilePath, myfilePath);
     fillAttribute(anExtension, myimportType);
     execute();
@@ -106,7 +106,7 @@ void ExchangeAPI_Import::dump(ModelHighAPI_Dumper& theDumper) const
   if (aFormat == "STEP" || aFormat == "STP")
   {
     aFilePath = aBase->string(ExchangePlugin_ImportFeature::STEP_FILE_PATH_ID())->value();
-  }else{
+  } else {
     aFilePath = aBase->string(ExchangePlugin_ImportFeature::FILE_PATH_ID())->value();
   }
 
@@ -119,14 +119,14 @@ void ExchangeAPI_Import::dump(ModelHighAPI_Dumper& theDumper) const
     aPos += aTo.size();
   }
   std::string anExtension = GeomAlgoAPI_Tools::File_Tools::extension(aFilePath);
-  if( anExtension == "STP" || anExtension == "STEP"){
-      theDumper << aBase << " = model.addImportStep(" << aPartName << ", \""
+  if (anExtension == "STP" || anExtension == "STEP"){
+      theDumper << aBase << " = model.addImportSTEP(" << aPartName << ", \""
                 << aFilePath << "\"" ;
 
       theDumper << ", " << scalInterUnits()->value()
                 << ", " << materials()->value()
                 << ", " << colors()->value() << ")"<< std::endl;
-  }else{
+  } else {
       theDumper << aBase << " = model.addImport(" << aPartName << ", \""
             << aFilePath << "\")" << std::endl;
   }
@@ -136,7 +136,7 @@ void ExchangeAPI_Import::dump(ModelHighAPI_Dumper& theDumper) const
 
   CompositeFeaturePtr aCompositeFeature =
     std::dynamic_pointer_cast<ModelAPI_CompositeFeature>(aBase);
-  if(aCompositeFeature.get()) {
+  if (aCompositeFeature.get()) {
     int aNbOfSubs = aCompositeFeature->numberOfSubs();
     for(int anIndex = 0; anIndex < aNbOfSubs; ++anIndex) {
       std::string aSubFeatureGet =
@@ -155,7 +155,7 @@ ImportPtr addImport(
   return ImportPtr(new ExchangeAPI_Import(aFeature, theFilePath));
 }
 
-ImportPtr addImportStep(
+ImportPtr addImportSTEP(
     const std::shared_ptr<ModelAPI_Document> & thePart,
     const std::string & theFilePath,
     const bool  theScalInterUnits,

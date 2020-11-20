@@ -37,13 +37,13 @@ std::shared_ptr<GeomAPI_Shape> STEPImport(const std::string& theFileName,
 
 /// Implementation of the import STEP files algorithms with Attributs (Name, Color, Materials)
 GEOMALGOAPI_EXPORT
-std::shared_ptr<GeomAPI_Shape>  STEPImportAttributs(const std::string& theFileName,
-                                                std::shared_ptr<ModelAPI_ResultBody> theResultBody,
-                                                const bool  anScalInterUnits,
-                                                const bool  anMaterials,
-                                                const bool  anColor,
-                                                std::map< std::wstring,
-                                                std::list<std::wstring>> &theMaterialShape,
-                                                std::string& theError);
+GeomShapePtr  STEPImportAttributs(const std::string& theFileName,
+                                  std::shared_ptr<ModelAPI_ResultBody> theResultBody,
+                                  const bool  anScalInterUnits,
+                                  const bool  anMaterials,
+                                  const bool  anColor,
+                                  std::map< std::wstring,
+                                  std::list<std::wstring>> &theMaterialShape,
+                                  std::string& theError);
 
 #endif /* GEOMALGOAPI_STEPIMPORT_H_ */

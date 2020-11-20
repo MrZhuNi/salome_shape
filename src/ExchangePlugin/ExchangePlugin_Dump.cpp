@@ -93,10 +93,10 @@ void ExchangePlugin_Dump::dump(const std::string& theFileName)
   DocumentPtr aDoc = ModelAPI_Session::get()->moduleDocument();
 
   int aFeaturesNb = aDoc->size(ModelAPI_Feature::group());
-  if(aFeaturesNb > 1) {
+  if (aFeaturesNb > 1) {
     FeaturePtr aLastFeature =
         ModelAPI_Feature::feature(aDoc->object(ModelAPI_Feature::group(), aFeaturesNb - 1));
-    if(aDoc->currentFeature(true) != aLastFeature) {
+    if (aDoc->currentFeature(true) != aLastFeature) {
         setError("Dump cannot be done. Please move the history line to the end before dumping.");
         return;
     }
@@ -104,10 +104,10 @@ void ExchangePlugin_Dump::dump(const std::string& theFileName)
 
   DocumentPtr anActiveDoc = ModelAPI_Session::get()->activeDocument();
   aFeaturesNb = anActiveDoc->size(ModelAPI_Feature::group());
-  if(aFeaturesNb > 1) {
+  if (aFeaturesNb > 1) {
     FeaturePtr aLastFeature =
         ModelAPI_Feature::feature(anActiveDoc->object(ModelAPI_Feature::group(), aFeaturesNb - 1));
-    if(anActiveDoc->currentFeature(true) != aLastFeature) {
+    if (anActiveDoc->currentFeature(true) != aLastFeature) {
       setError("Dump cannot be done. Please move the history line to the end before dumping.");
       return;
     }
