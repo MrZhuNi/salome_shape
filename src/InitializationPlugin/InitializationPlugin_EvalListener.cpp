@@ -49,7 +49,7 @@
 #include <iostream>
 #include <algorithm>
 
-//------------------------------------------------------------------------------
+//=================================================================================================
 // Tools
 
 std::wstring toString(double theValue)
@@ -67,7 +67,7 @@ std::set<std::wstring> toSet(const std::list<std::wstring>& theContainer)
   return std::set<std::wstring>(theContainer.begin(), theContainer.end());
 }
 
-//------------------------------------------------------------------------------
+//=================================================================================================
 
 InitializationPlugin_EvalListener::InitializationPlugin_EvalListener()
 {
@@ -82,10 +82,12 @@ InitializationPlugin_EvalListener::InitializationPlugin_EvalListener()
   myInterp->initialize();
 }
 
+//=================================================================================================
 InitializationPlugin_EvalListener::~InitializationPlugin_EvalListener()
 {
 }
 
+//=================================================================================================
 void InitializationPlugin_EvalListener::processEvent(
     const std::shared_ptr<Events_Message>& theMessage)
 {
@@ -143,7 +145,7 @@ void InitializationPlugin_EvalListener::processEvent(
     Locale::Convert::toWString(anExprAttr->value());
     anExpZ.erase(std::remove(anExpZ.begin(),anExpZ.end(), ' '), anExpZ.end());
 
-    for(int step =0; step < anValueAttr->rows(); step++ ){
+    for (int step =0; step < anValueAttr->rows(); step++){
       aVal.myDouble = evaluate(anVar,
                                 anValueAttr->value(step,0).myDouble,
                                 aParam,
@@ -151,9 +153,8 @@ void InitializationPlugin_EvalListener::processEvent(
                                 anError,
                                 aParamsList,
                                 anIsFirstTime);
-      if(!anError.empty()) break;
+      if (!anError.empty()) break;
       anValueAttr->setValue(aVal,step,1);
-      
       aVal.myDouble = evaluate(anVar,
                               anValueAttr->value(step,0).myDouble,
                               aParam,
@@ -161,9 +162,8 @@ void InitializationPlugin_EvalListener::processEvent(
                               anError,
                               aParamsList,
                               anIsFirstTime);
-      if(!anError.empty()) break;
+      if (!anError.empty()) break;
       anValueAttr->setValue(aVal,step,2);
-      
       aVal.myDouble = evaluate(anVar,
                                 anValueAttr->value(step,0).myDouble,
                                 aParam,
@@ -171,16 +171,16 @@ void InitializationPlugin_EvalListener::processEvent(
                                 anError,
                                 aParamsList,
                                 anIsFirstTime);
-      if(!anError.empty()) break;
+      if (!anError.empty()) break;
       anValueAttr->setValue(aVal,step,3);
-      if ( anIsFirstTime )
+      if (anIsFirstTime)
           anIsFirstTime = false;
     }
-
     aMsg->setResults(aParamsList, anError);
   }
 }
 
+//=================================================================================================
 double InitializationPlugin_EvalListener::evaluate(
   std::wstring& theVariable,
   double theValueVariable,
@@ -197,9 +197,8 @@ double InitializationPlugin_EvalListener::evaluate(
 
   std::list<std::wstring> anExprParams = myInterp->compile(theExpression);
   // find expression's params in the model
-  
   std::list<std::wstring>::iterator it = anExprParams.begin();
-  for ( ; it != anExprParams.end(); it++) {
+  for (; it != anExprParams.end(); it++) {
     double aValue;
     ResultParameterPtr aParamRes;
     // If variable does not exist python interpreter will generate an error.
@@ -207,11 +206,11 @@ double InitializationPlugin_EvalListener::evaluate(
                            *it, aValue, aParamRes, theParameter->document()))
       continue;
 
-    if( theIsFirstTime )
+    if (theIsFirstTime)
     {
       std::list<ResultParameterPtr>::iterator anIter =
                           std::find(theParamsList.begin(),theParamsList.end(), aParamRes );
-      if(anIter == theParamsList.end())
+      if (anIter == theParamsList.end())
         theParamsList.push_back(aParamRes);
     }
 
@@ -223,7 +222,7 @@ double InitializationPlugin_EvalListener::evaluate(
   return result;
 }
 
-
+//=================================================================================================
 double InitializationPlugin_EvalListener::evaluate(FeaturePtr theParameter,
   const std::wstring& theExpression, std::string& theError,
   std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
@@ -253,6 +252,7 @@ double InitializationPlugin_EvalListener::evaluate(FeaturePtr theParameter,
   return result;
 }
 
+//=================================================================================================
 void InitializationPlugin_EvalListener::processEvaluationEvent(
     const std::shared_ptr<Events_Message>& theMessage)
 {
@@ -341,6 +341,7 @@ void InitializationPlugin_EvalListener::processEvaluationEvent(
   }
 }
 
+//=================================================================================================
 void InitializationPlugin_EvalListener::initDataModel()
 {
   myInterp->runString("import salome_iapp;salome_iapp.register_module_in_study(\"Shaper\")");

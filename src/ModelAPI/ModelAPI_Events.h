@@ -357,7 +357,7 @@ class ModelAPI_BuildEvalMessage : public Events_Message
   FeaturePtr myParam; ///< parameters that should be evaluated
   bool myIsProcessed; ///< true if results were set
   std::string myError; ///< error of processing, empty if there is no error
-    /// result of processing, list of parameters in expression found
+  /// result of processing, list of parameters in expression found
   std::list<std::shared_ptr<ModelAPI_ResultParameter> > myParamsList;
 
  public:
@@ -375,8 +375,8 @@ class ModelAPI_BuildEvalMessage : public Events_Message
     send(FeaturePtr theParameter, const void* theSender)
   {
     std::shared_ptr<ModelAPI_BuildEvalMessage> aMessage =
-      std::shared_ptr<ModelAPI_BuildEvalMessage>(
-      new ModelAPI_BuildEvalMessage(eventId(), theSender));
+          std::shared_ptr<ModelAPI_BuildEvalMessage>(
+                new ModelAPI_BuildEvalMessage(eventId(), theSender));
     aMessage->setParameter(theParameter);
     Events_Loop::loop()->send(aMessage);
     return aMessage;
@@ -393,9 +393,9 @@ class ModelAPI_BuildEvalMessage : public Events_Message
   MODELAPI_EXPORT void setParameter(FeaturePtr theParam);
   /// Sets the results of processing
   MODELAPI_EXPORT void setResults(
-            const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
-            const std::string& theError);
-    /// Returns the results of processing: list of parameters found in the expression
+                       const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
+                       const std::string& theError);
+  /// Returns the results of processing: list of parameters found in the expression
   MODELAPI_EXPORT const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& params() const;
   /// Returns true if the expression is processed
   MODELAPI_EXPORT bool isProcessed();

@@ -31,7 +31,6 @@
 
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_ResultBody.h>
-#include <ModelAPI_ResultConstruction.h>
 #include <ModelAPI_Events.h>
 #include <ModelAPI_ResultParameter.h>
 
@@ -46,13 +45,7 @@
 #include <GeomAPI_Edge.h>
 #include <GeomAPI_Lin.h>
 #include <GeomAPI_ShapeExplorer.h>
-#include <ModelAPI_Tools.h>
-
-#include <ModelAPI_Expression.h>
-
 #include <algorithm>
-
-#include <iostream>
 #include <sstream>
 
 
@@ -98,7 +91,7 @@ void BuildPlugin_Interpolation::initAttributes()
   data()->reflist(ARGUMENTS_ID())->setIsArgument(false);
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), ARGUMENTS_ID());
 
-  if(  string( XT_ID())->value() == ""
+  if ( string( XT_ID())->value() == ""
     && string( YT_ID())->value() == ""
     && string( ZT_ID())->value() == "")
     {
@@ -112,9 +105,10 @@ void BuildPlugin_Interpolation::initAttributes()
     }
 }
 
+//=================================================================================================
 void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
 {
-  if( (theID == XT_ID()
+  if ((theID == XT_ID()
     || theID == YT_ID()
     || theID == ZT_ID()
     || theID == MINT_ID()
@@ -128,6 +122,7 @@ void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
   }
 }
 
+//=================================================================================================
 void BuildPlugin_Interpolation::updateCoordinates()
 {
     std::wstring exp;
@@ -135,7 +130,7 @@ void BuildPlugin_Interpolation::updateCoordinates()
     double aMaxt = real(MAXT_ID())->value();
     int aNbrStep = integer(NUMSTEP_ID())->value();
 
-    if ( aMaxt < aMint ) {
+    if (aMaxt < aMint) {
       setError("The minimum value of the parameter must be less than maximum value !!!" );
     }
 
@@ -143,7 +138,7 @@ void BuildPlugin_Interpolation::updateCoordinates()
     string(VARIABLE_ID())->setValue("t");
 
     tables(VALUE_ID())->setSize(aNbrStep+1,4);
-    for( int step = 0; step <= aNbrStep; step++ ){
+    for (int step = 0; step <= aNbrStep; step++ ){
       ModelAPI_AttributeTables::Value aVal;
       aVal.myDouble = step * aScale + aMint;
       tables(VALUE_ID())->setValue(aVal,step,0);
@@ -183,7 +178,7 @@ static GeomDirPtr selectionToDir(const AttributeSelectionPtr& theSelection)
 //=================================================================================================
 void BuildPlugin_Interpolation::execute()
 {
-  if( string(CREATION_METHOD_ID())->value() == CREATION_METHOD_BY_SELECTION_ID() )
+  if (string(CREATION_METHOD_ID())->value() == CREATION_METHOD_BY_SELECTION_ID())
   {
     // Get closed flag value
     bool isClosed = boolean(CLOSED_ID())->value();
@@ -244,9 +239,8 @@ void BuildPlugin_Interpolation::execute()
 
     setResult(aResultBody);
 
-  }else
-  {
-    if(   string( XT_ID())->value() == ""
+  } else {
+    if (string( XT_ID())->value() == ""
         ||string( YT_ID())->value() == ""
         ||string( ZT_ID())->value() == ""
         ||tables(VALUE_ID())->rows()== 0  )
@@ -258,7 +252,7 @@ void BuildPlugin_Interpolation::execute()
 
     AttributeTablesPtr aTable = tables( VALUE_ID() );
     std::list<std::vector<double> > aCoordPoints;
-    for( int step = 0; step < aTable->rows() ; step++ ){
+    for (int step = 0; step < aTable->rows(); step++){
       std::vector<double> aCoordPoint;
       ModelAPI_AttributeTables::Value value;
       //x
@@ -278,7 +272,7 @@ void BuildPlugin_Interpolation::execute()
     std::list<GeomVertexPtr> aVertices;
     std::list<std::vector<double> >::const_iterator anItCoordPoints = aCoordPoints.begin();
 
-    for( ; anItCoordPoints != aCoordPoints.end(); ++anItCoordPoints ){
+    for (; anItCoordPoints != aCoordPoints.end(); ++anItCoordPoints){
 
       GeomVertexPtr aVertex =
           GeomAlgoAPI_PointBuilder::vertex( (*anItCoordPoints)[0],
@@ -309,7 +303,8 @@ void BuildPlugin_Interpolation::execute()
   }
 }
 
-void  BuildPlugin_Interpolation::evaluate(std::string& theError)
+//=================================================================================================
+void BuildPlugin_Interpolation::evaluate(std::string& theError)
 {
   FeaturePtr aMyPtr = std::dynamic_pointer_cast<ModelAPI_Feature>(data()->owner());
   std::shared_ptr<ModelAPI_BuildEvalMessage> aProcessMessage =

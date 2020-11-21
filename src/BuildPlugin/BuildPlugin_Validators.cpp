@@ -573,7 +573,7 @@ bool BuildPlugin_ValidatorBaseForVertex::isValid(const AttributePtr& theAttribut
   return true;
 }
 
-
+//=================================================================================================
 bool BuildPlugin_ValidatorExpressionInterpolation::isValid(const AttributePtr& theAttribute,
                                                    const std::list<std::string>& /*theArguments*/,
                                                    Events_InfoMessage& theError) const

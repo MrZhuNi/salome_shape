@@ -178,9 +178,9 @@ Part_5 = model.addPart(partSet)
 Part_5_doc = Part_5.document()
 
 Interpolation_11 = model.addInterpolation(Part_5_doc, "sin(t)","cos(t)","t", 0, 100, 10)
-
-model.checkResult(Interpolation_11, model, 1, [0], [0], [0], [1], [2])
-
+model.do()
+model.testNbResults(Interpolation_11, 1)
+model.end()
 # =============================================================================
 # Test 13. Check Python dump
 # =============================================================================
