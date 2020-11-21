@@ -36,7 +36,6 @@
     </box>
     <box id="analytical"
          title="Curve analytical"
-         tooltip="???"
          icon="icons/Build/feature_interpolation_analytical.png">
       <groupbox title="Curves parameters">
         <stringvalue id="xt" label="X(t) equation">

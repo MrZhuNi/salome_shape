@@ -186,15 +186,18 @@ public:
   /// Creates a new part document if needed.
   BUILDPLUGIN_EXPORT virtual void execute();
 
+  /// Called on change of any argument-attribute of this object.
+  /// \param[in] theID identifier of changed attribute.
   BUILDPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
   protected:
   /// Evaluates the expression x(t), y(t),z(t) in value table.
   void evaluate(std::string& theError);
 
-  //Update coordinates x,y,z
+  ///Update coordinates x,y,z
   void updateCoordinates();
 
+  ///Output error for python interpreter
   std::string outErrorMessage;
 
 };

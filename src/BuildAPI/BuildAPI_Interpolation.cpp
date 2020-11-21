@@ -31,14 +31,14 @@ BuildAPI_Interpolation::BuildAPI_Interpolation(const std::shared_ptr<ModelAPI_Fe
 
 //==================================================================================================
 BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
-                    const std::list<ModelHighAPI_Selection>& theBaseObjects,
-                    const ModelHighAPI_Selection& theStartTangent,
-                    const ModelHighAPI_Selection& theEndTangent,
-                    const bool theIsClosed,
-                    const bool theIsToReorder)
+                        const std::list<ModelHighAPI_Selection>& theBaseObjects,
+                        const ModelHighAPI_Selection& theStartTangent,
+                        const ModelHighAPI_Selection& theEndTangent,
+                        const bool theIsClosed,
+                        const bool theIsToReorder)
 : ModelHighAPI_Interface(theFeature)
 {
-  if(initialize()) {
+  if (initialize()) {
     fillAttribute(BuildPlugin_Interpolation::CREATION_METHOD_BY_SELECTION_ID(),mycreationmethod);
     setUseTangents(true);
     setTangents(theStartTangent, theEndTangent);
@@ -49,11 +49,10 @@ BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
 }
 
 //==================================================================================================
-BuildAPI_Interpolation::BuildAPI_Interpolation(
-                                  const FeaturePtr& theFeature,
-                                  const std::list<ModelHighAPI_Selection>& theBaseObjects,
-                                  const bool theIsClosed,
-                                  const bool theIsToReorder)
+BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
+                        const std::list<ModelHighAPI_Selection>& theBaseObjects,
+                        const bool theIsClosed,
+                        const bool theIsToReorder)
   : ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
@@ -137,7 +136,7 @@ void BuildAPI_Interpolation::dump(ModelHighAPI_Dumper& theDumper) const
   FeaturePtr aBase = feature();
   std::string aPartName = theDumper.name(aBase->document());
 
-  if( aBase->string(BuildPlugin_Interpolation::CREATION_METHOD_ID())->value() ==
+  if (aBase->string(BuildPlugin_Interpolation::CREATION_METHOD_ID())->value() ==
             BuildPlugin_Interpolation::CREATION_METHOD_BY_SELECTION_ID() )
   {
     AttributeSelectionListPtr anAttrBaseObjects =
@@ -158,7 +157,7 @@ void BuildAPI_Interpolation::dump(ModelHighAPI_Dumper& theDumper) const
     }
 
     theDumper << closed() << ", " << reorder() << ")" << std::endl;
-  }else{
+  } else {
 
     theDumper << aBase << " = model.addInterpolation(" << aPartName ;
     AttributeStringPtr XtAttr = xt();

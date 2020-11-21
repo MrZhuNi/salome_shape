@@ -36,9 +36,6 @@
 #include <BuildPlugin_Filling.h>
 #include <BuildPlugin_Validators.h>
 
-
-
-
 // the only created instance of this plugin
 static BuildPlugin_Plugin* MY_INSTANCE = new BuildPlugin_Plugin();
 
