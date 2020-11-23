@@ -39,6 +39,7 @@
 #include <GeomAlgoAPI_Tools.h>
 #include <GeomAlgoAPI_XAOExport.h>
 
+//#include <GeomAPI_Ax1.h>
 #include <GeomAPI_Shape.h>
 #include <GeomAPI_ShapeExplorer.h>
 #include <GeomAPI_Trsf.h>
@@ -646,19 +647,15 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
     aListMedium.push_back(anIt->first);
   }
     
-  std::cout<<"ETRANGE"<<std::endl;
   itExport = theExport.begin();
   for (; itExport != theExport.end(); ++itExport)
   {
-      std::cout<<"ETRANGE une fois"<<std::endl;
       FeaturePtr aCurFeature = *itExport;
       if (aCurFeature->getKind() == "Group") {
-        std::cout<<"ETRANGE deux fois"<<std::endl;
         std::vector<std::string> aListNames;
         std::string anObjectName = aCurFeature->firstResult()->data()->name();
         ExchangePlugin_ExportRoot::computeGroup(aCurFeature, aListNames);
-        
-        //for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
+
         for (std::vector<std::string>::iterator it = aListNames.begin(); it != aListNames.end(); it++) {
           std::string aName = anObjectName + "_" + *it;
           anAlgo->buildVolume(aName, *it, anObjectName, aListMedium);
@@ -688,6 +685,19 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
           std::cout<<anObjectName<<" et "<<aName<<std::endl;
           aMapFeatureObject[anObjectName]=aName;
         }
+      } else if (aCurFeature->getKind() == "LinearCopy") {
+        std::vector<std::string> aObjNames;
+        double aStep; 
+        int aNb; 
+        std::string anObjectName = aCurFeature->firstResult()->data()->name();
+        std::vector<std::vector<std::string>> aResulNames;
+        std::shared_ptr<GeomAPI_Ax1> anAxis = ExchangePlugin_ExportRoot::computeMultiTranslation(aCurFeature, aObjNames, aResulNames, aStep, aNb);
+        anAlgo->buildMultiTranslation(aObjNames, aResulNames, aStep, aNb, anAxis);
+        for (int i=0; i<aObjNames.size(); i++) {
+          for (int j=0; j<aResulNames[i].size(); j++) {
+            aMapFeatureObject[aResulNames[i][j]]=aObjNames[i];
+          }
+        }
       } else if (aCurFeature->getKind() == "Partition") {
         std::string anObjectName = aCurFeature->firstResult()->data()->name();
         // ToDo dans computePartition
@@ -703,7 +713,6 @@ void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
           if (index == 0) {
             aMainName = aName;
           } else {
-            std::cout<<aMainName<<"AA  AA "<<aMapFeatureObject[aName]<<" BB  BB "<<aName<<std::endl;
             anAlgo->buildPartition(aMainName, aMapFeatureObject[aName], aName, index);
           }
           index++;

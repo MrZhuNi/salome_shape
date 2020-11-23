@@ -22,6 +22,8 @@
 
 #include <GeomAlgoAPI.h>
 
+#include <GeomAPI_Ax1.h>
+
 #include <map>
 #include <string>
 #include <vector>
@@ -48,6 +50,13 @@ public:
   GEOMALGOAPI_EXPORT void buildTranslation(const std::string& theObjectName,
                                            const double theDX, const double theDY,
                                            const double theDZ);
+  
+  /// Build translation
+  GEOMALGOAPI_EXPORT void buildMultiTranslation(const std::vector<std::string>& theObjNames,
+                                                const std::vector<std::vector<std::string>>& theResulNames,
+                                                const double theStep,
+                                                const int theNb, 
+                                                std::shared_ptr<GeomAPI_Ax1> theAxis);
   
   /// Build partition
   GEOMALGOAPI_EXPORT void buildPartition(const std::string& theMainName,

@@ -21,9 +21,11 @@
 #define EXCHANGEPLUGIN_EXPORTROOT_H_
 
 #include <ExchangePlugin.h>
+#include <GeomAPI_Ax1.h>
 #include <ModelAPI_Feature.h>
 
 #include <map>
+#include <vector>
 
 /**
  * \class ExchangePlugin_Tools
@@ -42,6 +44,12 @@ public:
   
   /// Compute ....
   static void computeTranslation(FeaturePtr theCurFeature, double& DX, double& DY, double& DZ);
+  
+  /// Compute ....
+  static std::shared_ptr<GeomAPI_Ax1> computeMultiTranslation(FeaturePtr theCurFeature,
+                                                              std::vector<std::string>& theObjNames,
+                                                              std::vector<std::vector<std::string>>& theResulNames,
+                                                              double& theStep, int& theNb);
   
   /// Compute ....
   static void computeGroup(FeaturePtr theCurFeature, std::vector<std::string>& theListNames);

@@ -19,6 +19,8 @@
 
 #include <GeomAlgoAPI_ROOTExport.h>
 
+#include <gp_Ax1.hxx>
+
 #include <OSD_OpenFile.hxx>
 
 #include <fstream>
@@ -70,6 +72,29 @@ void GeomAlgoAPI_ROOTExport::buildTranslation(const std::string& theObjectName,
   myContent += doubleToString(theDX) + "," + doubleToString(theDY) + ",";
   myContent += doubleToString(theDZ) + ");\n";
   myContent += "\n";
+}
+
+//=================================================================================================
+void GeomAlgoAPI_ROOTExport::buildMultiTranslation(const std::vector<std::string>& theObjNames,
+                                                   const std::vector<std::vector<std::string>>& theResulNames,
+                                                   const double theStep,
+                                                   const int theNb, 
+                                                   std::shared_ptr<GeomAPI_Ax1> theAxis)
+{
+  const gp_Ax1& anAxis = theAxis->impl<gp_Ax1>();
+  
+  for (int i=0; i< theResulNames.size(); i++) {
+    std::vector<std::string> aVector = theResulNames[i];
+    for (int j=0; j<aVector.size();j++) {
+      double aDistance = j*theStep;
+      gp_Vec aVec = gp_Vec(anAxis.Direction()) * aDistance;
+      myContent += "TGeoTranslation *" + aVector[j];
+      myContent += " = new TGeoTranslation(\"" + aVector[j] + "\",";
+      myContent += doubleToString(aVec.X()) + "," + doubleToString(aVec.Y()) + ",";
+      myContent += doubleToString(aVec.Z()) + ");\n";
+      myContent += "\n";
+    }
+  }
 }
 
 //=================================================================================================

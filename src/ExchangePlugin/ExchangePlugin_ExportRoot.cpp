@@ -21,13 +21,21 @@
 
 #include <GeomAlgoAPI_PointBuilder.h>
 
+#include <GeomAPI_Edge.h>
+#include <GeomAPI_Lin.h>
+#include <GeomAPI_ShapeIterator.h>
+
 #include <ModelAPI_AttributeDouble.h>
+#include <ModelAPI_AttributeInteger.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeString.h>
 
 #include <CollectionPlugin_Group.h>
 #include <ExchangePlugin_Tools.h>
+
+#include <FeaturesPlugin_MultiTranslation.h>
 #include <FeaturesPlugin_Translation.h>
+
 #include <PrimitivesPlugin_Box.h>
 
 #include <fstream>
@@ -61,8 +69,6 @@ void ExchangePlugin_ExportRoot::readFileMat(const std::string theFileMat,
           aData.push_back(anElem);
         }
       }
-      //std::cout<<"aType :: "<<aName<<std::endl;
-      //std::cout<<"aName :: "<<aData[0]<<std::endl;
       if (aName == "mat") {
         aMat[aData[0]] = aData;
       } else if (aName == "medium") {
@@ -74,8 +80,6 @@ void ExchangePlugin_ExportRoot::readFileMat(const std::string theFileMat,
     
     aFile.close();
   }
-  //std::cout<<"Size of aMat :: "<<aMat.size()<<std::endl;
-  //std::cout<<"Size of aMedias :: "<<aMedias.size()<<std::endl;
 }
 
 void ExchangePlugin_ExportRoot::computeBox(FeaturePtr theCurFeature,
@@ -138,10 +142,77 @@ void ExchangePlugin_ExportRoot::computeTranslation(FeaturePtr theCurFeature,
   }
 }
 
+std::shared_ptr<GeomAPI_Ax1>
+ExchangePlugin_ExportRoot::computeMultiTranslation(FeaturePtr theCurFeature,
+                                                   std::vector<std::string>& theObjNames,
+                                                   std::vector<std::vector<std::string>>& theResulNames,
+                                                   double& theStep, int& theNb)
+{
+  std::list<ResultPtr> aResList = theCurFeature->results();
+  std::list<ResultPtr>::const_iterator aIt;
+  for (aIt = aResList.cbegin(); aIt != aResList.cend(); aIt++) {
+    std::cout<<(*aIt)->data()->name()<<std::endl;
+    ResultBodyPtr aCompSolid = std::dynamic_pointer_cast<ModelAPI_ResultBody>((*aIt));
+    std::cout<<aCompSolid->numberOfSubs()<<std::endl;
+    std::vector<std::string> aVector;
+    for (int i=0; i< aCompSolid->numberOfSubs();i++) {
+      std::cout<<aCompSolid->subResult(i)->data()->name()<<std::endl;
+      aVector.push_back(aCompSolid->subResult(i)->data()->name());
+    }
+    theResulNames.push_back(aVector);
+  }
+ 
+  theStep = theCurFeature->data()->real(FeaturesPlugin_MultiTranslation::STEP_FIRST_DIR_ID())->value();
+  theNb = theCurFeature->data()->integer(FeaturesPlugin_MultiTranslation::NB_COPIES_FIRST_DIR_ID())->value();
+ 
+  AttributeSelectionPtr anObjRef = theCurFeature->data()->
+    selection(FeaturesPlugin_MultiTranslation::AXIS_FIRST_DIR_ID());
+    
+  GeomShapePtr aShape = anObjRef->value();
+  if (!aShape.get()) {
+    if (anObjRef->context().get()) {
+      aShape = anObjRef->context()->shape();
+    }
+  }
+  if (!aShape.get()) {
+    return;
+  }
+
+  GeomEdgePtr anEdge;
+  if (aShape->isEdge())
+  {
+    anEdge = aShape->edge();
+  }
+  else if (aShape->isCompound())
+  {
+    GeomAPI_ShapeIterator anIt(aShape);
+    anEdge = anIt.current()->edge();
+  }
+
+  if (!anEdge.get())
+  {
+    return;
+  }
+
+  std::shared_ptr<GeomAPI_Ax1> anAxis(new GeomAPI_Ax1(anEdge->line()->location(),
+                                                      anEdge->line()->direction()));
+    
+  AttributeSelectionListPtr anObjectsSelList = theCurFeature->data()->
+    selectionList(FeaturesPlugin_MultiTranslation::OBJECTS_LIST_ID());
+  for (int anObjectsIndex = 0; anObjectsIndex < anObjectsSelList->size(); anObjectsIndex++) {
+    std::shared_ptr<ModelAPI_AttributeSelection> anObjectAttr =
+      anObjectsSelList->value(anObjectsIndex);
+    ObjectPtr anObject = anObjectAttr->contextObject();
+    std::string aName = anObject->data()->name();
+    theObjNames.push_back(aName);
+  }
+  
+  return anAxis;
+}
+
 void ExchangePlugin_ExportRoot::computeGroup(FeaturePtr theCurFeature,
                                              std::vector<std::string>& theListNames)
 {
-  //std::cout<<"COMPUTE GROUP"<<std::endl;
   AttributeSelectionListPtr anObjectsSelList =
       theCurFeature->data()->selectionList(CollectionPlugin_Group::LIST_ID());
       
