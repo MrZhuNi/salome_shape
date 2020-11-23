@@ -45,6 +45,7 @@
 
 
 // Extract edges from the list
+//=================================================================================================
 static ListOfShape extractEdges(const ListOfShape& theShapes)
 {
   ListOfShape anEdges;
@@ -54,11 +55,12 @@ static ListOfShape extractEdges(const ListOfShape& theShapes)
   return anEdges;
 }
 
-
+//=================================================================================================
 FeaturesPlugin_Fillet::FeaturesPlugin_Fillet()
 {
 }
 
+//=================================================================================================
 void FeaturesPlugin_Fillet::initAttributes()
 {
 
@@ -104,35 +106,35 @@ void FeaturesPlugin_Fillet::initAttributes()
 
 }
 
+//=================================================================================================
 AttributePtr FeaturesPlugin_Fillet::objectsAttribute()
 {
-  if( string(CREATION_METHOD())->value() == METHOD_MULTIPLES_RADIUSES() )
-  {
-    if( string(CREATION_MULTI_RADIUS_METHOD())->value() == CREATION_METHOD_BY_POINTS())
-    {
+  if (string(CREATION_METHOD())->value() == METHOD_MULTIPLES_RADIUSES() ){
+    if (string(CREATION_MULTI_RADIUS_METHOD())->value() == CREATION_METHOD_BY_POINTS()){
       return attribute(EDGE_SELECTED_ID());
-    }else{
+    } else {
       return attribute(EDGES_FACES_MULTI_LIST_ID());
     }
-  }else if ( string(CREATION_METHOD())->value() == CREATION_METHOD_VARYING_RADIUS() )
-  {
+  } else if (string(CREATION_METHOD())->value() == CREATION_METHOD_VARYING_RADIUS()) {
        return attribute(EDGES_FACES_LIST_ID());
-
   }
  return attribute(OBJECT_LIST_ID());
 
 }
 
+//=================================================================================================
 void FeaturesPlugin_Fillet::attributeChanged(const std::string& theID)
 {
 }
 
+//=================================================================================================
 const std::string& FeaturesPlugin_Fillet::modifiedShapePrefix() const
 {
   static const std::string& THE_PREFIX("Fillet");
   return THE_PREFIX;
 }
 
+//=================================================================================================
 GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& theSolid,
                                                          const ListOfShape& theEdges)
 {
@@ -148,19 +150,17 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
 
   ListOfShape aFilletEdges = extractEdges(theEdges);
 
-  if ( aCreationMethod->value() == METHOD_MULTIPLES_RADIUSES())
-  {
+  if (aCreationMethod->value() == METHOD_MULTIPLES_RADIUSES()){
 
     std::list<double> aCoodCurv;
     std::list<double> aRadiuses;
     AttributeTablesPtr aTablesAttr;
 
 
-    if( string(CREATION_MULTI_RADIUS_METHOD())->value() == CREATION_METHOD_BY_POINTS() )
-    {
+    if (string(CREATION_MULTI_RADIUS_METHOD())->value() == CREATION_METHOD_BY_POINTS()){
       aTablesAttr =  tables(VALUES_ID());
 
-    }else{
+    } else {
       aTablesAttr =  tables(VALUES_CURV_ID());
     }
 
@@ -169,15 +169,20 @@ GeomMakeShapePtr FeaturesPlugin_Fillet::performOperation(const GeomShapePtr& the
     for (int k = 0; k < aRows; k++) {
         aVal = aTablesAttr->value(k, 0);
         aCoodCurv.push_back(aVal.myDouble);
+        if (k!=0 && k!= aRows-1 && (aVal.myDouble >= 1.0 || aVal.myDouble <= 0.0)){
+          bool aWasBlocked = data()->blockSendAttributeUpdated(true);
+          aVal.myDouble = 2.0;
+          aTablesAttr->setValue(aVal, k, 0);
+          data()->blockSendAttributeUpdated(aWasBlocked, false);
+          setError("the value is not validate ");
+          return GeomMakeShapePtr();
+        }
         aVal = aTablesAttr->value(k, 1);
         aRadiuses.push_back(aVal.myDouble);
     }
-
-
     aFilletBuilder.reset(new GeomAlgoAPI_Fillet(theSolid, aFilletEdges, aCoodCurv,aRadiuses));
 
-  }else
-  {
+  } else {
     bool isFixedRadius = aCreationMethod->value() == CREATION_METHOD_SINGLE_RADIUS();
     double aRadius1 = 0.0, aRadius2 = 0.0;
     if (isFixedRadius)

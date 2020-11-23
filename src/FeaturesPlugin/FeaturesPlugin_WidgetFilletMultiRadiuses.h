@@ -89,7 +89,6 @@ protected:
   /// The methiod called when widget is activated
   virtual void activateCustom();
 
-
   /// Saves the internal parameters to the given feature
   /// \return True in success
   virtual bool storeValueCustom();
@@ -102,8 +101,6 @@ protected:
   /// \param theEvent an event
   virtual bool eventFilter(QObject* theObject, QEvent* theEvent);
 
-  //virtual void showEvent(QShowEvent* theEvent);
-
   /// Returns list of widget controls
   /// \return a control list
   virtual QList<QWidget*> getControls() const;
@@ -115,12 +112,12 @@ protected:
   virtual bool setSelection(QList<std::shared_ptr<ModuleBase_ViewerPrs>>& theValues,
                             const bool theToValidate);
 
-    /// Return the attribute values wrapped in a list of viewer presentations
+  /// Return the attribute values wrapped in a list of viewer presentations
   /// \return a list of viewer presentations, which contains an attribute result and
   /// a shape. If the attribute do not uses the shape, it is empty
   virtual QList<std::shared_ptr<ModuleBase_ViewerPrs>> getAttributeSelection() const;
 
-   /// Returns attribute indices selected in the widget selection list
+  /// Returns attribute indices selected in the widget selection list
   /// \param theIndices a list of indices
   void getSelectedAttributeIndices(std::set<int>& theIndices);
 
@@ -173,22 +170,24 @@ private:
   /// Editor for table header
   QLineEdit* myHeaderEditor;
 
-  // Choice of the method
+  /// Choice of the method
   bool myTypeMethodBypoint;
 
-  //Sort the selection
+  ///Sort the selection
   bool mySetSelection;
-
+  
+  /// my sort list
   bool mySortList;
 
+  /// delegate array item
   DataArrayItemDelegate* myDelegate;
 
-  // Label for first and last row
+  /// Label for first and last row
   std::vector<QString> myfirstRowValue;
   std::vector<QString> myLastRowValue;
-  // map to sort
+  
+  /// map to sort
   std::map<double,std::pair<QString,QString>> myValuesSort;
-
 };
 
 #endif

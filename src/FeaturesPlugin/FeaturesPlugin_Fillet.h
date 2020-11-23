@@ -43,47 +43,51 @@ public:
     return MY_KIND;
   }
 
+  /// Attribute name of creation method
   inline static const std::string& CREATION_METHOD()
   {
     static std::string MY_CREATION_METHOD("creation_method");
     return MY_CREATION_METHOD;
   }
 
+  /// Attribute name of creation method single radius
   inline static const std::string CREATION_METHOD_SINGLE_RADIUS()
   {
     static std::string MY_SINGLE_RADIUS("fixed_radius");
     return MY_SINGLE_RADIUS;
   }
 
+  /// Attribute name of creation method varying radius
   inline static const std::string CREATION_METHOD_VARYING_RADIUS()
   {
     static std::string MY_VARYING_RADIUS("variable_radius");
     return MY_VARYING_RADIUS;
   }
-
+  /// Attribute name of methode multiples radiuses
   inline static const std::string METHOD_MULTIPLES_RADIUSES()
   {
     static std::string MY_METHOD_MULTIPLES_RADIUSES("multiple_radiuses");
     return MY_METHOD_MULTIPLES_RADIUSES;
   }
-
+  /// Attribute name of creation method multi radius
   inline static const std::string CREATION_MULTI_RADIUS_METHOD()
   {
     static std::string MY_CREATION_MULTI_RADIUS_METHODE("multiple_radiuses_method");
     return MY_CREATION_MULTI_RADIUS_METHODE;
   }
-
+  /// Attribute name of creation method multi radius by curvilear abscissa
   inline static const std::string CREATION_METHOD_BY_CURVILEAR_ABSCISSA()
   {
     static std::string MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA("by_curvilinear_abscissa_method");
     return MY_CREATION_METHOD_BY_CURVILEAR_ABSCISSA;
   }
+  /// Attribute name of creation method multi radius by point
   inline static const std::string CREATION_METHOD_BY_POINTS()
   {
     static std::string MY_CREATION_METHOD_BY_POINTS("by_points");
     return MY_CREATION_METHOD_BY_POINTS;
   }
-
+  /// Attribute name of array point
   inline static const std::string ARRAY_POINT_RADIUS_BY_POINTS()
   {
     static std::string MY_ARRAY_POINT_RADIUS_BY_POINTS("array_point_radius_by_point");
@@ -154,6 +158,8 @@ public:
   /// Request for initialization of data model of the feature: adding all attributes.
   FEATURESPLUGIN_EXPORT virtual void initAttributes();
 
+  /// Called on change of any argument-attribute of this object.
+  /// \param[in] theID identifier of changed attribute.
   FEATURESPLUGIN_EXPORT void attributeChanged(const std::string& theID);
 
   /// Use plugin manager for features creation.

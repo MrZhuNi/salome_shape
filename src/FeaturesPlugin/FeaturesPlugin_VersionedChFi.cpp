@@ -117,7 +117,7 @@ bool FeaturesPlugin_VersionedChFi::processAttribute(const AttributePtr& theAttri
   AttributeSelectionPtr anObject =
                     std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(theAttribute);
 
-  if( anObject.get() )
+  if (anObject.get())
   {
     if ( !addShapeInHierarchy(anObject , theObjects, isStoreFullHierarchy) )
       return false;
@@ -155,16 +155,14 @@ bool FeaturesPlugin_VersionedChFi::addShapeInHierarchy(const AttributeSelectionP
       return false;
 
     // store full shape hierarchy for the corresponding version only
-    if (anObject->shapeType() <= GeomAPI_Shape::SOLID)
-    {
+    if (anObject->shapeType() <= GeomAPI_Shape::SOLID) {
       ListOfShape anEdges;
       collectSubs(aParent, anEdges, GeomAPI_Shape::EDGE);
       for (ListOfShape::iterator anIt = anEdges.begin(); anIt != anEdges.end(); ++anIt) {
         theObjects.addObject(*anIt);
         theObjects.addParent(*anIt, aParent);
       }
-    }else
-    {
+    } else {
       theObjects.addObject(anObject);
       theObjects.addParent(anObject, aParent);
     }
