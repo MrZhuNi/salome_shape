@@ -22,26 +22,26 @@
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeDoubleArray.h>
 #include <ModelAPI_AttributeBoolean.h>
-#include <GeomAlgoAPI_BoundingBox.h>
 #include <ModelAPI_AttributeString.h>
+
+#include <GeomAlgoAPI_BoundingBox.h>
+
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
-#include <GeomAlgoAPI_PointBuilder.h>
-#include <GeomAPI_Vertex.h>
 #include <Config_PropManager.h>
-#include <ModelAPI_ResultBody.h>
 
 #include <FeaturesPlugin_CreateBoundingBox.h>
 
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
+//=================================================================================================
 FeaturesPlugin_BoundingBox::FeaturesPlugin_BoundingBox()
 {
 }
 
+//=================================================================================================
 void FeaturesPlugin_BoundingBox::initAttributes()
 {
   // attribute for object selected
@@ -70,17 +70,18 @@ void FeaturesPlugin_BoundingBox::initAttributes()
 
 }
 
+//=================================================================================================
 void FeaturesPlugin_BoundingBox::execute()
 {
   updateValues();
-  if(boolean(CREATEBOX_ID())->value())
-  {
-    if( !myCreateFeature.get() )
+  createBoxByTwoPoints();
+
+  if (boolean(CREATEBOX_ID())->value()) {
+    if (!myCreateFeature.get())
       createBox();
     updateBox();
-  }else{
-    if( myCreateFeature.get() )
-    {
+  } else {
+    if (myCreateFeature.get()) {
       myCreateFeature->eraseResults();
       SessionPtr aSession = ModelAPI_Session::get();
       DocumentPtr aDoc =  aSession->activeDocument();
@@ -90,15 +91,24 @@ void FeaturesPlugin_BoundingBox::execute()
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_BoundingBox::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECTS_LIST_ID()) {
     updateValues();
-    if( myCreateFeature.get() )
+    createBoxByTwoPoints();
+    if (myCreateFeature.get())
       updateBox();
   }
 }
 
+//=================================================================================================
+AttributePtr FeaturesPlugin_BoundingBox::attributResultValues()
+{
+   return attribute(RESULT_VALUES_ID());
+}
+
+//=================================================================================================
 void FeaturesPlugin_BoundingBox::updateValues()
 {
   AttributeSelectionPtr aSelection = selection(OBJECTS_LIST_ID());
@@ -116,10 +126,10 @@ void FeaturesPlugin_BoundingBox::updateValues()
     if (!aShape && aSelection->context())
       aShape = aSelection->context()->shape();
   }
-  if (aShape){
+  if (aShape) {
     double aXmin, aXmax, aYmin,aYmax,aZmin,aZmax;
           std::string aError;
-    if( !GetBoundingBox(aShape,
+    if (!GetBoundingBox(aShape,
                         true,
                         aXmin, aXmax,
                         aYmin,aYmax,
@@ -161,6 +171,7 @@ void FeaturesPlugin_BoundingBox::createBox()
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_BoundingBox::updateBox()
 {
     myCreateFeature->selection(FeaturesPlugin_CreateBoundingBox::OBJECTS_LIST_ID())

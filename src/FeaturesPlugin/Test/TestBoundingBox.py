@@ -24,7 +24,6 @@
 # Initialization of the test
 #=========================================================================
 
-import salome
 
 import os
 import math

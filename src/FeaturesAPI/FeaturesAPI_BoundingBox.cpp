@@ -28,7 +28,7 @@
 #include <ModelHighAPI_Selection.h>
 #include <ModelHighAPI_Tools.h>
 
-
+//=================================================================================================
 FeaturesAPI_BoundingBox::
           FeaturesAPI_BoundingBox(const std::shared_ptr<ModelAPI_Feature>& theFeature)
   : ModelHighAPI_Interface(theFeature)
@@ -36,6 +36,7 @@ FeaturesAPI_BoundingBox::
   initialize();
 }
 
+//=================================================================================================
 FeaturesAPI_BoundingBox::FeaturesAPI_BoundingBox(
                                     const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                     const ModelHighAPI_Selection& theobject)
@@ -47,11 +48,12 @@ FeaturesAPI_BoundingBox::FeaturesAPI_BoundingBox(
   }
 }
 
-
+//=================================================================================================
 FeaturesAPI_BoundingBox::~FeaturesAPI_BoundingBox()
 {
 }
 
+//=================================================================================================
 void FeaturesAPI_BoundingBox::dump(ModelHighAPI_Dumper& theDumper) const
 {
   FeaturePtr aBase = feature();
@@ -65,6 +67,7 @@ void FeaturesAPI_BoundingBox::dump(ModelHighAPI_Dumper& theDumper) const
   theDumper << ")" << std::endl;
 }
 
+//=================================================================================================
 BoundingBoxPtr getBoundingBox(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Selection& theobject)
 {

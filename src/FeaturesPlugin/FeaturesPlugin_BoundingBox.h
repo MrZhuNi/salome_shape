@@ -20,18 +20,13 @@
 #ifndef FeaturesPlugin_BoundingBox_H_
 #define FeaturesPlugin_BoundingBox_H_
 
-#include "FeaturesPlugin.h"
-#include <ModelAPI_Feature.h>
-
-#include <GeomAPI_IPresentable.h>
-#include <GeomAPI_IScreenParams.h>
-#include <GeomAlgoAPI_Box.h>
+#include <FeaturesPlugin_CommonBoundingBox.h>
 
 /// \class FeaturesPlugin_BoundingBox
 /// \ingroup Plugins
 /// \brief Feature to view the Bounding Box.
 
-class FeaturesPlugin_BoundingBox : public ModelAPI_Feature
+class FeaturesPlugin_BoundingBox : public FeaturesPlugin_CommonBoundingBox
 {
 public:
    inline static const std::string& ID()
@@ -74,7 +69,7 @@ public:
     return MY_Z_MIN_COOD_ID;
   }
 
-    /// Attribute name for x max coodinate.
+  /// Attribute name for x max coodinate.
   inline static const std::string& X_MAX_COOD_ID()
   {
     static const std::string MY_X_MAX_COOD_ID("xmaxcoordinate");
@@ -126,9 +121,17 @@ public:
   FeaturesPlugin_BoundingBox();
 
   private:
+  /// Return Attribut values of result.
+  virtual AttributePtr attributResultValues();
+
+  /// Update values displayed.
   void updateValues();
+  /// Create Box
   void createBox();
+  /// Update Box
   void updateBox();
+
+  /// Feature to create box
   FeaturePtr myCreateFeature;
 
 };

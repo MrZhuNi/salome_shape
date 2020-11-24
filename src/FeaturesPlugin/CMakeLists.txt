@@ -73,6 +73,7 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_GeometryCalculation.h
     FeaturesPlugin_BoundingBox.h
     FeaturesPlugin_CreateBoundingBox.h
+    FeaturesPlugin_CommonBoundingBox.h
     FeaturesPlugin_FusionFaces.h
     FeaturesPlugin_RemoveResults.h
     FeaturesPlugin_Chamfer.h
@@ -123,6 +124,7 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_GeometryCalculation.cpp
     FeaturesPlugin_BoundingBox.cpp
     FeaturesPlugin_CreateBoundingBox.cpp
+    FeaturesPlugin_CommonBoundingBox.cpp
     FeaturesPlugin_FusionFaces.cpp
     FeaturesPlugin_RemoveResults.cpp
     FeaturesPlugin_Chamfer.cpp

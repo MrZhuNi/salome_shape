@@ -20,18 +20,13 @@
 #ifndef FeaturesPlugin_CreateBoundingBox_H_
 #define FeaturesPlugin_CreateBoundingBox_H_
 
-#include "FeaturesPlugin.h"
-#include <ModelAPI_Feature.h>
-
-#include <GeomAPI_IPresentable.h>
-#include <GeomAPI_IScreenParams.h>
-#include <GeomAlgoAPI_Box.h>
+#include <FeaturesPlugin_CommonBoundingBox.h>
 
 /// \class FeaturesPlugin_BoundingBox
 /// \ingroup Plugins
 /// \brief Feature to view the Bounding Box.
 
-class FeaturesPlugin_CreateBoundingBox : public ModelAPI_Feature
+class FeaturesPlugin_CreateBoundingBox : public FeaturesPlugin_CommonBoundingBox
 {
 public:
    inline static const std::string& ID()
@@ -112,14 +107,15 @@ public:
   /// \param theID identifier of changed attribute
   FEATURESPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
+  /// Return Attribut values of result.
+  FEATURESPLUGIN_EXPORT virtual AttributePtr attributResultValues();
+
   /// Use plugin manager for features creation
   FeaturesPlugin_CreateBoundingBox();
 
   private:
+  /// Update values displayed.
   void updateValues();
-  void createBoxByTwoPoints();
-  void loadNamingDS(std::shared_ptr<GeomAlgoAPI_Box> theBoxAlgo,
-                    std::shared_ptr<ModelAPI_ResultBody> theResultBox);
 
 };
 
