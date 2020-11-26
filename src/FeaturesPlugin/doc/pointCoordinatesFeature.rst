@@ -26,3 +26,13 @@ Input fields:
 - Input field contains a point selected in 3D OCC viewer or object browser. 
 
 Note, the coordinates displayed can be selected.
+
+**TUI Command**:
+
+.. py:function:: model.getPointCoordinates(Part_doc, point)
+
+    :param part: The current part object.
+    :param object: A point in format *model.selection("VERTEX", shape)*.
+    :return: list of coordinates.
+
+**See Also** a sample TUI Script of :ref:`tui_point_coordinates` operation.

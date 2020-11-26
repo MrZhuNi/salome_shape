@@ -52,25 +52,25 @@ public:
     return MY_POINT_SELECTED_ID;
   }
 
-  /// Attribute name for x coodinate.
-  inline static const std::string& X_COOD_ID()
+  /// Attribute name for x coordinate.
+  inline static const std::string& X_COORD_ID()
   {
-    static const std::string MY_X_COOOD_ID("xcoordinate");
-    return MY_X_COOOD_ID;
+    static const std::string MY_X_COORD_ID("xcoordinate");
+    return MY_X_COORD_ID;
   }
 
-  /// Attribute name for y coodinate.
-  inline static const std::string& Y_COOD_ID()
+  /// Attribute name for y coordinate.
+  inline static const std::string& Y_COORD_ID()
   {
-    static const std::string MY_Y_COOOD_ID("ycoordinate");
-    return MY_Y_COOOD_ID;
+    static const std::string MY_Y_COORD_ID("ycoordinate");
+    return MY_Y_COORD_ID;
   }
 
-  /// Attribute name for z coodinate.
-  inline static const std::string& Z_COOD_ID()
+  /// Attribute name for z coordinate.
+  inline static const std::string& Z_COORD_ID()
   {
-    static const std::string MY_Z_COOOD_ID("zcoordinate");
-    return MY_Z_COOOD_ID;
+    static const std::string MY_Z_COORD_ID("zcoordinate");
+    return MY_Z_COORD_ID;
   }
 
    /// Attribute name for values of result.

@@ -175,7 +175,7 @@
     <group id="PointCoordinates">
       <feature id="PointCoordinates" title="Point coordinates" tooltip="View point coordinate"
                icon="icons/Features/point_coord.png" helpfile="pointCoordinatesFeature.html" abort_confirmation="false">
-        <source path="pointcoordinates_widget.xml"/>
+        <source path="point_coordinates_widget.xml"/>
       </feature>
     </group>
     <group id="Calculation">

@@ -24,18 +24,18 @@
 #include <ModelHighAPI_Services.h>
 #include <ModelHighAPI_Tools.h>
 
-std::list<double>  getPointCoordinates(const std::shared_ptr<ModelAPI_Document>& thePart,
-                                       const ModelHighAPI_Selection& thePoint)
+std::list<double> getPointCoordinates(const std::shared_ptr<ModelAPI_Document>& thePart,
+                                      const ModelHighAPI_Selection& thePoint)
 {
-  FeaturePtr aPointCoodFeat = thePart->addFeature(FeaturesPlugin_PointCoordinates::ID());
+  FeaturePtr aPointCoordFeat = thePart->addFeature(FeaturesPlugin_PointCoordinates::ID());
 
-  fillAttribute(thePoint, aPointCoodFeat
+  fillAttribute(thePoint, aPointCoordFeat
                       ->selection(FeaturesPlugin_PointCoordinates::POINT_SELECTED_ID()));
   std::list<double> res;
 
   // obtain result
   AttributeDoubleArrayPtr aResult = std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(
-      aPointCoodFeat->attribute(FeaturesPlugin_PointCoordinates::RESULT_VALUES_ID()));
+      aPointCoordFeat->attribute(FeaturesPlugin_PointCoordinates::RESULT_VALUES_ID()));
 
   for ( int i : {0, 1, 2})
     res.push_back( aResult->value(i));

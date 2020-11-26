@@ -46,9 +46,9 @@ void FeaturesPlugin_PointCoordinates::initAttributes()
   // attribute for point selected
   data()->addAttribute(POINT_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
   // attributes for result message and values
-  data()->addAttribute(X_COOD_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(Y_COOD_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(Z_COOD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(X_COORD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(Y_COORD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(Z_COORD_ID(), ModelAPI_AttributeString::typeId());
 
   data()->addAttribute(RESULT_VALUES_ID(), ModelAPI_AttributeDoubleArray::typeId());
 
@@ -77,8 +77,7 @@ void FeaturesPlugin_PointCoordinates::attributeChanged(const std::string& theID)
       if (!aShape && aSelection->context())
         aShape = aSelection->context()->shape();
     }
-    if (aShape){
-
+    if (aShape) {
       aPoint = GeomAlgoAPI_PointBuilder::point(aShape);
       streamx << std::setprecision(14) << aPoint->x();
       aValues->setValue(0, aPoint->x());
@@ -88,9 +87,9 @@ void FeaturesPlugin_PointCoordinates::attributeChanged(const std::string& theID)
       aValues->setValue(2, aPoint->z());
     }
 
-    string(X_COOD_ID() )->setValue( "X = " +  streamx.str() );
-    string(Y_COOD_ID() )->setValue( "Y = " +  streamy.str() );
-    string(Z_COOD_ID() )->setValue( "Z = " +  streamz.str() );
+    string(X_COORD_ID() )->setValue( "X = " +  streamx.str() );
+    string(Y_COORD_ID() )->setValue( "Y = " +  streamy.str() );
+    string(Z_COORD_ID() )->setValue( "Z = " +  streamz.str() );
   }
 
 }
