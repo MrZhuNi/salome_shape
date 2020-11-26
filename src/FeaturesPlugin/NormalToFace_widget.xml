@@ -1,5 +1,5 @@
 <source>
-  <shape_selector id="main_objects"
+  <shape_selector id="face"
                   label="Face"
                   tooltip="Select a face"
                   shape_types="face"
@@ -9,14 +9,13 @@
     <validator id="GeomValidators_ShapeType" parameters="wire,face"/>
   </shape_selector>
   <optionalbox id="vertex_option" title="Option">
-    <shape_selector id="tool_objects"
+    <shape_selector id="vertex"
                     label="Vertex"
                     tooltip="Select a vertex"
                     shape_types="vertex"
                     default=""
                     geometrical_selection="true">
       <validator id="PartSet_DifferentObjects"/>
-      <!--validator id="GeomValidators_ShapeType" parameters="vertex"/-->
     </shape_selector>
   </optionalbox>
   <boolvalue id="createnormal" label="Create normal" default="false"/>

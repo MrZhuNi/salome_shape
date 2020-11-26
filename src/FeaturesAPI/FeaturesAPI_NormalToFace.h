@@ -52,8 +52,8 @@ public:
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_NormalToFace();
 
-    INTERFACE_3(FeaturesPlugin_CreateNormalToFace::ID(),
-              faceSelected, FeaturesPlugin_CreateNormalToFace::OBJECTS_LIST_ID(),
+  INTERFACE_3(FeaturesPlugin_CreateNormalToFace::ID(),
+              faceSelected, FeaturesPlugin_CreateNormalToFace::FACE_SELECTED_ID(),
                               ModelAPI_AttributeSelection,
                               /** base face */,
               vertexSelected, FeaturesPlugin_CreateNormalToFace::VERTEX_SELECTED_ID(),

@@ -25,7 +25,6 @@
 
 #include <GeomAPI_IPresentable.h>
 #include <GeomAPI_IScreenParams.h>
-#include <GeomAlgoAPI_Box.h>
 
 /// \class FeaturesPlugin_NormalToFace
 /// \ingroup Plugins
@@ -47,16 +46,16 @@ public:
   }
 
   /// Attribute name for face selected.
-  inline static const std::string& OBJECTS_LIST_ID()
+  inline static const std::string& FACE_SELECTED_ID()
   {
-    static const std::string MY_OBJECTS_LIST_ID("main_objects");
-    return MY_OBJECTS_LIST_ID;
+    static const std::string MY_FACE_SELECTED_ID("face");
+    return MY_FACE_SELECTED_ID;
   }
 
   /// Attribute name for vertex selected.
   inline static const std::string& VERTEX_SELECTED_ID()
   {
-    static const std::string MY_VERTEX_SELECTED_ID("tool_objects");
+    static const std::string MY_VERTEX_SELECTED_ID("vertex");
     return MY_VERTEX_SELECTED_ID;
   }
 
@@ -92,7 +91,7 @@ public:
 
   private:
 
-  void createNormal(); 
+  void createNormal();
   void updateNormal();
   FeaturePtr myCreateFeature;
 

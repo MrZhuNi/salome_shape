@@ -180,11 +180,11 @@
     </group>
     <group id="Face">
       <feature id="NormalMacro" title="Normal to a face" tooltip="Calculate the normal to a face" auto_preview="true"
-               icon="icons/Features/normale.png" helpfile="measurementFeature.html"> 
+               icon="icons/Features/normale.png" helpfile="normalToFaceFeature.html"> 
         <source path="NormalToFace_widget.xml"/>
       </feature>
       <feature id="Normal" title="Normal to a face" tooltip="Calculate the normal to a face" auto_preview="true"
-               icon="icons/Features/axis.png" helpfile="measurementFeature.html" internal="1"> 
+               icon="icons/Features/axis.png" helpfile="normalToFaceFeature.html" internal="1"> 
         <source path="CreateNormalToFace_widget.xml"/>
       </feature>
     </group>

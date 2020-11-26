@@ -20,21 +20,14 @@
 #include "FeaturesPlugin_CreateNormalToFace.h"
 
 #include <ModelAPI_AttributeSelection.h>
-#include <ModelAPI_AttributeDoubleArray.h>
-#include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
-#include <PrimitivesPlugin_Box.h>
-#include <GeomAlgoAPI_PointBuilder.h>
 #include <GeomAPI_Vertex.h>
 #include <GeomAPI_Edge.h>
 #include <Config_PropManager.h>
-#include <ModelAPI_ResultBody.h>
 #include <GeomAlgoAPI_NormalToFace.h>
-#include <GeomAPI_ShapeExplorer.h>
-#include <GeomAPI_Ax1.h>
 #include <GeomAPI_Lin.h>
 #include <GeomAPI_Dir.h>
 #include <GeomAlgoAPI_EdgeBuilder.h>
@@ -42,16 +35,17 @@
 
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
+//=================================================================================================
 FeaturesPlugin_CreateNormalToFace::FeaturesPlugin_CreateNormalToFace()
 {
 }
 
+//=================================================================================================
 void FeaturesPlugin_CreateNormalToFace::initAttributes()
 {
   // attribute for object selected
-  data()->addAttribute(OBJECTS_LIST_ID(), ModelAPI_AttributeSelection::typeId());
+  data()->addAttribute(FACE_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
   data()->addAttribute(VERTEX_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
   // attributes for result message and values
   data()->addAttribute(VERTEX_OPTION_ID(), ModelAPI_AttributeString::typeId());
@@ -60,35 +54,37 @@ void FeaturesPlugin_CreateNormalToFace::initAttributes()
 
 }
 
+//=================================================================================================
 void FeaturesPlugin_CreateNormalToFace::execute()
 {
-AttributeSelectionPtr aSelectionFace = selection(OBJECTS_LIST_ID());
-AttributeSelectionPtr aSelectionPoint = selection(VERTEX_SELECTED_ID());
 
-GeomShapePtr aShape;
-GeomShapePtr aShapePoint;
+  AttributeSelectionPtr aSelectionFace = selection(FACE_SELECTED_ID());
+  AttributeSelectionPtr aSelectionPoint = selection(VERTEX_SELECTED_ID());
+
+  GeomShapePtr aShape;
+  GeomShapePtr aShapePoint;
   if(!string(VERTEX_OPTION_ID())->value().empty())
-{
-  if (aSelectionPoint && aSelectionPoint->isInitialized()) {
-    aShapePoint = aSelectionPoint->value();
-    if (!aShapePoint && aSelectionPoint->context())
-      aShapePoint = aSelectionPoint->context()->shape();
-    }
-}
+  {
+    if (aSelectionPoint && aSelectionPoint->isInitialized()) {
+      aShapePoint = aSelectionPoint->value();
+      if (!aShapePoint && aSelectionPoint->context())
+        aShapePoint = aSelectionPoint->context()->shape();
+      }
+  }
 
-if (aSelectionFace && aSelectionFace->isInitialized()) {
-  aShape = aSelectionFace->value();
-  if (!aShape && aSelectionFace->context())
-    aShape = aSelectionFace->context()->shape();
-}
+  if (aSelectionFace && aSelectionFace->isInitialized()) {
+    aShape = aSelectionFace->value();
+    if (!aShape && aSelectionFace->context())
+      aShape = aSelectionFace->context()->shape();
+  }
 
-if (aShape){
-  std::string aError;
-  std::shared_ptr<GeomAPI_Edge> theNormal(new GeomAPI_Edge);
-  if( !GeomAlgoAPI_NormalToFace::normal(aShape,
-                                        aShapePoint,
-                                        theNormal,
-                                        aError))
+  if (aShape) {
+    std::string aError;
+    std::shared_ptr<GeomAPI_Edge> theNormal(new GeomAPI_Edge);
+    if( !GeomAlgoAPI_NormalToFace::normal(aShape,
+                                          aShapePoint,
+                                          theNormal,
+                                          aError))
       setError("Error in bounding box calculation :" +  aError);
 
     GeomDirPtr theDir;
@@ -98,8 +94,8 @@ if (aShape){
         theDir = theNormal->line()->direction();
       }
     }
-    aPnt->translate(theDir, 100 );
-    
+    aPnt->translate(theDir, 100);
+
     std::shared_ptr<GeomAPI_Edge> anEdge =
                         GeomAlgoAPI_EdgeBuilder::line(theNormal->firstPoint(),
                                                       aPnt);
@@ -111,6 +107,7 @@ if (aShape){
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_CreateNormalToFace::attributeChanged(const std::string& theID)
 {
 }

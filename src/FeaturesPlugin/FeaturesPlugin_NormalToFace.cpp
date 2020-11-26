@@ -20,7 +20,6 @@
 #include "FeaturesPlugin_NormalToFace.h"
 
 #include <ModelAPI_AttributeSelection.h>
-#include <ModelAPI_AttributeDoubleArray.h>
 #include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_Data.h>
@@ -31,10 +30,7 @@
 #include <GeomAPI_Vertex.h>
 #include <GeomAPI_Edge.h>
 #include <Config_PropManager.h>
-#include <ModelAPI_ResultBody.h>
 #include <GeomAlgoAPI_NormalToFace.h>
-#include <GeomAPI_ShapeExplorer.h>
-#include <GeomAPI_Ax1.h>
 #include <GeomAPI_Lin.h>
 #include <GeomAPI_Dir.h>
 #include <GeomAlgoAPI_EdgeBuilder.h>
@@ -44,16 +40,17 @@
 
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
+//=================================================================================================
 FeaturesPlugin_NormalToFace::FeaturesPlugin_NormalToFace()
 {
 }
 
+//=================================================================================================
 void FeaturesPlugin_NormalToFace::initAttributes()
 {
   // attribute for object selected
-  data()->addAttribute(OBJECTS_LIST_ID(), ModelAPI_AttributeSelection::typeId());
+  data()->addAttribute(FACE_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
   data()->addAttribute(VERTEX_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
   // attributes for result message and values
   data()->addAttribute(CREATENORMAL_ID(), ModelAPI_AttributeBoolean::typeId());
@@ -63,35 +60,35 @@ void FeaturesPlugin_NormalToFace::initAttributes()
 
 }
 
+//=================================================================================================
 void FeaturesPlugin_NormalToFace::execute()
 {
-AttributeSelectionPtr aSelectionFace = selection(OBJECTS_LIST_ID());
-AttributeSelectionPtr aSelectionPoint = selection(VERTEX_SELECTED_ID());
+  AttributeSelectionPtr aSelectionFace = selection(FACE_SELECTED_ID());
+  AttributeSelectionPtr aSelectionPoint = selection(VERTEX_SELECTED_ID());
 
-GeomShapePtr aShape;
-GeomShapePtr aShapePoint;
-  if(!string(VERTEX_OPTION_ID())->value().empty())
-{
-  if (aSelectionPoint && aSelectionPoint->isInitialized()) {
-    aShapePoint = aSelectionPoint->value();
-    if (!aShapePoint && aSelectionPoint->context())
-      aShapePoint = aSelectionPoint->context()->shape();
+  GeomShapePtr aShape;
+  GeomShapePtr aShapePoint;
+  if (!string(VERTEX_OPTION_ID())->value().empty()) {
+    if (aSelectionPoint && aSelectionPoint->isInitialized()) {
+      aShapePoint = aSelectionPoint->value();
+      if (!aShapePoint && aSelectionPoint->context())
+        aShapePoint = aSelectionPoint->context()->shape();
     }
-}
+  }
 
-if (aSelectionFace && aSelectionFace->isInitialized()) {
-  aShape = aSelectionFace->value();
-  if (!aShape && aSelectionFace->context())
-    aShape = aSelectionFace->context()->shape();
-}
+  if (aSelectionFace && aSelectionFace->isInitialized()) {
+    aShape = aSelectionFace->value();
+      if (!aShape && aSelectionFace->context())
+        aShape = aSelectionFace->context()->shape();
+  }
 
-if (aShape){
-  std::string aError;
-  std::shared_ptr<GeomAPI_Edge> theNormal(new GeomAPI_Edge);
-  if( !GeomAlgoAPI_NormalToFace::normal(aShape,
-                                        aShapePoint,
-                                        theNormal,
-                                        aError))
+  if (aShape) {
+    std::string aError;
+    std::shared_ptr<GeomAPI_Edge> theNormal(new GeomAPI_Edge);
+    if( !GeomAlgoAPI_NormalToFace::normal(aShape,
+                                          aShapePoint,
+                                          theNormal,
+                                          aError))
       setError("Error in bounding box calculation :" +  aError);
 
     GeomDirPtr theDir;
@@ -101,26 +98,23 @@ if (aShape){
         theDir = theNormal->line()->direction();
       }
     }
-    aPnt->translate(theDir, 100 );
-    
+    aPnt->translate(theDir, 100);
+
     std::shared_ptr<GeomAPI_Edge> anEdge =
-                        GeomAlgoAPI_EdgeBuilder::line(theNormal->firstPoint(),
-                                                      aPnt);
+                      GeomAlgoAPI_EdgeBuilder::line(theNormal->firstPoint(), aPnt);
 
     ResultConstructionPtr aConstr = document()->createConstruction(data());
     aConstr->setInfinite(true);
     aConstr->setShape(anEdge);
     setResult(aConstr);
   }
-  
-  if(boolean(CREATENORMAL_ID())->value())
-  {
-    if( !myCreateFeature.get() )
+
+  if (boolean(CREATENORMAL_ID())->value()) {
+    if (!myCreateFeature.get())
       createNormal();
     updateNormal();
-  }else{
-    if( myCreateFeature.get() )
-    {
+  } else {
+    if (myCreateFeature.get()) {
       myCreateFeature->eraseResults();
       SessionPtr aSession = ModelAPI_Session::get();
       DocumentPtr aDoc =  aSession->activeDocument();
@@ -130,10 +124,11 @@ if (aShape){
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_NormalToFace::attributeChanged(const std::string& theID)
 {
-   if (theID == OBJECTS_LIST_ID()) {
-    if( myCreateFeature.get() )
+   if (theID == FACE_SELECTED_ID()) {
+    if (myCreateFeature.get())
       updateNormal();
   }
 }
@@ -142,7 +137,7 @@ void FeaturesPlugin_NormalToFace::attributeChanged(const std::string& theID)
 void FeaturesPlugin_NormalToFace::createNormal()
 {
   SessionPtr aSession = ModelAPI_Session::get();
-  
+
   DocumentPtr aDoc =  aSession->activeDocument();
 
   if (aDoc.get()) {
@@ -150,17 +145,17 @@ void FeaturesPlugin_NormalToFace::createNormal()
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_NormalToFace::updateNormal()
 {
-  myCreateFeature->selection(FeaturesPlugin_CreateNormalToFace::OBJECTS_LIST_ID())
-                        ->setValue( selection(OBJECTS_LIST_ID())->context() ,
-                                    selection(OBJECTS_LIST_ID())->value() );
+  myCreateFeature->selection(FeaturesPlugin_CreateNormalToFace::FACE_SELECTED_ID())
+                        ->setValue( selection(FACE_SELECTED_ID())->context() ,
+                                    selection(FACE_SELECTED_ID())->value() );
 
   myCreateFeature->string(FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID())
                         ->setValue( string(VERTEX_OPTION_ID())->value());
 
-  if(!string(VERTEX_OPTION_ID())->value().empty())
-  {
+  if (!string(VERTEX_OPTION_ID())->value().empty()) {
     myCreateFeature->selection(FeaturesPlugin_CreateNormalToFace::VERTEX_SELECTED_ID())
                         ->setValue( selection(VERTEX_SELECTED_ID())->context() ,
                                     selection(VERTEX_SELECTED_ID())->value() );
