@@ -38,6 +38,8 @@ SET(PROJECT_HEADERS
     FiltersPlugin_EdgeSize.h
     FiltersPlugin_FaceSize.h
     FiltersPlugin_VolumeSize.h
+    FiltersPlugin_FeatureEdges.h
+    FiltersPlugin_ContinuousFaces.h
 )
 
 SET(PROJECT_SOURCES
@@ -57,6 +59,8 @@ SET(PROJECT_SOURCES
     FiltersPlugin_EdgeSize.cpp
     FiltersPlugin_FaceSize.cpp
     FiltersPlugin_VolumeSize.cpp
+    FiltersPlugin_FeatureEdges.cpp
+    FiltersPlugin_ContinuousFaces.cpp
 )
 
 SET(PROJECT_LIBRARIES
@@ -85,6 +89,8 @@ SET(XML_RESOURCES
   filter-EdgeSize.xml
   filter-FaceSize.xml
   filter-VolumeSize.xml
+  filter-FeatureEdges.xml
+  filter-ContinuousFaces.xml
 )
 
 SET(TEXT_RESOURCES

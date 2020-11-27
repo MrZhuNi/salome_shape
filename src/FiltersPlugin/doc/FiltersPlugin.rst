@@ -62,7 +62,7 @@ By default, the result of Selection feature all selectable entities from all Sha
 - **Result type:** Edge
 - **Argument:** 
     - **Comparator:** <, <=, >, >=, is between, is strickly between
-    - **Comparator argument:** **Size** or  **Min size** and **Max size**
+    - **Size** or  **Min size** and **Max size**
 - **Algorithm:** Returns all edges whose lenght respect comparator rules.
 
 **Face size**
@@ -70,7 +70,7 @@ By default, the result of Selection feature all selectable entities from all Sha
 - **Result type:** Face
 - **Argument:** 
     - **Comparator:** <, <=, >, >=, is between, is strickly between
-    - **Comparator argument:** **Size** or  **Min size** and **Max size**
+    - **Size** or  **Min size** and **Max size**
 - **Algorithm:** Returns all faces whose area respect comparator rules.
 
 **Volume size**
@@ -78,8 +78,17 @@ By default, the result of Selection feature all selectable entities from all Sha
 - **Result type:** Solid
 - **Argument:** 
     - **Comparator:** <, <=, >, >=, is between, is strickly between
-    - **Comparator argument:** **Size** or  **Min size** and **Max size**
+    - **Size** or  **Min size** and **Max size**
 - **Algorithm:** Returns all solids whose volume respect comparator rules.
+
+**Features edge**
+
+This algorithm identifies edges between two faces discontinuous with an angular tolerance.
+
+- **Result type:** Edge
+- **Argument:** 
+    - **Angle** an angular tolerance used for G1 continuity to compare the angle between the normals 
+- **Algorithm:** Returns all Edges between two discontinuous faces.
 
 **On a plane**
 
@@ -112,6 +121,16 @@ This algorithm is based on the Propagate geompy function. It works on a model pa
 - **Result type:** Edge
 - **Argument:** An edge belonging to a quadrangular face
 - **Algorithm:** Returns all Edges opposite to the given Edge on all quadrangular faces connected to this Edge. The algorithm is recursive: after an edge is found on one face, it adds edges opposite to this new one.
+
+**Continuous Faces**
+
+This algorithm identifies continuous faces with an angular tolerance given by topological propagation.
+
+- **Result type:** Face
+- **Argument:** 
+    - **Angle:** an angular tolerance used for G1 continuity to compare the angle between the normals. 
+    - **Faces:** Faces to start the propagation.    
+- **Algorithm:** Returns continuous faces.
 
 **On/In/Out a Solid**
 
