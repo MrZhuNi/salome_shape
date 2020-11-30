@@ -76,12 +76,12 @@ std::shared_ptr<GeomAPI_Shape> readAttributes(STEPCAFControl_Reader &theReader,
   // dummy XCAF Application to handle the STEP XCAF Document
   Handle(XCAFApp_Application) dummy_app = XCAFApp_Application::GetApplication();
   // XCAF Document to contain the STEP/IGES file itself
-  Handle(TDocStd_Document) doc;
+  Handle(TDocStd_Document) adoc;
 
-  dummy_app->NewDocument( TCollection_ExtendedString("MDTV-CAF"), doc);
+  dummy_app->NewDocument( TCollection_ExtendedString("MDTV-CAF"), adoc);
   // transfer STEP/IGES into the document, and get the main label
-  theReader.Transfer(doc);
-  TDF_Label mainLabel = doc->Main();
+  theReader.Transfer(adoc);
+  TDF_Label mainLabel = adoc->Main();
   Handle_XCAFDoc_ShapeTool shapeTool = XCAFDoc_DocumentTool::ShapeTool(mainLabel);
   Handle_XCAFDoc_ColorTool colorTool = XCAFDoc_DocumentTool::ColorTool(mainLabel);
   Handle(XCAFDoc_MaterialTool) materialTool = XCAFDoc_DocumentTool::MaterialTool(mainLabel);
@@ -114,6 +114,8 @@ std::shared_ptr<GeomAPI_Shape> readAttributes(STEPCAFControl_Reader &theReader,
       }
     }
   }
+  if (adoc->CanClose() == CDM_CCS_OK)
+    adoc->Close();
   return ageom;
 }
 
