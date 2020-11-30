@@ -19,6 +19,16 @@
 
 INCLUDE(Common)
 INCLUDE(UnitTest)
+INCLUDE(UseQtExt)
+
+# additional include directories
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
+                     ${PROJECT_SOURCE_DIR}/src/Locale
+                     ${QT_INCLUDES})
+
+# additional preprocessor / compiler flags
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
 
 SET(PROJECT_HEADERS
     FeaturesPlugin.h
@@ -59,6 +69,7 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_Fillet.h
     FeaturesPlugin_Fillet1D.h
     FeaturesPlugin_Measurement.h
+    FeaturesPlugin_PointCoordinates.h
     FeaturesPlugin_FusionFaces.h
     FeaturesPlugin_RemoveResults.h
     FeaturesPlugin_Chamfer.h
@@ -106,6 +117,7 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_Fillet.cpp
     FeaturesPlugin_Fillet1D.cpp
     FeaturesPlugin_Measurement.cpp
+    FeaturesPlugin_PointCoordinates.cpp
     FeaturesPlugin_FusionFaces.cpp
     FeaturesPlugin_RemoveResults.cpp
     FeaturesPlugin_Chamfer.cpp
@@ -144,6 +156,7 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
+  point_coordinates_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml
@@ -166,6 +179,7 @@ INCLUDE_DIRECTORIES(
   ../GeomAPI
   ../GeomAlgoAPI
   ../GeomValidators
+  ../ModuleBase
   ../Events
   ../Config
   ${OpenCASCADE_INCLUDE_DIR}
@@ -182,7 +196,11 @@ SET(PROJECT_LIBRARIES
 )
 
 ADD_DEFINITIONS(-DFEATURESPLUGIN_EXPORTS)
-ADD_LIBRARY(FeaturesPlugin MODULE ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${XML_RESOURCES} ${TEXT_RESOURCES})
+ADD_LIBRARY(FeaturesPlugin MODULE 
+            ${PROJECT_SOURCES} 
+            ${PROJECT_HEADERS} 
+            ${XML_RESOURCES} 
+            ${TEXT_RESOURCES})
 TARGET_LINK_LIBRARIES(FeaturesPlugin ${PROJECT_LIBRARIES})
 
 INSTALL(TARGETS FeaturesPlugin DESTINATION ${SHAPER_INSTALL_PLUGIN_FILES})
@@ -688,4 +706,5 @@ ADD_UNIT_TESTS(TestExtrusion.py
                Test20245_2.py
                Test20245_3.py
                Test20247.py
+               TestPointCoordinates.py
 )

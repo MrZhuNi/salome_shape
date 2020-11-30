@@ -134,7 +134,7 @@
         <source path="chamfer_widget.xml"/>
       </feature>
       <feature id="FusionFaces" title="Fuse Faces" tooltip="Performs fusion of connected faces"
-               icon="icons/Features/fusion_faces.png" auto_preview="true" helpfile="fuseFeatureFaces.html">
+               icon="icons/Features/fusion_faces.png" auto_preview="true" helpfile="FeaturesPlugin/fusionFacesFeature.html">
         <source path="fusion_faces_widget.xml"/>
       </feature>
       <feature id="Defeaturing" title="Defeaturing" tooltip="Perform removing faces from solid"
@@ -172,7 +172,13 @@
     </group>
   </workbench>
   <workbench id="Inspection">
-    <group id="Measurement">
+    <group id="PointCoordinates">
+      <feature id="PointCoordinates" title="Point coordinates" tooltip="View point coordinate"
+               icon="icons/Features/point_coord.png" helpfile="pointCoordinatesFeature.html" abort_confirmation="false">
+        <source path="point_coordinates_widget.xml"/>
+      </feature>
+    </group>
+    <group id="Calculation">
       <feature id="Measurement" title="Measurement" tooltip="Calculate properties of objects"
                icon="icons/Features/measurement.png" helpfile="measurementFeature.html" abort_confirmation="false">
         <source path="measurement_widget.xml"/>
