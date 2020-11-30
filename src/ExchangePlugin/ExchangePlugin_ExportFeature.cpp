@@ -71,6 +71,8 @@
 
 #include <ExchangePlugin_Tools.h>
 
+#include <ModelAPI_ResultConstruction.h>
+
 ExchangePlugin_ExportFeature::ExchangePlugin_ExportFeature()
 {
 }

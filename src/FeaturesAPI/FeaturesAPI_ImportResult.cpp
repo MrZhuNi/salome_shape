@@ -34,7 +34,7 @@ FeaturesAPI_ImportResult::FeaturesAPI_ImportResult(
   const std::shared_ptr<ModelAPI_Feature>& theFeature,
   const std::list<ModelHighAPI_Selection>& theObjects) : ModelHighAPI_Interface(theFeature)
 {
-  if(initialize()) {
+  if (initialize()) {
     setObjects(theObjects);
   }
 }
