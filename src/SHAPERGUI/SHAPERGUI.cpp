@@ -689,7 +689,12 @@ QAction* SHAPERGUI::addFeature(const QString& theWBName, const QString& theTBNam
 #ifdef _DEBUG
   int aItemId =
 #endif
-    createMenu(aId, aWBMenu);
+
+  if( theId == "PointCoordinates" )
+    createMenu(separator(), aWBMenu);
+
+  createMenu(aId, aWBMenu);
+
   if (isAddSeparator)
     createMenu(separator(), aWBMenu);
 
