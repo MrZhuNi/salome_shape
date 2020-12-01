@@ -20,7 +20,6 @@
 #include "FeaturesPlugin_SharedFaces.h"
 
 #include <ModelAPI_AttributeSelection.h>
-#include <ModelAPI_AttributeRefList.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_AttributeString.h>
@@ -36,20 +35,19 @@
 
 #include <Config_PropManager.h>
 #include <ModelAPI_ResultBody.h>
-#include <ModelAPI_ResultGroup.h>
 #include <GeomAlgoAPI_ShapeTools.h>
 #include <GeomAlgoAPI_SharedFaces.h>
 #include <GeomAPI_ShapeIterator.h>
 #include <ModelAPI_Tools.h>
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
-
+//=================================================================================================
 FeaturesPlugin_SharedFaces::FeaturesPlugin_SharedFaces()
 {
 }
 
+//=================================================================================================
 void FeaturesPlugin_SharedFaces::initAttributes()
 {
   // attribute for object selected
@@ -68,33 +66,37 @@ void FeaturesPlugin_SharedFaces::initAttributes()
 
 void explodeCompound(const GeomShapePtr& theCompound, ListOfShape& theSubs)
 {
-  if (theCompound->isCompound() || theCompound->isCompSolid() ) {
+  if (theCompound->isCompound() || theCompound->isCompSolid()) {
     GeomAPI_ShapeIterator anIt(theCompound);
     for (; anIt.more(); anIt.next())
       explodeCompound(anIt.current(), theSubs);
-  }
-  else
+  } else
     theSubs.push_back(theCompound);
 }
 
-
-
+//=================================================================================================
 void FeaturesPlugin_SharedFaces::execute()
 {
-  if(boolean(CREATE_GROUP_ID())->value()
+  if (boolean(CREATE_GROUP_ID())->value()
     && selectionList(LIST_FACES_ID())->isInitialized()
-    && string(GROUP_NAME_ID())->value() != "" )
-  {
+    && string(GROUP_NAME_ID())->value() != "") {
     AttributeStringPtr aNameAtt = string( GROUP_NAME_ID() ) ;
     std::wstring aNameFace = aNameAtt->isUValue() ?
                             Locale::Convert::toWString(aNameAtt->valueU()) :
                             Locale::Convert::toWString(aNameAtt->value());
 
-
+    if (myGroup.get())
+      eraseResults();
     setFacesGroup(aNameFace);
+
+  } else {
+    if (myGroup.get()) {
+      eraseResults();
+      myGroup.reset();
+    }
+
   }
-  if( selection(OBJECT_ID())->isInitialized() )
-  {
+  if (selection(OBJECT_ID())->isInitialized()) {
     AttributeSelectionPtr ancompSolidAttr = selection(OBJECT_ID());
     ResultPtr aResult = ancompSolidAttr->context();
 
@@ -106,11 +108,12 @@ void FeaturesPlugin_SharedFaces::execute()
     ModelAPI_Tools::allSubs(aResultBody, allRes);
     std::list<ResultPtr>::iterator aRes;
     for(aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
-        ModelAPI_Tools::setTransparency(*aRes, aTranparency);
+      ModelAPI_Tools::setTransparency(*aRes, aTranparency);
     }
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_SharedFaces::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECT_ID()) {
@@ -120,7 +123,7 @@ void FeaturesPlugin_SharedFaces::attributeChanged(const std::string& theID)
     if (aShape.get() && ancompSolidAttr->context().get()) {
 
       aShape = ancompSolidAttr->context()->shape();
-      if(aShape){
+      if (aShape) {
         std::string anError;
         ListOfShape aFaces;
         ListOfShape theSubs;
@@ -135,8 +138,8 @@ void FeaturesPlugin_SharedFaces::attributeChanged(const std::string& theID)
                     std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
                                                         (attribute(LIST_FACES_ID()));
 
-        if ( aFacesListAttr->isInitialized())
-              aFacesListAttr->clear();
+        if (aFacesListAttr->isInitialized())
+          aFacesListAttr->clear();
 
         aFacesListAttr->setSelectionType("face");
 
@@ -159,13 +162,14 @@ void FeaturesPlugin_SharedFaces::attributeChanged(const std::string& theID)
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_SharedFaces::setFacesGroup(const std::wstring& theName )
 {
   std::vector<int> aColor;
-  ResultGroupPtr aGroup = document()->createGroup(data());
+  myGroup = document()->createGroup(data());
   // clean the result of the operation
-  aGroup->data()->setName(theName);
-  aGroup->store(GeomShapePtr());
+  myGroup->data()->setName(theName);
+  myGroup->store(GeomShapePtr());
 
   // shapes containing in group
   ListOfShape aFaces;
@@ -173,15 +177,14 @@ void FeaturesPlugin_SharedFaces::setFacesGroup(const std::wstring& theName )
                     std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
                                                         (attribute(LIST_FACES_ID()));
 
-  for(int anI =0; anI< aFacesListAttr->size(); anI++  )
-  {
+  for (int anI =0; anI< aFacesListAttr->size(); anI++) {
     AttributeSelectionPtr aAtt = aFacesListAttr->value(anI);
     aFaces.push_back( aAtt->value() );
   }
   GeomShapePtr aCompound = GeomAlgoAPI_CompoundBuilder::compound(aFaces);
-  aGroup->store(aCompound);
+  myGroup->store(aCompound);
   aColor = {255,0,0};
-  setResult(aGroup);
+  setResult(myGroup);
   ModelAPI_Tools::setColor( lastResult(),aColor);
 
 }

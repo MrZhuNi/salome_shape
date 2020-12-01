@@ -180,7 +180,7 @@
     </group>
     <group id="Face">
       <feature id="Shared_faces" title="Check shared faces" tooltip="Check the shared faces" auto_preview="true"
-               icon="icons/Features/shared_shapes.png" helpfile="measurementFeature.html"> 
+               icon="icons/Features/shared_shapes.png" helpfile="checkSharedFaceFeature.html"> 
         <source path="sharedFaces_widget.xml"/>
       </feature>
     </group>

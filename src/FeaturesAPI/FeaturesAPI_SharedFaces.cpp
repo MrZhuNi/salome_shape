@@ -28,7 +28,7 @@
 #include <ModelHighAPI_Selection.h>
 #include <ModelHighAPI_Tools.h>
 
-
+//=================================================================================================
 FeaturesAPI_SharedFaces::
           FeaturesAPI_SharedFaces(const std::shared_ptr<ModelAPI_Feature>& theFeature)
   : ModelHighAPI_Interface(theFeature)
@@ -36,18 +36,17 @@ FeaturesAPI_SharedFaces::
   initialize();
 }
 
-FeaturesAPI_SharedFaces::FeaturesAPI_SharedFaces(
-                                    const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                    const ModelHighAPI_Selection& theobject,
-                                    const double theTransparency,
-                                    const std::string & theNameGroup)
+//=================================================================================================
+FeaturesAPI_SharedFaces::FeaturesAPI_SharedFaces(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                         const ModelHighAPI_Selection& theobject,
+                         const double theTransparency,
+                         const std::string & theNameGroup)
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
     fillAttribute(theobject, myobjectselected);
     fillAttribute(theTransparency, mytransparency);
-    if( theNameGroup != "" )
-    {
+    if (theNameGroup != "") {
       fillAttribute(true,
                 feature()->boolean(FeaturesPlugin_SharedFaces::CREATE_GROUP_ID()));
       fillAttribute(theNameGroup, mygroupname);
@@ -56,11 +55,12 @@ FeaturesAPI_SharedFaces::FeaturesAPI_SharedFaces(
   }
 }
 
-
+//=================================================================================================
 FeaturesAPI_SharedFaces::~FeaturesAPI_SharedFaces()
 {
 }
 
+//=================================================================================================
 void FeaturesAPI_SharedFaces::dump(ModelHighAPI_Dumper& theDumper) const
 {
   FeaturePtr aBase = feature();
@@ -72,12 +72,13 @@ void FeaturesAPI_SharedFaces::dump(ModelHighAPI_Dumper& theDumper) const
   theDumper << aBase << " = model.getSharedFaces(" << aDocName << ", " << anAttrObject;
   theDumper << ", " << aBase->integer(FeaturesPlugin_SharedFaces::TRANSPARENCY_ID());
 
-  if(aBase->boolean(FeaturesPlugin_SharedFaces::CREATE_GROUP_ID())->value() )
+  if (aBase->boolean(FeaturesPlugin_SharedFaces::CREATE_GROUP_ID())->value())
     theDumper << ", " << aBase->string(FeaturesPlugin_SharedFaces::GROUP_NAME_ID());
 
   theDumper << ")" << std::endl;
 }
 
+//=================================================================================================
 SharedFacesPtr getSharedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
                               const ModelHighAPI_Selection& theobject,
                               const double theTransparency,

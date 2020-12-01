@@ -23,14 +23,10 @@
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Compound.hxx>
 #include <BRep_Builder.hxx>
-#include <TColStd_HSequenceOfTransient.hxx>
 #include <TopTools_IndexedMapOfShape.hxx>
-#include <GeomAlgoAPI_ShapeBuilder.h>
-#include <vector>
 #include <TopExp.hxx>
 #include <TopoDS_Iterator.hxx>
 #include <TopExp_Explorer.hxx>
-
 
 //=======================================================================
 //function : GetSharedShapes
@@ -60,12 +56,11 @@
 // [4] theShapes = 1 shape, theMultiShare = False
 //     Result: sub-shapes of all possible couples of all top-level sub-objects of
 //     theShapes[0].
-//=======================================================================
 //=================================================================================================
-bool GetSharedredFaces( const ListOfShape& theShapes,
-                        ListOfShape & theFaces,
-                        const bool  theMultiShare,
-                        std::string& theError)
+bool GetSharedredFaces(const ListOfShape& theShapes,
+                       ListOfShape & theFaces,
+                       const bool  theMultiShare,
+                       std::string& theError)
 {
 
   #ifdef _DEBUG
@@ -95,11 +90,10 @@ bool GetSharedredFaces( const ListOfShape& theShapes,
 
   // if only single shape is specified as input
   // collect all ites top-level sub-shapes for processing
-  if ( aShapesSeq.Length() == 1 )
-  {
+  if (aShapesSeq.Length() == 1) {
     aShape = aShapesSeq.First();
     aShapesSeq.Clear();
-    for ( TopoDS_Iterator it( aShape ); it.More(); it.Next() )
+    for (TopoDS_Iterator it( aShape ); it.More(); it.Next())
       aShapesSeq.Append( it.Value() );
   }
 
@@ -112,14 +106,14 @@ bool GetSharedredFaces( const ListOfShape& theShapes,
   // numShares factor to search (i.e. by what nb of shapes each found sub-shape should be shared)
   int nbShares =  theMultiShare ? aShapesSeq.Length()-1 : 1;
 
-  for ( int iter = 1; iter <= nbIters; iter++) {
-    for ( int ind = iter+1; ind <= aShapesSeq.Length(); ind++) {
-      if ( ind-1+nbShares > aShapesSeq.Length() ) break;
+  for (int iter = 1; iter <= nbIters; iter++) {
+    for (int ind = iter+1; ind <= aShapesSeq.Length(); ind++) {
+      if (ind-1+nbShares > aShapesSeq.Length()) break;
       TopoDS_Compound aCurrSelection;
       TopoDS_Shape aShape1 = aShapesSeq.Value( iter );
       TopTools_IndexedMapOfShape mapSelected;
       TopExp::MapShapes(aShape1, aShapeType, mapSelected);
-      for ( int s = 0; s < nbShares; s++ ) {
+      for (int s = 0; s < nbShares; s++) {
         BRep_Builder B;
         TopoDS_Compound aCompound;
         B.MakeCompound(aCompound);

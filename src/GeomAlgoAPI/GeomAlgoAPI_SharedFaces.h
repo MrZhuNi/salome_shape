@@ -25,14 +25,14 @@
 #include <Standard_TypeDef.hxx>
 
 /// get the boundin box of theshape.
-  /// \param theShape   the shape
-  /// \param theTolerance precise TRUE for precise computation; FALSE for fast one.
-  /// \param theFaces  the faces shared
-  /// \param theError  error
+/// \param theShape   the shape
+/// \param theTolerance precise TRUE for precise computation; FALSE for fast one.
+/// \param theFaces  the faces shared
+/// \param theError  error
 GEOMALGOAPI_EXPORT
-bool GetSharedredFaces( const ListOfShape& theShapes,
-                        ListOfShape & theFaces,
-                        const bool  theMultiShare,
-                        std::string& theError);
+bool GetSharedredFaces(const ListOfShape& theShapes,
+                       ListOfShape & theFaces,
+                       const bool  theMultiShare,
+                       std::string& theError);
 
 #endif //GEOMALGOAPI_SHAREDFACES_H_
