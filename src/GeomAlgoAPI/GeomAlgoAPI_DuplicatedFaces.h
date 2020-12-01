@@ -25,14 +25,14 @@
 #include <Standard_TypeDef.hxx>
 
 /// get the boundin box of theshape.
-  /// \param theShape   the shape
-  /// \param theTolerance precise TRUE for precise computation; FALSE for fast one.
-  /// \param theFaces  the duplicated faces
-  /// \param theError  error
+/// \param theShape   the shape
+/// \param theTolerance precise TRUE for precise computation; FALSE for fast one.
+/// \param theFaces  the duplicated faces
+/// \param theError  error
 GEOMALGOAPI_EXPORT
-bool GetDuplicatedFaces( const ListOfShape& theShapes,
-                         const Standard_Real& theTolerance,
-                         ListOfShape & theFaces,
-                         std::string& theError);
+bool GetDuplicatedFaces(const ListOfShape& theShapes,
+                        const Standard_Real& theTolerance,
+                        ListOfShape & theFaces,
+                        std::string& theError);
 
 #endif //GEOMALGOAPI_DUPLICATEDFACES_H_

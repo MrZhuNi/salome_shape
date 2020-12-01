@@ -45,7 +45,7 @@
 #include <sstream>
 #include <iostream>
 
-
+//=================================================================================================
 FeaturesPlugin_DuplicatedFaces::FeaturesPlugin_DuplicatedFaces()
 {
 }
@@ -66,9 +66,10 @@ void FeaturesPlugin_DuplicatedFaces::initAttributes()
   boolean(CREATE_GROUP_ID())->setValue(false);
 }
 
+//=================================================================================================
 void explode(const GeomShapePtr& theCompound, ListOfShape& theSubs)
 {
-  if (theCompound->isCompound() || theCompound->isCompSolid() ) {
+  if (theCompound->isCompound() || theCompound->isCompSolid()) {
     GeomAPI_ShapeIterator anIt(theCompound);
     for (; anIt.more(); anIt.next())
       explode(anIt.current(), theSubs);
@@ -77,23 +78,30 @@ void explode(const GeomShapePtr& theCompound, ListOfShape& theSubs)
     theSubs.push_back(theCompound);
 }
 
+//=================================================================================================
 void FeaturesPlugin_DuplicatedFaces::execute()
 {
   if(boolean(CREATE_GROUP_ID())->value()
     && selectionList(LIST_FACES_ID())->isInitialized()
-    && string(GROUP_NAME_ID())->value() != "" )
-  {
-    AttributeStringPtr aNameAtt = string( GROUP_NAME_ID() ) ;
+    && string(GROUP_NAME_ID())->value() != "" ){
+
+    AttributeStringPtr aNameAtt = string(GROUP_NAME_ID());
     std::wstring aNameFace = aNameAtt->isUValue() ?
                             Locale::Convert::toWString(aNameAtt->valueU()) :
                             Locale::Convert::toWString(aNameAtt->value());
 
-
+    if (myGroup.get())
+      eraseResults();
     setFacesGroup(aNameFace);
-  }
-  if( selection(OBJECT_ID())->isInitialized() )
-  {
 
+  } else {
+    if (myGroup.get()) {
+      eraseResults();
+      myGroup.reset();
+    }
+
+  }
+  if (selection(OBJECT_ID())->isInitialized()) {
     AttributeSelectionPtr ancompSolidAttr = selection(OBJECT_ID());
     ResultPtr aResult = ancompSolidAttr->context();
 
@@ -104,12 +112,13 @@ void FeaturesPlugin_DuplicatedFaces::execute()
     std::list<ResultPtr> allRes;
     ModelAPI_Tools::allSubs(aResultBody, allRes);
     std::list<ResultPtr>::iterator aRes;
-    for(aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
+    for (aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
         ModelAPI_Tools::setTransparency(*aRes, aTranparency);
     }
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_DuplicatedFaces::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECT_ID()) {
@@ -119,13 +128,13 @@ void FeaturesPlugin_DuplicatedFaces::attributeChanged(const std::string& theID)
     if (aShape.get() && ancompSolidAttr->context().get()) {
 
       aShape = ancompSolidAttr->context()->shape();
-      if(aShape){
+      if (aShape) {
         std::string anError;
         ListOfShape aFaces;
         ListOfShape theSubs;
         explode(aShape, theSubs);
 
-        if( !GetDuplicatedFaces( theSubs,
+        if (!GetDuplicatedFaces(theSubs,
                                 0.001,
                                 aFaces,
                                 anError))
@@ -136,8 +145,8 @@ void FeaturesPlugin_DuplicatedFaces::attributeChanged(const std::string& theID)
                     std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
                                                       (attribute(LIST_FACES_ID()));
 
-        if ( aFacesListAttr->isInitialized())
-              aFacesListAttr->clear();
+        if (aFacesListAttr->isInitialized())
+          aFacesListAttr->clear();
 
         aFacesListAttr->setSelectionType("face");
 
@@ -154,19 +163,19 @@ void FeaturesPlugin_DuplicatedFaces::attributeChanged(const std::string& theID)
         std::stringstream alabel;
         alabel << "Number of duplicated faces : " << aFacesListAttr->size();
         string(NUMBER_FACES_ID() )->setValue( alabel.str() );
-
       }
     }
   }
 }
 
+//=================================================================================================
 void FeaturesPlugin_DuplicatedFaces::setFacesGroup(const std::wstring& theName )
 {
   std::vector<int> aColor;
-  ResultGroupPtr aGroup = document()->createGroup(data());
+  myGroup = document()->createGroup(data());
   // clean the result of the operation
-  aGroup->data()->setName(theName);
-  aGroup->store(GeomShapePtr());
+  myGroup->data()->setName(theName);
+  myGroup->store(GeomShapePtr());
 
   // shapes containing in each group
   ListOfShape aFaces;
@@ -174,16 +183,15 @@ void FeaturesPlugin_DuplicatedFaces::setFacesGroup(const std::wstring& theName )
                     std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
                                                         (attribute(LIST_FACES_ID()));
 
-  for(int anI =0; anI< aFacesListAttr->size(); anI++  )
-  {
+  for (int anI =0; anI< aFacesListAttr->size(); anI++) {
     AttributeSelectionPtr aAtt = aFacesListAttr->value(anI);
     aFaces.push_back( aAtt->value() );
   }
-  GeomShapePtr aCompound = GeomAlgoAPI_CompoundBuilder::compound(aFaces);
-  aGroup->store(aCompound);
-  aColor = {255,0,0};
-  setResult(aGroup);
-  ModelAPI_Tools::setColor( lastResult(),aColor);
 
+  GeomShapePtr aCompound = GeomAlgoAPI_CompoundBuilder::compound(aFaces);
+  myGroup->store(aCompound);
+  aColor = {255,0,0};
+  setResult(myGroup);
+  ModelAPI_Tools::setColor( lastResult(),aColor);
 }
 

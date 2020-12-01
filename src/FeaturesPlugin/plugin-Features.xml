@@ -180,7 +180,7 @@
     </group>
     <group id="Face">
       <feature id="Duplicated_faces" title="Check duplicated faces" tooltip="Check the duplicated faces" auto_preview="true"
-               icon="icons/Features/duplicatedFaces.png" helpfile="measurementFeature.html"> 
+               icon="icons/Features/duplicatedFaces.png" helpfile="checkDuplicatedFaceFeature.html"> 
         <source path="duplicatedFaces_widget.xml"/>
       </feature>
     </group>

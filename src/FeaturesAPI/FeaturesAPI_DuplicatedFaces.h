@@ -78,8 +78,8 @@ typedef std::shared_ptr<FeaturesAPI_DuplicatedFaces> DuplicatedFacesPtr;
 /// \param theobject the object selected
 FEATURESAPI_EXPORT
 DuplicatedFacesPtr getDuplicatedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
-                                  const ModelHighAPI_Selection& theObject,
-                                  const double theTransparency = 0.0,
-                                  const std::string & theNameGroup = "");
+                                      const ModelHighAPI_Selection& theObject,
+                                      const double theTransparency = 0.0,
+                                      const std::string & theNameGroup = "");
 
 #endif // FeaturesAPI_DuplicatedFaces_H_

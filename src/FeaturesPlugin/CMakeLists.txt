@@ -708,4 +708,5 @@ ADD_UNIT_TESTS(TestExtrusion.py
                TestFillet1D_Wire_3.py
                TestFillet1D_Wire_4.py
                TestFillet1D_Wire_5.py
+               TestCheckDuplictedFaces.py
 )

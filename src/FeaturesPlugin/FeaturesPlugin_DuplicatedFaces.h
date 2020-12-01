@@ -22,6 +22,7 @@
 
 #include "FeaturesPlugin.h"
 #include <ModelAPI_Feature.h>
+#include <ModelAPI_ResultGroup.h>
 
 #include <GeomAPI_IPresentable.h>
 #include <GeomAPI_IScreenParams.h>
@@ -102,10 +103,10 @@ public:
   FeaturesPlugin_DuplicatedFaces();
 
   private:
-
   //Set group of faces
   void setFacesGroup(const std::wstring& theName );
 
+  ResultGroupPtr myGroup;
 };
 
 #endif

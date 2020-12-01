@@ -23,7 +23,6 @@
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Compound.hxx>
 #include <BRep_Builder.hxx>
-#include <TColStd_HSequenceOfTransient.hxx>
 #include <GeomAlgoAPI_GlueDetector.h>
 #include <TopTools_IndexedMapOfShape.hxx>
 #include <GeomAlgoAPI_ShapeBuilder.h>
@@ -31,14 +30,12 @@
 #include <GeomAlgoAPI_SortListOfShapes.h>
 #include <TopExp.hxx>
 
-
 //=================================================================================================
-bool GetDuplicatedFaces( const ListOfShape& theShapes,
+bool GetDuplicatedFaces(const ListOfShape& theShapes,
                         const Standard_Real& theTolerance,
                         ListOfShape & theFaces,
                         std::string& theError)
 {
-
   #ifdef _DEBUG
   std::cout << "GetDuplicatedFaces " << std::endl;
   #endif
@@ -48,7 +45,7 @@ bool GetDuplicatedFaces( const ListOfShape& theShapes,
 
   ListOfShape::const_iterator anIt = theShapes.cbegin();
 
-  for(; anIt != theShapes.cend(); ++anIt) {
+  for (; anIt != theShapes.cend(); ++anIt) {
 
     GeomShapePtr aShapePtr = *anIt;
 
@@ -60,8 +57,7 @@ bool GetDuplicatedFaces( const ListOfShape& theShapes,
     aShapesSeq.Append( aShape );
   }
 
-  if ( aShapesSeq.Length() > 1 )
-  {
+  if (aShapesSeq.Length() > 1){
     TopoDS_Compound aCompound;
     BRep_Builder aBuilder;
     aBuilder.MakeCompound( aCompound );
@@ -80,7 +76,7 @@ bool GetDuplicatedFaces( const ListOfShape& theShapes,
 
   std::vector< TopTools_IndexedMapOfShape* > anIndices( aShapesSeq.Length(), NULL );
   Handle(TColStd_HArray1OfInteger) anArray;
-  GeomShapePtr anObj;//Handle(GEOM_Object) anObj;
+  GeomShapePtr anObj;
 
   ListOfShape listOnePerSet;
 
@@ -88,7 +84,6 @@ bool GetDuplicatedFaces( const ListOfShape& theShapes,
   TopTools_DataMapIteratorOfDataMapOfShapeListOfShape aItDMSLS (aImages);
   for (int index = 1; aItDMSLS.More(); aItDMSLS.Next(), ++index) {
     // some key shape
-    //const TopoDS_Shape& aSkey = aItDMSLS.Key();
 
     // list of shapes of the argument that can be glued
     const TopTools_ListOfShape& aLSD = aItDMSLS.Value();
@@ -108,18 +103,16 @@ bool GetDuplicatedFaces( const ListOfShape& theShapes,
 
   //TopTools_ListIteratorOfListOfShape aListIt (listOnePerSet);
   ListOfShape::const_iterator aListIt = listOnePerSet.cbegin();
-  for (; aListIt != listOnePerSet.cend(); ++aListIt)
-  {
+  for (; aListIt != listOnePerSet.cend(); ++aListIt) {
     TopoDS_Shape aValue = (*aListIt)->impl<TopoDS_Shape>();
     // find a shape to add aValue as a sub-shape
     anObj.reset();
 
     anIt = theShapes.cbegin();
     GeomShapePtr aShapePtr;
-    for ( int i = 0; i < theShapes.size(); ++i, ++anIt )
-    {
+    for (int i = 0; i < theShapes.size(); ++i, ++anIt) {
       aShapePtr = *anIt;
-      if ( !anIndices[i] ) {
+      if (!anIndices[i]) {
         anIndices[i] = new TopTools_IndexedMapOfShape;
         aShape = aShapePtr->impl<TopoDS_Shape>();
         TopExp::MapShapes( aShape, *anIndices[i]);
@@ -130,13 +123,13 @@ bool GetDuplicatedFaces( const ListOfShape& theShapes,
         GeomShapePtr aS(new GeomAPI_Shape);
         aS->setImpl<TopoDS_Shape>(new TopoDS_Shape(aSelShape));
         // GeomAlgoAPI_ShapeBuilder::add(aShapePtr,aS);
-        if ( aS.get())
+        if (aS.get())
             theFaces.push_back(aS);
         break;
       }
     }
   }
-  for ( size_t i = 0 ; i < anIndices.size(); ++i )
+  for (size_t i = 0 ; i < anIndices.size(); ++i)
     delete anIndices[i];
 
   return true;

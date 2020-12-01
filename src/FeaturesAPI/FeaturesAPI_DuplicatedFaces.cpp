@@ -28,7 +28,7 @@
 #include <ModelHighAPI_Selection.h>
 #include <ModelHighAPI_Tools.h>
 
-
+//=================================================================================================
 FeaturesAPI_DuplicatedFaces::
           FeaturesAPI_DuplicatedFaces(const std::shared_ptr<ModelAPI_Feature>& theFeature)
   : ModelHighAPI_Interface(theFeature)
@@ -36,30 +36,31 @@ FeaturesAPI_DuplicatedFaces::
   initialize();
 }
 
+//=================================================================================================
 FeaturesAPI_DuplicatedFaces::~FeaturesAPI_DuplicatedFaces()
 {
 }
 
+//=================================================================================================
 FeaturesAPI_DuplicatedFaces::FeaturesAPI_DuplicatedFaces(
-                                    const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                    const ModelHighAPI_Selection& theObject,
-                                    const double theTransparency,
-                                    const std::string & theNameGroup)
+                             const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                             const ModelHighAPI_Selection& theObject,
+                             const double theTransparency,
+                             const std::string & theNameGroup)
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
     fillAttribute(theObject, myobjectselected);
     fillAttribute(theTransparency, mytransparency);
-    if( theNameGroup != "" )
-    {
-      fillAttribute(true,
-                feature()->boolean(FeaturesPlugin_DuplicatedFaces::CREATE_GROUP_ID()));
+    if (theNameGroup != "") {
+      fillAttribute(true,feature()->boolean(FeaturesPlugin_DuplicatedFaces::CREATE_GROUP_ID()));
       fillAttribute(theNameGroup, mygroupname);
     }
     execute();
   }
 }
 
+//=================================================================================================
 void FeaturesAPI_DuplicatedFaces::dump(ModelHighAPI_Dumper& theDumper) const
 {
   FeaturePtr aBase = feature();
@@ -77,6 +78,7 @@ void FeaturesAPI_DuplicatedFaces::dump(ModelHighAPI_Dumper& theDumper) const
   theDumper << ")" << std::endl;
 }
 
+//=================================================================================================
 DuplicatedFacesPtr getDuplicatedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
                                       const ModelHighAPI_Selection& theObject,
                                       const double theTransparency,
