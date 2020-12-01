@@ -81,14 +81,14 @@ By default, the result of Selection feature all selectable entities from all Sha
     - **Size** or  **Min size** and **Max size**
 - **Algorithm:** Returns all solids whose volume respect comparator rules.
 
-**Features edge**
+**Feature edges**
 
 This algorithm identifies edges between two faces discontinuous with an angular tolerance.
 
 - **Result type:** Edge
 - **Argument:** 
-    - **Angle** an angular tolerance used for G1 continuity to compare the angle between the normals 
-- **Algorithm:** Returns all Edges between two discontinuous faces.
+    - **Angle** an angular tolerance used by G1 continuity criterion for comparing the angle between the normals 
+- **Algorithm:** Returns all edges between two discontinuous faces.
 
 **On a plane**
 
@@ -128,7 +128,7 @@ This algorithm identifies continuous faces with an angular tolerance given by to
 
 - **Result type:** Face
 - **Argument:** 
-    - **Angle:** an angular tolerance used for G1 continuity to compare the angle between the normals. 
+    - **Angle:** an angular tolerance used by G1 continuity criterion for comparing the angle between the normals. 
     - **Faces:** Faces to start the propagation.    
 - **Algorithm:** Returns continuous faces.
 
