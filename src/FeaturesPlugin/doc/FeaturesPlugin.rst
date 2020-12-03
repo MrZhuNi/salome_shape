@@ -21,11 +21,12 @@ Features plug-in provides a set of common topological operations. It implements 
    filletFeature.rst
    fillet1dFeature.rst
    fuseFeatureFaces.rst
+   geometryCalculationFeature.rst
    importResultFeature.rst
    linearCopyFeature.rst
    measurementFeature.rst
-   pointCoordinatesFeature.rst
    pipeFeature.rst
+   pointCoordinatesFeature.rst
    placementFeature.rst
    recoverFeature.rst
    removeSubShapesFeature.rst

@@ -33,6 +33,7 @@ SET(PROJECT_HEADERS
   FeaturesAPI_Intersection.h
   FeaturesAPI_Measurement.h
   FeaturesAPI_PointCoordinates.h
+  FeaturesAPI_GeometryCalculation.h
   FeaturesAPI_MultiRotation.h
   FeaturesAPI_MultiTranslation.h
   FeaturesAPI_Partition.h
@@ -67,6 +68,7 @@ SET(PROJECT_SOURCES
   FeaturesAPI_Intersection.cpp
   FeaturesAPI_Measurement.cpp
   FeaturesAPI_PointCoordinates.cpp
+  FeaturesAPI_GeometryCalculation.cpp
   FeaturesAPI_MultiRotation.cpp
   FeaturesAPI_MultiTranslation.cpp
   FeaturesAPI_Partition.cpp

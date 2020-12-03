@@ -1,0 +1,13 @@
+<source>
+  <shape_selector id="main_object"
+                  label="Object"
+                  tooltip="Select a object"
+                  shape_types="edges wires faces shells solids compsolids compounds"
+                  default=""
+                  geometrical_selection="true">
+    <validator id="GeomValidators_ShapeType" parameters="line,edge,wire,face,shell,solid,compsolid,compound"/>
+  </shape_selector>
+  <label id="lenght" isSelectable = "true"/>
+  <label id="area" isSelectable = "true"/>
+  <label id="volume" isSelectable = "true"/>
+</source>

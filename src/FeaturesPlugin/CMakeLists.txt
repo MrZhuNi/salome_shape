@@ -70,6 +70,7 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_Fillet1D.h
     FeaturesPlugin_Measurement.h
     FeaturesPlugin_PointCoordinates.h
+    FeaturesPlugin_GeometryCalculation.h
     FeaturesPlugin_FusionFaces.h
     FeaturesPlugin_RemoveResults.h
     FeaturesPlugin_Chamfer.h
@@ -118,6 +119,7 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_Fillet1D.cpp
     FeaturesPlugin_Measurement.cpp
     FeaturesPlugin_PointCoordinates.cpp
+    FeaturesPlugin_GeometryCalculation.cpp
     FeaturesPlugin_FusionFaces.cpp
     FeaturesPlugin_RemoveResults.cpp
     FeaturesPlugin_Chamfer.cpp
@@ -157,6 +159,7 @@ SET(XML_RESOURCES
   fillet1d_widget.xml
   measurement_widget.xml
   point_coordinates_widget.xml
+  geometry_calculation_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml
@@ -707,4 +710,5 @@ ADD_UNIT_TESTS(TestExtrusion.py
                Test20245_3.py
                Test20247.py
                TestPointCoordinates.py
+               TestBasicProperties.py
 )

@@ -31,6 +31,7 @@
 #include <FeaturesPlugin_ExtrusionFuse.h>
 #include <FeaturesPlugin_Fillet.h>
 #include <FeaturesPlugin_Fillet1D.h>
+#include <FeaturesPlugin_GeometryCalculation.h>
 #include <FeaturesPlugin_Intersection.h>
 #include <FeaturesPlugin_Measurement.h>
 #include <FeaturesPlugin_PointCoordinates.h>
@@ -190,6 +191,8 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
     return FeaturePtr(new FeaturesPlugin_Measurement);
   } else if (theFeatureID == FeaturesPlugin_PointCoordinates::ID()) {
     return FeaturePtr(new FeaturesPlugin_PointCoordinates);
+  } else if (theFeatureID == FeaturesPlugin_GeometryCalculation::ID()) {
+    return FeaturePtr(new FeaturesPlugin_GeometryCalculation);
   } else if (theFeatureID == FeaturesPlugin_RemoveResults::ID()) {
     return FeaturePtr(new FeaturesPlugin_RemoveResults);
   } else if (theFeatureID == FeaturesPlugin_Chamfer::ID()) {
