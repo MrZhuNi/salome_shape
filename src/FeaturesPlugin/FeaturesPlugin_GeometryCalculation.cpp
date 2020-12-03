@@ -29,18 +29,18 @@
 #include <Config_PropManager.h>
 
 #include <GeomAPI_Shape.h>
-#include <GeomAPI_Pnt.h>
-#include <GeomAPI_Vertex.h>
 #include <GeomAlgoAPI_BasicProperties.h>
 
 
 #include <iomanip>
 #include <sstream>
 
+//=================================================================================================
 FeaturesPlugin_GeometryCalculation::FeaturesPlugin_GeometryCalculation()
 {
 }
 
+//=================================================================================================
 void FeaturesPlugin_GeometryCalculation::initAttributes()
 {
   // attribute for point selected
@@ -51,15 +51,16 @@ void FeaturesPlugin_GeometryCalculation::initAttributes()
   data()->addAttribute(VOLUME_ID(), ModelAPI_AttributeString::typeId());
 
   data()->addAttribute(RESULT_VALUES_ID(), ModelAPI_AttributeDoubleArray::typeId());
-
   data()->realArray(RESULT_VALUES_ID())->setSize(3);
 
 }
 
+//=================================================================================================
 void FeaturesPlugin_GeometryCalculation::execute()
 {
 }
 
+//=================================================================================================
 void FeaturesPlugin_GeometryCalculation::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECT_SELECTED_ID()) {
@@ -77,18 +78,18 @@ void FeaturesPlugin_GeometryCalculation::attributeChanged(const std::string& the
       if (!aShape && aSelection->context())
         aShape = aSelection->context()->shape();
     }
-    if (aShape){
+    if (aShape) {
       double aTolerance = 0.0001;
       double aLength;
       double aSurfArea;
       double aVolume;
       std::string aError;
-      if( !GetBasicProperties( aShape,
+      if (!GetBasicProperties(aShape,
                               aTolerance,
                               aLength,
                               aSurfArea,
                               aVolume,
-                              aError) )
+                              aError))
          setError("Error in Geometry calculation :" +  aError);
 
       streamL << std::setprecision(14) << aLength;
@@ -99,9 +100,9 @@ void FeaturesPlugin_GeometryCalculation::attributeChanged(const std::string& the
       aValues->setValue(2, aVolume);
     }
 
-    string(LENGHT_ID() )->setValue( "Lenght = " +  streamL.str() );
-    string(AREA_ID() )->setValue( "Area = " +  streamA.str() );
-    string(VOLUME_ID() )->setValue( "Volume = " +  streamV.str() );
+    string(LENGHT_ID())->setValue("Lenght = " +  streamL.str());
+    string(AREA_ID())->setValue("Area = " +  streamA.str());
+    string(VOLUME_ID())->setValue("Volume = " +  streamV.str());
   }
 }
 

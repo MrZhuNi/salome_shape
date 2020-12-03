@@ -32,11 +32,11 @@
   /// \param theVolume     Volume calculated
   /// \param theError      error
 GEOMALGOAPI_EXPORT
-bool GetBasicProperties(  const std::shared_ptr<GeomAPI_Shape>& theShape,
-                          const Standard_Real theTolerance,
-                          Standard_Real& theLength,
-                          Standard_Real& theSurfArea,
-                          Standard_Real& theVolume,
-                          std::string& theError);
+bool GetBasicProperties(const std::shared_ptr<GeomAPI_Shape>& theShape,
+                        const Standard_Real theTolerance,
+                        Standard_Real& theLength,
+                        Standard_Real& theSurfArea,
+                        Standard_Real& theVolume,
+                        std::string& theError);
 
 #endif

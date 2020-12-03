@@ -26,3 +26,13 @@ Input fields:
 - **Object** contains an object selected in 3D OCC viewer or object browser. 
 
 The basic properties displayed can be selected.
+
+**TUI Command**:
+
+.. py:function:: model.GetBasicProperties(Part_doc, shape)
+
+    :param part: The current part object.
+    :param object: A shape in format *model.selection("type", shape)*.
+    :return: list containing lenght, area and volume.
+
+**See Also** a sample TUI Script of :ref:`tui_basic_properties` operation.

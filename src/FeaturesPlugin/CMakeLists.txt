@@ -24,7 +24,6 @@ INCLUDE(UseQtExt)
 # additional include directories
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
                      ${PROJECT_SOURCE_DIR}/src/Locale
-                     ${PROJECT_SOURCE_DIR}/src/PrimitivesPlugin
                      ${QT_INCLUDES})
 
 # additional preprocessor / compiler flags
@@ -157,7 +156,7 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
-  GeometryCalculation_widget.xml
+  geometry_calculation_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml

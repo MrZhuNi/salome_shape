@@ -24,8 +24,9 @@
 #include <ModelHighAPI_Services.h>
 #include <ModelHighAPI_Tools.h>
 
-std::list<double>  getBasicProperties(const std::shared_ptr<ModelAPI_Document>& thePart,
-                                      const ModelHighAPI_Selection& theObject)
+//=================================================================================================
+std::list<double> getBasicProperties(const std::shared_ptr<ModelAPI_Document>& thePart,
+                                     const ModelHighAPI_Selection& theObject)
 {
   FeaturePtr aPointCoodFeat = thePart->addFeature(FeaturesPlugin_GeometryCalculation::ID());
 
@@ -37,7 +38,7 @@ std::list<double>  getBasicProperties(const std::shared_ptr<ModelAPI_Document>& 
   AttributeDoubleArrayPtr aResult = std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(
       aPointCoodFeat->attribute(FeaturesPlugin_GeometryCalculation::RESULT_VALUES_ID()));
 
-  for ( int i : {0, 1, 2})
+  for (int i : {0, 1, 2})
     res.push_back( aResult->value(i));
 
   return res;

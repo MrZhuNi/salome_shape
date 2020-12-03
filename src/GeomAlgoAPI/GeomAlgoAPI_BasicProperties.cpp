@@ -26,12 +26,12 @@
 #include <Standard_ErrorHandler.hxx>
 
 //=================================================================================================
-bool GetBasicProperties(  const std::shared_ptr<GeomAPI_Shape>& theShape,
-                          const double theTolerance,
-                          Standard_Real& theLength,
-                          Standard_Real& theSurfArea,
-                          Standard_Real& theVolume,
-                          std::string& theError)
+bool GetBasicProperties(const std::shared_ptr<GeomAPI_Shape>& theShape,
+                        const double theTolerance,
+                        Standard_Real& theLength,
+                        Standard_Real& theSurfArea,
+                        Standard_Real& theVolume,
+                        std::string& theError)
 {
 
   #ifdef _DEBUG
