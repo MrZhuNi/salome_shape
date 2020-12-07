@@ -61,17 +61,6 @@ void FeaturesPlugin_SharedFaces::initAttributes()
   data()->addAttribute(GROUP_NAME_ID(), ModelAPI_AttributeString::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), GROUP_NAME_ID());
-  boolean(CREATE_GROUP_ID())->setValue(false);
-}
-
-void explodeCompound(const GeomShapePtr& theCompound, ListOfShape& theSubs)
-{
-  if (theCompound->isCompound() || theCompound->isCompSolid()) {
-    GeomAPI_ShapeIterator anIt(theCompound);
-    for (; anIt.more(); anIt.next())
-      explodeCompound(anIt.current(), theSubs);
-  } else
-    theSubs.push_back(theCompound);
 }
 
 //=================================================================================================
@@ -126,13 +115,14 @@ void FeaturesPlugin_SharedFaces::attributeChanged(const std::string& theID)
       if (aShape) {
         std::string anError;
         ListOfShape aFaces;
-        ListOfShape theSubs;
-        explodeCompound(aShape, theSubs);
-        if( !GetSharedredFaces( theSubs,
-                                aFaces,
-                                true,
-                                anError))
-          setError("Error in GetSharedredFaces calculation :" +  anError);
+        ListOfShape theShapes;
+
+        theShapes.push_back(aShape);
+        if (!GetSharedFaces(theShapes,
+                               aFaces,
+                               false,
+                               anError))
+          setError("Error in GetSharedFaces calculation :" +  anError);
 
         AttributeSelectionListPtr aFacesListAttr =
                     std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
@@ -149,7 +139,7 @@ void FeaturesPlugin_SharedFaces::attributeChanged(const std::string& theID)
           GeomShapePtr aFacePtr = *anIt;
 
           if (!aFacePtr.get()) {
-            setError("GetSharedredFaces : An invalid face found " +  anError);
+            setError("GetSharedFaces : An invalid face found " +  anError);
           }
           aFacesListAttr->append( ancompSolidAttr->context(), aFacePtr);
         }

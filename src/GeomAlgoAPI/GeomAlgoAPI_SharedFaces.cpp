@@ -57,14 +57,14 @@
 //     Result: sub-shapes of all possible couples of all top-level sub-objects of
 //     theShapes[0].
 //=================================================================================================
-bool GetSharedredFaces(const ListOfShape& theShapes,
-                       ListOfShape & theFaces,
-                       const bool  theMultiShare,
-                       std::string& theError)
+bool GetSharedFaces(const ListOfShape& theShapes,
+                    ListOfShape & theFaces,
+                    const bool  theMultiShare,
+                    std::string& theError)
 {
 
   #ifdef _DEBUG
-  std::cout << "GetSharedredFaces " << std::endl;
+  std::cout << "GetSharedFaces " << std::endl;
   #endif
   int aLen = theShapes.size();
   if (aLen < 1) return NULL;
@@ -81,7 +81,7 @@ bool GetSharedredFaces(const ListOfShape& theShapes,
     GeomShapePtr aShapePtr = *anIt;
 
     if (!aShapePtr.get()) {
-      theError = "GetSharedredFaces : An invalid argument";
+      theError = "GetSharedFaces : An invalid argument";
       return false;
     }
     aShape = aShapePtr->impl<TopoDS_Shape>();
@@ -102,9 +102,9 @@ bool GetSharedredFaces(const ListOfShape& theShapes,
   // find shared shapes
 
   // number of iterations
-  int nbIters  =  theMultiShare || theShapes.size() > 1 ? 1 : aShapesSeq.Length()-1;
+  int nbIters  = theMultiShare || theShapes.size() > 1 ? 1 : aShapesSeq.Length()-1;
   // numShares factor to search (i.e. by what nb of shapes each found sub-shape should be shared)
-  int nbShares =  theMultiShare ? aShapesSeq.Length()-1 : 1;
+  int nbShares = theMultiShare ? aShapesSeq.Length()-1 : 1;
 
   for (int iter = 1; iter <= nbIters; iter++) {
     for (int ind = iter+1; ind <= aShapesSeq.Length(); ind++) {

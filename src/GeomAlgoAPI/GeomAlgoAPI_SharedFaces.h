@@ -30,9 +30,9 @@
 /// \param theFaces  the faces shared
 /// \param theError  error
 GEOMALGOAPI_EXPORT
-bool GetSharedredFaces(const ListOfShape& theShapes,
-                       ListOfShape & theFaces,
-                       const bool  theMultiShare,
-                       std::string& theError);
+bool GetSharedFaces(const ListOfShape& theShapes,
+                    ListOfShape & theFaces,
+                    const bool  theMultiShare,
+                    std::string& theError);
 
 #endif //GEOMALGOAPI_SHAREDFACES_H_

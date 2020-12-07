@@ -11,7 +11,7 @@
   <groupbox title="Shared faces">
     <label id="number_shared_faces"/>
     <multi_selector id="faces"
-                      label="Liste of faces :"
+                      label="List of faces :"
                       icon=""
                       shape_types="faces"
                       Block_selection = "true"
