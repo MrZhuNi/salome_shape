@@ -179,11 +179,11 @@
       </feature>
       <feature id="BoundingBoxMacro" title="Bounding box" tooltip="Calculate the bounding box" auto_preview="true"
                icon="icons/Features/bounding.png" helpfile="boundingBoxFeature.html"> 
-        <source path="BoundingBox_widget.xml"/>
+        <source path="Bounding_Box_widget.xml"/>
       </feature>
       <feature id="BoundingBox" title="Bounding box" tooltip="Calculate the bounding box" auto_preview="true"
                icon="icons/Features/bounding.png" helpfile="boundingBoxFeature.html" internal="1"> 
-        <source path="CreateBoundingBox_widget.xml"/>
+        <source path="Create_Bounding_Box_widget.xml"/>
       </feature>
       <feature id="Measurement" title="Measurement" tooltip="Calculate properties of objects"
                icon="icons/Features/measurement.png" helpfile="measurementFeature.html" abort_confirmation="false">

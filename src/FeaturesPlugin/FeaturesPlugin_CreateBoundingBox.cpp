@@ -21,7 +21,6 @@
 
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeDoubleArray.h>
-#include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_AttributeString.h>
 
 #include <ModelAPI_Data.h>
@@ -32,8 +31,6 @@
 
 #include <Config_PropManager.h>
 #include <ModelAPI_ResultBody.h>
-
-#include <PrimitivesPlugin_Box.h>
 
 #include <iomanip>
 #include <sstream>
@@ -103,10 +100,10 @@ void FeaturesPlugin_CreateBoundingBox::updateValues()
     if (!aShape && aSelection->context())
       aShape = aSelection->context()->shape();
   }
-  if (aShape){
+  if (aShape) {
     double aXmin, aXmax, aYmin,aYmax,aZmin,aZmax;
           std::string aError;
-    if( !GetBoundingBox(aShape,
+    if (!GetBoundingBox(aShape,
                         true,
                         aXmin, aXmax,
                         aYmin,aYmax,

@@ -19,19 +19,19 @@
 
 #include "FeaturesPlugin_BoundingBox.h"
 
+#include <Config_PropManager.h>
+
+#include <FeaturesPlugin_CreateBoundingBox.h>
+
+#include <GeomAlgoAPI_BoundingBox.h>
+
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeDoubleArray.h>
 #include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_AttributeString.h>
-
-#include <GeomAlgoAPI_BoundingBox.h>
-
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
-#include <Config_PropManager.h>
-
-#include <FeaturesPlugin_CreateBoundingBox.h>
 
 #include <iomanip>
 #include <sstream>

@@ -23,9 +23,10 @@
 #include "FeaturesPlugin.h"
 #include <ModelAPI_Feature.h>
 
+#include <GeomAlgoAPI_Box.h>
+
 #include <GeomAPI_IPresentable.h>
 #include <GeomAPI_IScreenParams.h>
-#include <GeomAlgoAPI_Box.h>
 
 #include <ModelAPI_Attribute.h>
 

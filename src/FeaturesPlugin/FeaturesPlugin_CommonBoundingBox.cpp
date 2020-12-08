@@ -19,26 +19,23 @@
 
 #include "FeaturesPlugin_CommonBoundingBox.h"
 
-#include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeDoubleArray.h>
-#include <ModelAPI_AttributeBoolean.h>
-#include <ModelAPI_AttributeDouble.h>
-#include <GeomAlgoAPI_BoundingBox.h>
-#include <ModelAPI_AttributeString.h>
+
 #include <ModelAPI_Data.h>
+#include <ModelAPI_ResultBody.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
-#include <GeomAlgoAPI_PointBuilder.h>
 #include <GeomAPI_Vertex.h>
-#include <Config_PropManager.h>
-#include <ModelAPI_ResultBody.h>
+
+#include <GeomAlgoAPI_BoundingBox.h>
+#include <GeomAlgoAPI_PointBuilder.h>
 #include <GeomAlgoAPI_ShapeTools.h>
 
-#include <PrimitivesPlugin_Box.h>
+#include <Config_PropManager.h>
 
 #include <iomanip>
 #include <sstream>
-#include <iostream>
+
 
 
 //=================================================================================================
@@ -52,14 +49,14 @@ void FeaturesPlugin_CommonBoundingBox::createBoxByTwoPoints()
   DocumentPtr aDoc =  aSession->activeDocument();
 
   GeomVertexPtr vertexFirst =
-          GeomAlgoAPI_PointBuilder::vertex( aValues->value(0),
-                                            aValues->value(2),
-                                            aValues->value(4));
+          GeomAlgoAPI_PointBuilder::vertex(aValues->value(0),
+                                           aValues->value(2),
+                                           aValues->value(4));
 
   GeomVertexPtr  vertexSecond =
-          GeomAlgoAPI_PointBuilder::vertex( aValues->value(1),
-                                            aValues->value(3),
-                                            aValues->value(5));
+          GeomAlgoAPI_PointBuilder::vertex(aValues->value(1),
+                                           aValues->value(3),
+                                           aValues->value(5));
 
 
   std::shared_ptr<GeomAlgoAPI_Box> aBoxAlgo;
