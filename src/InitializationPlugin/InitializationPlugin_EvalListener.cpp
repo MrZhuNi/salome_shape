@@ -209,7 +209,7 @@ double InitializationPlugin_EvalListener::evaluate(
     if (theIsFirstTime)
     {
       std::list<ResultParameterPtr>::iterator anIter =
-                          std::find(theParamsList.begin(),theParamsList.end(), aParamRes );
+                          std::find(theParamsList.begin(),theParamsList.end(), aParamRes);
       if (anIter == theParamsList.end())
         theParamsList.push_back(aParamRes);
     }
@@ -232,7 +232,7 @@ double InitializationPlugin_EvalListener::evaluate(FeaturePtr theParameter,
   // find expression's params in the model
   std::list<std::wstring> aContext;
   std::list<std::wstring>::iterator it = anExprParams.begin();
-  for ( ; it != anExprParams.end(); it++) {
+  for (; it != anExprParams.end(); it++) {
     double aValue;
     ResultParameterPtr aParamRes;
     // If variable does not exist python interpreter will generate an error. It is OK.

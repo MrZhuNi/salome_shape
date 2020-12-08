@@ -137,7 +137,7 @@ void BuildAPI_Interpolation::dump(ModelHighAPI_Dumper& theDumper) const
   std::string aPartName = theDumper.name(aBase->document());
 
   if (aBase->string(BuildPlugin_Interpolation::CREATION_METHOD_ID())->value() ==
-            BuildPlugin_Interpolation::CREATION_METHOD_BY_SELECTION_ID() )
+            BuildPlugin_Interpolation::CREATION_METHOD_BY_SELECTION_ID())
   {
     AttributeSelectionListPtr anAttrBaseObjects =
       aBase->selectionList(BuildPlugin_Interpolation::BASE_OBJECTS_ID());

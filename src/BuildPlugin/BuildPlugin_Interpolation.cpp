@@ -91,10 +91,9 @@ void BuildPlugin_Interpolation::initAttributes()
   data()->reflist(ARGUMENTS_ID())->setIsArgument(false);
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), ARGUMENTS_ID());
 
-  if ( string( XT_ID())->value() == ""
-    && string( YT_ID())->value() == ""
-    && string( ZT_ID())->value() == "")
-    {
+  if (string(XT_ID())->value() == ""
+     && string(YT_ID())->value() == ""
+     && string(ZT_ID())->value() == "") {
       string(XT_ID())->setValue("t");
       string(YT_ID())->setValue("t");
       string(ZT_ID())->setValue("t");
@@ -102,7 +101,7 @@ void BuildPlugin_Interpolation::initAttributes()
       real(MAXT_ID())->setValue(100);
       integer(NUMSTEP_ID())->setValue(10);
       updateCoordinates();
-    }
+  }
 }
 
 //=================================================================================================
@@ -117,7 +116,7 @@ void BuildPlugin_Interpolation::attributeChanged(const std::string& theID)
     && string(XT_ID())->value() !=""
     && string(YT_ID())->value() !=""
     && string(ZT_ID())->value() !=""
-    && string(CREATION_METHOD_ID())->value() == CREATION_METHOD_ANALYTICAL_ID()){
+    && string(CREATION_METHOD_ID())->value() == CREATION_METHOD_ANALYTICAL_ID()) {
     updateCoordinates();
   }
 }
@@ -131,14 +130,14 @@ void BuildPlugin_Interpolation::updateCoordinates()
     int aNbrStep = integer(NUMSTEP_ID())->value();
 
     if (aMaxt < aMint) {
-      setError("The minimum value of the parameter must be less than maximum value !!!" );
+      setError("The minimum value of the parameter must be less than maximum value !!!");
     }
 
-    double aScale = (aMaxt - aMint )/aNbrStep;
+    double aScale = (aMaxt - aMint)/aNbrStep;
     string(VARIABLE_ID())->setValue("t");
 
     tables(VALUE_ID())->setSize(aNbrStep+1,4);
-    for (int step = 0; step <= aNbrStep; step++ ){
+    for (int step = 0; step <= aNbrStep; step++) {
       ModelAPI_AttributeTables::Value aVal;
       aVal.myDouble = step * aScale + aMint;
       tables(VALUE_ID())->setValue(aVal,step,0);
@@ -147,8 +146,8 @@ void BuildPlugin_Interpolation::updateCoordinates()
     outErrorMessage="";
     evaluate(outErrorMessage);
     data()->string(EXPRESSION_ERROR_ID())->setValue(outErrorMessage);
-    if (!outErrorMessage.empty()){
-      setError("Error: Python interpreter "); //+ outErrorMessage );
+    if (!outErrorMessage.empty()) {
+      setError("Error: Python interpreter ");
       return;
     }
 }
@@ -178,8 +177,7 @@ static GeomDirPtr selectionToDir(const AttributeSelectionPtr& theSelection)
 //=================================================================================================
 void BuildPlugin_Interpolation::execute()
 {
-  if (string(CREATION_METHOD_ID())->value() == CREATION_METHOD_BY_SELECTION_ID())
-  {
+  if (string(CREATION_METHOD_ID())->value() == CREATION_METHOD_BY_SELECTION_ID()) {
     // Get closed flag value
     bool isClosed = boolean(CLOSED_ID())->value();
 
@@ -240,46 +238,57 @@ void BuildPlugin_Interpolation::execute()
     setResult(aResultBody);
 
   } else {
-    if (string( XT_ID())->value() == ""
-        ||string( YT_ID())->value() == ""
-        ||string( ZT_ID())->value() == ""
-        ||tables(VALUE_ID())->rows()== 0  )
+    if (string(XT_ID())->value() == ""
+        ||string(YT_ID())->value() == ""
+        ||string(ZT_ID())->value() == ""
+        ||tables(VALUE_ID())->rows()== 0)
       return;
 
     bool aWasBlocked = data()->blockSendAttributeUpdated(true);
     updateCoordinates();
     data()->blockSendAttributeUpdated(aWasBlocked, false);
 
-    AttributeTablesPtr aTable = tables( VALUE_ID() );
-    std::list<std::vector<double> > aCoordPoints;
-    for (int step = 0; step < aTable->rows(); step++){
+    AttributeTablesPtr aTable = tables(VALUE_ID());
+    std::list<std::vector<double>> aCoordPoints;
+    for (int step = 0; step < aTable->rows(); step++) {
       std::vector<double> aCoordPoint;
       ModelAPI_AttributeTables::Value value;
       //x
       value = aTable->value(step, 1);
-      aCoordPoint.push_back( value.myDouble );
+      aCoordPoint.push_back(value.myDouble);
       //y
       value = aTable->value(step, 2);
-      aCoordPoint.push_back( value.myDouble );
+      aCoordPoint.push_back(value.myDouble);
       //
       value = aTable->value(step, 3);
-      aCoordPoint.push_back( value.myDouble );
+      aCoordPoint.push_back(value.myDouble);
 
       aCoordPoints.push_back(aCoordPoint);
     }
 
     std::list<GeomPointPtr> aPoints;
-    std::list<GeomVertexPtr> aVertices;
-    std::list<std::vector<double> >::const_iterator anItCoordPoints = aCoordPoints.begin();
+    std::list<std::vector<double>>::const_iterator anItCoordPoints = aCoordPoints.begin();
 
-    for (; anItCoordPoints != aCoordPoints.end(); ++anItCoordPoints){
+    for (; anItCoordPoints!=aCoordPoints.end(); ++anItCoordPoints) {
 
       GeomVertexPtr aVertex =
-          GeomAlgoAPI_PointBuilder::vertex( (*anItCoordPoints)[0],
-                                            (*anItCoordPoints)[1],
-                                            (*anItCoordPoints)[2]);
-      aPoints.push_back (aVertex->point());
-      aVertices.push_back (aVertex);
+          GeomAlgoAPI_PointBuilder::vertex((*anItCoordPoints)[0],
+                                           (*anItCoordPoints)[1],
+                                           (*anItCoordPoints)[2]);
+      aPoints.push_back(aVertex->point());
+    }
+
+    // test if some points are identical
+    std::list<GeomPointPtr>::const_iterator anItPoint1 = aPoints.begin();
+    std::list<GeomPointPtr>::const_iterator anItPoint2;
+    for(; anItPoint1 != aPoints.end(); ++ anItPoint1) {
+      anItPoint2 = anItPoint1;
+      ++anItPoint2;
+      for(; anItPoint2 != aPoints.end(); ++ anItPoint2)
+          if ((*anItPoint2)->isEqual(*anItPoint1)) {
+            setError("Error: Several points are identical");
+            return;
+          }
     }
 
     // Create curve from points
@@ -318,7 +327,7 @@ void BuildPlugin_Interpolation::evaluate(std::string& theError)
     AttributeRefListPtr aParams = reflist(ARGUMENTS_ID());
     aParams->clear();
     std::list<ResultParameterPtr>::const_iterator aNewIter = aParamsList.begin();
-    for(; aNewIter != aParamsList.end(); aNewIter++) {
+    for (; aNewIter != aParamsList.end(); aNewIter++) {
       aParams->append(*aNewIter);
     }
   } else { // error: python interpreter is not active
