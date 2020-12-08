@@ -17,9 +17,8 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "FeaturesPlugin_SharedFaces.h"
+#include "FeaturesPlugin_GroupSharedFaces.h"
 
-#include <FeaturesPlugin_GroupSharedFaces.h>
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeBoolean.h>
@@ -37,19 +36,18 @@
 #include <Config_PropManager.h>
 #include <ModelAPI_ResultBody.h>
 #include <GeomAlgoAPI_ShapeTools.h>
-#include <GeomAlgoAPI_SharedFaces.h>
 #include <GeomAPI_ShapeIterator.h>
 #include <ModelAPI_Tools.h>
 #include <iomanip>
 #include <sstream>
 
 //=================================================================================================
-FeaturesPlugin_SharedFaces::FeaturesPlugin_SharedFaces()
+FeaturesPlugin_GroupSharedFaces::FeaturesPlugin_GroupSharedFaces()
 {
 }
 
 //=================================================================================================
-void FeaturesPlugin_SharedFaces::initAttributes()
+void FeaturesPlugin_GroupSharedFaces::initAttributes()
 {
   // attribute for object selected
   data()->addAttribute(OBJECT_ID(), ModelAPI_AttributeSelection::typeId());
@@ -58,65 +56,49 @@ void FeaturesPlugin_SharedFaces::initAttributes()
 
   data()->addAttribute(NUMBER_FACES_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(TRANSPARENCY_ID(), ModelAPI_AttributeInteger::typeId());
-  data()->addAttribute(CREATE_GROUP_ID(), ModelAPI_AttributeBoolean::typeId());
   data()->addAttribute(GROUP_NAME_ID(), ModelAPI_AttributeString::typeId());
 
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), GROUP_NAME_ID());
 }
 
 
 //=================================================================================================
-AttributePtr FeaturesPlugin_SharedFaces::attributObject()
+AttributePtr FeaturesPlugin_GroupSharedFaces::attributObject()
 {
   return attribute(OBJECT_ID());
 }
 
 //=================================================================================================
-AttributePtr FeaturesPlugin_SharedFaces::attributListFaces()
+AttributePtr FeaturesPlugin_GroupSharedFaces::attributListFaces()
 {
   return attribute(LIST_FACES_ID());
 }
 
 //=================================================================================================
-AttributePtr FeaturesPlugin_SharedFaces::attributNumberFaces()
+AttributePtr FeaturesPlugin_GroupSharedFaces::attributNumberFaces()
 {
   return attribute(NUMBER_FACES_ID());
 }
 
 //=================================================================================================
-void FeaturesPlugin_SharedFaces::execute()
+void FeaturesPlugin_GroupSharedFaces::execute()
 {
-  if (boolean(CREATE_GROUP_ID())->value()) {
+  if ( selectionList(LIST_FACES_ID())->isInitialized()
+    && string(GROUP_NAME_ID())->value() != "") {
+    AttributeStringPtr aNameAtt = string( GROUP_NAME_ID() ) ;
+    std::wstring aNameFace = aNameAtt->isUValue() ?
+                            Locale::Convert::toWString(aNameAtt->valueU()) :
+                            Locale::Convert::toWString(aNameAtt->value());
 
-    if ( string(GROUP_NAME_ID())->value() != ""
-      && selectionList(LIST_FACES_ID())->isInitialized()) {
-
-      if (lastResult().get()) {
-        eraseResultFromList(lastResult());
-      }
-
-      if (!myCreateGroupFeature.get())
-        createGroup();
-      updateGroup();
-    }
+    if (lastResult().get())
+      eraseResultFromList(lastResult());
+    setFacesGroup(aNameFace);
 
   } else {
-    if (selectionList(LIST_FACES_ID())->isInitialized()) {
-
-      if (myCreateGroupFeature.get()) {
-        myCreateGroupFeature->eraseResults();
-        SessionPtr aSession = ModelAPI_Session::get();
-        DocumentPtr aDoc =  aSession->activeDocument();
-        aDoc->removeFeature(myCreateGroupFeature);
-        myCreateGroupFeature.reset();
-      }
-
-      if (lastResult().get())
-        eraseResultFromList(lastResult());
-      setFacesGroup(L"Group_SharedFaces");
+    if (lastResult().get()) {
+      eraseResultFromList(lastResult());
     }
-  }
 
+  }
   if (selection(OBJECT_ID())->isInitialized()) {
     AttributeSelectionPtr ancompSolidAttr = selection(OBJECT_ID());
     ResultPtr aResult = ancompSolidAttr->context();
@@ -135,41 +117,9 @@ void FeaturesPlugin_SharedFaces::execute()
 }
 
 //=================================================================================================
-void FeaturesPlugin_SharedFaces::attributeChanged(const std::string& theID)
+void FeaturesPlugin_GroupSharedFaces::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECT_ID()) {
-
     updateFaces();
-    if (myCreateGroupFeature.get())
-      updateGroup();
   }
-}
-
-
-//=================================================================================================
-void FeaturesPlugin_SharedFaces::createGroup()
-{
-  SessionPtr aSession = ModelAPI_Session::get();
-
-  DocumentPtr aDoc =  aSession->activeDocument();
-
-  if (aDoc.get()) {
-    myCreateGroupFeature = aDoc->addFeature(FeaturesPlugin_GroupSharedFaces::ID());
-  }
-}
-
-//=================================================================================================
-void FeaturesPlugin_SharedFaces::updateGroup()
-{
-    myCreateGroupFeature->string(FeaturesPlugin_GroupSharedFaces::GROUP_NAME_ID())
-                          ->setValue( string(GROUP_NAME_ID())->value());
-
-    myCreateGroupFeature->selection(FeaturesPlugin_GroupSharedFaces::OBJECT_ID())
-                          ->setValue( selection(OBJECT_ID())->context() ,
-                                      selection(OBJECT_ID())->value() );
-
-    myCreateGroupFeature->integer(FeaturesPlugin_GroupSharedFaces::TRANSPARENCY_ID())
-                          ->setValue( integer(TRANSPARENCY_ID())->value());
-
-    myCreateGroupFeature->execute();
 }

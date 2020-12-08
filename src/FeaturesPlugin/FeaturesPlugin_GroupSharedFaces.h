@@ -17,21 +17,21 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef FeaturesPlugin_SharedFaces_H_
-#define FeaturesPlugin_SharedFaces_H_
+#ifndef FeaturesPlugin_GroupSharedFaces_H_
+#define FeaturesPlugin_GroupSharedFaces_H_
 
 #include <FeaturesPlugin_CommonSharedFaces.h>
 
-/// \class FeaturesPlugin_SharedFaces
+/// \class FeaturesPlugin_GroupSharedFaces
 /// \ingroup Plugins
 /// \brief Feature to check the shared faces of solid
 
-class FeaturesPlugin_SharedFaces : public FeaturesPlugin_CommonSharedFaces
+class FeaturesPlugin_GroupSharedFaces : public FeaturesPlugin_CommonSharedFaces
 {
 public:
    inline static const std::string& ID()
   {
-    static const std::string MY_ID("Shared_faces_macro");
+    static const std::string MY_ID("Shared_faces");
     return MY_ID;
   }
 
@@ -69,13 +69,6 @@ public:
     return MY_TRANSPARENCY_ID;
   }
 
-  /// Attribute name for checkbox create group.
-  inline static const std::string& CREATE_GROUP_ID()
-  {
-    static const std::string MY_CREATE_GROUP_ID("create_group");
-    return MY_CREATE_GROUP_ID;
-  }
-
   /// Attribute name for group name.
   inline static const std::string& GROUP_NAME_ID()
   {
@@ -93,11 +86,8 @@ public:
   /// \param theID identifier of changed attribute
   FEATURESPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
-  /// Reimplemented from ModelAPI_Feature::isMacro(). Returns true.
-  FEATURESPLUGIN_EXPORT virtual bool isMacro() const { return true; }
-
   /// Use plugin manager for features creation
-  FeaturesPlugin_SharedFaces();
+  FeaturesPlugin_GroupSharedFaces();
 
   private:
 
@@ -109,15 +99,6 @@ public:
 
   /// Return Attribut values of number of faces.
   virtual AttributePtr attributNumberFaces();
-
-  /// Create group
-  void createGroup();
-
-  /// Update group
-  void updateGroup();
-
-  /// Feature to create group
-  FeaturePtr myCreateGroupFeature;
 
 };
 

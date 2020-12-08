@@ -179,9 +179,13 @@
       </feature>
     </group>
     <group id="Face">
-      <feature id="Shared_faces" title="Check shared faces" tooltip="Check the shared faces" auto_preview="true"
+      <feature id="Shared_faces_macro" title="Check shared faces" tooltip="Check the shared faces" auto_preview="true"
                icon="icons/Features/shared_shapes.png" helpfile="checkSharedFaceFeature.html"> 
-        <source path="sharedFaces_widget.xml"/>
+        <source path="shared_Faces_macro_widget.xml"/>
+      </feature>
+      <feature id="Shared_faces" title="Check shared faces" tooltip="Check the shared faces" auto_preview="true"
+               icon="icons/Features/shared_shapes.png" helpfile="checkSharedFaceFeature.html" internal="1"> 
+        <source path="shared_Faces_widget.xml"/>
       </feature>
     </group>
   </workbench>
