@@ -2518,40 +2518,43 @@ void XGUI_Workshop::changeAutoColor(const QObjectPtrList& theObjects)
   aMgr->startOperation(aDescription.toStdString());
 
   Config_Prop* aProp = Config_PropManager::findProp("Visualization", "result_group_Auto_color");
-  bool anIsAutoColor = Config_PropManager::boolean("Visualization", "result_group_Auto_color");
 
-  if (anIsAutoColor) {
-     contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Auto color"));
-     aProp->setValue("false");
-  } else {
-    // set the value to all results
-    foreach (ObjectPtr anObj, theObjects) {
-      DocumentPtr aDocument = anObj->document();
-      std::list<FeaturePtr> anAllFeatures = allFeatures(aDocument);
-      // find the object iterator
-      std::list<FeaturePtr>::iterator aObjectIt = anAllFeatures.begin();
-      for (; aObjectIt !=  anAllFeatures.end(); ++ aObjectIt) {
-        FeaturePtr aFeature = *aObjectIt;
-        if (aFeature.get()) {
-          std::list<ResultPtr> aResults;
-          ModelAPI_Tools::allResults(aFeature, aResults);
-          std::list<std::shared_ptr<ModelAPI_Result> >::const_iterator aIt;
-          for (aIt = aResults.cbegin(); aIt != aResults.cend(); aIt++) {
-            ResultPtr aGroupResult = *aIt;
-            if (aGroupResult.get() && aGroupResult->groupName() == ModelAPI_ResultGroup::group()) {
-              ModelAPI_Tools::findRandomColor(aColor);
-              ModelAPI_Tools::setColor(aGroupResult, aColor);
+  if (aProp) {
+    bool anIsAutoColor = Config_PropManager::boolean("Visualization", "result_group_Auto_color");
+    
+    if (anIsAutoColor) {
+      contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Auto color"));
+      aProp->setValue("false");
+    } else {
+      // set the value to all results
+      foreach (ObjectPtr anObj, theObjects) {
+        DocumentPtr aDocument = anObj->document();
+        std::list<FeaturePtr> anAllFeatures = allFeatures(aDocument);
+        // find the object iterator
+        std::list<FeaturePtr>::iterator aObjectIt = anAllFeatures.begin();
+        for (; aObjectIt !=  anAllFeatures.end(); ++ aObjectIt) {
+          FeaturePtr aFeature = *aObjectIt;
+          if (aFeature.get()) {
+            std::list<ResultPtr> aResults;
+            ModelAPI_Tools::allResults(aFeature, aResults);
+            std::list<std::shared_ptr<ModelAPI_Result> >::const_iterator aIt;
+            for (aIt = aResults.cbegin(); aIt != aResults.cend(); aIt++) {
+              ResultPtr aGroupResult = *aIt;
+              if (aGroupResult.get() && aGroupResult->groupName() == ModelAPI_ResultGroup::group()) {
+                ModelAPI_Tools::findRandomColor(aColor);
+                ModelAPI_Tools::setColor(aGroupResult, aColor);
+              }
             }
           }
         }
       }
+      Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
+      aMgr->finishOperation();
+      updateCommandStatus();
+      myViewerProxy->update();
+      contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Disable auto color"));
+      aProp->setValue("true");
     }
-    Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
-    aMgr->finishOperation();
-    updateCommandStatus();
-    myViewerProxy->update();
-    contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Disable auto color"));
-    aProp->setValue("true");
   }
 }
 
