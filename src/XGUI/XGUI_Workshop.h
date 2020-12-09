@@ -442,7 +442,7 @@ signals:
   /// Sets the granted operations for the parameter operation. Firstly, it finds the nested features
   /// and set them into the operation. Secondly, it asks the module about ids of granted operations.
   /// \param theOperation an operation
-   void setGrantedFeatures(ModuleBase_Operation* theOperation);
+  void setGrantedFeatures(ModuleBase_Operation* theOperation);
 
 private:
   /// Display results from document

@@ -2478,6 +2478,7 @@ void XGUI_Workshop::changeColor(const QObjectPtrList& theObjects)
   // 3. abort the previous operation and start a new one
   SessionPtr aMgr = ModelAPI_Session::get();
   QString aDescription = contextMenuMgr()->action("COLOR_CMD")->text();
+
   aMgr->startOperation(aDescription.toStdString());
 
   // 4. set the value to all results
@@ -2508,53 +2509,49 @@ void XGUI_Workshop::changeAutoColor(const QObjectPtrList& theObjects)
   if (!abortAllOperations())
   return;
 
-  std::vector<int> aColor = XGUI_ColorDialog::randomColor();
+  std::vector<int> aColor;
+  ModelAPI_Tools::findRandomColor(aColor);
 
   // abort the previous operation and start a new one
   SessionPtr aMgr = ModelAPI_Session::get();
   QString aDescription = contextMenuMgr()->action("AUTOCOLOR_CMD")->text();
   aMgr->startOperation(aDescription.toStdString());
 
-  Config_Prop* aProp = Config_PropManager::findProp("Visualization", "result_group_color");
+  Config_Prop* aProp = Config_PropManager::findProp("Visualization", "result_group_Auto_color");
+  bool anIsAutoColor = Config_PropManager::boolean("Visualization", "result_group_Auto_color");
 
-  if( aDescription == tr("Disable auto color"))
-  {
-     contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Auto color") );
-
-    aProp->setValue(ModelAPI_ResultGroup::DEFAULT_COLOR());
-
-  }else{
-    std::stringstream streamColor;
-    streamColor<< aColor[0] <<","<< aColor[1] <<"," <<aColor[2];
-
-    /*Config_PropManager::registerProp("Visualization", "result_group_color", "Group color",
-                                                          Config_Prop::Color, streamColor.str());*/
-
-    aProp->setValue(streamColor.str());
-
-    /* set the value to all results
-    foreach(ObjectPtr anObj, theObjects) {
-      ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(anObj);
-      if (aResult.get() != NULL) {
-        //aResult->setAutocolor(true); 
-        //ResultBodyPtr aBodyResult = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aResult);
-        ResultBodyPtr aBodyResult = ModelAPI_Tools::bodyOwner(aResult,true);
-        if (aBodyResult.get() != NULL) { // change colors for all sub-solids
-          std::list<ResultPtr> allRes;
-          ModelAPI_Tools::allSubs(aBodyResult, allRes);
-          for(std::list<ResultPtr>::iterator aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
-            //(*aRes)->setAutocolor(true); 
-            ModelAPI_Tools::setColor(*aRes,  aColor);
+  if (anIsAutoColor) {
+     contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Auto color"));
+     aProp->setValue("false");
+  } else {
+    // set the value to all results
+    foreach (ObjectPtr anObj, theObjects) {
+      DocumentPtr aDocument = anObj->document();
+      std::list<FeaturePtr> anAllFeatures = allFeatures(aDocument);
+      // find the object iterator
+      std::list<FeaturePtr>::iterator aObjectIt = anAllFeatures.begin();
+      for (; aObjectIt !=  anAllFeatures.end(); ++ aObjectIt) {
+        FeaturePtr aFeature = *aObjectIt;
+        if (aFeature.get()) {
+          std::list<ResultPtr> aResults;
+          ModelAPI_Tools::allResults(aFeature, aResults);
+          std::list<std::shared_ptr<ModelAPI_Result> >::const_iterator aIt;
+          for (aIt = aResults.cbegin(); aIt != aResults.cend(); aIt++) {
+            ResultPtr aGroupResult = *aIt;
+            if (aGroupResult.get() && aGroupResult->groupName() == ModelAPI_ResultGroup::group()) {
+              ModelAPI_Tools::findRandomColor(aColor);
+              ModelAPI_Tools::setColor(aGroupResult, aColor);
+            }
           }
         }
-        ModelAPI_Tools::setColor(aResult, aColor);
       }
-    }*/
+    }
     Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
     aMgr->finishOperation();
     updateCommandStatus();
     myViewerProxy->update();
-    contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Disable auto color") );
+    contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Disable auto color"));
+    aProp->setValue("true");
   }
 }
 

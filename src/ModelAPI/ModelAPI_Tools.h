@@ -299,6 +299,15 @@ MODELAPI_EXPORT void copyVisualizationAttrs(std::shared_ptr<ModelAPI_Result> the
 MODELAPI_EXPORT std::list<std::shared_ptr<ModelAPI_Feature> > referencedFeatures(
   std::shared_ptr<ModelAPI_Result> theTarget, const std::string& theFeatureKind,
   const bool theSortResults);
+
+
+/*! Returns a container with the current color value.
+*   These are tree int values for RGB definition.
+*   It returns the next random color.
+* \param theValues vector of values
+*/
+MODELAPI_EXPORT void findRandomColor(std::vector<int>& theValues);
+
 }
 
 #endif
