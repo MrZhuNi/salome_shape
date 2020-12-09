@@ -17,21 +17,21 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef FeaturesPlugin_DuplicatedFaces_H_
-#define FeaturesPlugin_DuplicatedFaces_H_
+#ifndef FeaturesPlugin_GroupDuplicatedFaces_H_
+#define FeaturesPlugin_GroupDuplicatedFaces_H_
 
 #include <FeaturesPlugin_CommonDuplicatedFaces.h>
 
-/// \class FeaturesPlugin_DuplicatedFaces
+/// \class FeaturesPlugin_GroupDuplicatedFaces
 /// \ingroup Plugins
 /// \brief Feature to check the duplicated faces of solid
 
-class FeaturesPlugin_DuplicatedFaces : public FeaturesPlugin_CommonDuplicatedFaces
+class FeaturesPlugin_GroupDuplicatedFaces : public FeaturesPlugin_CommonDuplicatedFaces
 {
 public:
    inline static const std::string& ID()
   {
-    static const std::string MY_ID("Duplicated_faces_macro");
+    static const std::string MY_ID("Duplicated_faces");
     return MY_ID;
   }
 
@@ -62,7 +62,7 @@ public:
     return MY_LIST_FACES_ID;
   }
 
-  /// Attribute name for transparency.
+    /// Attribute name for transparency.
   inline static const std::string& TRANSPARENCY_ID()
   {
     static const std::string MY_TRANSPARENCY_ID("transparency");
@@ -74,13 +74,6 @@ public:
   {
     static const std::string MY_TOLERANCE_ID("tolerance");
     return MY_TOLERANCE_ID;
-  }
-
-  /// Attribute name for checkbox create group.
-  inline static const std::string& CREATE_GROUP_ID()
-  {
-    static const std::string MY_CREATE_GROUP_ID("create_group");
-    return MY_CREATE_GROUP_ID;
   }
 
   /// Attribute name for group name.
@@ -100,11 +93,8 @@ public:
   /// \param theID identifier of changed attribute
   FEATURESPLUGIN_EXPORT virtual void attributeChanged(const std::string& theID);
 
-  /// Reimplemented from ModelAPI_Feature::isMacro(). Returns true.
-  FEATURESPLUGIN_EXPORT virtual bool isMacro() const { return true; }
-
   /// Use plugin manager for features creation
-  FeaturesPlugin_DuplicatedFaces();
+  FeaturesPlugin_GroupDuplicatedFaces();
 
   private:
 
@@ -120,14 +110,6 @@ public:
   /// Return Attribut values of tolerance.
   virtual AttributePtr attributTolerance();
 
-  /// Create group
-  void createGroup();
-
-  /// Update group
-  void updateGroup();
-
-  /// Feature to create group
-  FeaturePtr myCreateGroupFeature;
 };
 
 #endif

@@ -34,6 +34,7 @@
 #include <FeaturesPlugin_Intersection.h>
 #include <FeaturesPlugin_Measurement.h>
 #include <FeaturesPlugin_DuplicatedFaces.h>
+#include <FeaturesPlugin_GroupDuplicatedFaces.h>
 #include <FeaturesPlugin_MultiRotation.h>
 #include <FeaturesPlugin_MultiTranslation.h>
 #include <FeaturesPlugin_Partition.h>
@@ -190,6 +191,8 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
     return FeaturePtr(new FeaturesPlugin_Measurement);
   } else if (theFeatureID == FeaturesPlugin_DuplicatedFaces::ID()) {
     return FeaturePtr(new FeaturesPlugin_DuplicatedFaces);
+  } else if (theFeatureID == FeaturesPlugin_GroupDuplicatedFaces::ID()) {
+    return FeaturePtr(new FeaturesPlugin_GroupDuplicatedFaces);
   } else if (theFeatureID == FeaturesPlugin_RemoveResults::ID()) {
     return FeaturePtr(new FeaturesPlugin_RemoveResults);
   } else if (theFeatureID == FeaturesPlugin_Chamfer::ID()) {

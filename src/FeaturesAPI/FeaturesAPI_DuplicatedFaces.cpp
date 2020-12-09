@@ -19,8 +19,8 @@
 
 #include "FeaturesAPI_DuplicatedFaces.h"
 
-#include <FeaturesPlugin_DuplicatedFaces.h>
-#include <ModelAPI_AttributeDoubleArray.h>
+#include <FeaturesPlugin_GroupDuplicatedFaces.h>
+
 #include <ModelHighAPI_Services.h>
 #include <ModelHighAPI_Tools.h>
 
@@ -45,17 +45,17 @@ FeaturesAPI_DuplicatedFaces::~FeaturesAPI_DuplicatedFaces()
 FeaturesAPI_DuplicatedFaces::FeaturesAPI_DuplicatedFaces(
                              const std::shared_ptr<ModelAPI_Feature>& theFeature,
                              const ModelHighAPI_Selection& theObject,
-                             const double theTransparency,
+                             const ModelHighAPI_Integer& theTransparency,
+                             const ModelHighAPI_Double& theTolerance,
                              const std::string & theNameGroup)
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
     fillAttribute(theObject, myobjectselected);
     fillAttribute(theTransparency, mytransparency);
-    if (theNameGroup != "") {
-      fillAttribute(true,feature()->boolean(FeaturesPlugin_DuplicatedFaces::CREATE_GROUP_ID()));
-      fillAttribute(theNameGroup, mygroupname);
-    }
+    fillAttribute(theTolerance, mytolerance);
+    fillAttribute(theNameGroup, mygroupname);
+
     execute();
   }
 }
@@ -67,31 +67,31 @@ void FeaturesAPI_DuplicatedFaces::dump(ModelHighAPI_Dumper& theDumper) const
   const std::string& aDocName = theDumper.name(aBase->document());
 
   AttributeSelectionPtr anAttrObject;
-    anAttrObject = aBase->selection(FeaturesPlugin_DuplicatedFaces::OBJECT_ID());
+    anAttrObject = aBase->selection(FeaturesPlugin_GroupDuplicatedFaces::OBJECT_ID());
 
   theDumper << aBase << " = model.getDuplicatedFaces(" << aDocName << ", " << anAttrObject;
-  theDumper << ", " << aBase->integer(FeaturesPlugin_DuplicatedFaces::TRANSPARENCY_ID());
-
-  if(aBase->boolean(FeaturesPlugin_DuplicatedFaces::CREATE_GROUP_ID())->value() )
-    theDumper << ", " << aBase->string(FeaturesPlugin_DuplicatedFaces::GROUP_NAME_ID());
-
+  theDumper << ", " << aBase->integer(FeaturesPlugin_GroupDuplicatedFaces::TRANSPARENCY_ID());
+  theDumper << ", " << aBase->real(FeaturesPlugin_GroupDuplicatedFaces::TOLERANCE_ID());
+  theDumper << ", " << aBase->string(FeaturesPlugin_GroupDuplicatedFaces::GROUP_NAME_ID());
   theDumper << ")" << std::endl;
 }
 
 //=================================================================================================
 DuplicatedFacesPtr getDuplicatedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
                                       const ModelHighAPI_Selection& theObject,
-                                      const double theTransparency,
+                                      const ModelHighAPI_Integer& theTransparency,
+                                      const ModelHighAPI_Double& theTolerance,
                                       const std::string & theNameGroup)
 {
 
-  FeaturePtr aFeature = thePart->addFeature(FeaturesPlugin_DuplicatedFaces::ID());
+  FeaturePtr aFeature = thePart->addFeature(FeaturesPlugin_GroupDuplicatedFaces::ID());
 
   DuplicatedFacesPtr aDuplicatedFaces;
 
   aDuplicatedFaces.reset(new FeaturesAPI_DuplicatedFaces(aFeature,
                                                          theObject,
                                                          theTransparency,
+                                                         theTolerance,
                                                          theNameGroup));
 
   return aDuplicatedFaces;

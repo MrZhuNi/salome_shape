@@ -22,9 +22,11 @@
 
 #include "FeaturesAPI.h"
 
-#include "FeaturesPlugin_DuplicatedFaces.h"
+#include "FeaturesPlugin_GroupDuplicatedFaces.h"
 
 #include <ModelHighAPI_Interface.h>
+#include <ModelHighAPI_Integer.h>
+#include <ModelHighAPI_Double.h>
 #include <ModelHighAPI_Macro.h>
 
 #include <memory>
@@ -45,21 +47,25 @@ public:
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_DuplicatedFaces(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                        const ModelHighAPI_Selection& theobject,
-                                       const double theTransparency,
+                                       const ModelHighAPI_Integer& theTransparency,
+                                       const ModelHighAPI_Double& theTolerance,
                                        const std::string & theNameGroup);
 
   /// Destructor.
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_DuplicatedFaces();
 
-    INTERFACE_3(FeaturesPlugin_DuplicatedFaces::ID(),
-              objectselected, FeaturesPlugin_DuplicatedFaces::OBJECT_ID(),
+    INTERFACE_4(FeaturesPlugin_GroupDuplicatedFaces::ID(),
+                objectselected, FeaturesPlugin_GroupDuplicatedFaces::OBJECT_ID(),
                               ModelAPI_AttributeSelection,
                               /** object selected*/,
-              transparency, FeaturesPlugin_DuplicatedFaces::TRANSPARENCY_ID(),
+                transparency, FeaturesPlugin_GroupDuplicatedFaces::TRANSPARENCY_ID(),
                               ModelAPI_AttributeInteger,
                               /** transparency*/,
-              groupname, FeaturesPlugin_DuplicatedFaces::GROUP_NAME_ID(),
+                tolerance, FeaturesPlugin_GroupDuplicatedFaces::TOLERANCE_ID(),
+                              ModelAPI_AttributeDouble,
+                              /** tolerance*/,
+                groupname, FeaturesPlugin_GroupDuplicatedFaces::GROUP_NAME_ID(),
                               ModelAPI_AttributeString,
                               /** group name*/)
 
@@ -79,7 +85,8 @@ typedef std::shared_ptr<FeaturesAPI_DuplicatedFaces> DuplicatedFacesPtr;
 FEATURESAPI_EXPORT
 DuplicatedFacesPtr getDuplicatedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
                                       const ModelHighAPI_Selection& theObject,
-                                      const double theTransparency = 0.0,
-                                      const std::string & theNameGroup = "");
+                                      const ModelHighAPI_Integer& theTransparency,
+                                      const ModelHighAPI_Double& theTolerance,
+                                      const std::string & theNameGroup);
 
 #endif // FeaturesAPI_DuplicatedFaces_H_

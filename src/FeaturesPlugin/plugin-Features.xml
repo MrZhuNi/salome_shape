@@ -126,7 +126,7 @@
         <source path="fillet1d_widget.xml"/>
       </feature>
       <feature id="Fillet" title="Fillet" tooltip="Perform fillet on face or edge"
-               icon="icons/Features/fillet.png" auto_preview="false" helpfile="filletFeature.html">
+               icon="icons/Features/fillet.png" auto_preview="true" helpfile="filletFeature.html">
         <source path="fillet_widget.xml"/>
       </feature>
       <feature id="Chamfer" title="Chamfer" tooltip="Perform chamfer on face or edge"
@@ -179,9 +179,13 @@
       </feature>
     </group>
     <group id="Face">
-      <feature id="Duplicated_faces" title="Check duplicated faces" tooltip="Check the duplicated faces" auto_preview="true"
+      <feature id="Duplicated_faces_macro" title="Check duplicated faces" tooltip="Check the duplicated faces" auto_preview="true"
                icon="icons/Features/duplicatedFaces.png" helpfile="checkDuplicatedFaceFeature.html"> 
-        <source path="duplicatedFaces_widget.xml"/>
+        <source path="duplicated_faces_macro_widget.xml"/>
+      </feature>
+      <feature id="Duplicated_faces" title="Check duplicated faces" tooltip="Check the duplicated faces" auto_preview="true"
+               icon="icons/Features/duplicatedFaces.png" helpfile="checkDuplicatedFaceFeature.html" internal="1"> 
+        <source path="duplicated_faces_widget.xml"/>
       </feature>
     </group>
   </workbench>

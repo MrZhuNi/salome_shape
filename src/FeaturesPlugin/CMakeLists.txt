@@ -24,7 +24,6 @@ INCLUDE(UseQtExt)
 # additional include directories
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
                      ${PROJECT_SOURCE_DIR}/src/Locale
-                     ${PROJECT_SOURCE_DIR}/src/PrimitivesPlugin
                      ${QT_INCLUDES})
 
 # additional preprocessor / compiler flags
@@ -71,6 +70,8 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_Fillet1D.h
     FeaturesPlugin_Measurement.h
     FeaturesPlugin_DuplicatedFaces.h
+    FeaturesPlugin_CommonDuplicatedFaces.h
+    FeaturesPlugin_GroupDuplicatedFaces.h
     FeaturesPlugin_FusionFaces.h
     FeaturesPlugin_RemoveResults.h
     FeaturesPlugin_Chamfer.h
@@ -119,6 +120,8 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_Fillet1D.cpp
     FeaturesPlugin_Measurement.cpp
     FeaturesPlugin_DuplicatedFaces.cpp
+    FeaturesPlugin_CommonDuplicatedFaces.cpp
+    FeaturesPlugin_GroupDuplicatedFaces.cpp
     FeaturesPlugin_FusionFaces.cpp
     FeaturesPlugin_RemoveResults.cpp
     FeaturesPlugin_Chamfer.cpp
@@ -157,7 +160,8 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
-  duplicatedFaces_widget.xml
+  duplicated_faces_widget.xml
+  duplicated_faces_macro_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml
@@ -708,5 +712,5 @@ ADD_UNIT_TESTS(TestExtrusion.py
                TestFillet1D_Wire_3.py
                TestFillet1D_Wire_4.py
                TestFillet1D_Wire_5.py
-               TestCheckDuplictedFaces.py
+               TestCheckDuplicatedFaces.py
 )

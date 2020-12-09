@@ -17,20 +17,20 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "FeaturesPlugin_DuplicatedFaces.h"
+#include "FeaturesPlugin_GroupDuplicatedFaces.h"
 
-#include <FeaturesPlugin_GroupDuplicatedFaces.h>
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeBoolean.h>
-#include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeInteger.h>
+#include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_Attribute.h>
 
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
+
 #include <Locale_Convert.h>
 
 #include <GeomAlgoAPI_CompoundBuilder.h>
@@ -38,16 +38,18 @@
 #include <Config_PropManager.h>
 #include <ModelAPI_ResultBody.h>
 #include <GeomAlgoAPI_ShapeTools.h>
+#include <GeomAPI_ShapeIterator.h>
 #include <ModelAPI_Tools.h>
 #include <iomanip>
 #include <sstream>
 
 //=================================================================================================
-FeaturesPlugin_DuplicatedFaces::FeaturesPlugin_DuplicatedFaces()
+FeaturesPlugin_GroupDuplicatedFaces::FeaturesPlugin_GroupDuplicatedFaces()
 {
 }
 
-void FeaturesPlugin_DuplicatedFaces::initAttributes()
+//=================================================================================================
+void FeaturesPlugin_GroupDuplicatedFaces::initAttributes()
 {
   // attribute for object selected
   data()->addAttribute(OBJECT_ID(), ModelAPI_AttributeSelection::typeId());
@@ -57,72 +59,55 @@ void FeaturesPlugin_DuplicatedFaces::initAttributes()
   data()->addAttribute(NUMBER_FACES_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(TRANSPARENCY_ID(), ModelAPI_AttributeInteger::typeId());
   data()->addAttribute(TOLERANCE_ID(), ModelAPI_AttributeDouble::typeId());
-  data()->addAttribute(CREATE_GROUP_ID(), ModelAPI_AttributeBoolean::typeId());
   data()->addAttribute(GROUP_NAME_ID(), ModelAPI_AttributeString::typeId());
 
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), GROUP_NAME_ID());
 }
 
 
 //=================================================================================================
-AttributePtr FeaturesPlugin_DuplicatedFaces::attributObject()
+AttributePtr FeaturesPlugin_GroupDuplicatedFaces::attributObject()
 {
   return attribute(OBJECT_ID());
 }
 
 //=================================================================================================
-AttributePtr FeaturesPlugin_DuplicatedFaces::attributListFaces()
+AttributePtr FeaturesPlugin_GroupDuplicatedFaces::attributListFaces()
 {
   return attribute(LIST_FACES_ID());
 }
 
 //=================================================================================================
-AttributePtr FeaturesPlugin_DuplicatedFaces::attributNumberFaces()
+AttributePtr FeaturesPlugin_GroupDuplicatedFaces::attributNumberFaces()
 {
   return attribute(NUMBER_FACES_ID());
 }
 
 //=================================================================================================
-AttributePtr FeaturesPlugin_DuplicatedFaces::attributTolerance()
+AttributePtr FeaturesPlugin_GroupDuplicatedFaces::attributTolerance()
 {
   return attribute(TOLERANCE_ID());
 }
 
-
 //=================================================================================================
-void FeaturesPlugin_DuplicatedFaces::execute()
+void FeaturesPlugin_GroupDuplicatedFaces::execute()
 {
-    if (boolean(CREATE_GROUP_ID())->value()) {
+  if (selectionList(LIST_FACES_ID())->isInitialized()
+    && string(GROUP_NAME_ID())->value() != "") {
+    AttributeStringPtr aNameAtt = string(GROUP_NAME_ID()) ;
+    std::wstring aNameFace = aNameAtt->isUValue() ?
+                            Locale::Convert::toWString(aNameAtt->valueU()) :
+                            Locale::Convert::toWString(aNameAtt->value());
 
-    if (string(GROUP_NAME_ID())->value() != ""
-      && selectionList(LIST_FACES_ID())->isInitialized()) {
-
-      if (lastResult().get()) {
-        eraseResultFromList(lastResult());
-      }
-
-      if (!myCreateGroupFeature.get())
-        createGroup();
-      updateGroup();
-    }
+    if (lastResult().get())
+      eraseResultFromList(lastResult());
+    setFacesGroup(aNameFace);
 
   } else {
-    if (selectionList(LIST_FACES_ID())->isInitialized()) {
-
-      if (myCreateGroupFeature.get()) {
-        myCreateGroupFeature->eraseResults();
-        SessionPtr aSession = ModelAPI_Session::get();
-        DocumentPtr aDoc =  aSession->activeDocument();
-        aDoc->removeFeature(myCreateGroupFeature);
-        myCreateGroupFeature.reset();
-      }
-
-      if (lastResult().get())
-        eraseResultFromList(lastResult());
-      setFacesGroup(L"Group_DuplicatedFaces");
+    if (lastResult().get()) {
+      eraseResultFromList(lastResult());
     }
-  }
 
+  }
   if (selection(OBJECT_ID())->isInitialized()) {
     AttributeSelectionPtr ancompSolidAttr = selection(OBJECT_ID());
     ResultPtr aResult = ancompSolidAttr->context();
@@ -134,51 +119,17 @@ void FeaturesPlugin_DuplicatedFaces::execute()
     std::list<ResultPtr> allRes;
     ModelAPI_Tools::allSubs(aResultBody, allRes);
     std::list<ResultPtr>::iterator aRes;
-    for (aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
+    for(aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
       ModelAPI_Tools::setTransparency(*aRes, aTranparency);
     }
   }
 }
 
 //=================================================================================================
-void FeaturesPlugin_DuplicatedFaces::attributeChanged(const std::string& theID)
+void FeaturesPlugin_GroupDuplicatedFaces::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECT_ID()
      || theID == TOLERANCE_ID()) {
-
     updateFaces();
-    if (myCreateGroupFeature.get())
-      updateGroup();
   }
-}
-
-//=================================================================================================
-void FeaturesPlugin_DuplicatedFaces::createGroup()
-{
-  SessionPtr aSession = ModelAPI_Session::get();
-
-  DocumentPtr aDoc =  aSession->activeDocument();
-
-  if (aDoc.get()) {
-    myCreateGroupFeature = aDoc->addFeature(FeaturesPlugin_GroupDuplicatedFaces::ID());
-  }
-}
-
-//=================================================================================================
-void FeaturesPlugin_DuplicatedFaces::updateGroup()
-{
-    myCreateGroupFeature->string(FeaturesPlugin_GroupDuplicatedFaces::GROUP_NAME_ID())
-                          ->setValue(string(GROUP_NAME_ID())->value());
-
-    myCreateGroupFeature->selection(FeaturesPlugin_GroupDuplicatedFaces::OBJECT_ID())
-                          ->setValue(selection(OBJECT_ID())->context() ,
-                                      selection(OBJECT_ID())->value());
-
-    myCreateGroupFeature->integer(FeaturesPlugin_GroupDuplicatedFaces::TRANSPARENCY_ID())
-                          ->setValue(integer(TRANSPARENCY_ID())->value());
-
-    myCreateGroupFeature->real(FeaturesPlugin_GroupDuplicatedFaces::TOLERANCE_ID())
-                          ->setValue(real(TOLERANCE_ID())->value());
-
-    myCreateGroupFeature->execute();
 }

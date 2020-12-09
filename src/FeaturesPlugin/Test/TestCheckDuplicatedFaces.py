@@ -60,7 +60,7 @@ if __name__ == '__main__':
                           model.selection("SOLID", "Box_3_1")]
     Compound_1 = model.addCompound(Part_1_doc, Compound_1_objects)
     ### Create Duplicated_faces
-    Duplicated_faces_1 = model.getDuplicatedFaces(Part_1_doc, model.selection("COMPOUND", "Compound_1_1"), 50, "mygroup")
+    Duplicated_faces_1 = model.getDuplicatedFaces(Part_1_doc, model.selection("COMPOUND", "Compound_1_1"), 50, 0.001, "mygroup")
 
     model.do()
      # Check results

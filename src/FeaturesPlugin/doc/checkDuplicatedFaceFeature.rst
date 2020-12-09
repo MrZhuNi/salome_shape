@@ -26,17 +26,19 @@ Input fields:
 - **Number of duplicated faces** indicate the number of found faces. 
 - **List of faces** the list of found faces.
 - **Transparency** set the transparency of selected object.   
+- **Tolerance** set the tolerance for the algotithme. 
 - **Create group** check-box allow the creation of the group of found faces. 
 - **Group name**  specified the name of the group created. 
 
 
 **TUI Command**:
 
-.. py:function:: model.getDuplicatedFaces(Part_doc, shape, transparency, nameGroup)
+.. py:function:: model.getDuplicatedFaces(Part_doc, shape, transparency, tolerance, nameGroup)
  
     :param part: The current part object.
     :param object: A composolid or compound in format *model.selection("Type", shape)*.
-    :param number: value for the transparency.
+    :param number: value of the transparency.
+    :param number: value of the tolerance.
     :param string: name of group created. 
     :return: Created group.
 
