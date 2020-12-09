@@ -74,12 +74,16 @@ void ModelAPI_Feature::setResult(const std::shared_ptr<ModelAPI_Result>& theResu
   if (!isDisabled()) // disabled feature may be executed when it is added as not enabled (#2078)
     theResult->setDisabled(theResult, false);
 
-  bool anIsAutoColor = Config_PropManager::boolean("Visualization", "result_group_Auto_color");
+  Config_Prop* aProp = Config_PropManager::findProp("Visualization", "result_group_Auto_color");
 
-  if (anIsAutoColor && theResult->groupName() == ModelAPI_ResultGroup::group()) {
-    std::vector<int> aColor;
-    ModelAPI_Tools::findRandomColor(aColor);
-    ModelAPI_Tools::setColor(theResult,  aColor);
+  if (aProp) {
+    bool anIsAutoColor = Config_PropManager::boolean("Visualization", "result_group_Auto_color");
+
+    if (anIsAutoColor && theResult->groupName() == ModelAPI_ResultGroup::group()) {
+      std::vector<int> aColor;
+      ModelAPI_Tools::findRandomColor(aColor);
+      ModelAPI_Tools::setColor(theResult,  aColor);
+    }
   }
 }
 
