@@ -45,14 +45,12 @@ FeaturesAPI_DuplicatedFaces::~FeaturesAPI_DuplicatedFaces()
 FeaturesAPI_DuplicatedFaces::FeaturesAPI_DuplicatedFaces(
                              const std::shared_ptr<ModelAPI_Feature>& theFeature,
                              const ModelHighAPI_Selection& theObject,
-                             const ModelHighAPI_Integer& theTransparency,
                              const ModelHighAPI_Double& theTolerance,
                              const std::string & theNameGroup)
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
     fillAttribute(theObject, myobjectselected);
-    fillAttribute(theTransparency, mytransparency);
     fillAttribute(theTolerance, mytolerance);
     fillAttribute(theNameGroup, mygroupname);
 
@@ -70,7 +68,6 @@ void FeaturesAPI_DuplicatedFaces::dump(ModelHighAPI_Dumper& theDumper) const
     anAttrObject = aBase->selection(FeaturesPlugin_GroupDuplicatedFaces::OBJECT_ID());
 
   theDumper << aBase << " = model.getDuplicatedFaces(" << aDocName << ", " << anAttrObject;
-  theDumper << ", " << aBase->integer(FeaturesPlugin_GroupDuplicatedFaces::TRANSPARENCY_ID());
   theDumper << ", " << aBase->real(FeaturesPlugin_GroupDuplicatedFaces::TOLERANCE_ID());
   theDumper << ", " << aBase->string(FeaturesPlugin_GroupDuplicatedFaces::GROUP_NAME_ID());
   theDumper << ")" << std::endl;
@@ -79,7 +76,6 @@ void FeaturesAPI_DuplicatedFaces::dump(ModelHighAPI_Dumper& theDumper) const
 //=================================================================================================
 DuplicatedFacesPtr getDuplicatedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
                                       const ModelHighAPI_Selection& theObject,
-                                      const ModelHighAPI_Integer& theTransparency,
                                       const ModelHighAPI_Double& theTolerance,
                                       const std::string & theNameGroup)
 {
@@ -90,7 +86,6 @@ DuplicatedFacesPtr getDuplicatedFaces(const std::shared_ptr<ModelAPI_Document>& 
 
   aDuplicatedFaces.reset(new FeaturesAPI_DuplicatedFaces(aFeature,
                                                          theObject,
-                                                         theTransparency,
                                                          theTolerance,
                                                          theNameGroup));
 

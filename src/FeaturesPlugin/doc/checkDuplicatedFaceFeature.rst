@@ -33,11 +33,10 @@ Input fields:
 
 **TUI Command**:
 
-.. py:function:: model.getDuplicatedFaces(Part_doc, shape, transparency, tolerance, nameGroup)
+.. py:function:: model.getDuplicatedFaces(Part_doc, shape, tolerance, nameGroup)
  
     :param part: The current part object.
     :param object: A composolid or compound in format *model.selection("Type", shape)*.
-    :param number: value of the transparency.
     :param number: value of the tolerance.
     :param string: name of group created. 
     :return: Created group.

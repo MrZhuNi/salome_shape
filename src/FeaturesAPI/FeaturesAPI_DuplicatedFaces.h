@@ -47,7 +47,6 @@ public:
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_DuplicatedFaces(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                        const ModelHighAPI_Selection& theobject,
-                                       const ModelHighAPI_Integer& theTransparency,
                                        const ModelHighAPI_Double& theTolerance,
                                        const std::string & theNameGroup);
 
@@ -55,13 +54,10 @@ public:
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_DuplicatedFaces();
 
-    INTERFACE_4(FeaturesPlugin_GroupDuplicatedFaces::ID(),
+    INTERFACE_3(FeaturesPlugin_GroupDuplicatedFaces::ID(),
                 objectselected, FeaturesPlugin_GroupDuplicatedFaces::OBJECT_ID(),
                               ModelAPI_AttributeSelection,
                               /** object selected*/,
-                transparency, FeaturesPlugin_GroupDuplicatedFaces::TRANSPARENCY_ID(),
-                              ModelAPI_AttributeInteger,
-                              /** transparency*/,
                 tolerance, FeaturesPlugin_GroupDuplicatedFaces::TOLERANCE_ID(),
                               ModelAPI_AttributeDouble,
                               /** tolerance*/,
@@ -85,7 +81,6 @@ typedef std::shared_ptr<FeaturesAPI_DuplicatedFaces> DuplicatedFacesPtr;
 FEATURESAPI_EXPORT
 DuplicatedFacesPtr getDuplicatedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
                                       const ModelHighAPI_Selection& theObject,
-                                      const ModelHighAPI_Integer& theTransparency,
                                       const ModelHighAPI_Double& theTolerance,
                                       const std::string & theNameGroup);
 

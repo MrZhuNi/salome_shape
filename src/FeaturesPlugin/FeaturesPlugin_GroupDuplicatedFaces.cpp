@@ -61,6 +61,8 @@ void FeaturesPlugin_GroupDuplicatedFaces::initAttributes()
   data()->addAttribute(TOLERANCE_ID(), ModelAPI_AttributeDouble::typeId());
   data()->addAttribute(GROUP_NAME_ID(), ModelAPI_AttributeString::typeId());
 
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), TRANSPARENCY_ID());
+
 }
 
 
@@ -112,15 +114,18 @@ void FeaturesPlugin_GroupDuplicatedFaces::execute()
     AttributeSelectionPtr ancompSolidAttr = selection(OBJECT_ID());
     ResultPtr aResult = ancompSolidAttr->context();
 
-    double aTranparency = integer(TRANSPARENCY_ID())->value()/100.0;
-    ModelAPI_Tools::setTransparency(aResult, aTranparency);
+    if(integer(TRANSPARENCY_ID())->isInitialized()){
+      double aTranparency = integer(TRANSPARENCY_ID())->value()/100.0;
+      ModelAPI_Tools::setTransparency(aResult, aTranparency);
+    
 
-    ResultBodyPtr aResultBody = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aResult);
-    std::list<ResultPtr> allRes;
-    ModelAPI_Tools::allSubs(aResultBody, allRes);
-    std::list<ResultPtr>::iterator aRes;
-    for(aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
-      ModelAPI_Tools::setTransparency(*aRes, aTranparency);
+      ResultBodyPtr aResultBody = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aResult);
+      std::list<ResultPtr> allRes;
+      ModelAPI_Tools::allSubs(aResultBody, allRes);
+      std::list<ResultPtr>::iterator aRes;
+      for(aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
+        ModelAPI_Tools::setTransparency(*aRes, aTranparency);
+      }
     }
   }
 }

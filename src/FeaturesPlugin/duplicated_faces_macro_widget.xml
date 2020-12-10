@@ -30,8 +30,8 @@
   <doublevalue id="tolerance"
                     label="Tolerance"
                     min="0"
-                    step="0.001"
-                    default="0.001">
+                    step="0.00001"
+                    default="1e-7">
   </doublevalue>
   <optionalbox id="create_group" title="Create group" show_title="true">
     <stringvalue id="group_name" label="Group Name"/>
