@@ -58,6 +58,8 @@ void FeaturesPlugin_GroupSharedFaces::initAttributes()
   data()->addAttribute(TRANSPARENCY_ID(), ModelAPI_AttributeInteger::typeId());
   data()->addAttribute(GROUP_NAME_ID(), ModelAPI_AttributeString::typeId());
 
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), TRANSPARENCY_ID());
+
 }
 
 
@@ -99,7 +101,7 @@ void FeaturesPlugin_GroupSharedFaces::execute()
     }
 
   }
-  if (selection(OBJECT_ID())->isInitialized()) {
+  if (selection(OBJECT_ID())->isInitialized() && integer(TRANSPARENCY_ID())->isInitialized()) {
     AttributeSelectionPtr ancompSolidAttr = selection(OBJECT_ID());
     ResultPtr aResult = ancompSolidAttr->context();
 

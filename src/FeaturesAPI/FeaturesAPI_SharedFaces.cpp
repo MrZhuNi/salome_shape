@@ -39,13 +39,11 @@ FeaturesAPI_SharedFaces::
 FeaturesAPI_SharedFaces::FeaturesAPI_SharedFaces(
                          const std::shared_ptr<ModelAPI_Feature>& theFeature,
                          const ModelHighAPI_Selection& theobject,
-                         const ModelHighAPI_Integer& theTransparency,
                          const std::string & theNameGroup)
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
     fillAttribute(theobject, myobjectselected);
-    fillAttribute(theTransparency, mytransparency);
     fillAttribute(theNameGroup, mygroupname);
     execute();
   }
@@ -66,7 +64,6 @@ void FeaturesAPI_SharedFaces::dump(ModelHighAPI_Dumper& theDumper) const
     anAttrObject = aBase->selection(FeaturesPlugin_GroupSharedFaces::OBJECT_ID());
 
   theDumper << aBase << " = model.getSharedFaces(" << aDocName << ", " << anAttrObject;
-  theDumper << ", " << aBase->integer(FeaturesPlugin_GroupSharedFaces::TRANSPARENCY_ID());
   theDumper << ", " << aBase->string(FeaturesPlugin_GroupSharedFaces::GROUP_NAME_ID());
   theDumper << ")" << std::endl;
 }
@@ -74,7 +71,6 @@ void FeaturesAPI_SharedFaces::dump(ModelHighAPI_Dumper& theDumper) const
 //=================================================================================================
 SharedFacesPtr getSharedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
                               const ModelHighAPI_Selection& theobject,
-                              const ModelHighAPI_Integer& theTransparency,
                               const std::string & theNameGroup)
 {
 
@@ -84,7 +80,6 @@ SharedFacesPtr getSharedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
 
   aSharedFaces.reset(new FeaturesAPI_SharedFaces(aFeature,
                                                  theobject,
-                                                 theTransparency,
                                                  theNameGroup));
 
   return aSharedFaces;

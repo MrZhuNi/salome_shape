@@ -46,20 +46,16 @@ public:
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_SharedFaces(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                    const ModelHighAPI_Selection& theobject,
-                                   const ModelHighAPI_Integer& theTransparency,
                                    const std::string & theNameGroup);
 
   /// Destructor.
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_SharedFaces();
 
-    INTERFACE_3(FeaturesPlugin_GroupSharedFaces::ID(),
+    INTERFACE_2(FeaturesPlugin_GroupSharedFaces::ID(),
                objectselected, FeaturesPlugin_GroupSharedFaces::OBJECT_ID(),
                               ModelAPI_AttributeSelection,
                               /** object selected*/,
-               transparency, FeaturesPlugin_GroupSharedFaces::TRANSPARENCY_ID(),
-                              ModelAPI_AttributeInteger,
-                              /** transparency*/,
                groupname, FeaturesPlugin_GroupSharedFaces::GROUP_NAME_ID(),
                               ModelAPI_AttributeString,
                               /** group name*/)
@@ -80,7 +76,6 @@ typedef std::shared_ptr<FeaturesAPI_SharedFaces> SharedFacesPtr;
 FEATURESAPI_EXPORT
 SharedFacesPtr getSharedFaces(const std::shared_ptr<ModelAPI_Document>& thePart,
                               const ModelHighAPI_Selection& theObject,
-                              const ModelHighAPI_Integer& theTransparency,
                               const std::string & theNameGroup);
 
 #endif // FeaturesAPI_SharedFaces_H_

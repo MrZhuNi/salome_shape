@@ -32,11 +32,10 @@ Input fields:
 
 **TUI Command**:
 
-.. py:function:: model.getSharedFaces(Part_doc, shape, transparency, nameGroup)
+.. py:function:: model.getSharedFaces(Part_doc, shape, nameGroup)
  
     :param part: The current part object.
     :param object: A composolid or compound in format *model.selection("Type", shape)*.
-    :param number: value for the transparency.
     :param string: name of group created. 
     :return: Created group.
 

@@ -15,7 +15,7 @@ Box_2 = model.addBox(Part_1_doc, model.selection("VERTEX", "[Box_1_1/Front][Box_
 CompSolid_1 = model.addCompSolid(Part_1_doc, [model.selection("SOLID", "Box_1_1"), model.selection("SOLID", "Box_2_1")])
 
 ### Create Shared_faces
-Shared_faces_1 = model.getSharedFaces(Part_1_doc, model.selection("COMPSOLID", "CompSolid_1_1"), 50, "mygroup")
+Shared_faces_1 = model.getSharedFaces(Part_1_doc, model.selection("COMPSOLID", "CompSolid_1_1"), "mygroup")
 
 model.do()
 model.end()
