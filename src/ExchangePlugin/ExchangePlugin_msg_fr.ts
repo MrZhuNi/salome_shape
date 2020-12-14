@@ -381,7 +381,7 @@
   </message>
   </context>
   <context>
-  <name>Import:step_materials</name>
+  <name>Import:step_colors</name>
   <message>
     <source>Colors</source>
     <translation>Couleurs</translation>
