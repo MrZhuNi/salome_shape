@@ -324,6 +324,7 @@
     <translation>Mettre àl'échelle du système international d'unités</translation>
   </message>
   </context>
+  <context>
   <name>Import:step_materials</name>
   <message>
     <source>Materials</source>
@@ -331,7 +332,7 @@
   </message>
   </context>
   <context>
-  <name>Import:step_materials</name>
+  <name>Import:step_colors</name>
   <message>
     <source>Colors</source>
     <translation>Couleurs</translation>
@@ -347,11 +348,11 @@
       <source>Import a file</source>
       <translation>Importer un fichier</translation>
     </message>
-  </context>
-  <message>
+    <message>
       <source>Create groups from</source>
       <translation>créer des groupes à partir</translation>
     </message>
+  </context>
   <context>
     <name>ImportMacro:target_part</name>
     <message>

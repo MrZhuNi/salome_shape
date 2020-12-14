@@ -31,13 +31,9 @@ import os
 import math
 from tempfile import TemporaryDirectory
 
-import GEOM
-
 from ModelAPI import *
 
 from salome.shaper import model
-
-from salome.geom import geomBuilder
 
 from GeomAPI import GeomAPI_Shape
 
@@ -46,7 +42,6 @@ from GeomAlgoAPI import *
 __updated__ = "2015-05-22"
 
 salome.salome_init(1)
-geompy = geomBuilder.New()
 
 #=========================================================================
 # Help functions
