@@ -58,7 +58,7 @@ public:
   /// Attribute name for z coodinate.
   inline static const std::string& LIST_FACES_ID()
   {
-    static const std::string MY_LIST_FACES_ID("faces");
+    static const std::string MY_LIST_FACES_ID("group_list");
     return MY_LIST_FACES_ID;
   }
 

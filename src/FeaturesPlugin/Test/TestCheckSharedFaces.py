@@ -60,7 +60,7 @@ if __name__ == '__main__':
     assert Shared_faces_1_Feature.error() == ''
     assert Shared_faces_1_Feature.name() == "Shared_faces_1"
 
-    aSelectionList = Shared_faces_1_Feature.selectionList("faces")
+    aSelectionList = Shared_faces_1_Feature.selectionList("group_list")
     assert aSelectionList.size() == 1
 
     assert(Part_1_doc.size("Groups") == 1)
