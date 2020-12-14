@@ -55,10 +55,10 @@ public:
     return MY_NUMBER_FACES_ID;
   }
 
-  /// Attribute name for z coodinate.
+  /// Attribute name for list of faces.
   inline static const std::string& LIST_FACES_ID()
   {
-    static const std::string MY_LIST_FACES_ID("faces");
+    static const std::string MY_LIST_FACES_ID("group_list");
     return MY_LIST_FACES_ID;
   }
 

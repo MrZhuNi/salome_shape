@@ -68,7 +68,7 @@ if __name__ == '__main__':
     assert Duplicated_faces_1_Feature.error() == ''
     assert Duplicated_faces_1_Feature.name() == "Duplicated_faces_1"
 
-    aSelectionList = Duplicated_faces_1_Feature.selectionList("faces")
+    aSelectionList = Duplicated_faces_1_Feature.selectionList("group_list")
     assert aSelectionList.size() == 2
 
     assert(Part_1_doc.size("Groups") == 1)

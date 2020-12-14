@@ -10,7 +10,7 @@
   </shape_selector>
   <groupbox title="Duplicated faces">
     <label id="number_duplicated_faces"/>
-    <multi_selector id="faces"
+    <multi_selector id="group_list"
                       label="List of faces :"
                       icon=""
                       shape_types="faces"
