@@ -27,7 +27,6 @@
 #include <ostream>
 #endif
 
-
 #include <Config_Common.h>
 #include <Config_PropManager.h>
 
@@ -35,7 +34,6 @@
 #include <GeomAlgoAPI_CompoundBuilder.h>
 #include <GeomAlgoAPI_IGESExport.h>
 #include <GeomAlgoAPI_STEPExport.h>
-#include <GeomAlgoAPI_STLExport.h>
 #include <GeomAlgoAPI_Tools.h>
 #include <GeomAlgoAPI_XAOExport.h>
 
@@ -50,7 +48,6 @@
 #include <ModelAPI_AttributeStringArray.h>
 #include <ModelAPI_AttributeIntArray.h>
 #include <ModelAPI_AttributeTables.h>
-#include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Document.h>
 #include <ModelAPI_Object.h>
@@ -70,8 +67,6 @@
 #include <XAO_Geometry.hxx>
 
 #include <ExchangePlugin_Tools.h>
-
-#include <ModelAPI_ResultConstruction.h>
 
 ExchangePlugin_ExportFeature::ExchangePlugin_ExportFeature()
 {
@@ -103,27 +98,9 @@ void ExchangePlugin_ExportFeature::initAttributes()
     ModelAPI_AttributeString::typeId());
   data()->addAttribute(ExchangePlugin_ExportFeature::XAO_SELECTION_LIST_ID(),
     ModelAPI_AttributeSelectionList::typeId());
-  data()->addAttribute(ExchangePlugin_ExportFeature::STL_FILE_PATH_ID(),
-    ModelAPI_AttributeString::typeId());
-  data()->addAttribute(ExchangePlugin_ExportFeature::STL_OBJECT_SELECTED(),
-    ModelAPI_AttributeSelection::typeId());
-  data()->addAttribute(ExchangePlugin_ExportFeature::STL_DEFLECTION_TYPE(),
-   ModelAPI_AttributeString::typeId());
-  data()->addAttribute(ExchangePlugin_ExportFeature::STL_RELATIVE(),
-    ModelAPI_AttributeDouble::typeId());
-
-  double defelection = Config_PropManager::real("Visualization", "body_deflection");
-  real(ExchangePlugin_ExportFeature::STL_RELATIVE())->setValue(defelection);
-
-  data()->addAttribute(ExchangePlugin_ExportFeature::STL_ABSOLUTE(),
-    ModelAPI_AttributeDouble::typeId());
-  data()->addAttribute(ExchangePlugin_ExportFeature::STL_FILE_TYPE(),
-   ModelAPI_AttributeString::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
     ExchangePlugin_ExportFeature::XAO_FILE_PATH_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
-    ExchangePlugin_ExportFeature::STL_FILE_PATH_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
     ExchangePlugin_ExportFeature::XAO_AUTHOR_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
@@ -151,11 +128,6 @@ void ExchangePlugin_ExportFeature::attributeChanged(const std::string& theID)
     string(ExchangePlugin_ExportFeature::FILE_PATH_ID())->setValue(
       string(ExchangePlugin_ExportFeature::XAO_FILE_PATH_ID())->value());
   }
-  else if (theID == STL_FILE_PATH_ID()) {
-    string(ExchangePlugin_ExportFeature::FILE_PATH_ID())->setValue(
-      string(ExchangePlugin_ExportFeature::STL_FILE_PATH_ID())->value());
-  }
-
 }
 
 /*
@@ -197,9 +169,6 @@ void ExchangePlugin_ExportFeature::exportFile(const std::string& theFileName,
 
   if (aFormatName == "XAO") {
     exportXAO(theFileName);
-    return;
-  }else if (aFormatName == "STL") {
-    exportSTL(theFileName);
     return;
   }
 
@@ -346,49 +315,6 @@ static bool isInResults(AttributeSelectionListPtr theSelection,
   }
   return false;
 }
-
-void ExchangePlugin_ExportFeature::exportSTL(const std::string& theFileName)
-{
-  // Get shape.
-  AttributeSelectionPtr aSelection = selection(STL_OBJECT_SELECTED());
-  GeomShapePtr aShape = aSelection->value();
-  if (!aShape.get()) {
-    aShape = aSelection->context()->shape();
-  }
-
-  // Get relative value and percent flag.
-  double aValue;
-  bool anIsRelative = false;
-  bool anIsASCII = false;
-
-  if (string(STL_DEFLECTION_TYPE())->value() == STL_DEFLECTION_TYPE_RELATIVE()) {
-    aValue = real(STL_RELATIVE())->value();
-    anIsRelative = true;
-  } else {
-    aValue = real(STL_ABSOLUTE())->value();
-  }
-
-  if (string(STL_FILE_TYPE())->value() == STL_FILE_TYPE_ASCII()) {
-    anIsASCII = true;
-  }
-  // Perform the export
-  std::string anError;
-  bool aResult = false;
-
-  aResult = STLExport(theFileName,
-                      "STL",
-                      aShape,
-                      aValue,
-                      anIsRelative,
-                      anIsASCII,
-                      anError);
-
-  if (!aResult || !anError.empty()) {
-    setError("An error occurred while exporting " + theFileName + ": " + anError);
-    return;
-  }
-}
-
 
 void ExchangePlugin_ExportFeature::exportXAO(const std::string& theFileName)
 {
