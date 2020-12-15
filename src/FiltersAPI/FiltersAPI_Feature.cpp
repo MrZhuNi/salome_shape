@@ -41,12 +41,15 @@ FiltersAPI_Feature::~FiltersAPI_Feature()
 static void separateArguments(const std::list<FiltersAPI_Argument>& theArguments,
                               std::list<ModelHighAPI_Selection>& theSelections,
                               std::list<std::string>& theTextArgs,
-                              std::list<bool>& theBoolArgs)
+                              std::list<bool>& theBoolArgs,
+                              std::list<ModelHighAPI_Double>& theDoubleArgs)
 {
   std::list<FiltersAPI_Argument>::const_iterator anIt = theArguments.begin();
   for (; anIt != theArguments.end(); ++anIt) {
     if (anIt->selection().variantType() != ModelHighAPI_Selection::VT_Empty)
       theSelections.push_back(anIt->selection());
+    else if (anIt->dble().value() > -100000000000)
+      theDoubleArgs.push_back(anIt->dble());
     else if (anIt->string().empty())
       theBoolArgs.push_back(anIt->boolean());
     else
@@ -68,7 +71,8 @@ void FiltersAPI_Feature::setFilters(const std::list<FilterAPIPtr>& theFilters)
       std::list<ModelHighAPI_Selection> aSelections;
       std::list<std::string> aTexts;
       std::list<bool> aBools;
-      separateArguments(anArgs, aSelections, aTexts, aBools);
+      std::list<ModelHighAPI_Double> aDoubles;
+      separateArguments(anArgs, aSelections, aTexts, aBools, aDoubles);
 
       std::list<AttributePtr> aFilterArgs = aBase->filterArgs(aFilterID);
       std::list<AttributePtr>::iterator aFIt = aFilterArgs.begin();
@@ -78,6 +82,7 @@ void FiltersAPI_Feature::setFilters(const std::list<FilterAPIPtr>& theFilters)
       if (aReversedFlag)
         ++aFIt;
       // fill arguments of the filter
+      std::list<ModelHighAPI_Double>::const_iterator anItDle = aDoubles.begin(); 
       for (; aFIt != aFilterArgs.end(); ++aFIt) {
         AttributeSelectionListPtr aSelList =
             std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(*aFIt);
@@ -98,8 +103,17 @@ void FiltersAPI_Feature::setFilters(const std::list<FilterAPIPtr>& theFilters)
             else {
               AttributeBooleanPtr aBoolean =
                   std::dynamic_pointer_cast<ModelAPI_AttributeBoolean>(*aFIt);
-              if (aBoolean && aBools.size() == 1)
-                fillAttribute(aBools.front(), aBoolean);
+              if (aBoolean) {
+                if (aBools.size() == 1)
+                  fillAttribute(aBools.front(), aBoolean);
+              }else {
+                AttributeDoublePtr aDouble =
+                    std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(*aFIt);
+                if (aDouble) {
+                  fillAttribute((*anItDle).value(), aDouble);
+                  anItDle++;
+                }
+              }
             }
           }
         }

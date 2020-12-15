@@ -28,6 +28,11 @@ FiltersAPI_Argument::FiltersAPI_Argument(const bool theValue)
 {
 }
 
+FiltersAPI_Argument::FiltersAPI_Argument(const ModelHighAPI_Double theValue)
+  : myDouble(theValue)
+{
+}
+
 FiltersAPI_Argument::FiltersAPI_Argument(const std::string& theValue)
   : myValue(theValue)
 {

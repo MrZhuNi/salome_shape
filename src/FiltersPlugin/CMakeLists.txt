@@ -224,4 +224,6 @@ ADD_UNIT_TESTS(
   Test17924.py
   Test17962.py
   Test19190.py
+  TestFilter_FaceSize.py
+  TestFilter_EdgeSize.py
 )

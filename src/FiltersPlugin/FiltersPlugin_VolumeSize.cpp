@@ -30,6 +30,8 @@
 #include <GeomAPI_Wire.h>
 #include <GeomAlgoAPI_BasicProperties.h>
 
+#include <Precision.hxx>
+
 #include <map>
 #include <iostream>
 
@@ -47,12 +49,6 @@ bool FiltersPlugin_VolumeSize::isOk(const GeomShapePtr& theShape, const ResultPt
   if (!aValue.get()|| !anAttr->isInitialized() )
     return false;
   double aVal = aValue->value();
-
-  anAttr = theArgs.argument("valueMin");
-  aValue = std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(anAttr);
-  if (!aValue.get()|| !anAttr->isInitialized() )
-    return false;
-  double aValMin = aValue->value();
 
   anAttr = theArgs.argument("valueMax");
   aValue = std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(anAttr);
@@ -81,17 +77,19 @@ bool FiltersPlugin_VolumeSize::isOk(const GeomShapePtr& theShape, const ResultPt
 
   bool isOK = false;
   if (aCompString == "inf")
-    isOK = aVolume < aVal;
+    isOK = aVolume < aVal && fabs(aVolume - aVal) > Precision::Confusion();
   else if (aCompString == "infEq")
-    isOK = aVolume <= aVal;
+    isOK = aVolume < aVal || fabs(aVolume - aVal) < Precision::Confusion();
   else if (aCompString == "sup")
-    isOK = aVolume > aVal;
+    isOK = aVolume > aVal && fabs(aVolume - aVal) > Precision::Confusion();
   else if (aCompString == "supEq")
-    isOK = aVolume >= aVal;
+    isOK = aVolume > aVal || fabs(aVolume - aVal) < Precision::Confusion();
   else if (aCompString == "isBetween")
-    isOK = (aVolume >= aValMin) && (aVolume <= aValMax);
+    isOK = (aVolume > aVal || fabs(aVolume - aVal) < Precision::Confusion())
+          && (aVolume < aValMax || fabs(aVolume - aVal) < Precision::Confusion());
   else if (aCompString == "isStrictlyBetween")
-    isOK = (aVolume > aValMin) && (aVolume < aValMax);
+    isOK = (aVolume > aVal && fabs(aVolume - aVal) > Precision::Confusion())
+           && (aVolume < aValMax && fabs(aVolume - aValMax) > Precision::Confusion());
   return isOK;
 }
 
@@ -104,7 +102,6 @@ void FiltersPlugin_VolumeSize::initAttributes(ModelAPI_FiltersArgs& theArguments
 {
   theArguments.initAttribute("comparatorType", ModelAPI_AttributeString::typeId());
   theArguments.initAttribute("value", ModelAPI_AttributeDouble::typeId());
-  theArguments.initAttribute("valueMin", ModelAPI_AttributeDouble::typeId());
   theArguments.initAttribute("valueMax", ModelAPI_AttributeDouble::typeId());
 }
 

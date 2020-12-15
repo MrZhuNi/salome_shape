@@ -23,6 +23,7 @@
 #include "FiltersAPI.h"
 
 #include <ModelAPI_AttributeSelection.h>
+#include <ModelHighAPI_Double.h>
 
 #include <ModelHighAPI_Dumper.h>
 #include <ModelHighAPI_Selection.h>
@@ -40,6 +41,9 @@ public:
   FiltersAPI_Argument(const bool theValue);
 
   FILTERSAPI_EXPORT
+  FiltersAPI_Argument(const ModelHighAPI_Double theValue);
+
+  FILTERSAPI_EXPORT
   FiltersAPI_Argument(const std::string& theValue);
 
   FILTERSAPI_EXPORT
@@ -55,13 +59,14 @@ public:
   const bool boolean() const { return myBoolean; }
   const std::string& string() const { return myValue; }
   const ModelHighAPI_Selection& selection() const { return mySelection; }
-
+  const ModelHighAPI_Double& dble() const { return myDouble; }
   /// Dump wrapped feature
   FILTERSAPI_EXPORT
   void dump(ModelHighAPI_Dumper& theDumper) const;
 
 private:
   bool myBoolean;
+  ModelHighAPI_Double myDouble  = -100000000000;
   std::string myValue;
   ModelHighAPI_Selection mySelection;
   AttributeSelectionPtr mySelectionAttr;

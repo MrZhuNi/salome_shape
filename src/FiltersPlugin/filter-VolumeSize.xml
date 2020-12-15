@@ -35,7 +35,7 @@
       </doublevalue>
      </case>
     <case id="isBetween" title="is between">
-     <doublevalue id="VolumeSize__valueMin"
+     <doublevalue id="VolumeSize__value"
                   label="Min size"
                   min="0"
                   step="0.1"
@@ -51,7 +51,7 @@
       </doublevalue>
     </case>
     <case id="isStrictlyBetween" title="is strictly between">
-     <doublevalue id="VolumeSize__valueMin"
+     <doublevalue id="VolumeSize__value"
                   label="Min size"
                   min="0"
                   step="0.1"
