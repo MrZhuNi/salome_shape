@@ -22,6 +22,7 @@
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeDoubleArray.h>
 #include <ModelAPI_AttributeString.h>
+#include <ModelAPI_AttributeBoolean.h>
 
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Session.h>
@@ -52,6 +53,7 @@ void FeaturesPlugin_CreateBoundingBox::initAttributes()
   data()->addAttribute(X_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(Y_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(Z_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(COMPUTE_ID(), ModelAPI_AttributeBoolean::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), X_MIN_COOD_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Y_MIN_COOD_ID());
@@ -59,11 +61,12 @@ void FeaturesPlugin_CreateBoundingBox::initAttributes()
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), X_MAX_COOD_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Y_MAX_COOD_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Z_MAX_COOD_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), RESULT_VALUES_ID());
-
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), COMPUTE_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), OBJECTS_LIST_ID());
   data()->addAttribute(RESULT_VALUES_ID(), ModelAPI_AttributeDoubleArray::typeId());
 
   data()->realArray(RESULT_VALUES_ID())->setSize(6);
+  data()->boolean(COMPUTE_ID())->setValue(true);
 
 }
 
@@ -77,9 +80,6 @@ void FeaturesPlugin_CreateBoundingBox::execute()
 //=================================================================================================
 void FeaturesPlugin_CreateBoundingBox::attributeChanged(const std::string& theID)
 {
-  if (theID == OBJECTS_LIST_ID()) {
-    updateValues();
-  }
 }
 
 //=================================================================================================
@@ -87,50 +87,65 @@ void FeaturesPlugin_CreateBoundingBox::updateValues()
 {
   AttributeSelectionPtr aSelection = selection(OBJECTS_LIST_ID());
   AttributeDoubleArrayPtr aValues =
-    std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(attribute(RESULT_VALUES_ID()));
-  std::stringstream streamxmin;
-  std::stringstream streamymin;
-  std::stringstream streamzmin;
-  std::stringstream streamxmax;
-  std::stringstream streamymax;
-  std::stringstream streamzmax;
-  GeomShapePtr aShape;
-  if (aSelection && aSelection->isInitialized()) {
-    aShape = aSelection->value();
-    if (!aShape && aSelection->context())
-      aShape = aSelection->context()->shape();
-  }
-  if (aShape) {
-    double aXmin, aXmax, aYmin,aYmax,aZmin,aZmax;
-          std::string aError;
-    if (!GetBoundingBox(aShape,
-                        true,
-                        aXmin, aXmax,
-                        aYmin,aYmax,
-                        aZmin,aZmax,
-                        aError))
-        setError("Error in bounding box calculation :" +  aError);
+      std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(attribute(RESULT_VALUES_ID()));
 
-    streamxmin << std::setprecision(14) << aXmin;
-    aValues->setValue(0, aXmin);
-    streamxmax << std::setprecision(14) << aXmax;
-    aValues->setValue(1, aXmax);
-    streamymin << std::setprecision(14) << aYmin;
-    aValues->setValue(2, aYmin);
-    streamymax << std::setprecision(14) << aYmax;
-    aValues->setValue(3, aYmax);
-    streamzmin << std::setprecision(14) << aZmin;
-    aValues->setValue(4, aZmin);
-    streamzmax << std::setprecision(14) << aZmax;
-    aValues->setValue(5, aZmax);
-  }
+  if (aSelection->isInitialized()) {
+    std::stringstream streamxmin;
+    std::stringstream streamymin;
+    std::stringstream streamzmin;
+    std::stringstream streamxmax;
+    std::stringstream streamymax;
+    std::stringstream streamzmax;
+    GeomShapePtr aShape;
+    if (aSelection && aSelection->isInitialized()) {
+      aShape = aSelection->value();
+      if (!aShape && aSelection->context())
+        aShape = aSelection->context()->shape();
+    }
+    AttributeBooleanPtr anIsCompute = boolean(COMPUTE_ID());
+    if (!anIsCompute->value()) {
+      myShape = aShape;
+      anIsCompute->setValue(true);
+    } 
 
-  string(X_MIN_COOD_ID() )->setValue( "X = " +  streamxmin.str() );
-  string(Y_MIN_COOD_ID() )->setValue( "Y = " +  streamymin.str() );
-  string(Z_MIN_COOD_ID() )->setValue( "Z = " +  streamzmin.str() );
-  string(X_MAX_COOD_ID() )->setValue( "X = " +  streamxmax.str() );
-  string(Y_MAX_COOD_ID() )->setValue( "Y = " +  streamymax.str() );
-  string(Z_MAX_COOD_ID() )->setValue( "Z = " +  streamzmax.str() );
+    if (aShape && !aShape->isEqual(myShape)) {
+      double aXmin, aXmax, aYmin,aYmax,aZmin,aZmax;
+      std::string aError;
+      if (!GetBoundingBox(aShape,
+                          true,
+                          aXmin, aXmax,
+                          aYmin,aYmax,
+                          aZmin,aZmax,
+                          aError))
+          setError("Error in bounding box calculation :" +  aError);
+      myShape = aShape;
+      streamxmin << std::setprecision(14) << aXmin;
+      aValues->setValue(0, aXmin);
+      streamxmax << std::setprecision(14) << aXmax;
+      aValues->setValue(1, aXmax);
+      streamymin << std::setprecision(14) << aYmin;
+      aValues->setValue(2, aYmin);
+      streamymax << std::setprecision(14) << aYmax;
+      aValues->setValue(3, aYmax);
+      streamzmin << std::setprecision(14) << aZmin;
+      aValues->setValue(4, aZmin);
+      streamzmax << std::setprecision(14) << aZmax;
+      aValues->setValue(5, aZmax);
+    } else {
+      streamxmin << std::setprecision(14) << aValues->value(0);
+      streamxmax << std::setprecision(14) << aValues->value(1);
+      streamymin << std::setprecision(14) << aValues->value(2);
+      streamymax << std::setprecision(14) << aValues->value(3);
+      streamzmin << std::setprecision(14) << aValues->value(4);
+      streamzmax << std::setprecision(14) << aValues->value(5);
+    }
+    string(X_MIN_COOD_ID() )->setValue( "X = " +  streamxmin.str() );
+    string(Y_MIN_COOD_ID() )->setValue( "Y = " +  streamymin.str() );
+    string(Z_MIN_COOD_ID() )->setValue( "Z = " +  streamzmin.str() );
+    string(X_MAX_COOD_ID() )->setValue( "X = " +  streamxmax.str() );
+    string(Y_MAX_COOD_ID() )->setValue( "Y = " +  streamymax.str() );
+    string(Z_MAX_COOD_ID() )->setValue( "Z = " +  streamzmax.str() );
+  }
 }
 
 //=================================================================================================
