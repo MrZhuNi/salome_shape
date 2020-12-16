@@ -90,11 +90,18 @@ public:
     return MY_Z_MAX_COOD_ID;
   }
 
-   /// Attribute name for values of result.
+  /// Attribute name for values of result.
   inline static const std::string& RESULT_VALUES_ID()
   {
     static const std::string MY_RESULT_VALUES_ID("result_values");
     return MY_RESULT_VALUES_ID;
+  }
+
+  /// Attribute name for indicate to compute the bounding box.
+  inline static const std::string& COMPUTE_ID()
+  {
+    static const std::string MY_COMPUTE_ID("compute");
+    return MY_COMPUTE_ID;
   }
 
   /// Performs the algorithm and stores results it in the data structure.

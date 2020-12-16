@@ -95,8 +95,6 @@ void FeaturesPlugin_BoundingBox::execute()
 void FeaturesPlugin_BoundingBox::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECTS_LIST_ID()) {
-    updateValues();
-    createBoxByTwoPoints();
     if (myCreateFeature.get())
       updateBox();
   }
@@ -112,51 +110,52 @@ AttributePtr FeaturesPlugin_BoundingBox::attributResultValues()
 void FeaturesPlugin_BoundingBox::updateValues()
 {
   AttributeSelectionPtr aSelection = selection(OBJECTS_LIST_ID());
-  AttributeDoubleArrayPtr aValues =
-    std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(attribute(RESULT_VALUES_ID()));
-  std::stringstream streamxmin;
-  std::stringstream streamymin;
-  std::stringstream streamzmin;
-  std::stringstream streamxmax;
-  std::stringstream streamymax;
-  std::stringstream streamzmax;
-  GeomShapePtr aShape;
-  if (aSelection && aSelection->isInitialized()) {
-    aShape = aSelection->value();
-    if (!aShape && aSelection->context())
-      aShape = aSelection->context()->shape();
+  if (aSelection->isInitialized()) {
+    AttributeDoubleArrayPtr aValues =
+      std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(attribute(RESULT_VALUES_ID()));
+    std::stringstream streamxmin;
+    std::stringstream streamymin;
+    std::stringstream streamzmin;
+    std::stringstream streamxmax;
+    std::stringstream streamymax;
+    std::stringstream streamzmax;
+    GeomShapePtr aShape;
+    if (aSelection && aSelection->isInitialized()) {
+      aShape = aSelection->value();
+      if (!aShape && aSelection->context())
+        aShape = aSelection->context()->shape();
+    }
+    if (aShape && !aShape->isEqual(myShape)) {
+      double aXmin, aXmax, aYmin,aYmax,aZmin,aZmax;
+      std::string aError;
+      if (!GetBoundingBox(aShape,
+                          true,
+                          aXmin, aXmax,
+                          aYmin,aYmax,
+                          aZmin,aZmax,
+                          aError))
+          setError("Error in bounding box calculation :" +  aError);
+      myShape = aShape;
+      streamxmin << std::setprecision(14) << aXmin;
+      aValues->setValue(0, aXmin);
+      streamxmax << std::setprecision(14) << aXmax;
+      aValues->setValue(1, aXmax);
+      streamymin << std::setprecision(14) << aYmin;
+      aValues->setValue(2, aYmin);
+      streamymax << std::setprecision(14) << aYmax;
+      aValues->setValue(3, aYmax);
+      streamzmin << std::setprecision(14) << aZmin;
+      aValues->setValue(4, aZmin);
+      streamzmax << std::setprecision(14) << aZmax;
+      aValues->setValue(5, aZmax);
+      string(X_MIN_COOD_ID() )->setValue( "X = " +  streamxmin.str() );
+      string(Y_MIN_COOD_ID() )->setValue( "Y = " +  streamymin.str() );
+      string(Z_MIN_COOD_ID() )->setValue( "Z = " +  streamzmin.str() );
+      string(X_MAX_COOD_ID() )->setValue( "X = " +  streamxmax.str() );
+      string(Y_MAX_COOD_ID() )->setValue( "Y = " +  streamymax.str() );
+      string(Z_MAX_COOD_ID() )->setValue( "Z = " +  streamzmax.str() );
+    }
   }
-  if (aShape) {
-    double aXmin, aXmax, aYmin,aYmax,aZmin,aZmax;
-          std::string aError;
-    if (!GetBoundingBox(aShape,
-                        true,
-                        aXmin, aXmax,
-                        aYmin,aYmax,
-                        aZmin,aZmax,
-                        aError))
-        setError("Error in bounding box calculation :" +  aError);
-
-    streamxmin << std::setprecision(14) << aXmin;
-    aValues->setValue(0, aXmin);
-    streamxmax << std::setprecision(14) << aXmax;
-    aValues->setValue(1, aXmax);
-    streamymin << std::setprecision(14) << aYmin;
-    aValues->setValue(2, aYmin);
-    streamymax << std::setprecision(14) << aYmax;
-    aValues->setValue(3, aYmax);
-    streamzmin << std::setprecision(14) << aZmin;
-    aValues->setValue(4, aZmin);
-    streamzmax << std::setprecision(14) << aZmax;
-    aValues->setValue(5, aZmax);
-  }
-
-  string(X_MIN_COOD_ID() )->setValue( "X = " +  streamxmin.str() );
-  string(Y_MIN_COOD_ID() )->setValue( "Y = " +  streamymin.str() );
-  string(Z_MIN_COOD_ID() )->setValue( "Z = " +  streamzmin.str() );
-  string(X_MAX_COOD_ID() )->setValue( "X = " +  streamxmax.str() );
-  string(Y_MAX_COOD_ID() )->setValue( "Y = " +  streamymax.str() );
-  string(Z_MAX_COOD_ID() )->setValue( "Z = " +  streamzmax.str() );
 }
 
 //=================================================================================================
@@ -174,9 +173,18 @@ void FeaturesPlugin_BoundingBox::createBox()
 //=================================================================================================
 void FeaturesPlugin_BoundingBox::updateBox()
 {
+    myCreateFeature->boolean(FeaturesPlugin_CreateBoundingBox::COMPUTE_ID())->setValue(false);
     myCreateFeature->selection(FeaturesPlugin_CreateBoundingBox::OBJECTS_LIST_ID())
-                          ->setValue( selection(OBJECTS_LIST_ID())->context() ,
+                          ->setValue( selection(OBJECTS_LIST_ID())->context(),
                                       selection(OBJECTS_LIST_ID())->value() );
+    
+    AttributeDoubleArrayPtr aValuesFeatures =
+      std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(myCreateFeature->attribute(RESULT_VALUES_ID()));
+    AttributeDoubleArrayPtr aValues =
+      std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(attribute(RESULT_VALUES_ID()));
+    for (int anI=0; anI < 6; anI++)
+      aValuesFeatures->setValue(anI,aValues->value(anI));
 
     myCreateFeature->execute();
+    myCreateFeature->boolean(FeaturesPlugin_CreateBoundingBox::COMPUTE_ID())->setValue(true);
 }

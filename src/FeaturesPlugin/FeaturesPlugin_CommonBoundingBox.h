@@ -54,6 +54,7 @@ public:
   void loadNamingDS(std::shared_ptr<GeomAlgoAPI_Box> theBoxAlgo,
                     std::shared_ptr<ModelAPI_ResultBody> theResultBox);
 
+  GeomShapePtr myShape;
 };
 
 #endif
