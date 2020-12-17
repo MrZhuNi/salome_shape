@@ -7,7 +7,7 @@
                   geometrical_selection="true">
     <validator id="GeomValidators_ShapeType" parameters="line,edge,wire,face,shell,solid,compsolid,compound"/>
   </shape_selector>
-  <label id="lenght" isSelectable = "true"/>
+  <label id="length" isSelectable = "true"/>
   <label id="area" isSelectable = "true"/>
   <label id="volume" isSelectable = "true"/>
 </source>

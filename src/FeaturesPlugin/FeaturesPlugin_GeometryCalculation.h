@@ -52,11 +52,11 @@ public:
     return MY_OBJECT_SELECTED_ID;
   }
 
-  /// Attribute name for lenght
-  inline static const std::string& LENGHT_ID()
+  /// Attribute name for length
+  inline static const std::string& LENGTH_ID()
   {
-    static const std::string MY_LENGHT_ID("lenght");
-    return MY_LENGHT_ID;
+    static const std::string MY_LENGTH_ID("length");
+    return MY_LENGTH_ID;
   }
 
   /// Attribute name for area

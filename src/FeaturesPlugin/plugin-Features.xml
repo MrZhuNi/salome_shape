@@ -173,7 +173,7 @@
   </workbench>
   <workbench id="Inspection">
     <group id="Calculation">
-      <feature id="GeometryCalculation" title="Geometry Calculation" tooltip="Calculate properties of objects"
+      <feature id="GeometryCalculation" title="Geometry calculation" tooltip="Calculate properties of objects"
                icon="icons/Features/basicproperties.png" helpfile="geometryCalculationFeature.html" abort_confirmation="false">
         <source path="geometry_calculation_widget.xml"/>
       </feature>

@@ -116,6 +116,10 @@
       <translation>Copie angulaire</translation>
     </message>
     <message>
+      <source>Geometry calculation</source>
+      <translation>Calcul géométrique</translation>
+    </message>
+    <message>
       <source>Linear copy</source>
       <translation>Copie linéaire</translation>
     </message>
@@ -4454,7 +4458,31 @@
       <translation>Deuxième direction</translation>
     </message>
   </context>
-
+  
+  <!-- Geometry calculation -->
+  <context>
+    <name>GeometryCalculation</name>
+    <message>
+      <source>Geometry calculation</source>
+      <translation>Calcul géométrique</translation>
+    </message>
+    <message>
+      <source>GeometryCalculation:Object</source>
+      <translation>Objet</translation>
+    </message>
+    <message>
+      <source>GeometryCalculation:Length</source>
+      <translation>Longueur</translation>
+    </message>
+    <message>
+      <source>GeometryCalculation:Area</source>
+      <translation>Surface</translation>
+    </message>
+    <message>
+      <source>GeometryCalculation:Volume</source>
+      <translation>Volume</translation>
+    </message>
+  </context>
   <!-- Measurement -->
   <context>
     <name>Measurement</name>

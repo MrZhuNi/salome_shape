@@ -27,7 +27,7 @@
 /// Run chamfer operation with two distances or with a distance and an angle .
   /// \param theShape      the shape
   /// \param theTolerance  tolerance desirated
-  /// \param theLength     lenght calculated
+  /// \param theLength     length calculated
   /// \param theSurfArea   Surface Area calculated
   /// \param theVolume     Volume calculated
   /// \param theError      error

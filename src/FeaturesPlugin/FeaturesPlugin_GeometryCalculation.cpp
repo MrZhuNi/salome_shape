@@ -46,7 +46,7 @@ void FeaturesPlugin_GeometryCalculation::initAttributes()
   // attribute for point selected
   data()->addAttribute(OBJECT_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
   // attributes for result message and values
-  data()->addAttribute(LENGHT_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(LENGTH_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(AREA_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(VOLUME_ID(), ModelAPI_AttributeString::typeId());
 
@@ -100,7 +100,7 @@ void FeaturesPlugin_GeometryCalculation::attributeChanged(const std::string& the
       aValues->setValue(2, aVolume);
     }
 
-    string(LENGHT_ID())->setValue("Lenght = " +  streamL.str());
+    string(LENGTH_ID())->setValue("Length = " +  streamL.str());
     string(AREA_ID())->setValue("Area = " +  streamA.str());
     string(VOLUME_ID())->setValue("Volume = " +  streamV.str());
   }

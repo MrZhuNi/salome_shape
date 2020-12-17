@@ -39,7 +39,7 @@ std::list<double> getBasicProperties(const std::shared_ptr<ModelAPI_Document>& t
       aPointCoodFeat->attribute(FeaturesPlugin_GeometryCalculation::RESULT_VALUES_ID()));
 
   for (int i : {0, 1, 2})
-    res.push_back( aResult->value(i));
+    res.push_back(aResult->value(i));
 
   return res;
 }

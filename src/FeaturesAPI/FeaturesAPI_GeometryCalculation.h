@@ -29,7 +29,7 @@ class ModelAPI_Document;
 class ModelHighAPI_Selection;
 
 /// \ingroup CPPHighAPI
-/// \brief get the basic properties (lenght, Surface area, volume)
+/// \brief get the basic properties (length, Surface area, volume)
 FEATURESAPI_EXPORT
 std::list<double> getBasicProperties(const std::shared_ptr<ModelAPI_Document>& thePart,
                                      const ModelHighAPI_Selection& theObject);
