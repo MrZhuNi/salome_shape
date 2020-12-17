@@ -79,16 +79,12 @@ void FeaturesPlugin_PointCoordinates::attributeChanged(const std::string& theID)
     }
     if (aShape) {
       aPoint = GeomAlgoAPI_PointBuilder::point(aShape);
-      if (aPoint.get()) {
-        streamx << std::setprecision(14) << aPoint->x();
-        aValues->setValue(0, aPoint->x());
-        streamy << std::setprecision(14) << aPoint->y();
-        aValues->setValue(1, aPoint->y());
-        streamz << std::setprecision(14) << aPoint->z();
-        aValues->setValue(2, aPoint->z());
-      } else {
-        aSelection->setValue( aSelection->context(),GeomShapePtr());
-      }
+      streamx << std::setprecision(14) << aPoint->x();
+      aValues->setValue(0, aPoint->x());
+      streamy << std::setprecision(14) << aPoint->y();
+      aValues->setValue(1, aPoint->y());
+      streamz << std::setprecision(14) << aPoint->z();
+      aValues->setValue(2, aPoint->z());
     }
 
     string(X_COORD_ID() )->setValue( "X = " +  streamx.str() );

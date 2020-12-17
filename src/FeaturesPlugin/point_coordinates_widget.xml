@@ -5,6 +5,7 @@
                       tooltip="Select a point"
                       shape_types="vertex"
                       default="">
+        <validator id="GeomValidators_ConstructionComposite"/>
         <validator id="GeomValidators_ShapeType" parameters="vertex"/>
   </shape_selector>
   <label id="xcoordinate" isSelectable = "true"/>
