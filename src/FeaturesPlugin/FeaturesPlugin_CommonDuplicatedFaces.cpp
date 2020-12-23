@@ -23,6 +23,7 @@
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeDouble.h>
+#include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_Attribute.h>
 
 #include <ModelAPI_Data.h>
@@ -62,15 +63,23 @@ void FeaturesPlugin_CommonDuplicatedFaces::updateFaces()
               std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
                                                 (attributListFaces());
 
-  if (aFacesListAttr->isInitialized())
-      aFacesListAttr->clear();
-  
+  GeomShapePtr aShape = ancompSolidAttr->value();
+
   AttributeDoublePtr aToleranceAttr =
               std::dynamic_pointer_cast<ModelAPI_AttributeDouble>
                                                 (attributTolerance());
 
-  GeomShapePtr aShape = ancompSolidAttr->value();
-  if (aShape.get() && ancompSolidAttr->context().get() && aToleranceAttr.get()) {
+  AttributeBooleanPtr anIsCompute =
+            std::dynamic_pointer_cast<ModelAPI_AttributeBoolean>(attributIsCompute());
+  if (!anIsCompute->value()) {
+    myShape = aShape;
+    anIsCompute->setValue(true);
+  }
+  if (aShape.get() && ancompSolidAttr->context().get()
+                   && aToleranceAttr.get() && !aShape->isEqual(myShape)) {
+
+    if (aFacesListAttr->isInitialized())
+      aFacesListAttr->clear();
 
     aShape = ancompSolidAttr->context()->shape();
     if (aShape) {
@@ -85,6 +94,7 @@ void FeaturesPlugin_CommonDuplicatedFaces::updateFaces()
                               anError))
         setError("Error in duplicated faces calculation :" +  anError);
 
+      myShape = aShape;
       aFacesListAttr->setSelectionType("face");
 
       ListOfShape::const_iterator anIt = aFaces.cbegin();
@@ -98,7 +108,7 @@ void FeaturesPlugin_CommonDuplicatedFaces::updateFaces()
         aFacesListAttr->append(ancompSolidAttr->context(), aFacePtr);
       }
       std::stringstream alabel;
-      alabel << "Number of duplicated faces : " << aFacesListAttr->size();
+      alabel << aFacesListAttr->size();
       AttributeStringPtr aNumberFacesAttr =
                   std::dynamic_pointer_cast<ModelAPI_AttributeString>
                                                       (attributNumberFaces());

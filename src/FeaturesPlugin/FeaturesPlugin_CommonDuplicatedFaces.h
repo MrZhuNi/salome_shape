@@ -52,6 +52,9 @@ public:
   /// Return Attribut values of tolerance.
   virtual AttributePtr attributTolerance() = 0;
 
+  /// Return Attribut values of IsCompute.
+  virtual AttributePtr attributIsCompute() = 0;
+
   protected:
   FeaturesPlugin_CommonDuplicatedFaces() {}
 
@@ -60,6 +63,9 @@ public:
 
   // Update the list of faces
   void updateFaces();
+
+  // the shape studied
+  GeomShapePtr myShape;
 
 };
 

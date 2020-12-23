@@ -9,7 +9,7 @@
     <validator id="GeomValidators_ShapeType" parameters="compsolid,compound"/>
   </shape_selector>
   <groupbox title="Duplicated faces">
-    <label id="number_duplicated_faces"/>
+    <label id="number_duplicated_faces" label="Number of duplicated faces : "/>
     <multi_selector id="group_list"
                       label="List of faces :"
                       icon=""
@@ -33,5 +33,5 @@
                     step="0.00001"
                     default="1e-7">
   </doublevalue>
-  <stringvalue id="group_name" label="Group Name"/>
+  <stringvalue id="group_name" label="Group name"/>
 </source>

@@ -61,6 +61,8 @@ protected:
 
   /// A label control
   QLabel* myLabel;
+  /// prefix for label
+  std::string myPrefix;
 };
 
 #endif

@@ -83,6 +83,13 @@ public:
     return MY_GROUP_NAME_ID;
   }
 
+  /// Attribute name for indicate to launch the algo.
+  inline static const std::string& COMPUTE_ID()
+  {
+    static const std::string MY_COMPUTE_ID("compute");
+    return MY_COMPUTE_ID;
+  }
+
   /// Performs the algorithm and stores results it in the data structure.
   FEATURESPLUGIN_EXPORT virtual void execute();
 
@@ -109,6 +116,9 @@ public:
 
   /// Return Attribut values of tolerance.
   virtual AttributePtr attributTolerance();
+
+  /// Return Attribut values of IsCompute.
+  virtual AttributePtr attributIsCompute();
 
 };
 
