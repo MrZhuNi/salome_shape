@@ -22,6 +22,7 @@
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeString.h>
+#include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_Attribute.h>
 
 #include <ModelAPI_Data.h>
@@ -51,11 +52,18 @@ void FeaturesPlugin_CommonSharedFaces::updateFaces()
                   std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
                                                       (attributListFaces());
 
-  if (aFacesListAttr->isInitialized())
-        aFacesListAttr->clear();
-
   GeomShapePtr aShape = ancompSolidAttr->value();
-  if (aShape.get() && ancompSolidAttr->context().get()) {
+
+  AttributeBooleanPtr anIsCompute =
+            std::dynamic_pointer_cast<ModelAPI_AttributeBoolean>(attributIsCompute());
+  if (!anIsCompute->value()) {
+    myShape = aShape;
+    anIsCompute->setValue(true);
+  }
+  if (aShape.get() && ancompSolidAttr->context().get() && !aShape->isEqual(myShape)) {
+
+    if (aFacesListAttr->isInitialized())
+        aFacesListAttr->clear();
 
     aShape = ancompSolidAttr->context()->shape();
     if (aShape) {
@@ -70,6 +78,7 @@ void FeaturesPlugin_CommonSharedFaces::updateFaces()
                           anError))
         setError("Error in GetSharedFaces calculation :" +  anError);
 
+      myShape = aShape;
       aFacesListAttr->setSelectionType("face");
 
       ListOfShape::const_iterator anIt = aFaces.cbegin();
@@ -83,7 +92,7 @@ void FeaturesPlugin_CommonSharedFaces::updateFaces()
         aFacesListAttr->append( ancompSolidAttr->context(), aFacePtr);
       }
       std::stringstream alabel;
-      alabel << "Number of shared faces : " << aFacesListAttr->size();
+      alabel << aFacesListAttr->size();
       AttributeStringPtr aNumberFacesAttr =
                   std::dynamic_pointer_cast<ModelAPI_AttributeString>
                                                       (attributNumberFaces());

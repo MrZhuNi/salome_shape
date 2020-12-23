@@ -76,6 +76,13 @@ public:
     return MY_CREATE_GROUP_ID;
   }
 
+  /// Attribute name for indicate to launch the algo.
+  inline static const std::string& COMPUTE_ID()
+  {
+    static const std::string MY_COMPUTE_ID("compute");
+    return MY_COMPUTE_ID;
+  }
+
   /// Attribute name for group name.
   inline static const std::string& GROUP_NAME_ID()
   {
@@ -109,6 +116,9 @@ public:
 
   /// Return Attribut values of number of faces.
   virtual AttributePtr attributNumberFaces();
+
+  /// Return Attribut values of IsCompute.
+  virtual AttributePtr attributIsCompute();
 
   /// Create group
   void createGroup();

@@ -57,8 +57,12 @@ void FeaturesPlugin_GroupSharedFaces::initAttributes()
   data()->addAttribute(NUMBER_FACES_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(TRANSPARENCY_ID(), ModelAPI_AttributeInteger::typeId());
   data()->addAttribute(GROUP_NAME_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(COMPUTE_ID(), ModelAPI_AttributeBoolean::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), TRANSPARENCY_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), COMPUTE_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), NUMBER_FACES_ID());
+  data()->boolean(COMPUTE_ID())->setValue(true);
 
 }
 
@@ -67,6 +71,12 @@ void FeaturesPlugin_GroupSharedFaces::initAttributes()
 AttributePtr FeaturesPlugin_GroupSharedFaces::attributObject()
 {
   return attribute(OBJECT_ID());
+}
+
+//=================================================================================================
+AttributePtr FeaturesPlugin_GroupSharedFaces::attributIsCompute()
+{
+  return attribute(COMPUTE_ID());
 }
 
 //=================================================================================================

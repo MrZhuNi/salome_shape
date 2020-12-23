@@ -49,6 +49,9 @@ public:
   /// Return Attribut values of result.
   virtual AttributePtr attributNumberFaces() = 0;
 
+  /// Return Attribut values of IsCompute.
+  virtual AttributePtr attributIsCompute() = 0;
+
   protected:
   FeaturesPlugin_CommonSharedFaces() {}
 
@@ -57,6 +60,9 @@ public:
 
   // Update the list of faces
   void updateFaces();
+
+  // the shape studied
+  GeomShapePtr myShape;
 
 };
 

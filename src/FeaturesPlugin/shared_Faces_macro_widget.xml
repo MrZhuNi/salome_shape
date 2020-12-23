@@ -9,9 +9,9 @@
     <validator id="GeomValidators_ShapeType" parameters="compsolid,compound"/>
   </shape_selector>
   <groupbox title="Shared faces">
-    <label id="number_shared_faces"/>
+    <label id="number_shared_faces" label="Number of shared faces : "/>
     <multi_selector id="group_list"
-                      label="Liste of faces :"
+                      label="List of faces :"
                       icon=""
                       shape_types="faces"
                       Block_selection = "true"
@@ -28,7 +28,7 @@
                     default="50">
   </integervalue>
   <optionalbox id="create_group" title="Create group" show_title="true">
-    <stringvalue id="group_name" label="Group Name"/>
+    <stringvalue id="group_name" label="Group name"/>
     <label/>
   </optionalbox>
 </source>

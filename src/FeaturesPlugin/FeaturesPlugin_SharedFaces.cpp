@@ -60,10 +60,18 @@ void FeaturesPlugin_SharedFaces::initAttributes()
   data()->addAttribute(TRANSPARENCY_ID(), ModelAPI_AttributeInteger::typeId());
   data()->addAttribute(CREATE_GROUP_ID(), ModelAPI_AttributeBoolean::typeId());
   data()->addAttribute(GROUP_NAME_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(COMPUTE_ID(), ModelAPI_AttributeBoolean::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), GROUP_NAME_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), COMPUTE_ID());
+  data()->boolean(COMPUTE_ID())->setValue(true);
 }
 
+//=================================================================================================
+AttributePtr FeaturesPlugin_SharedFaces::attributIsCompute()
+{
+  return attribute(COMPUTE_ID());
+}
 
 //=================================================================================================
 AttributePtr FeaturesPlugin_SharedFaces::attributObject()
@@ -161,15 +169,24 @@ void FeaturesPlugin_SharedFaces::createGroup()
 //=================================================================================================
 void FeaturesPlugin_SharedFaces::updateGroup()
 {
+    myCreateGroupFeature->boolean(FeaturesPlugin_GroupSharedFaces::COMPUTE_ID())->setValue(false);
     myCreateGroupFeature->string(FeaturesPlugin_GroupSharedFaces::GROUP_NAME_ID())
                           ->setValue( string(GROUP_NAME_ID())->value());
 
     myCreateGroupFeature->selection(FeaturesPlugin_GroupSharedFaces::OBJECT_ID())
                           ->setValue( selection(OBJECT_ID())->context() ,
                                       selection(OBJECT_ID())->value() );
+    AttributeSelectionListPtr aFacesFeatures =
+      std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
+                               (myCreateGroupFeature->attribute(LIST_FACES_ID()));
+    AttributeSelectionListPtr aFaces =
+      std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(attribute(LIST_FACES_ID()));
+
+    aFaces->copyTo(aFacesFeatures);
 
     myCreateGroupFeature->integer(FeaturesPlugin_GroupSharedFaces::TRANSPARENCY_ID())
                           ->setValue( integer(TRANSPARENCY_ID())->value());
 
     myCreateGroupFeature->execute();
+    myCreateGroupFeature->boolean(FeaturesPlugin_GroupSharedFaces::COMPUTE_ID())->setValue(true);
 }
