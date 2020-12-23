@@ -162,7 +162,7 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
-  GeometryCalculation_widget.xml
+  geometry_calculation_widget.xml
   Bounding_Box_widget.xml
   Create_Bounding_Box_widget.xml
   fusion_faces_widget.xml
@@ -708,5 +708,6 @@ ADD_UNIT_TESTS(TestExtrusion.py
                TestFillet1D_Wire_3.py
                TestFillet1D_Wire_4.py
                TestFillet1D_Wire_5.py
+               TestGeometryCalculation.py
                TestBoundingBox.py
 )

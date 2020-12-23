@@ -177,9 +177,10 @@ void FeaturesPlugin_BoundingBox::updateBox()
     myCreateFeature->selection(FeaturesPlugin_CreateBoundingBox::OBJECTS_LIST_ID())
                           ->setValue( selection(OBJECTS_LIST_ID())->context(),
                                       selection(OBJECTS_LIST_ID())->value() );
-    
+
     AttributeDoubleArrayPtr aValuesFeatures =
-      std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(myCreateFeature->attribute(RESULT_VALUES_ID()));
+      std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>
+                                (myCreateFeature->attribute(RESULT_VALUES_ID()));
     AttributeDoubleArrayPtr aValues =
       std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(attribute(RESULT_VALUES_ID()));
     for (int anI=0; anI < 6; anI++)

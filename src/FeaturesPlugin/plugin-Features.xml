@@ -173,9 +173,9 @@
   </workbench>
   <workbench id="Inspection">
     <group id="Calculation">
-      <feature id="GeometryCalculation" title="Geometry Calculation" tooltip="Calculate properties of objects"
-               icon="icons/Features/basicproperties.png" helpfile="geometryCalculationFeature.html" abort_confirmation="false">
-        <source path="GeometryCalculation_widget.xml"/>
+      <feature id="GeometryCalculation" title="Geometry calculation" tooltip="Calculate properties of objects"
+               icon="icons/Features/geometryCalculation.png" helpfile="geometryCalculationFeature.html" abort_confirmation="false">
+        <source path="geometry_calculation_widget.xml"/>
       </feature>
       <feature id="BoundingBoxMacro" title="Bounding box" tooltip="Calculate the bounding box" auto_preview="true"
                icon="icons/Features/bounding.png" helpfile="boundingBoxFeature.html"> 

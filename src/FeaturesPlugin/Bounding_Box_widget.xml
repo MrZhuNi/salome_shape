@@ -1,5 +1,5 @@
 <source>
-  <shape_selector id="main_objects"
+  <shape_selector id="main_object"
                   label="Object"
                   tooltip="Select a object"
                   shape_types="vertex edge face solid compsolid compound object"

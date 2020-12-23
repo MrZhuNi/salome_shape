@@ -106,7 +106,7 @@ void FeaturesPlugin_CreateBoundingBox::updateValues()
     if (!anIsCompute->value()) {
       myShape = aShape;
       anIsCompute->setValue(true);
-    } 
+    }
 
     if (aShape && !aShape->isEqual(myShape)) {
       double aXmin, aXmax, aYmin,aYmax,aZmin,aZmax;

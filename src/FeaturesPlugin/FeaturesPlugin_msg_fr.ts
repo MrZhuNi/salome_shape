@@ -116,6 +116,14 @@
       <translation>Copie angulaire</translation>
     </message>
     <message>
+      <source>Bounding box</source>
+      <translation>Boite englobante</translation>
+    </message>
+    <message>
+      <source>Geometry calculation</source>
+      <translation>Calcul de la géométrie</translation>
+    </message>
+    <message>
       <source>Linear copy</source>
       <translation>Copie linéaire</translation>
     </message>
@@ -140,7 +148,30 @@
       <translation>Translation</translation>
     </message>
   </context>
-
+  
+  <!-- Bounding Box -->
+  <context>
+    <name>BoundingBox</name>
+    <message>
+      <source>BoundingBox</source>
+      <translation>Boite englobante</translation>
+    </message>
+    <message>
+      <source>Create box</source>
+      <translation>Créer la boite</translation>
+    </message>
+  </context>
+  <context>
+    <name>BoundingBoxMacro</name>
+    <message>
+      <source>BoundingBox</source>
+      <translation>Boite englobante</translation>
+    </message>
+    <message>
+      <source>Create box</source>
+      <translation>Créer la boite</translation>
+    </message>
+  </context>
   <!-- Chamfer -->
   <context>
     <name>Chamfer</name>
@@ -4327,7 +4358,73 @@
       <translation>Pas pour la direction angulaire</translation>
     </message>
   </context>
+  <!--Bounding box-->
+  <context>
+    <name>BoundingBoxMacro</name>
+    <message>
+      <source>Bounding box</source>
+      <translation>Boîte englobante</translation>
+    </message>
+  </context>
+  <context>
+    <name>BoundingBoxMacro:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+  </context>
+  <context>
+  <name>BoundingBoxMacro:createbox</name>
+    <message>
+      <source>Create box</source>
+      <translation>Créer la boite</translation>
+    </message>
+  </context>
+  <context>
+    <name>BoundingBox</name>
+    <message>
+      <source>Bounding box</source>
+      <translation>Boîte englobante</translation>
+    </message>
+  </context>
+  <context>
+    <name>BoundingBox:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+  </context>
 
+  <!--Geometry calculation-->
+  <context>
+    <name>GeometryCalculation</name>
+    <message>
+      <source>Geometry calculation</source>
+      <translation>Calcul de la géometrie</translation>
+    </message>
+  </context>
+  <context>
+    <name>GeometryCalculation:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+  </context>
+  <context>
+  <name>GeometryCalculation</name>
+    <message>
+      <source>Length = </source>
+      <translation>Longueur = </translation>
+    </message>
+    <message>
+      <source>Area = </source>
+      <translation>Surface = </translation>
+    </message>
+    <message>
+      <source>Volume = </source>
+      <translation>Volume = </translation>
+    </message>
+  </context>
   <!-- LinearCopy -->
   <context>
     <name>LinearCopy</name>

@@ -33,7 +33,7 @@
 class FeaturesPlugin_GeometryCalculation : public ModelAPI_Feature
 {
 public:
-   inline static const std::string& ID()
+  inline static const std::string& ID()
   {
     static const std::string MY_ID("GeometryCalculation");
     return MY_ID;
@@ -52,11 +52,11 @@ public:
     return MY_OBJECT_SELECTED_ID;
   }
 
-  /// Attribute name for lenght
-  inline static const std::string& LENGHT_ID()
+  /// Attribute name for length
+  inline static const std::string& LENGTH_ID()
   {
-    static const std::string MY_LENGHT_ID("lenght");
-    return MY_LENGHT_ID;
+    static const std::string MY_LENGTH_ID("length");
+    return MY_LENGTH_ID;
   }
 
   /// Attribute name for area
@@ -73,7 +73,7 @@ public:
     return MY_VOLUME_ID;
   }
 
-   /// Attribute name for values of result.
+  /// Attribute name for values of result.
   inline static const std::string& RESULT_VALUES_ID()
   {
     static const std::string MY_RESULT_VALUES_ID("result_values");

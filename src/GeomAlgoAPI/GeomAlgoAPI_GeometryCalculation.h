@@ -17,8 +17,8 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef GeomAlgoAPI_BasicProperties_H_
-#define GeomAlgoAPI_BasicProperties_H_
+#ifndef GeomAlgoAPI_GeometryCalculation_H_
+#define GeomAlgoAPI_GeometryCalculation_H_
 
 #include <GeomAlgoAPI.h>
 #include <GeomAPI_Shape.h>
@@ -27,16 +27,16 @@
 /// Run chamfer operation with two distances or with a distance and an angle .
   /// \param theShape      the shape
   /// \param theTolerance  tolerance desirated
-  /// \param theLength     lenght calculated
+  /// \param theLength     length calculated
   /// \param theSurfArea   Surface Area calculated
   /// \param theVolume     Volume calculated
   /// \param theError      error
 GEOMALGOAPI_EXPORT
-bool GetBasicProperties(  const std::shared_ptr<GeomAPI_Shape>& theShape,
-                          const Standard_Real theTolerance,
-                          Standard_Real& theLength,
-                          Standard_Real& theSurfArea,
-                          Standard_Real& theVolume,
-                          std::string& theError);
+bool getGeometryCalculation(const std::shared_ptr<GeomAPI_Shape>& theShape,
+                            const Standard_Real theTolerance,
+                            Standard_Real& theLength,
+                            Standard_Real& theSurfArea,
+                            Standard_Real& theVolume,
+                            std::string& theError);
 
 #endif

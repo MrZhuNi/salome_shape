@@ -30,7 +30,7 @@ from FeaturesAPI import addRecover
 from FeaturesAPI import addFillet, addChamfer
 from FeaturesAPI import addFusionFaces
 from FeaturesAPI import measureLength, measureDistance, measureRadius, measureAngle
-from FeaturesAPI import getBasicProperties, getBoundingBox
+from FeaturesAPI import getGeometryCalculation, getBoundingBox
 from FeaturesAPI import addRemoveResults
 from FeaturesAPI import addCopy, addImportResult
 from FeaturesAPI import addDefeaturing

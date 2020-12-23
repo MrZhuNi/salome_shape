@@ -44,7 +44,7 @@ public:
   /// Attribute name for object selected.
   inline static const std::string& OBJECTS_LIST_ID()
   {
-    static const std::string MY_OBJECTS_LIST_ID("main_objects");
+    static const std::string MY_OBJECTS_LIST_ID("main_object");
     return MY_OBJECTS_LIST_ID;
   }
 

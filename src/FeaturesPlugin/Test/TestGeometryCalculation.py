@@ -24,6 +24,7 @@
 # Initialization of the test
 #=========================================================================
 
+import salome
 
 import os
 import math
@@ -32,49 +33,47 @@ from ModelAPI import *
 from salome.shaper import model
 
 
+
 __updated__ = "2020-11-12"
 
 
 #=========================================================================
-# test Bounding Box  
+# test Geometry calculation
 #=========================================================================
-def test_Bounding_Box():
+def test_Geometry_Calculation():
 
     model.begin()
-    file_path = os.path.join(os.getenv("DATA_DIR"),"Shapes","Step","screw.step")
+    file_path = os.path.join(os.getenv("DATA_DIR"),"Shapes","Brep","box1.brep")
     partSet = model.moduleDocument()
     Part_1 = model.addPart(partSet)
     Part_1_doc = Part_1.document()
     Import_1 = model.addImport(Part_1_doc,file_path)
     model.do()
-    ### Create BoundingBox
-    BoundingBox_1 = model.getBoundingBox(Part_1_doc, model.selection("SOLID", "screw_1"))
-    model.end()
-
+    
     myDelta = 1e-6
-    Props = model.getGeometryCalculation(Part_1_doc,model.selection("SOLID", "BoundingBox_1_1"))
+    Props = model.getGeometryCalculation(Part_1_doc,model.selection("SOLID", "box1_1"))
 
-    print(" Basic Properties:")
+    print(" Geometry calculation:")
     print(" Wires length: ", Props[0])
     print(" Surface area: ", Props[1])
     print(" Volume      : ", Props[2]) 
     
-    aReflength = 0.32855301948678
+    aReflength = 2400
     aReslength = Props[0]
     assert (math.fabs(aReslength - aReflength) < myDelta), "The surface is wrong: expected = {0}, real = {1}".format(aReflength, aReslength)
 
-    aRefSurface = 0.0041640657342782
+    aRefSurface = 240000
     aResSurface = Props[1]
     assert (math.fabs(aResSurface - aRefSurface) < myDelta), "The surface is wrong: expected = {0}, real = {1}".format(aRefSurface, aResSurface)
 
-    aRefVolume = 1.6785355394103e-05
+    aRefVolume = 8000000
     aResVolume = Props[2]
     assert (math.fabs(aResVolume - aRefVolume) < myDelta), "The volume is wrong: expected = {0}, real = {1}".format(aRefVolume, aResVolume)
 
     
 if __name__ == '__main__':
 
-    test_Bounding_Box()
+    test_Geometry_Calculation()
         
     #=========================================================================
     # End of test
