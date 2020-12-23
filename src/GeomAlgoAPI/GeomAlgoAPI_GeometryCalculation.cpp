@@ -17,7 +17,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "GeomAlgoAPI_BasicProperties.h"
+#include "GeomAlgoAPI_GeometryCalculation.h"
 
 #include <GProp_GProps.hxx>
 #include <TopoDS_Shape.hxx>
@@ -26,42 +26,42 @@
 #include <Standard_ErrorHandler.hxx>
 
 //=================================================================================================
-bool GetBasicProperties(const std::shared_ptr<GeomAPI_Shape>& theShape,
-                        const double theTolerance,
-                        Standard_Real& theLength,
-                        Standard_Real& theSurfArea,
-                        Standard_Real& theVolume,
-                        std::string& theError)
+bool getGeometryCalculation(const std::shared_ptr<GeomAPI_Shape>& theShape,
+                            const double theTolerance,
+                            Standard_Real& theLength,
+                            Standard_Real& theSurfArea,
+                            Standard_Real& theVolume,
+                            std::string& theError)
 {
 
   #ifdef _DEBUG
-  std::cout << "GetBasicProperties " << std::endl;
+  std::cout << "getGeometryCalculation " << std::endl;
   #endif
 
   if (!theShape.get()) {
-    theError = "GetBasicProperties : An invalid argument";
+    theError = "getGeometryCalculation : An invalid argument";
     return false;
   }
 
   TopoDS_Shape aShape = theShape->impl<TopoDS_Shape>();
 
   //Compute the parameters
-  GProp_GProps LProps, SProps;
+  GProp_GProps aLProps, aSProps;
   Standard_Real anEps = theTolerance >= 0 ? theTolerance : 1.e-6;
   try {
     OCC_CATCH_SIGNALS;
-    BRepGProp::LinearProperties(aShape, LProps, Standard_True);
-    theLength = LProps.Mass();
+    BRepGProp::LinearProperties(aShape, aLProps, Standard_True);
+    theLength = aLProps.Mass();
 
-    BRepGProp::SurfaceProperties(aShape, SProps, anEps, Standard_True);
-    theSurfArea = SProps.Mass();
+    BRepGProp::SurfaceProperties(aShape, aSProps, anEps, Standard_True);
+    theSurfArea = aSProps.Mass();
 
     theVolume = 0.0;
     if (aShape.ShapeType() < TopAbs_SHELL) {
-      for (TopExp_Explorer Exp (aShape, TopAbs_SOLID); Exp.More(); Exp.Next()) {
-        GProp_GProps VProps;
-        BRepGProp::VolumeProperties(Exp.Current(), VProps, anEps, Standard_True);
-        theVolume += VProps.Mass();
+      for (TopExp_Explorer anExp (aShape, TopAbs_SOLID); anExp.More(); anExp.Next()) {
+        GProp_GProps aVProps;
+        BRepGProp::VolumeProperties(anExp.Current(), aVProps, anEps, Standard_True);
+        theVolume += aVProps.Mass();
       }
     }
   }

@@ -25,8 +25,8 @@
 #include <ModelHighAPI_Tools.h>
 
 //=================================================================================================
-std::list<double> getBasicProperties(const std::shared_ptr<ModelAPI_Document>& thePart,
-                                     const ModelHighAPI_Selection& theObject)
+std::list<double> getGeometryCalculation(const std::shared_ptr<ModelAPI_Document>& thePart,
+                                         const ModelHighAPI_Selection& theObject)
 {
   FeaturePtr aPointCoodFeat = thePart->addFeature(FeaturesPlugin_GeometryCalculation::ID());
 

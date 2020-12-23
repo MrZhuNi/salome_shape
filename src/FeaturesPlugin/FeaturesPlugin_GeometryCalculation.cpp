@@ -29,7 +29,7 @@
 #include <Config_PropManager.h>
 
 #include <GeomAPI_Shape.h>
-#include <GeomAlgoAPI_BasicProperties.h>
+#include <GeomAlgoAPI_GeometryCalculation.h>
 
 
 #include <iomanip>
@@ -84,12 +84,12 @@ void FeaturesPlugin_GeometryCalculation::attributeChanged(const std::string& the
       double aSurfArea;
       double aVolume;
       std::string aError;
-      if (!GetBasicProperties(aShape,
-                              aTolerance,
-                              aLength,
-                              aSurfArea,
-                              aVolume,
-                              aError))
+      if (!getGeometryCalculation(aShape,
+                                  aTolerance,
+                                  aLength,
+                                  aSurfArea,
+                                  aVolume,
+                                  aError))
          setError("Error in Geometry calculation :" +  aError);
 
       streamL << std::setprecision(14) << aLength;
@@ -100,9 +100,9 @@ void FeaturesPlugin_GeometryCalculation::attributeChanged(const std::string& the
       aValues->setValue(2, aVolume);
     }
 
-    string(LENGTH_ID())->setValue("Length = " +  streamL.str());
-    string(AREA_ID())->setValue("Area = " +  streamA.str());
-    string(VOLUME_ID())->setValue("Volume = " +  streamV.str());
+    string(LENGTH_ID())->setValue(streamL.str());
+    string(AREA_ID())->setValue(streamA.str());
+    string(VOLUME_ID())->setValue(streamV.str());
   }
 }
 

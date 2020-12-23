@@ -38,9 +38,9 @@ __updated__ = "2020-11-12"
 
 
 #=========================================================================
-# test basic properties
+# test Geometry calculation
 #=========================================================================
-def test_Basic_properties():
+def test_Geometry_Calculation():
 
     model.begin()
     file_path = os.path.join(os.getenv("DATA_DIR"),"Shapes","Brep","box1.brep")
@@ -51,9 +51,9 @@ def test_Basic_properties():
     model.do()
     
     myDelta = 1e-6
-    Props = model.getBasicProperties(Part_1_doc,model.selection("SOLID", "box1_1"))
+    Props = model.getGeometryCalculation(Part_1_doc,model.selection("SOLID", "box1_1"))
 
-    print(" Basic Properties:")
+    print(" Geometry calculation:")
     print(" Wires length: ", Props[0])
     print(" Surface area: ", Props[1])
     print(" Volume      : ", Props[2]) 
@@ -73,7 +73,7 @@ def test_Basic_properties():
     
 if __name__ == '__main__':
 
-    test_Basic_properties()
+    test_Geometry_Calculation()
         
     #=========================================================================
     # End of test

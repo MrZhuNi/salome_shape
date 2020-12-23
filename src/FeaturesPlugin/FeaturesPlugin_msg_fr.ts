@@ -116,8 +116,12 @@
       <translation>Copie angulaire</translation>
     </message>
     <message>
+      <source>Bounding box</source>
+      <translation>Boite englobante</translation>
+    </message>
+    <message>
       <source>Geometry calculation</source>
-      <translation>Calcul géométrique</translation>
+      <translation>Calcul de la géométrie</translation>
     </message>
     <message>
       <source>Linear copy</source>
@@ -4331,7 +4335,36 @@
       <translation>Pas pour la direction angulaire</translation>
     </message>
   </context>
-
+  <!--Geometry calculation-->
+  <context>
+    <name>GeometryCalculation</name>
+    <message>
+      <source>Geometry calculation</source>
+      <translation>Calcul de la géometrie</translation>
+    </message>
+  </context>
+  <context>
+    <name>GeometryCalculation:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+  </context>
+  <context>
+  <name>GeometryCalculation</name>
+    <message>
+      <source>Length = </source>
+      <translation>Longueur = </translation>
+    </message>
+    <message>
+      <source>Area = </source>
+      <translation>Surface = </translation>
+    </message>
+    <message>
+      <source>Volume = </source>
+      <translation>Volume = </translation>
+    </message>
+  </context>
   <!-- LinearCopy -->
   <context>
     <name>LinearCopy</name>
@@ -4456,31 +4489,6 @@
     <message>
       <source>Second direction</source>
       <translation>Deuxième direction</translation>
-    </message>
-  </context>
-  
-  <!-- Geometry calculation -->
-  <context>
-    <name>GeometryCalculation</name>
-    <message>
-      <source>Geometry calculation</source>
-      <translation>Calcul géométrique</translation>
-    </message>
-    <message>
-      <source>GeometryCalculation:Object</source>
-      <translation>Objet</translation>
-    </message>
-    <message>
-      <source>GeometryCalculation:Length</source>
-      <translation>Longueur</translation>
-    </message>
-    <message>
-      <source>GeometryCalculation:Area</source>
-      <translation>Surface</translation>
-    </message>
-    <message>
-      <source>GeometryCalculation:Volume</source>
-      <translation>Volume</translation>
     </message>
   </context>
   <!-- Measurement -->
