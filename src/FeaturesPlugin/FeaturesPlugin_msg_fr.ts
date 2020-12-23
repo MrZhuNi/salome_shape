@@ -4870,7 +4870,7 @@
     </message>
     <message>
       <source>Number of shared faces : </source>
-      <translation>Nombre de face partagées : </translation>
+      <translation>Nombre de faces partagées : </translation>
     </message>
   </context>
   <context>
@@ -4928,7 +4928,7 @@
     </message>
     <message>
       <source>Number of shared faces : </source>
-      <translation>Nombre de face partagées : </translation>
+      <translation>Nombre de faces partagées : </translation>
     </message>
   </context>
   <context>
