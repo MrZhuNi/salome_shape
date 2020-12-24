@@ -25,4 +25,5 @@
 <!--
   <plugin library="SamplePanelPlugin" configuration="plugin-SamplePanel.xml"/>
 -->
+@SHAPER_ADDITIONAL_PLUGINS@
 </plugins>
