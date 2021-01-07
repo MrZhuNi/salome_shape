@@ -44,6 +44,9 @@ public:
   FiltersAPI_Argument(const ModelHighAPI_Double theValue);
 
   FILTERSAPI_EXPORT
+  FiltersAPI_Argument(const double& theValue);
+
+  FILTERSAPI_EXPORT
   FiltersAPI_Argument(const std::string& theValue);
 
   FILTERSAPI_EXPORT

@@ -56,6 +56,9 @@ bool FiltersPlugin_VolumeSize::isOk(const GeomShapePtr& theShape, const ResultPt
     return false;
   double aValMax = aValue->value();
 
+  if (aVal < 0.0)
+    return false;
+
   double aTolerance = 0.0001;
   double aLength;
   double aSurfArea;

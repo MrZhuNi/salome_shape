@@ -98,23 +98,28 @@ bool FiltersPlugin_FeatureEdges::isOk(const GeomShapePtr& theShape, const Result
 {
   AttributePtr anAttr = theArgs.argument("value");
   AttributeDoublePtr aValue = std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(anAttr);
-  if (!aValue.get()|| !anAttr->isInitialized() )
+
+  if (!aValue.get() || !anAttr->isInitialized())
     return false;
   double anAngle = aValue->value();
 
-  if (fabs(myAngle - anAngle) > 1e-10 ) {
+  // check base result
+  ResultBodyPtr aBaseResult = ModelAPI_Tools::bodyOwner(theResult, true);
+  if (!aBaseResult) {
+    aBaseResult = std::dynamic_pointer_cast<ModelAPI_ResultBody>(theResult);
+    if (!aBaseResult.get()) {
+      return false;
+    }
+  }
+  if (fabs(myAngle - anAngle) > 1e-10
+      || !myBaseShape
+      || !myBaseShape->isSame(aBaseResult->shape())) {
     const_cast<FiltersPlugin_FeatureEdges*>(this)->myAngle = anAngle;
+    const_cast<FiltersPlugin_FeatureEdges*>(this)->myBaseShape = aBaseResult->shape();
     const_cast<FiltersPlugin_FeatureEdges*>(this)->myCachedShapes.clear();
   }
 
-  if (myCachedShapes.empty()  ) {
-    // check number of solids containing the face
-    ResultBodyPtr aBaseResult = ModelAPI_Tools::bodyOwner(theResult, true);
-    if (!aBaseResult) {
-      aBaseResult = std::dynamic_pointer_cast<ModelAPI_ResultBody>(theResult);
-      if (!aBaseResult.get())
-        return false;
-    }
+  if (myCachedShapes.empty()) {
 
     cacheFeatureEdge(aBaseResult->shape(),
                      const_cast<FiltersPlugin_FeatureEdges*>(this)->myCachedShapes, anAngle);

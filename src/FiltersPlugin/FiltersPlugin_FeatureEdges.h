@@ -60,12 +60,14 @@ public:
 
   /// Initializes arguments of a filter.
   virtual void initAttributes(ModelAPI_FiltersArgs& theArguments) override;
-  
+
   private:
     /// Shapes applicable for the filter
     SetOfShapes myCachedShapes;
     /// Angle tolerance
-    double myAngle; 
+    double myAngle;
+    /// the base shape
+    GeomShapePtr myBaseShape;
 };
 
 #endif

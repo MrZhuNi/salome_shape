@@ -64,8 +64,24 @@
       <translation>Appartient à</translation>
     </message>
     <message>
+      <source>Edge size</source>
+      <translation>Taille d'arête</translation>
+    </message>
+    <message>
       <source>External faces</source>
       <translation>Externe faces</translation>
+    </message>
+    <message>
+      <source>Continuous faces</source>
+      <translation>Faces continues</translation>
+    </message>
+    <message>
+      <source>Feature edges</source>
+      <translation>Arêtes caractéristiques</translation>
+    </message>
+    <message>
+      <source>Face size</source>
+      <translation>Surface de face</translation>
     </message>
     <message>
       <source>Horizontal faces</source>
@@ -102,6 +118,10 @@
     <message>
       <source>Vertical faces</source>
       <translation>Faces verticales</translation>
+    </message>
+    <message>
+      <source>Volume size</source>
+      <translation>volume</translation>
     </message>
     <message>
       <source>Attribute "%1" is not initialized.</source>
@@ -159,7 +179,7 @@
       <translation>est compris entre</translation>
     </message>
     <message>
-      <source>is strickly between</source>
+      <source>is strictly between</source>
       <translation>est compris strictement entre</translation>
     </message>
   </context>
@@ -184,7 +204,7 @@
       <translation>est compris entre</translation>
     </message>
     <message>
-      <source>is strickly between</source>
+      <source>is strictly between</source>
       <translation>est compris strictement entre</translation>
     </message>
   </context>
@@ -198,18 +218,18 @@
     </message>
     <message>
       <source>Min size</source>
-      <translation>Longueur Min</translation>
+      <translation>Longueur min</translation>
     </message>
     <message>
       <source>Max size</source>
-      <translation>Longueur Max</translation>
+      <translation>Longueur max</translation>
     </message>
     <message>
       <source>is between</source>
       <translation>est compris entre</translation>
     </message>
     <message>
-      <source>is strickly between</source>
+      <source>is strictly between</source>
       <translation>est compris strictement entre</translation>
     </message>
   </context>

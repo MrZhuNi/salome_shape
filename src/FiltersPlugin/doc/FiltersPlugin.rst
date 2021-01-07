@@ -61,15 +61,15 @@ By default, the result of Selection feature all selectable entities from all Sha
 
 - **Result type:** Edge
 - **Argument:** 
-    - **Comparator:** <, <=, >, >=, is between, is strickly between
+    - **Comparator:** <, <=, >, >=, is between, is strictly between
     - **Size** or  **Min size** and **Max size**
-- **Algorithm:** Returns all edges whose lenght respect comparator rules.
+- **Algorithm:** Returns all edges whose length respect comparator rules.
 
 **Face size**
 
 - **Result type:** Face
 - **Argument:** 
-    - **Comparator:** <, <=, >, >=, is between, is strickly between
+    - **Comparator:** <, <=, >, >=, is between, is strictly between
     - **Size** or  **Min size** and **Max size**
 - **Algorithm:** Returns all faces whose area respect comparator rules.
 
@@ -77,7 +77,7 @@ By default, the result of Selection feature all selectable entities from all Sha
 
 - **Result type:** Solid
 - **Argument:** 
-    - **Comparator:** <, <=, >, >=, is between, is strickly between
+    - **Comparator:** <, <=, >, >=, is between, is strictly between
     - **Size** or  **Min size** and **Max size**
 - **Algorithm:** Returns all solids whose volume respect comparator rules.
 

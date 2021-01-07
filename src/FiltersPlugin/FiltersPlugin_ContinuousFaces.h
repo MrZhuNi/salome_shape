@@ -41,7 +41,7 @@ public:
   }
 
   virtual const std::string& name() const {
-    static const std::string kName("Continuous Faces");
+    static const std::string kName("Continuous faces");
     return kName;
   }
 
@@ -67,7 +67,7 @@ public:
     /// Shapes applicable for the filter
     SetOfShapes myCachedShapes;
     /// Angle tolerance
-    double myAngle; 
+    double myAngle;
 };
 
 #endif

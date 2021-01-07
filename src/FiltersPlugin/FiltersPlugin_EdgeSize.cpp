@@ -56,6 +56,9 @@ bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
     return false;
   double aValMax = aValue->value();
 
+  if (aVal < 0.0)
+    return false;
+
   GeomEdgePtr anEdge;
   switch (theShape->shapeType()) {
   case GeomAPI_Shape::EDGE:
@@ -68,7 +71,7 @@ bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   default:
     return false;
   }
-  double aLenght = anEdge->length();
+  double aLength = anEdge->length();
 
   anAttr = theArgs.argument("comparatorType");
   AttributeStringPtr aCompAttr = std::dynamic_pointer_cast<ModelAPI_AttributeString>(anAttr);
@@ -78,19 +81,19 @@ bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
 
   bool isOK = false;
   if (aCompString == "inf")
-    isOK = aLenght < aVal && fabs(aLenght - aVal) > Precision::Confusion();
+    isOK = aLength < aVal && fabs(aLength - aVal) > Precision::Confusion();
   else if (aCompString == "infEq")
-    isOK = aLenght < aVal || fabs(aLenght - aVal) < Precision::Confusion();
+    isOK = aLength < aVal || fabs(aLength - aVal) < Precision::Confusion();
   else if (aCompString == "sup")
-    isOK = aLenght > aVal && fabs(aLenght - aVal) > Precision::Confusion();
+    isOK = aLength > aVal && fabs(aLength - aVal) > Precision::Confusion();
   else if (aCompString == "supEq")
-    isOK = aLenght > aVal || fabs(aLenght - aVal) < Precision::Confusion();
+    isOK = aLength > aVal || fabs(aLength - aVal) < Precision::Confusion();
   else if (aCompString == "isBetween")
-    isOK = (aLenght > aVal || fabs(aLenght - aVal) < Precision::Confusion())
-          && (aLenght < aValMax || fabs(aLenght - aVal) < Precision::Confusion());
+    isOK = (aLength > aVal || fabs(aLength - aVal) < Precision::Confusion())
+          && (aLength < aValMax || fabs(aLength - aVal) < Precision::Confusion());
   else if (aCompString == "isStrictlyBetween")
-    isOK = (aLenght > aVal && fabs(aLenght - aVal) > Precision::Confusion())
-           && (aLenght < aValMax && fabs(aLenght - aValMax) > Precision::Confusion());
+    isOK = (aLength > aVal && fabs(aLength - aVal) > Precision::Confusion())
+           && (aLength < aValMax && fabs(aLength - aValMax) > Precision::Confusion());
   return isOK;
 }
 

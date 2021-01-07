@@ -71,7 +71,7 @@ static void cacheContinuousFace(const GeomShapePtr theFace,
 
     for (SetOfShapes::const_iterator aFIt = aFound->second.begin();
        aFIt != aFound->second.end(); ++aFIt) {
-      std::string anError = "";  
+      std::string anError = "";
       if (theCache.find(*aFIt) == theCache.end()) {
        GeomPointPtr aPoint = anEdge->middlePoint();
        if (isContinuousFaces(theFace,
@@ -79,7 +79,7 @@ static void cacheContinuousFace(const GeomShapePtr theFace,
                               aPoint,
                               theAngle,
                               anError)) {
-          theCache.insert(*aFIt); 
+          theCache.insert(*aFIt);
           cacheContinuousFace(*aFIt, theEdgeToFaces, theCache, theAngle);
         }
       }

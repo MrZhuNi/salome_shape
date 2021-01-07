@@ -48,10 +48,12 @@ static void separateArguments(const std::list<FiltersAPI_Argument>& theArguments
   for (; anIt != theArguments.end(); ++anIt) {
     if (anIt->selection().variantType() != ModelHighAPI_Selection::VT_Empty)
       theSelections.push_back(anIt->selection());
-    else if (anIt->dble().value() > -100000000000)
+    else if (anIt->dble().value() > -100000000000) {
       theDoubleArgs.push_back(anIt->dble());
-    else if (anIt->string().empty())
+    }
+    else if (anIt->string().empty()){
       theBoolArgs.push_back(anIt->boolean());
+    }
     else
       theTextArgs.push_back(anIt->string());
   }
@@ -82,7 +84,7 @@ void FiltersAPI_Feature::setFilters(const std::list<FilterAPIPtr>& theFilters)
       if (aReversedFlag)
         ++aFIt;
       // fill arguments of the filter
-      std::list<ModelHighAPI_Double>::const_iterator anItDle = aDoubles.begin(); 
+      std::list<ModelHighAPI_Double>::const_iterator anItDle = aDoubles.begin();
       for (; aFIt != aFilterArgs.end(); ++aFIt) {
         AttributeSelectionListPtr aSelList =
             std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(*aFIt);
