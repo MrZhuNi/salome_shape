@@ -43,6 +43,8 @@
 #include <ModelAPI_Tools.h>
 
 #include <LightApp_Application.h>
+#include <LightApp_DataObject.h>
+#include <LightApp_Displayer.h>
 #include <LightApp_SelectionMgr.h>
 #include <LightApp_OCCSelector.h>
 #include <LightApp_Study.h>
@@ -490,6 +492,47 @@ bool SHAPERGUI::deactivateModule(SUIT_Study* theStudy)
           getApp(), SLOT(onSaveAsDoc()));
 
   publishToStudy();
+
+  // update SHAPERSTUDY objects in OCC and VTK viewers
+  QString aShaperStudyComp = "SHAPERSTUDY";
+  LightApp_Displayer* aDisplayer = LightApp_Displayer::FindDisplayer(aShaperStudyComp, false);
+  if ( aDisplayer ) {
+    LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(theStudy);
+    DataObjectList aComps;
+    bool isFound = false;
+    aStudy->root()->children( aComps );
+    DataObjectList::const_iterator aCompsIt = aComps.begin();
+    for ( ; aCompsIt != aComps.end() && !isFound; aCompsIt++ ) {
+      LightApp_DataObject* aComp = dynamic_cast<LightApp_DataObject*>( *aCompsIt );
+      if ( aComp && aComp->componentDataType() == aShaperStudyComp ) {
+        isFound = true;
+        DataObjectList anObjs;
+        aComp->children(anObjs, true);
+
+        QList<SUIT_ViewManager*> aViewMgrs;
+        getApp()->viewManagers( "OCCViewer", aViewMgrs );
+        getApp()->viewManagers( "VTKViewer", aViewMgrs );
+        QListIterator<SUIT_ViewManager*> itViewMgrs( aViewMgrs );
+        while ( itViewMgrs.hasNext()) {
+          SUIT_ViewModel* aVM = itViewMgrs.next()->getViewModel();
+          if ( aVM ) {
+            SALOME_View* aView = dynamic_cast<SALOME_View*>(aVM);
+            if ( aView ) {
+              DataObjectList::const_iterator itObjs = anObjs.begin();
+              for ( ; itObjs != anObjs.end(); itObjs++ ) {
+                LightApp_DataObject* anObj = dynamic_cast<LightApp_DataObject*>( *itObjs );
+                QString anEntry = anObj->entry();
+                if ( aDisplayer->IsDisplayed( anEntry, aView ) ) {
+                  aDisplayer->Erase( anEntry, false, false, aView );
+                  aDisplayer->Display( anEntry, false, aView );
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   return LightApp_Module::deactivateModule(theStudy);
 }
