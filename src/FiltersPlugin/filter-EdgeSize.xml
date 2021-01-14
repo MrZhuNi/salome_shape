@@ -6,6 +6,7 @@
                   min="0"
                   step="0.1"
                   default="1">
+        <validator id="GeomValidators_Positive"/>
       </doublevalue>
     </case> 
     <case id="infEq" title="&lt;=">
@@ -23,7 +24,7 @@
                   min="0"
                   step="0.1"
                   default="1">
-        <validator id="GeomValidators_Positive"/>
+        <validator id="GeomValidators_Positive" parameters="-1.e-10"/>
       </doublevalue>
      </case>
     <case id="supEq" title="&gt;=">
@@ -32,7 +33,7 @@
                   min="0"
                   step="0.1"
                   default="1">
-        <validator id="GeomValidators_Positive"/>
+        <validator id="GeomValidators_Positive" parameters="-1.e-10"/>
       </doublevalue>
      </case>
     <case id="isBetween" title="is between">
@@ -41,7 +42,7 @@
                   min="0"
                   step="0.1"
                   default="1">
-        <validator id="GeomValidators_Positive"/>
+        <validator id="GeomValidators_Positive" parameters="-1.e-10"/>
       </doublevalue>
       <doublevalue id="EdgeSize__valueMax"
                   label="Max size"
@@ -57,14 +58,14 @@
                   min="0"
                   step="0.1"
                   default="1">
-        <validator id="GeomValidators_Positive"/>
+        <validator id="GeomValidators_Positive" parameters="-1.e-10"/>
       </doublevalue>
       <doublevalue id="EdgeSize__valueMax"
                   label="Max size"
                   min="0"
                   step="0.1"
                   default="10">
-        <validator id="GeomValidators_Positive"/>
+        <validator id="GeomValidators_Positive" />
       </doublevalue>
     </case>
   </switch>
