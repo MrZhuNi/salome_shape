@@ -228,4 +228,5 @@ ADD_UNIT_TESTS(
   TestFilter_EdgeSize.py
   TestFilter_FeatureEdges.py
   TestFilter_ContinuousFaces.py
+  TestFilter_VolumeSize.py
 )
