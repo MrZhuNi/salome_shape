@@ -29,7 +29,7 @@ Interpolation by selection
    :align: left
    :height: 24px
 
-interpolation analytical
+Interpolation analytical
 
 Interpolation by selection
 """"""""""""""""""""""""""
@@ -38,7 +38,7 @@ The  property panel is shown below.
 .. figure:: images/Interpolation.png
   :align: center
 
-  Create an interpolation
+  Create an interpolation by selection
 
 Select one or several vertices or points in the viewer.
 
@@ -82,7 +82,7 @@ The result of the operation will be a curve created from the selected shapes:
 
   Result of the operation.
 
-**See Also** a sample TUI Script of :ref:`tui_create_interpolation` operation.
+**See Also** a sample TUI Script of :ref:`tui_create_interpolation_by_selection` operation.
 
 Interpolation analytical
 """"""""""""""""""""""""
@@ -129,7 +129,7 @@ Result
 
 The result of the operation will be a curve created from analytical expressions for x,y and z as functions of variable t:
 
-.. figure:: images/CreateInterpolationanalitycal.png
+.. figure:: images/CreateInterpolationAnalitycal.png
   :align: center
 
   Result of the operation.
