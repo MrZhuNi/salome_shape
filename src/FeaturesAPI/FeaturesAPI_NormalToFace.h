@@ -43,7 +43,7 @@ public:
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_NormalToFace(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                     const ModelHighAPI_Selection& theBaseFace,
-                                    const ModelHighAPI_Selection& theOptionnelPoint );
+                                    const ModelHighAPI_Selection& theOptionnelPoint);
 
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_NormalToFace(const std::shared_ptr<ModelAPI_Feature>& theFeature,

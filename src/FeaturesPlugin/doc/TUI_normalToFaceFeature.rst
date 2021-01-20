@@ -1,7 +1,7 @@
 
-  .. _tui_create_Normal_To_Face:
+  .. _tui_create_normal_to_face:
 
-Create Normal to a face
+Create normal to a face
 =======================
 
 .. literalinclude:: examples/createNormalToFace.py 
@@ -10,9 +10,9 @@ Create Normal to a face
 
 :download:`Download this script <examples/createNormalToFace.py>`
 
-  .. _tui_create_Normal_To_Face_At_Vertex:
+  .. _tui_create_normal_to_face_at_vertex:
 
-Create Normal to a face at vertex
+Create normal to a face at vertex
 =================================
 
 .. literalinclude:: examples/createNormalToFaceAtVertex.py 

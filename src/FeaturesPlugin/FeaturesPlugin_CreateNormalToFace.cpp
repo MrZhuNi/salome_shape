@@ -63,8 +63,7 @@ void FeaturesPlugin_CreateNormalToFace::execute()
 
   GeomShapePtr aShape;
   GeomShapePtr aShapePoint;
-  if(!string(VERTEX_OPTION_ID())->value().empty())
-  {
+  if (!string(VERTEX_OPTION_ID())->value().empty()) {
     if (aSelectionPoint && aSelectionPoint->isInitialized()) {
       aShapePoint = aSelectionPoint->value();
       if (!aShapePoint && aSelectionPoint->context())
@@ -81,7 +80,7 @@ void FeaturesPlugin_CreateNormalToFace::execute()
   if (aShape) {
     std::string aError;
     std::shared_ptr<GeomAPI_Edge> theNormal(new GeomAPI_Edge);
-    if( !GeomAlgoAPI_NormalToFace::normal(aShape,
+    if (!GeomAlgoAPI_NormalToFace::normal(aShape,
                                           aShapePoint,
                                           theNormal,
                                           aError))

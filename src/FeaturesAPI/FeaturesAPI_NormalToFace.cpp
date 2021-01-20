@@ -26,8 +26,8 @@
 #include <ModelHighAPI_Tools.h>
 
 //=================================================================================================
-FeaturesAPI_NormalToFace::
-          FeaturesAPI_NormalToFace(const std::shared_ptr<ModelAPI_Feature>& theFeature)
+FeaturesAPI_NormalToFace::FeaturesAPI_NormalToFace(
+                                    const std::shared_ptr<ModelAPI_Feature>& theFeature)
   : ModelHighAPI_Interface(theFeature)
 {
   initialize();
@@ -37,7 +37,7 @@ FeaturesAPI_NormalToFace::
 FeaturesAPI_NormalToFace::FeaturesAPI_NormalToFace(
                                     const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                     const ModelHighAPI_Selection& theBaseFace,
-                                    const ModelHighAPI_Selection& theOptionnelPoint )
+                                    const ModelHighAPI_Selection& theOptionnelPoint)
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
@@ -94,8 +94,7 @@ NormalPtr getNormal(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Selection& theOptionnelPoint)
 {
 
-  FeaturePtr aFeature =
-      thePart->addFeature(FeaturesPlugin_CreateNormalToFace::ID());
+  FeaturePtr aFeature = thePart->addFeature(FeaturesPlugin_CreateNormalToFace::ID());
 
   NormalPtr aNormalToface;
 
@@ -109,8 +108,7 @@ NormalPtr getNormal(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Selection& theBaseFace)
 {
 
-  FeaturePtr aFeature =
-      thePart->addFeature(FeaturesPlugin_CreateNormalToFace::ID());
+  FeaturePtr aFeature = thePart->addFeature(FeaturesPlugin_CreateNormalToFace::ID());
 
   NormalPtr aNormalToface;
 

@@ -39,12 +39,6 @@ public:
     return MY_ID;
   }
 
-  /// \return the kind of a feature.
-  virtual const std::string& getKind()
-  {
-    return ID();
-  }
-
   /// Attribute name for face selected.
   inline static const std::string& FACE_SELECTED_ID()
   {
@@ -64,6 +58,12 @@ public:
   {
     static const std::string MY_VERTEX_OPTION_ID("vertex_option");
     return MY_VERTEX_OPTION_ID;
+  }
+
+  /// \return the kind of a feature.
+  virtual const std::string& getKind()
+  {
+    return ID();
   }
 
   /// Performs the algorithm and stores results it in the data structure.

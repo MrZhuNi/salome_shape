@@ -159,8 +159,8 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
-  NormalToFace_widget.xml
-  CreateNormalToFace_widget.xml
+  normal_to_face_widget.xml
+  create_normal_to_face_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml

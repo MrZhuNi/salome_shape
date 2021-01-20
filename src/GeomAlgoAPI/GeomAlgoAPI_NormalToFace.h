@@ -22,9 +22,7 @@
 
 #include <GeomAlgoAPI.h>
 #include <GeomAPI_Edge.h>
-#include <GeomAPI_Pnt.h>
 #include <GeomAPI_Face.h>
-#include <Standard_TypeDef.hxx>
 
 /**\class GeomAlgoAPI_NormalToFace
  * \ingroup DataAlgo
@@ -34,9 +32,11 @@
 class GEOMALGOAPI_EXPORT GeomAlgoAPI_NormalToFace
 {
  public:
-  /// get the boundin box of theshape.
+  /// get the normal to face-shapes
   /// \param theface   the face
   /// \param theOptionnelPoint the optionnel point
+  /// \param theNormal the normal
+  /// \param theError the error
   static bool GeomAlgoAPI_NormalToFace::normal(GeomShapePtr theFace,
                                                GeomShapePtr theOptionnelPoint,
                                                GeomEdgePtr  theNormal,

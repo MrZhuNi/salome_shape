@@ -46,7 +46,7 @@ Result of **Normal to a face**.
 
    Normal to a face
 
-**See Also** a sample TUI Script of :ref:`tui_create_Normal_To_Face` operation.
+**See Also** a sample TUI Script of :ref:`tui_create_normal_to_face` operation.
 
 
 **TUI Command**:
@@ -68,4 +68,4 @@ Result of **Normal to aface** where **Vertex** is selecteted.
 
    Normal to a face at vertex
 
-**See Also** a sample TUI Script of :ref:`tui_create_Normal_To_Face_At_Vertex` operation.
+**See Also** a sample TUI Script of :ref:`tui_create_normal_to_face_at_vertex` operation.

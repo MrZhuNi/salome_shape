@@ -39,12 +39,6 @@ public:
     return MY_ID;
   }
 
-  /// \return the kind of a feature.
-  virtual const std::string& getKind()
-  {
-    return ID();
-  }
-
   /// Attribute name for face selected.
   inline static const std::string& FACE_SELECTED_ID()
   {
@@ -73,6 +67,12 @@ public:
     return MY_VERTEX_OPTION_ID;
   }
 
+  /// \return the kind of a feature.
+  virtual const std::string& getKind()
+  {
+    return ID();
+  }
+
   /// Performs the algorithm and stores results it in the data structure.
   FEATURESPLUGIN_EXPORT virtual void execute();
 
@@ -90,9 +90,11 @@ public:
   FeaturesPlugin_NormalToFace();
 
   private:
-
+  /// Create normal in feature
   void createNormal();
+  /// Update normal in feature
   void updateNormal();
+  /// Feature to create normal
   FeaturePtr myCreateFeature;
 
 };

@@ -85,7 +85,7 @@ void FeaturesPlugin_NormalToFace::execute()
   if (aShape) {
     std::string aError;
     std::shared_ptr<GeomAPI_Edge> theNormal(new GeomAPI_Edge);
-    if( !GeomAlgoAPI_NormalToFace::normal(aShape,
+    if (!GeomAlgoAPI_NormalToFace::normal(aShape,
                                           aShapePoint,
                                           theNormal,
                                           aError))
@@ -149,16 +149,16 @@ void FeaturesPlugin_NormalToFace::createNormal()
 void FeaturesPlugin_NormalToFace::updateNormal()
 {
   myCreateFeature->selection(FeaturesPlugin_CreateNormalToFace::FACE_SELECTED_ID())
-                        ->setValue( selection(FACE_SELECTED_ID())->context() ,
-                                    selection(FACE_SELECTED_ID())->value() );
+                        ->setValue(selection(FACE_SELECTED_ID())->context() ,
+                                    selection(FACE_SELECTED_ID())->value());
 
   myCreateFeature->string(FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID())
-                        ->setValue( string(VERTEX_OPTION_ID())->value());
+                        ->setValue(string(VERTEX_OPTION_ID())->value());
 
   if (!string(VERTEX_OPTION_ID())->value().empty()) {
     myCreateFeature->selection(FeaturesPlugin_CreateNormalToFace::VERTEX_SELECTED_ID())
-                        ->setValue( selection(VERTEX_SELECTED_ID())->context() ,
-                                    selection(VERTEX_SELECTED_ID())->value() );
+                        ->setValue(selection(VERTEX_SELECTED_ID())->context() ,
+                                    selection(VERTEX_SELECTED_ID())->value());
   }
 
   myCreateFeature->execute();

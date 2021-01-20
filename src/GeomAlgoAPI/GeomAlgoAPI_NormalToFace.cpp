@@ -40,7 +40,7 @@
    * \param theShape The shape to get type of.
    * \retval TopAbs_ShapeEnum Return type of shape for explode.
    */
-TopAbs_ShapeEnum GetTypeOfSimplePart (const TopoDS_Shape& theShape)
+TopAbs_ShapeEnum GetTypeOfSimplePart(const TopoDS_Shape& theShape)
 {
   TopAbs_ShapeEnum aType = theShape.ShapeType();
   if      (aType == TopAbs_VERTEX)                             return TopAbs_VERTEX;
@@ -64,7 +64,7 @@ TopAbs_ShapeEnum GetTypeOfSimplePart (const TopoDS_Shape& theShape)
    * Axes of the LCS are obtained from shape's location or,
    * if the shape is a planar face, from position of its plane.
    */
-gp_Ax3 GetPosition (const TopoDS_Shape& theShape)
+gp_Ax3 GetPosition(const TopoDS_Shape& theShape)
 {
   gp_Ax3 aResult;
 
@@ -81,8 +81,7 @@ gp_Ax3 GetPosition (const TopoDS_Shape& theShape)
       aResult = aPln.Position();
       // In case of reverse orinetation of the face invert the plane normal
       // (the face's normal does not mathc the plane's normal in this case)
-      if(theShape.Orientation() == TopAbs_REVERSED)
-      {
+      if (theShape.Orientation() == TopAbs_REVERSED) {
         gp_Dir Vx =  aResult.XDirection();
         gp_Dir N  =  aResult.Direction().Mirrored(Vx);
         gp_Pnt P  =  aResult.Location();
@@ -98,8 +97,7 @@ gp_Ax3 GetPosition (const TopoDS_Shape& theShape)
 
   if (aShType == TopAbs_VERTEX) {
     aPnt = BRep_Tool::Pnt(TopoDS::Vertex(theShape));
-  }
-  else {
+  } else {
     if (aShType == TopAbs_COMPOUND) {
       aShType = GetTypeOfSimplePart(theShape);
     }
@@ -138,8 +136,8 @@ static bool GeomAlgoAPI_NormalToFace::normal(GeomShapePtr theFace,
   TopoDS_Shape aShape = theFace->impl<TopoDS_Shape>();
 
   if (aShape.ShapeType() != TopAbs_FACE) {
-      theError = "Shape for normale calculation is not a face";
-      return false;
+    theError = "Shape for normale calculation is not a face";
+    return false;
   }
 
   TopoDS_Face aFace = TopoDS::Face(aShape);
@@ -149,93 +147,89 @@ static bool GeomAlgoAPI_NormalToFace::normal(GeomShapePtr theFace,
 
   if (theOptionnelPoint.get()) {
     TopoDS_Shape anOptPnt = theOptionnelPoint->impl<TopoDS_Shape>();
-    if (anOptPnt.IsNull()){
+    if (anOptPnt.IsNull()) {
       theError = "Invalid shape given for point argument";
       return false;
     }
     p1 = BRep_Tool::Pnt(TopoDS::Vertex(anOptPnt));
-  }
-  else
-  {
-      gp_Ax3 aPos = GetPosition(aFace);
-      p1 = aPos.Location();
+  } else {
+    gp_Ax3 aPos = GetPosition(aFace);
+    p1 = aPos.Location();
   }
 
-    // Point parameters on surface
-    Handle(Geom_Surface) aSurf = BRep_Tool::Surface(aFace);
-    Handle(ShapeAnalysis_Surface) aSurfAna = new ShapeAnalysis_Surface (aSurf);
-    gp_Pnt2d pUV = aSurfAna->ValueOfUV(p1, Precision::Confusion());
+  // Point parameters on surface
+  Handle(Geom_Surface) aSurf = BRep_Tool::Surface(aFace);
+  Handle(ShapeAnalysis_Surface) aSurfAna = new ShapeAnalysis_Surface (aSurf);
+  gp_Pnt2d pUV = aSurfAna->ValueOfUV(p1, Precision::Confusion());
 
-    // Normal direction
-    gp_Vec Vec1,Vec2;
-    BRepAdaptor_Surface SF (aFace);
-    SF.D1(pUV.X(), pUV.Y(), p1, Vec1, Vec2);
-    if (Vec1.Magnitude() < Precision::Confusion()) {
-      gp_Vec tmpV;
-      gp_Pnt tmpP;
-      SF.D1(pUV.X(), pUV.Y()-0.1, tmpP, Vec1, tmpV);
-    }
-    else if (Vec2.Magnitude() < Precision::Confusion()) {
-      gp_Vec tmpV;
-      gp_Pnt tmpP;
-      SF.D1(pUV.X()-0.1, pUV.Y(), tmpP, tmpV, Vec2);
-    }
+  // Normal direction
+  gp_Vec Vec1,Vec2;
+  BRepAdaptor_Surface SF (aFace);
+  SF.D1(pUV.X(), pUV.Y(), p1, Vec1, Vec2);
+  if (Vec1.Magnitude() < Precision::Confusion()) {
+    gp_Vec tmpV;
+    gp_Pnt tmpP;
+    SF.D1(pUV.X(), pUV.Y()-0.1, tmpP, Vec1, tmpV);
+  }
+  else if (Vec2.Magnitude() < Precision::Confusion()) {
+    gp_Vec tmpV;
+    gp_Pnt tmpP;
+    SF.D1(pUV.X()-0.1, pUV.Y(), tmpP, tmpV, Vec2);
+  }
 
-    gp_Vec V = Vec1.Crossed(Vec2);
-    Standard_Real mod = V.Magnitude();
-    if (mod < Precision::Confusion())
-      Standard_NullObject::Raise("Normal vector of a face has null magnitude");
+  gp_Vec V = Vec1.Crossed(Vec2);
+  Standard_Real mod = V.Magnitude();
+  if (mod < Precision::Confusion())
+    Standard_NullObject::Raise("Normal vector of a face has null magnitude");
 
-    // Set length of normal vector to average radius of curvature
-    Standard_Real radius = 0.0;
-    GeomLProp_SLProps aProperties (aSurf, pUV.X(), pUV.Y(), 2, Precision::Confusion());
-    if (aProperties.IsCurvatureDefined()) {
-      Standard_Real radius1 = Abs(aProperties.MinCurvature());
-      Standard_Real radius2 = Abs(aProperties.MaxCurvature());
-      if (Abs(radius1) > Precision::Confusion()) {
-        radius = 1.0 / radius1;
-        if (Abs(radius2) > Precision::Confusion()) {
-          radius = (radius + 1.0 / radius2) / 2.0;
-        }
+  // Set length of normal vector to average radius of curvature
+  Standard_Real radius = 0.0;
+  GeomLProp_SLProps aProperties (aSurf, pUV.X(), pUV.Y(), 2, Precision::Confusion());
+  if (aProperties.IsCurvatureDefined()) {
+    Standard_Real radius1 = Abs(aProperties.MinCurvature());
+    Standard_Real radius2 = Abs(aProperties.MaxCurvature());
+    if (Abs(radius1) > Precision::Confusion()) {
+      radius = 1.0 / radius1;
+      if (Abs(radius2) > Precision::Confusion()) {
+        radius = (radius + 1.0 / radius2) / 2.0;
       }
-      else {
-        if (Abs(radius2) > Precision::Confusion()) {
-          radius = 1.0 / radius2;
-        }
+    } else {
+      if (Abs(radius2) > Precision::Confusion()) {
+        radius = 1.0 / radius2;
       }
     }
+  }
 
-    // Set length of normal vector to average dimension of the face
-    // (only if average radius of curvature is not appropriate)
-    if (radius < Precision::Confusion()) {
-        Bnd_Box B;
-        Standard_Real Xmin, Xmax, Ymin, Ymax, Zmin, Zmax;
-        BRepBndLib::Add(aFace, B);
-        B.Get(Xmin, Ymin, Zmin, Xmax, Ymax, Zmax);
-        radius = ((Xmax - Xmin) + (Ymax - Ymin) + (Zmax - Zmin)) / 3.0;
-    }
+  // Set length of normal vector to average dimension of the face
+  // (only if average radius of curvature is not appropriate)
+  if (radius < Precision::Confusion()) {
+    Bnd_Box B;
+    Standard_Real Xmin, Xmax, Ymin, Ymax, Zmin, Zmax;
+    BRepBndLib::Add(aFace, B);
+    B.Get(Xmin, Ymin, Zmin, Xmax, Ymax, Zmax);
+    radius = ((Xmax - Xmin) + (Ymax - Ymin) + (Zmax - Zmin)) / 3.0;
+  }
 
-    if (radius < Precision::Confusion())
-      radius = 1.0;
+  if (radius < Precision::Confusion())
+    radius = 1.0;
 
-    V *= radius / mod;
+  V *= radius / mod;
 
-    // consider the face orientation
-    if (aFace.Orientation() == TopAbs_REVERSED ||
-        aFace.Orientation() == TopAbs_INTERNAL) {
-      V = - V;
-    }
+  // consider the face orientation
+  if (aFace.Orientation() == TopAbs_REVERSED ||
+      aFace.Orientation() == TopAbs_INTERNAL) {
+    V = - V;
+  }
 
-    // Edge
-    gp_Pnt p2 = p1.Translated(V);
-    BRepBuilderAPI_MakeEdge aBuilder (p1, p2);
-    if (!aBuilder.IsDone())
-      Standard_NullObject::Raise("Vector construction failed");
-    aShape = aBuilder.Shape();
+  // Edge
+  gp_Pnt p2 = p1.Translated(V);
+  BRepBuilderAPI_MakeEdge aBuilder (p1, p2);
+  if (!aBuilder.IsDone())
+    Standard_NullObject::Raise("Vector construction failed");
+  aShape = aBuilder.Shape();
 
-    theNormal->setImpl(new TopoDS_Shape(aShape));
+  theNormal->setImpl(new TopoDS_Shape(aShape));
 
-    return true;
-
+  return true;
 }
 
