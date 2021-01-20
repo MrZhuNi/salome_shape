@@ -63,7 +63,6 @@
 %shared_ptr(FeaturesAPI_BooleanSmash)
 %shared_ptr(FeaturesAPI_BooleanFill)
 %shared_ptr(FeaturesAPI_Chamfer)
-%shared_ptr(FeaturesAPI_BoundingBox)
 %shared_ptr(FeaturesAPI_Extrusion)
 %shared_ptr(FeaturesAPI_ExtrusionBoolean)
 %shared_ptr(FeaturesAPI_ExtrusionCut)
@@ -93,6 +92,7 @@
 %shared_ptr(FeaturesAPI_Copy)
 %shared_ptr(FeaturesAPI_ImportResult)
 %shared_ptr(FeaturesAPI_Defeaturing)
+%shared_ptr(FeaturesAPI_BoundingBox)
 
 
 %typecheck(SWIG_TYPECHECK_POINTER) std::pair<std::list<ModelHighAPI_Selection>, bool>, const std::pair<std::list<ModelHighAPI_Selection>, bool> & {
@@ -212,8 +212,6 @@
 %include "FeaturesAPI_Fillet.h"
 %include "FeaturesAPI_Intersection.h"
 %include "FeaturesAPI_Measurement.h"
-%include "FeaturesAPI_GeometryCalculation.h"
-%include "FeaturesAPI_BoundingBox.h"
 %include "FeaturesAPI_MultiRotation.h"
 %include "FeaturesAPI_MultiTranslation.h"
 %include "FeaturesAPI_Partition.h"
@@ -232,3 +230,5 @@
 %include "FeaturesAPI_RemoveResults.h"
 %include "FeaturesAPI_Copy.h"
 %include "FeaturesAPI_ImportResult.h"
+%include "FeaturesAPI_GeometryCalculation.h"
+%include "FeaturesAPI_BoundingBox.h"

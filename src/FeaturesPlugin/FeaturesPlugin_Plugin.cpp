@@ -24,18 +24,18 @@
 #include <FeaturesPlugin_BooleanCommon.h>
 #include <FeaturesPlugin_BooleanSmash.h>
 #include <FeaturesPlugin_BooleanFill.h>
+#include <FeaturesPlugin_BoundingBox.h>
 #include <FeaturesPlugin_Chamfer.h>
+#include <FeaturesPlugin_CreateBoundingBox.h>
 #include <FeaturesPlugin_Defeaturing.h>
 #include <FeaturesPlugin_Extrusion.h>
 #include <FeaturesPlugin_ExtrusionCut.h>
 #include <FeaturesPlugin_ExtrusionFuse.h>
 #include <FeaturesPlugin_Fillet.h>
 #include <FeaturesPlugin_Fillet1D.h>
+#include <FeaturesPlugin_GeometryCalculation.h>
 #include <FeaturesPlugin_Intersection.h>
 #include <FeaturesPlugin_Measurement.h>
-#include <FeaturesPlugin_GeometryCalculation.h>
-#include <FeaturesPlugin_BoundingBox.h>
-#include <FeaturesPlugin_CreateBoundingBox.h>
 #include <FeaturesPlugin_MultiRotation.h>
 #include <FeaturesPlugin_MultiTranslation.h>
 #include <FeaturesPlugin_Partition.h>
@@ -189,12 +189,7 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
   } else if (theFeatureID == FeaturesPlugin_Fillet1D::ID()) {
     return FeaturePtr(new FeaturesPlugin_Fillet1D);
   } else if (theFeatureID == FeaturesPlugin_Measurement::ID()) {
-  } else if (theFeatureID == FeaturesPlugin_GeometryCalculation::ID()) {
-    return FeaturePtr(new FeaturesPlugin_GeometryCalculation);
-  } else if (theFeatureID == FeaturesPlugin_BoundingBox::ID()) {
-    return FeaturePtr(new FeaturesPlugin_BoundingBox);
-  } else if (theFeatureID == FeaturesPlugin_CreateBoundingBox::ID()) {
-    return FeaturePtr(new FeaturesPlugin_CreateBoundingBox);
+    return FeaturePtr(new FeaturesPlugin_Measurement);
   } else if (theFeatureID == FeaturesPlugin_RemoveResults::ID()) {
     return FeaturePtr(new FeaturesPlugin_RemoveResults);
   } else if (theFeatureID == FeaturesPlugin_Chamfer::ID()) {
@@ -205,6 +200,12 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
     return FeaturePtr(new FeaturesPlugin_ImportResult);
   } else if (theFeatureID == FeaturesPlugin_Defeaturing::ID()) {
     return FeaturePtr(new FeaturesPlugin_Defeaturing);
+  } else if (theFeatureID == FeaturesPlugin_GeometryCalculation::ID()) {
+    return FeaturePtr(new FeaturesPlugin_GeometryCalculation);
+  } else if (theFeatureID == FeaturesPlugin_BoundingBox::ID()) {
+    return FeaturePtr(new FeaturesPlugin_BoundingBox);
+  } else if (theFeatureID == FeaturesPlugin_CreateBoundingBox::ID()) {
+    return FeaturePtr(new FeaturesPlugin_CreateBoundingBox);
   }
 
 

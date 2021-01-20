@@ -113,4 +113,3 @@ void FeaturesPlugin_CommonBoundingBox::loadNamingDS(std::shared_ptr<GeomAlgoAPI_
     theResultBox->generated((*it).second, (*it).first);
   }
 }
-

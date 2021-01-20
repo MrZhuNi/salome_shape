@@ -12,6 +12,7 @@ Features plug-in provides a set of common topological operations. It implements 
 
    booleanOperations.rst
    angularCopyFeature.rst
+   boundingBoxFeature.rst
    chamferFeature.rst
    copyFeature.rst
    defeaturingFeature.rst
@@ -21,11 +22,10 @@ Features plug-in provides a set of common topological operations. It implements 
    fillet1dFeature.rst
    filletFeature.rst
    fuseFeatureFaces.rst
+   geometryCalculationFeature.rst
    importResultFeature.rst
    linearCopyFeature.rst
    measurementFeature.rst
-   geometryCalculationFeature.rst
-   boundingBoxFeature.rst
    pipeFeature.rst
    placementFeature.rst
    recoverFeature.rst

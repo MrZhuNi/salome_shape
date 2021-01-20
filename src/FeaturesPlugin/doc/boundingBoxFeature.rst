@@ -43,7 +43,7 @@ Result
 
 Result of **Bounding box** where **Create box** is checked.
 
-.. figure:: images/BoundinBoxResult.png
+.. figure:: images/BoundingBoxResult.png
    :align: center
 
    Object selected

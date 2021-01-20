@@ -116,20 +116,20 @@
       <translation>Copie angulaire</translation>
     </message>
     <message>
-      <source>Bounding box</source>
-      <translation>Boite englobante</translation>
-    </message>
-    <message>
-      <source>Geometry calculation</source>
-      <translation>Calcul de la géométrie</translation>
-    </message>
-    <message>
       <source>Linear copy</source>
       <translation>Copie linéaire</translation>
     </message>
     <message>
       <source>Measurement</source>
       <translation>Mesure</translation>
+    </message>
+    <message>
+      <source>Geometry calculation</source>
+      <translation>Calcul de la géométrie</translation>
+    </message>
+    <message>
+      <source>Bounding box</source>
+      <translation>Boîte englobante</translation>
     </message>
     <message>
       <source>Placement</source>
@@ -148,30 +148,31 @@
       <translation>Translation</translation>
     </message>
   </context>
-  
+
   <!-- Bounding Box -->
   <context>
     <name>BoundingBox</name>
     <message>
       <source>BoundingBox</source>
-      <translation>Boite englobante</translation>
+      <translation>Boîte englobante</translation>
     </message>
     <message>
       <source>Create box</source>
-      <translation>Créer la boite</translation>
+      <translation>Créer la boîte</translation>
     </message>
   </context>
   <context>
     <name>BoundingBoxMacro</name>
     <message>
       <source>BoundingBox</source>
-      <translation>Boite englobante</translation>
+      <translation>Boîte englobante</translation>
     </message>
     <message>
       <source>Create box</source>
-      <translation>Créer la boite</translation>
+      <translation>Créer la boîte</translation>
     </message>
   </context>
+
   <!-- Chamfer -->
   <context>
     <name>Chamfer</name>
@@ -553,8 +554,8 @@
   <context>
     <name>Extrusion:sketch</name>
     <message>
-      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edge/vertices. Extrusion will be filled by it.</source>
-      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arête / sommets. L&apos;extrusion sera remplie par elle.</translation>
+      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edges/vertices. Extrusion will be filled by it.</source>
+      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arêtes / sommets. L&apos;extrusion sera remplie par elle.</translation>
     </message>
   </context>
 
@@ -727,8 +728,8 @@
   <context>
     <name>ExtrusionCut:sketch</name>
     <message>
-      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edge/vertices. Extrusion will be filled by it.</source>
-      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arête / sommets. L&apos;extrusion sera remplie par elle.</translation>
+      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edges/vertices. Extrusion will be filled by it.</source>
+      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arêtes / sommets. L&apos;extrusion sera remplie par elle.</translation>
     </message>
   </context>
   <context>
@@ -911,8 +912,8 @@
   <context>
     <name>ExtrusionFuse:sketch</name>
     <message>
-      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edge/vertices. Extrusion will be filled by it.</source>
-      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arête / sommets. L&apos;extrusion sera remplie par elle.</translation>
+      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edges/vertices. Extrusion will be filled by it.</source>
+      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arêtes / sommets. L&apos;extrusion sera remplie par elle.</translation>
     </message>
   </context>
   <context>
@@ -1716,8 +1717,8 @@
   <context>
     <name>Revolution:sketch</name>
     <message>
-      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edge/vertices. Extrusion will be filled by it.</source>
-      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arête / sommets. L&apos;extrusion sera remplie par elle.</translation>
+      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edges/vertices. Extrusion will be filled by it.</source>
+      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arêtes / sommets. L&apos;extrusion sera remplie par elle.</translation>
     </message>
   </context>
   <context>
@@ -1897,8 +1898,8 @@
   <context>
     <name>RevolutionCut:sketch</name>
     <message>
-      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edge/vertices. Extrusion will be filled by it.</source>
-      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arête / sommets. L&apos;extrusion sera remplie par elle.</translation>
+      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edges/vertices. Extrusion will be filled by it.</source>
+      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arêtes / sommets. L&apos;extrusion sera remplie par elle.</translation>
     </message>
   </context>
 
@@ -2059,8 +2060,8 @@
   <context>
     <name>RevolutionFuse:sketch</name>
     <message>
-      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edge/vertices. Extrusion will be filled by it.</source>
-      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arête / sommets. L&apos;extrusion sera remplie par elle.</translation>
+      <source>Select:&lt;br /&gt; 1. Planar face of non-sketch object or a plane. Sketch creation will be started.&lt;br /&gt; 2. An existing sketch face or contour. Extrusion will be filled by it.&lt;br /&gt; 3. An existing result shape of kind: wires/edges/vertices. Extrusion will be filled by it.</source>
+      <translation>Sélectionnez : &lt;br /&gt; 1. Face plane d&apos;un objet non esquissé ou d&apos;un plan. La création de l&apos;esquisse sera lancée. &lt;br /&gt; 2. Une face ou un contour d&apos;esquisse existant. L&apos;extrusion sera remplie par elle. &lt;br /&gt; 3. Une forme de résultat existante de type: contours / arêtes / sommets. L&apos;extrusion sera remplie par elle.</translation>
     </message>
   </context>
 
@@ -4358,73 +4359,7 @@
       <translation>Pas pour la direction angulaire</translation>
     </message>
   </context>
-  <!--Bounding box-->
-  <context>
-    <name>BoundingBoxMacro</name>
-    <message>
-      <source>Bounding box</source>
-      <translation>Boîte englobante</translation>
-    </message>
-  </context>
-  <context>
-    <name>BoundingBoxMacro:main_object</name>
-    <message>
-      <source>Object</source>
-      <translation>Objet</translation>
-    </message>
-  </context>
-  <context>
-  <name>BoundingBoxMacro:createbox</name>
-    <message>
-      <source>Create box</source>
-      <translation>Créer la boite</translation>
-    </message>
-  </context>
-  <context>
-    <name>BoundingBox</name>
-    <message>
-      <source>Bounding box</source>
-      <translation>Boîte englobante</translation>
-    </message>
-  </context>
-  <context>
-    <name>BoundingBox:main_object</name>
-    <message>
-      <source>Object</source>
-      <translation>Objet</translation>
-    </message>
-  </context>
 
-  <!--Geometry calculation-->
-  <context>
-    <name>GeometryCalculation</name>
-    <message>
-      <source>Geometry calculation</source>
-      <translation>Calcul de la géometrie</translation>
-    </message>
-  </context>
-  <context>
-    <name>GeometryCalculation:main_object</name>
-    <message>
-      <source>Object</source>
-      <translation>Objet</translation>
-    </message>
-  </context>
-  <context>
-  <name>GeometryCalculation</name>
-    <message>
-      <source>Length = </source>
-      <translation>Longueur = </translation>
-    </message>
-    <message>
-      <source>Area = </source>
-      <translation>Surface = </translation>
-    </message>
-    <message>
-      <source>Volume = </source>
-      <translation>Volume = </translation>
-    </message>
-  </context>
   <!-- LinearCopy -->
   <context>
     <name>LinearCopy</name>
@@ -4549,6 +4484,74 @@
     <message>
       <source>Second direction</source>
       <translation>Deuxième direction</translation>
+    </message>
+  </context>
+
+  <!--Bounding box-->
+  <context>
+    <name>BoundingBoxMacro</name>
+    <message>
+      <source>Bounding box</source>
+      <translation>Boîte englobante</translation>
+    </message>
+  </context>
+  <context>
+    <name>BoundingBoxMacro:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+  </context>
+  <context>
+  <name>BoundingBoxMacro:createbox</name>
+    <message>
+      <source>Create box</source>
+      <translation>Créer la boîte</translation>
+    </message>
+  </context>
+  <context>
+    <name>BoundingBox</name>
+    <message>
+      <source>Bounding box</source>
+      <translation>Boîte englobante</translation>
+    </message>
+  </context>
+  <context>
+    <name>BoundingBox:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+  </context>
+
+  <!--Geometry calculation-->
+  <context>
+    <name>GeometryCalculation</name>
+    <message>
+      <source>Geometry calculation</source>
+      <translation>Calcul de la géometrie</translation>
+    </message>
+  </context>
+  <context>
+    <name>GeometryCalculation:main_object</name>
+    <message>
+      <source>Object</source>
+      <translation>Objet</translation>
+    </message>
+  </context>
+  <context>
+    <name>GeometryCalculation</name>
+    <message>
+      <source>Length = </source>
+      <translation>Longueur = </translation>
+    </message>
+    <message>
+      <source>Area = </source>
+      <translation>Surface = </translation>
+    </message>
+    <message>
+      <source>Volume = </source>
+      <translation>Volume = </translation>
     </message>
   </context>
 

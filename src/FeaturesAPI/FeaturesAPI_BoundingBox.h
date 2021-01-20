@@ -44,16 +44,15 @@ public:
 
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_BoundingBox(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                   const ModelHighAPI_Selection& theobject);
+                                   const ModelHighAPI_Selection& theObject);
 
   /// Destructor.
   FEATURESAPI_EXPORT
   virtual ~FeaturesAPI_BoundingBox();
 
-    INTERFACE_1(FeaturesPlugin_CreateBoundingBox::ID(),
-              objectselected, FeaturesPlugin_CreateBoundingBox::OBJECTS_LIST_ID(),
-                              ModelAPI_AttributeSelection,
-                              /** object selected*/)
+  INTERFACE_1(FeaturesPlugin_CreateBoundingBox::ID(),
+              objectSelected, FeaturesPlugin_CreateBoundingBox::OBJECT_ID(),
+              ModelAPI_AttributeSelection, /** object selected*/)
 
   /// Dump wrapped feature
   FEATURESAPI_EXPORT
@@ -70,6 +69,6 @@ typedef std::shared_ptr<FeaturesAPI_BoundingBox> BoundingBoxPtr;
 /// \param theobject the object selected
 FEATURESAPI_EXPORT
 BoundingBoxPtr getBoundingBox(const std::shared_ptr<ModelAPI_Document>& thePart,
-                              const ModelHighAPI_Selection& theobject);
+                              const ModelHighAPI_Selection& theObject);
 
 #endif // FeaturesAPI_BoundingBox_H_

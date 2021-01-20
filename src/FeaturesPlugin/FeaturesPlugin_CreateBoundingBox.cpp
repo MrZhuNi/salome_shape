@@ -45,36 +45,36 @@ FeaturesPlugin_CreateBoundingBox::FeaturesPlugin_CreateBoundingBox()
 void FeaturesPlugin_CreateBoundingBox::initAttributes()
 {
   // attribute for object selected
-  data()->addAttribute(OBJECTS_LIST_ID(), ModelAPI_AttributeSelection::typeId());
+  data()->addAttribute(OBJECT_ID(), ModelAPI_AttributeSelection::typeId());
+
   // attributes for result message and values
-  data()->addAttribute(X_MIN_COOD_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(Y_MIN_COOD_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(Z_MIN_COOD_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(X_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(Y_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
-  data()->addAttribute(Z_MAX_COOD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(X_MIN_COORD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(Y_MIN_COORD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(Z_MIN_COORD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(X_MAX_COORD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(Y_MAX_COORD_ID(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(Z_MAX_COORD_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(COMPUTE_ID(), ModelAPI_AttributeBoolean::typeId());
 
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), X_MIN_COOD_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Y_MIN_COOD_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Z_MIN_COOD_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), X_MAX_COOD_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Y_MAX_COOD_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Z_MAX_COOD_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), X_MIN_COORD_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Y_MIN_COORD_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Z_MIN_COORD_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), X_MAX_COORD_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Y_MAX_COORD_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), Z_MAX_COORD_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), COMPUTE_ID());
-  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), OBJECTS_LIST_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), OBJECT_ID());
   data()->addAttribute(RESULT_VALUES_ID(), ModelAPI_AttributeDoubleArray::typeId());
 
   data()->realArray(RESULT_VALUES_ID())->setSize(6);
   data()->boolean(COMPUTE_ID())->setValue(true);
-
 }
 
 //=================================================================================================
 void FeaturesPlugin_CreateBoundingBox::execute()
 {
-    updateValues();
-    createBoxByTwoPoints();
+  updateValues();
+  createBoxByTwoPoints();
 }
 
 //=================================================================================================
@@ -85,7 +85,7 @@ void FeaturesPlugin_CreateBoundingBox::attributeChanged(const std::string& theID
 //=================================================================================================
 void FeaturesPlugin_CreateBoundingBox::updateValues()
 {
-  AttributeSelectionPtr aSelection = selection(OBJECTS_LIST_ID());
+  AttributeSelectionPtr aSelection = selection(OBJECT_ID());
   AttributeDoubleArrayPtr aValues =
       std::dynamic_pointer_cast<ModelAPI_AttributeDoubleArray>(attribute(RESULT_VALUES_ID()));
 
@@ -96,12 +96,14 @@ void FeaturesPlugin_CreateBoundingBox::updateValues()
     std::stringstream streamxmax;
     std::stringstream streamymax;
     std::stringstream streamzmax;
+
     GeomShapePtr aShape;
     if (aSelection && aSelection->isInitialized()) {
       aShape = aSelection->value();
       if (!aShape && aSelection->context())
         aShape = aSelection->context()->shape();
     }
+
     AttributeBooleanPtr anIsCompute = boolean(COMPUTE_ID());
     if (!anIsCompute->value()) {
       myShape = aShape;
@@ -139,12 +141,13 @@ void FeaturesPlugin_CreateBoundingBox::updateValues()
       streamzmin << std::setprecision(14) << aValues->value(4);
       streamzmax << std::setprecision(14) << aValues->value(5);
     }
-    string(X_MIN_COOD_ID() )->setValue( "X = " +  streamxmin.str() );
-    string(Y_MIN_COOD_ID() )->setValue( "Y = " +  streamymin.str() );
-    string(Z_MIN_COOD_ID() )->setValue( "Z = " +  streamzmin.str() );
-    string(X_MAX_COOD_ID() )->setValue( "X = " +  streamxmax.str() );
-    string(Y_MAX_COOD_ID() )->setValue( "Y = " +  streamymax.str() );
-    string(Z_MAX_COOD_ID() )->setValue( "Z = " +  streamzmax.str() );
+
+    string(X_MIN_COORD_ID() )->setValue( "X = " +  streamxmin.str() );
+    string(Y_MIN_COORD_ID() )->setValue( "Y = " +  streamymin.str() );
+    string(Z_MIN_COORD_ID() )->setValue( "Z = " +  streamzmin.str() );
+    string(X_MAX_COORD_ID() )->setValue( "X = " +  streamxmax.str() );
+    string(Y_MAX_COORD_ID() )->setValue( "Y = " +  streamymax.str() );
+    string(Z_MAX_COORD_ID() )->setValue( "Z = " +  streamzmax.str() );
   }
 }
 

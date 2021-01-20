@@ -134,7 +134,7 @@
         <source path="chamfer_widget.xml"/>
       </feature>
       <feature id="FusionFaces" title="Fuse Faces" tooltip="Performs fusion of connected faces"
-               icon="icons/Features/fusion_faces.png" auto_preview="true" helpfile="FeaturesPlugin/fusionFacesFeature.html">
+               icon="icons/Features/fusion_faces.png" auto_preview="true" helpfile="fuseFeatureFaces.html">
         <source path="fusion_faces_widget.xml"/>
       </feature>
       <feature id="Defeaturing" title="Defeaturing" tooltip="Perform removing faces from solid"
@@ -173,17 +173,17 @@
   </workbench>
   <workbench id="Inspection">
     <group id="Calculation">
-      <feature id="GeometryCalculation" title="Geometry calculation" tooltip="Calculate properties of objects"
+     <feature id="GeometryCalculation" title="Geometry calculation" tooltip="Calculate properties of objects"
                icon="icons/Features/geometryCalculation.png" helpfile="geometryCalculationFeature.html" abort_confirmation="false">
         <source path="geometry_calculation_widget.xml"/>
       </feature>
       <feature id="BoundingBoxMacro" title="Bounding box" tooltip="Calculate the bounding box" auto_preview="true"
-               icon="icons/Features/bounding.png" helpfile="boundingBoxFeature.html"> 
-        <source path="Bounding_Box_widget.xml"/>
+               icon="icons/Features/bounding.png" helpfile="boundingBoxFeature.html">
+        <source path="bounding_box_widget.xml"/>
       </feature>
       <feature id="BoundingBox" title="Bounding box" tooltip="Calculate the bounding box" auto_preview="true"
-               icon="icons/Features/bounding.png" helpfile="boundingBoxFeature.html" internal="1"> 
-        <source path="Create_Bounding_Box_widget.xml"/>
+               icon="icons/Features/bounding.png" helpfile="boundingBoxFeature.html" internal="1">
+        <source path="create_bounding_box_widget.xml"/>
       </feature>
       <feature id="Measurement" title="Measurement" tooltip="Calculate properties of objects"
                icon="icons/Features/measurement.png" helpfile="measurementFeature.html" abort_confirmation="false">

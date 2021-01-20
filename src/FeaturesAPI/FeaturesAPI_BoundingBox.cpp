@@ -29,8 +29,8 @@
 #include <ModelHighAPI_Tools.h>
 
 //=================================================================================================
-FeaturesAPI_BoundingBox::
-          FeaturesAPI_BoundingBox(const std::shared_ptr<ModelAPI_Feature>& theFeature)
+FeaturesAPI_BoundingBox::FeaturesAPI_BoundingBox(
+                                    const std::shared_ptr<ModelAPI_Feature>& theFeature)
   : ModelHighAPI_Interface(theFeature)
 {
   initialize();
@@ -39,11 +39,11 @@ FeaturesAPI_BoundingBox::
 //=================================================================================================
 FeaturesAPI_BoundingBox::FeaturesAPI_BoundingBox(
                                     const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                    const ModelHighAPI_Selection& theobject)
+                                    const ModelHighAPI_Selection& theObject)
 :ModelHighAPI_Interface(theFeature)
 {
   if (initialize()) {
-    fillAttribute(theobject, myobjectselected);
+    fillAttribute(theObject, myobjectSelected);
     execute();
   }
 }
@@ -60,7 +60,7 @@ void FeaturesAPI_BoundingBox::dump(ModelHighAPI_Dumper& theDumper) const
   const std::string& aDocName = theDumper.name(aBase->document());
 
   AttributeSelectionPtr anAttrObject;
-    anAttrObject = aBase->selection(FeaturesPlugin_CreateBoundingBox::OBJECTS_LIST_ID());
+    anAttrObject = aBase->selection(FeaturesPlugin_CreateBoundingBox::OBJECT_ID());
 
   theDumper << aBase << " = model.getBoundingBox(" << aDocName << ", " << anAttrObject;
 
@@ -69,7 +69,7 @@ void FeaturesAPI_BoundingBox::dump(ModelHighAPI_Dumper& theDumper) const
 
 //=================================================================================================
 BoundingBoxPtr getBoundingBox(const std::shared_ptr<ModelAPI_Document>& thePart,
-                    const ModelHighAPI_Selection& theobject)
+                    const ModelHighAPI_Selection& theObject)
 {
 
   FeaturePtr aFeature =
@@ -77,7 +77,7 @@ BoundingBoxPtr getBoundingBox(const std::shared_ptr<ModelAPI_Document>& thePart,
 
   BoundingBoxPtr aBoundingBox;
 
-  aBoundingBox.reset(new FeaturesAPI_BoundingBox(aFeature, theobject));
+  aBoundingBox.reset(new FeaturesAPI_BoundingBox(aFeature, theObject));
 
   return aBoundingBox;
 }

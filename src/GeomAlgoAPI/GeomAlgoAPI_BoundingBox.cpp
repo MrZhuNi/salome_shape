@@ -42,46 +42,46 @@
 #include <Geom_ToroidalSurface.hxx>
 
 /**
-   * This function constructs and returns modified shape from the original one
-   * for singular cases. It is used for the method GetMinDistanceSingular.
-   *
-   * \param theShape the original shape
-   * \param theModifiedShape output parameter. The modified shape.
-   * \param theAddDist output parameter. The added distance for modified shape.
-   * \retval true if the shape is modified; false otherwise.
-   *
-   * \internal
-   */
-  Standard_Boolean ModifyShape(const TopoDS_Shape  &theShape,
-                               TopoDS_Shape  &theModifiedShape,
-                               Standard_Real &theAddDist)
-  {
-    TopExp_Explorer anExp;
-    int nbf = 0;
+* This function constructs and returns modified shape from the original one
+* for singular cases. It is used for the method GetMinDistanceSingular.
+*
+* \param theShape the original shape
+* \param theModifiedShape output parameter. The modified shape.
+* \param theAddDist output parameter. The added distance for modified shape.
+* \retval true if the shape is modified; false otherwise.
+*
+* \internal
+*/
+Standard_Boolean ModifyShape(const TopoDS_Shape  &theShape,
+                             TopoDS_Shape  &theModifiedShape,
+                             Standard_Real &theAddDist)
+{
+  TopExp_Explorer anExp;
+  int nbf = 0;
 
-    theAddDist = 0.;
-    theModifiedShape.Nullify();
+  theAddDist = 0.;
+  theModifiedShape.Nullify();
 
-    for ( anExp.Init( theShape, TopAbs_FACE ); anExp.More(); anExp.Next() ) {
-      nbf++;
-      theModifiedShape = anExp.Current();
+  for ( anExp.Init( theShape, TopAbs_FACE ); anExp.More(); anExp.Next() ) {
+    nbf++;
+    theModifiedShape = anExp.Current();
+  }
+  if(nbf==1) {
+    TopoDS_Shape sh = theShape;
+    while(sh.ShapeType()==TopAbs_COMPOUND) {
+      TopoDS_Iterator it(sh);
+      sh = it.Value();
     }
-    if(nbf==1) {
-      TopoDS_Shape sh = theShape;
-      while(sh.ShapeType()==TopAbs_COMPOUND) {
-        TopoDS_Iterator it(sh);
-        sh = it.Value();
-      }
-      Handle(Geom_Surface) S = BRep_Tool::Surface(TopoDS::Face(theModifiedShape));
-      if( S->IsKind(STANDARD_TYPE(Geom_SphericalSurface)) ||
-          S->IsKind(STANDARD_TYPE(Geom_ToroidalSurface)) ||
-          S->IsUPeriodic()) {
-        const Standard_Boolean isShell =
-          (sh.ShapeType()==TopAbs_SHELL || sh.ShapeType()==TopAbs_FACE);
+    Handle(Geom_Surface) S = BRep_Tool::Surface(TopoDS::Face(theModifiedShape));
+    if(S->IsKind(STANDARD_TYPE(Geom_SphericalSurface)) ||
+       S->IsKind(STANDARD_TYPE(Geom_ToroidalSurface)) ||
+       S->IsUPeriodic()) {
+      const Standard_Boolean isShell =
+        (sh.ShapeType()==TopAbs_SHELL || sh.ShapeType()==TopAbs_FACE);
 
-        if ( !isShell && S->IsKind(STANDARD_TYPE(Geom_SphericalSurface)) ) {
-          Handle(Geom_SphericalSurface) SS = Handle(Geom_SphericalSurface)::DownCast(S);
-          gp_Pnt PC = SS->Location();
+      if (!isShell && S->IsKind(STANDARD_TYPE(Geom_SphericalSurface))) {
+        Handle(Geom_SphericalSurface) SS = Handle(Geom_SphericalSurface)::DownCast(S);
+        gp_Pnt PC = SS->Location();
           BRep_Builder B;
           TopoDS_Vertex V;
           B.MakeVertex(V,PC,1.e-7);
@@ -89,7 +89,7 @@
           theAddDist = SS->Radius();
           return Standard_True;
         }
-        if ( !isShell && S->IsKind(STANDARD_TYPE(Geom_ToroidalSurface)) ) {
+        if (!isShell && S->IsKind(STANDARD_TYPE(Geom_ToroidalSurface))) {
           Handle(Geom_ToroidalSurface) TS = Handle(Geom_ToroidalSurface)::DownCast(S);
           gp_Ax3 ax3 = TS->Position();
           Handle(Geom_Circle) C = new Geom_Circle(ax3.Ax2(),TS->MajorRadius());
@@ -150,11 +150,11 @@
   }
 
 //=======================================================================
-//function : GetMinDistanceSingular
+// function : GetMinDistanceSingular
 //=======================================================================
 double GetMinDistanceSingular(const TopoDS_Shape& aSh1,
                               const TopoDS_Shape& aSh2,
-                             gp_Pnt& Ptmp1, gp_Pnt& Ptmp2)
+                              gp_Pnt& Ptmp1, gp_Pnt& Ptmp2)
 {
   TopoDS_Shape     tmpSh1;
   TopoDS_Shape     tmpSh2;
@@ -187,25 +187,25 @@ double GetMinDistanceSingular(const TopoDS_Shape& aSh1,
     else {
       gp_Dir aDir(gp_Vec(PMin1,PMin2));
       if( MinDist > (AddDist1+AddDist2) ) {
-        Ptmp1 = gp_Pnt( PMin1.X() + aDir.X()*AddDist1,
-                        PMin1.Y() + aDir.Y()*AddDist1,
-                        PMin1.Z() + aDir.Z()*AddDist1 );
-        Ptmp2 = gp_Pnt( PMin2.X() - aDir.X()*AddDist2,
-                        PMin2.Y() - aDir.Y()*AddDist2,
-                        PMin2.Z() - aDir.Z()*AddDist2 );
+        Ptmp1 = gp_Pnt(PMin1.X() + aDir.X()*AddDist1,
+                       PMin1.Y() + aDir.Y()*AddDist1,
+                       PMin1.Z() + aDir.Z()*AddDist1);
+        Ptmp2 = gp_Pnt(PMin2.X() - aDir.X()*AddDist2,
+                       PMin2.Y() - aDir.Y()*AddDist2,
+                       PMin2.Z() - aDir.Z()*AddDist2);
         return (MinDist - AddDist1 - AddDist2);
       }
       else {
         if( AddDist1 > 0 ) {
-          Ptmp1 = gp_Pnt( PMin1.X() + aDir.X()*AddDist1,
-                          PMin1.Y() + aDir.Y()*AddDist1,
-                          PMin1.Z() + aDir.Z()*AddDist1 );
+          Ptmp1 = gp_Pnt(PMin1.X() + aDir.X()*AddDist1,
+                         PMin1.Y() + aDir.Y()*AddDist1,
+                         PMin1.Z() + aDir.Z()*AddDist1);
           Ptmp2 = Ptmp1;
         }
         else {
-          Ptmp2 = gp_Pnt( PMin2.X() - aDir.X()*AddDist2,
-                          PMin2.Y() - aDir.Y()*AddDist2,
-                          PMin2.Z() - aDir.Z()*AddDist2 );
+          Ptmp2 = gp_Pnt(PMin2.X() - aDir.X()*AddDist2,
+                         PMin2.Y() - aDir.Y()*AddDist2,
+                         PMin2.Z() - aDir.Z()*AddDist2);
           Ptmp1 = Ptmp2;
         }
       }
@@ -217,8 +217,8 @@ double GetMinDistanceSingular(const TopoDS_Shape& aSh1,
   return -2.0;
 }
 
-//function : GetMinDistance
-//purpose  :
+//=======================================================================
+// function : GetMinDistance
 //=======================================================================
 Standard_Real GetMinDistance(const TopoDS_Shape& theShape1,
                              const TopoDS_Shape& theShape2,
@@ -276,13 +276,13 @@ Standard_Real GetMinDistance(const TopoDS_Shape& theShape1,
 }
 
 //=======================================================================
-//PreciseBoundingBox
+// function : PreciseBoundingBox
 //=======================================================================
 Standard_Boolean PreciseBoundingBox
                           (const TopoDS_Shape &theShape, Bnd_Box &theBox)
 {
-  if ( theBox.IsVoid() ) BRepBndLib::Add( theShape, theBox );
-  if ( theBox.IsVoid() ) return Standard_False;
+  if (theBox.IsVoid()) BRepBndLib::Add( theShape, theBox );
+  if (theBox.IsVoid()) return Standard_False;
 
   Standard_Real aBound[6];
   theBox.Get(aBound[0], aBound[2], aBound[4], aBound[1], aBound[3], aBound[5]);
@@ -342,14 +342,13 @@ Standard_Boolean PreciseBoundingBox
 }
 
 //=================================================================================================
-bool GetBoundingBox(  const std::shared_ptr<GeomAPI_Shape>& theShape,
-                      const bool thePrecise,
-                      Standard_Real& theXmin,Standard_Real& theXmax,
-                      Standard_Real& theYmin,Standard_Real& theYmax,
-                      Standard_Real& theZmin,Standard_Real& theZmax,
-                      std::string& theError)
+bool GetBoundingBox(const std::shared_ptr<GeomAPI_Shape>& theShape,
+                    const bool thePrecise,
+                    Standard_Real& theXmin,Standard_Real& theXmax,
+                    Standard_Real& theYmin,Standard_Real& theYmax,
+                    Standard_Real& theZmin,Standard_Real& theZmax,
+                    std::string& theError)
 {
-
   #ifdef _DEBUG
   std::cout << "GetBoundingBox " << std::endl;
   #endif
@@ -360,9 +359,9 @@ bool GetBoundingBox(  const std::shared_ptr<GeomAPI_Shape>& theShape,
   }
 
   TopoDS_Shape aShape = theShape->impl<TopoDS_Shape>();
+
   //Compute the parameters
   Bnd_Box B;
-
   try {
     OCC_CATCH_SIGNALS;
     BRepBuilderAPI_Copy aCopyTool (aShape);

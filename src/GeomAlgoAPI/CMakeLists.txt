@@ -33,8 +33,6 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Prism.h
     GeomAlgoAPI_Revolution.h
     GeomAlgoAPI_Boolean.h
-    GeomAlgoAPI_GeometryCalculation.h
-    GeomAlgoAPI_BoundingBox.h
     GeomAlgoAPI_ThroughAll.h
     GeomAlgoAPI_Rotation.h
     GeomAlgoAPI_Translation.h
@@ -88,6 +86,8 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Projection.h
     GeomAlgoAPI_Chamfer.h
     GeomAlgoAPI_Defeaturing.h
+    GeomAlgoAPI_GeometryCalculation.h
+    GeomAlgoAPI_BoundingBox.h
 )
 
 SET(PROJECT_SOURCES
@@ -100,8 +100,6 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Prism.cpp
     GeomAlgoAPI_Revolution.cpp
     GeomAlgoAPI_Boolean.cpp
-    GeomAlgoAPI_GeometryCalculation.cpp
-    GeomAlgoAPI_BoundingBox.cpp
     GeomAlgoAPI_ThroughAll.cpp
     GeomAlgoAPI_Rotation.cpp
     GeomAlgoAPI_Translation.cpp
@@ -155,6 +153,8 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Projection.cpp
     GeomAlgoAPI_Chamfer.cpp
     GeomAlgoAPI_Defeaturing.cpp
+    GeomAlgoAPI_GeometryCalculation.cpp
+    GeomAlgoAPI_BoundingBox.cpp
 )
 
 SET(PROJECT_LIBRARIES

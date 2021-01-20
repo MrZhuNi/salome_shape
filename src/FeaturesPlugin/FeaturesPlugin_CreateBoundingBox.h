@@ -29,65 +29,60 @@
 class FeaturesPlugin_CreateBoundingBox : public FeaturesPlugin_CommonBoundingBox
 {
 public:
-   inline static const std::string& ID()
+  /// Bounding box kind.
+  inline static const std::string& ID()
   {
     static const std::string MY_ID("BoundingBox");
     return MY_ID;
   }
 
-  /// \return the kind of a feature.
-  virtual const std::string& getKind()
-  {
-    return ID();
-  }
-
   /// Attribute name for object selected.
-  inline static const std::string& OBJECTS_LIST_ID()
+  inline static const std::string& OBJECT_ID()
   {
-    static const std::string MY_OBJECTS_LIST_ID("main_object");
-    return MY_OBJECTS_LIST_ID;
+    static const std::string MY_OBJECT_ID("main_object");
+    return MY_OBJECT_ID;
   }
 
   /// Attribute name for x coodinate.
-  inline static const std::string& X_MIN_COOD_ID()
+  inline static const std::string& X_MIN_COORD_ID()
   {
-    static const std::string MY_X_MIN_COOD_ID("xmincoordinate");
-    return MY_X_MIN_COOD_ID;
+    static const std::string MY_X_MIN_COORD_ID("xmincoordinate");
+    return MY_X_MIN_COORD_ID;
   }
 
   /// Attribute name for y coodinate.
-  inline static const std::string& Y_MIN_COOD_ID()
+  inline static const std::string& Y_MIN_COORD_ID()
   {
-    static const std::string MY_Y_MIN_COOD_ID("ymincoordinate");
-    return MY_Y_MIN_COOD_ID;
+    static const std::string MY_Y_MIN_COORD_ID("ymincoordinate");
+    return MY_Y_MIN_COORD_ID;
   }
 
   /// Attribute name for z coodinate.
-  inline static const std::string& Z_MIN_COOD_ID()
+  inline static const std::string& Z_MIN_COORD_ID()
   {
-    static const std::string MY_Z_MIN_COOD_ID("zmincoordinate");
-    return MY_Z_MIN_COOD_ID;
+    static const std::string MY_Z_MIN_COORD_ID("zmincoordinate");
+    return MY_Z_MIN_COORD_ID;
   }
 
-    /// Attribute name for x max coodinate.
-  inline static const std::string& X_MAX_COOD_ID()
+  /// Attribute name for x max coodinate.
+  inline static const std::string& X_MAX_COORD_ID()
   {
-    static const std::string MY_X_MAX_COOD_ID("xmaxcoordinate");
-    return MY_X_MAX_COOD_ID;
+    static const std::string MY_X_MAX_COORD_ID("xmaxcoordinate");
+    return MY_X_MAX_COORD_ID;
   }
 
   /// Attribute name for y max coodinate.
-  inline static const std::string& Y_MAX_COOD_ID()
+  inline static const std::string& Y_MAX_COORD_ID()
   {
-    static const std::string MY_Y_MAX_COOOD_ID("ymaxcoordinate");
-    return MY_Y_MAX_COOOD_ID;
+    static const std::string MY_Y_MAX_COORD_ID("ymaxcoordinate");
+    return MY_Y_MAX_COORD_ID;
   }
 
   /// Attribute name for z max coodinate.
-  inline static const std::string& Z_MAX_COOD_ID()
+  inline static const std::string& Z_MAX_COORD_ID()
   {
-    static const std::string MY_Z_MAX_COOD_ID("zmaxcoordinate");
-    return MY_Z_MAX_COOD_ID;
+    static const std::string MY_Z_MAX_COORD_ID("zmaxcoordinate");
+    return MY_Z_MAX_COORD_ID;
   }
 
   /// Attribute name for values of result.
@@ -102,6 +97,12 @@ public:
   {
     static const std::string MY_COMPUTE_ID("compute");
     return MY_COMPUTE_ID;
+  }
+
+  /// \return the kind of a feature.
+  virtual const std::string& getKind()
+  {
+    return ID();
   }
 
   /// Performs the algorithm and stores results it in the data structure.
@@ -120,7 +121,7 @@ public:
   /// Use plugin manager for features creation
   FeaturesPlugin_CreateBoundingBox();
 
-  private:
+private:
   /// Update values displayed.
   void updateValues();
 

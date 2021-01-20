@@ -37,14 +37,13 @@
 class FeaturesPlugin_CommonBoundingBox : public ModelAPI_Feature
 {
 public:
-
   /// Performs the algorithm and stores results it in the data structure.
   FEATURESPLUGIN_EXPORT virtual void execute(){};
 
   /// Return Attribut values of result.
   virtual AttributePtr attributResultValues() = 0;
 
-  protected:
+protected:
   FeaturesPlugin_CommonBoundingBox() {}
 
   /// Create box with two points

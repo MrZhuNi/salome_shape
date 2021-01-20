@@ -19,15 +19,6 @@
 
 INCLUDE(Common)
 INCLUDE(UnitTest)
-INCLUDE(UseQtExt)
-
-# additional include directories
-INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/src/GeomDataAPI
-                     ${PROJECT_SOURCE_DIR}/src/Locale
-                     ${QT_INCLUDES})
-
-# additional preprocessor / compiler flags
-ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 
 SET(PROJECT_HEADERS
@@ -69,10 +60,6 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_Fillet.h
     FeaturesPlugin_Fillet1D.h
     FeaturesPlugin_Measurement.h
-    FeaturesPlugin_GeometryCalculation.h
-    FeaturesPlugin_BoundingBox.h
-    FeaturesPlugin_CreateBoundingBox.h
-    FeaturesPlugin_CommonBoundingBox.h
     FeaturesPlugin_FusionFaces.h
     FeaturesPlugin_RemoveResults.h
     FeaturesPlugin_Chamfer.h
@@ -80,6 +67,10 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_ImportResult.h
     FeaturesPlugin_Defeaturing.h
     FeaturesPlugin_VersionedChFi.h
+    FeaturesPlugin_GeometryCalculation.h
+    FeaturesPlugin_BoundingBox.h
+    FeaturesPlugin_CommonBoundingBox.h
+    FeaturesPlugin_CreateBoundingBox.h
 )
 
 SET(PROJECT_SOURCES
@@ -120,10 +111,6 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_Fillet.cpp
     FeaturesPlugin_Fillet1D.cpp
     FeaturesPlugin_Measurement.cpp
-    FeaturesPlugin_GeometryCalculation.cpp
-    FeaturesPlugin_BoundingBox.cpp
-    FeaturesPlugin_CreateBoundingBox.cpp
-    FeaturesPlugin_CommonBoundingBox.cpp
     FeaturesPlugin_FusionFaces.cpp
     FeaturesPlugin_RemoveResults.cpp
     FeaturesPlugin_Chamfer.cpp
@@ -131,6 +118,10 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_ImportResult.cpp
     FeaturesPlugin_Defeaturing.cpp
     FeaturesPlugin_VersionedChFi.cpp
+    FeaturesPlugin_GeometryCalculation.cpp
+    FeaturesPlugin_BoundingBox.cpp
+    FeaturesPlugin_CommonBoundingBox.cpp
+    FeaturesPlugin_CreateBoundingBox.cpp
 )
 
 SET(XML_RESOURCES
@@ -162,14 +153,14 @@ SET(XML_RESOURCES
   fillet_widget.xml
   fillet1d_widget.xml
   measurement_widget.xml
-  geometry_calculation_widget.xml
-  Bounding_Box_widget.xml
-  Create_Bounding_Box_widget.xml
   fusion_faces_widget.xml
   chamfer_widget.xml
   copy_widget.xml
   import_result_widget.xml
   defeaturing_widget.xml
+  geometry_calculation_widget.xml
+  bounding_box_widget.xml
+  create_bounding_box_widget.xml
 )
 
 SET(TEXT_RESOURCES
@@ -204,11 +195,7 @@ SET(PROJECT_LIBRARIES
 )
 
 ADD_DEFINITIONS(-DFEATURESPLUGIN_EXPORTS)
-ADD_LIBRARY(FeaturesPlugin MODULE 
-            ${PROJECT_SOURCES} 
-            ${PROJECT_HEADERS} 
-            ${XML_RESOURCES} 
-            ${TEXT_RESOURCES})
+ADD_LIBRARY(FeaturesPlugin MODULE ${PROJECT_SOURCES} ${PROJECT_HEADERS} ${XML_RESOURCES} ${TEXT_RESOURCES})
 TARGET_LINK_LIBRARIES(FeaturesPlugin ${PROJECT_LIBRARIES})
 
 INSTALL(TARGETS FeaturesPlugin DESTINATION ${SHAPER_INSTALL_PLUGIN_FILES})
@@ -708,6 +695,12 @@ ADD_UNIT_TESTS(TestExtrusion.py
                TestFillet1D_Wire_3.py
                TestFillet1D_Wire_4.py
                TestFillet1D_Wire_5.py
+               Test19931.py
+               Test20027.py
+               Test20245_1.py
+               Test20245_2.py
+               Test20245_3.py
+               Test20247.py
                TestGeometryCalculation.py
                TestBoundingBox.py
 )
