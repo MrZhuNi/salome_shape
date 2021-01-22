@@ -37,7 +37,7 @@
     <box id="analytical"
          title="Curve analytical"
          icon="icons/Build/feature_interpolation_analytical.png">
-      <groupbox title="Curves parameters">
+      <groupbox id="curves_parameters" title="Curves parameters">
         <stringvalue id="xt" label="X(t) equation">
             <validator id="BuildPlugin_ValidatorExpressionInterpolation"/>
           </stringvalue>

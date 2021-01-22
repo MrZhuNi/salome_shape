@@ -30,7 +30,8 @@ BuildAPI_Interpolation::BuildAPI_Interpolation(const std::shared_ptr<ModelAPI_Fe
 }
 
 //==================================================================================================
-BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
+BuildAPI_Interpolation::BuildAPI_Interpolation(
+                        const FeaturePtr& theFeature,
                         const std::list<ModelHighAPI_Selection>& theBaseObjects,
                         const ModelHighAPI_Selection& theStartTangent,
                         const ModelHighAPI_Selection& theEndTangent,
@@ -49,7 +50,8 @@ BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
 }
 
 //==================================================================================================
-BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
+BuildAPI_Interpolation::BuildAPI_Interpolation(
+                        const FeaturePtr& theFeature,
                         const std::list<ModelHighAPI_Selection>& theBaseObjects,
                         const bool theIsClosed,
                         const bool theIsToReorder)
@@ -64,6 +66,7 @@ BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
   }
 }
 
+//==================================================================================================
 BuildAPI_Interpolation::BuildAPI_Interpolation(const FeaturePtr& theFeature,
                                                const std::string & theXTexpression,
                                                const std::string & theYTexpression,

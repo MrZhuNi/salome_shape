@@ -828,27 +828,39 @@
     </message>
   </context>
   <context>
-  <name>Interpolation:analytical</name>
-  <message>
-    <source>Curves parameters</source>
-    <translation>Paramètres de la courbe</translation>
-  </message>
-  <message>
-    <source>X(t) equation</source>
-    <translation>Équation X(t)</translation>
-  </message>
-  <message>
-    <source>Y(t) equation</source>
-    <translation>Équation Y(t)</translation>
-  </message>
-  <message>
-    <source>Z(t) equation</source>
-    <translation>Équation Z(t)</translation>
-  </message>
-  <message>
-    <source>Number of steps</source>
-    <translation>Nombre de pas</translation>
-  </message>
+    <name>Interpolation</name>
+    <message>
+      <source>Curves parameters</source>
+      <translation>Paramètres de la courbe</translation>
+    </message>
+  </context>
+  <context>
+    <name>Interpolation:xt</name>
+    <message>
+      <source>X(t) equation</source>
+      <translation>Équation X(t)</translation>
+    </message>
+  </context>
+  <context>
+    <name>Interpolation:yt</name>
+    <message>
+      <source>Y(t) equation</source>
+      <translation>Équation Y(t)</translation>
+    </message>
+  </context>
+  <context>
+    <name>Interpolation:zt</name>
+    <message>
+      <source>Z(t) equation</source>
+      <translation>Équation Z(t)</translation>
+    </message>
+  </context>
+  <context>
+    <name>Interpolation:numstep</name>
+    <message>
+      <source>Number of steps</source>
+      <translation>Nombre de pas</translation>
+    </message>
   </context>
   <context>
     <name>Polyline:base_objects</name>

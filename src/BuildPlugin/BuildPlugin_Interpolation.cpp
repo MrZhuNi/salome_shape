@@ -252,16 +252,16 @@ void BuildPlugin_Interpolation::execute()
     std::list<std::vector<double>> aCoordPoints;
     for (int step = 0; step < aTable->rows(); step++) {
       std::vector<double> aCoordPoint;
-      ModelAPI_AttributeTables::Value value;
+      ModelAPI_AttributeTables::Value aValue;
       //x
-      value = aTable->value(step, 1);
-      aCoordPoint.push_back(value.myDouble);
+      aValue = aTable->value(step, 1);
+      aCoordPoint.push_back(aValue.myDouble);
       //y
-      value = aTable->value(step, 2);
-      aCoordPoint.push_back(value.myDouble);
+      aValue = aTable->value(step, 2);
+      aCoordPoint.push_back(aValue.myDouble);
       //
-      value = aTable->value(step, 3);
-      aCoordPoint.push_back(value.myDouble);
+      aValue = aTable->value(step, 3);
+      aCoordPoint.push_back(aValue.myDouble);
 
       aCoordPoints.push_back(aCoordPoint);
     }
@@ -271,10 +271,9 @@ void BuildPlugin_Interpolation::execute()
 
     for (; anItCoordPoints!=aCoordPoints.end(); ++anItCoordPoints) {
 
-      GeomVertexPtr aVertex =
-          GeomAlgoAPI_PointBuilder::vertex((*anItCoordPoints)[0],
-                                           (*anItCoordPoints)[1],
-                                           (*anItCoordPoints)[2]);
+      GeomVertexPtr aVertex = GeomAlgoAPI_PointBuilder::vertex((*anItCoordPoints)[0],
+                                                               (*anItCoordPoints)[1],
+                                                               (*anItCoordPoints)[2]);
       aPoints.push_back(aVertex->point());
     }
 

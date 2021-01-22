@@ -166,7 +166,7 @@ public:
   /// Default value of the closed attribute
   inline static bool CLOSED_DEFAULT() { return false; }
 
- /// list of references to the arguments of this expression
+  /// list of references to the arguments of this expression
   inline static const std::string& ARGUMENTS_ID()
   {
     static const std::string MY_ARGUMENTS_ID("arguments");

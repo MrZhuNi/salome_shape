@@ -89,7 +89,7 @@ Interpolation analytical
 
 The  property panel is shown below.
 
-.. figure:: images/InterpolationAnalitycal.png
+.. figure:: images/InterpolationAnalytical.png
   :align: center
 
   Create an interpolation analytical
@@ -129,7 +129,7 @@ Result
 
 The result of the operation will be a curve created from analytical expressions for x,y and z as functions of variable t:
 
-.. figure:: images/CreateInterpolationAnalitycal.png
+.. figure:: images/CreateInterpolationAnalytical.png
   :align: center
 
   Result of the operation.
