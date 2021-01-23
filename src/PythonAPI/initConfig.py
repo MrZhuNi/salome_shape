@@ -28,6 +28,5 @@ import ConfigAPI
 # needed on immediate start of SHAPER from SALOME: salome.naming_service is not initialized then
 salome.salome_init()
 aCorbaModules = salome.modulcat.GetComponentList()
-print(aCorbaModules)
 for aName in aCorbaModules:
   ConfigAPI.Config_ModuleReader.addDependencyModule(aName)
