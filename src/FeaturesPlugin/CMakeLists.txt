@@ -38,6 +38,7 @@ SET(PROJECT_HEADERS
     FeaturesPlugin_Intersection.h
     FeaturesPlugin_Partition.h
     FeaturesPlugin_Pipe.h
+    FeaturesPlugin_Loft.h
     FeaturesPlugin_Placement.h
     FeaturesPlugin_CompositeBoolean.h
     FeaturesPlugin_CompositeSketch.h
@@ -85,6 +86,7 @@ SET(PROJECT_SOURCES
     FeaturesPlugin_Intersection.cpp
     FeaturesPlugin_Partition.cpp
     FeaturesPlugin_Pipe.cpp
+    FeaturesPlugin_Loft.cpp
     FeaturesPlugin_Placement.cpp
     FeaturesPlugin_CompositeBoolean.cpp
     FeaturesPlugin_CompositeSketch.cpp
@@ -135,6 +137,7 @@ SET(XML_RESOURCES
   placement_widget.xml
   intersection_widget.xml
   pipe_widget.xml
+  loft_widget.xml
   remove_subshapes_widget.xml
   union_widget.xml
   symmetry_widget.xml

@@ -56,6 +56,7 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_PaveFiller.h
     GeomAlgoAPI_Intersection.h
     GeomAlgoAPI_Pipe.h
+    GeomAlgoAPI_Loft.h
     GeomAlgoAPI_WireBuilder.h
     GeomAlgoAPI_Sewing.h
     GeomAlgoAPI_ShapeBuilder.h
@@ -122,6 +123,7 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_PaveFiller.cpp
     GeomAlgoAPI_Intersection.cpp
     GeomAlgoAPI_Pipe.cpp
+    GeomAlgoAPI_Loft.cpp
     GeomAlgoAPI_WireBuilder.cpp
     GeomAlgoAPI_Sewing.cpp
     GeomAlgoAPI_ShapeBuilder.cpp

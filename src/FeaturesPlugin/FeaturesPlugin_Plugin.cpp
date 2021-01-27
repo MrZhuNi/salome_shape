@@ -37,6 +37,7 @@
 #include <FeaturesPlugin_MultiTranslation.h>
 #include <FeaturesPlugin_Partition.h>
 #include <FeaturesPlugin_Pipe.h>
+#include <FeaturesPlugin_Loft.h>
 #include <FeaturesPlugin_Placement.h>
 #include <FeaturesPlugin_Recover.h>
 #include <FeaturesPlugin_RemoveSubShapes.h>
@@ -79,7 +80,9 @@ FeaturesPlugin_Plugin::FeaturesPlugin_Plugin()
   aFactory->registerValidator("FeaturesPlugin_ValidatorPipeLocations",
                               new FeaturesPlugin_ValidatorPipeLocations);
   aFactory->registerValidator("FeaturesPlugin_ValidatorPipeLocationsNumber",
-                              new FeaturesPlugin_ValidatorPipeLocationsNumber);
+                              new FeaturesPlugin_ValidatorLoftSameTypeShape);
+  aFactory->registerValidator("FeaturesPlugin_ValidatorLoftSameTypeShape",
+                              new FeaturesPlugin_ValidatorLoftSameTypeShape);
   aFactory->registerValidator("FeaturesPlugin_ValidatorExtrusionDir",
                               new FeaturesPlugin_ValidatorExtrusionDir);
   aFactory->registerValidator("FeaturesPlugin_ValidatorExtrusionBoundary",
@@ -155,6 +158,8 @@ FeaturePtr FeaturesPlugin_Plugin::createFeature(std::string theFeatureID)
     return FeaturePtr(new FeaturesPlugin_Partition);
   } else if (theFeatureID == FeaturesPlugin_Pipe::ID()) {
     return FeaturePtr(new FeaturesPlugin_Pipe);
+  } else if (theFeatureID == FeaturesPlugin_Loft::ID()) {
+    return FeaturePtr(new FeaturesPlugin_Loft);
   } else if (theFeatureID == FeaturesPlugin_Placement::ID()) {
     return FeaturePtr(new FeaturesPlugin_Placement);
   } else if (theFeatureID == FeaturesPlugin_Recover::ID()) {

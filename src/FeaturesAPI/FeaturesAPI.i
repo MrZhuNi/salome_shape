@@ -75,6 +75,7 @@
 %shared_ptr(FeaturesAPI_MultiTranslation)
 %shared_ptr(FeaturesAPI_Partition)
 %shared_ptr(FeaturesAPI_Pipe)
+%shared_ptr(FeaturesAPI_Loft)
 %shared_ptr(FeaturesAPI_Placement)
 %shared_ptr(FeaturesAPI_Recover)
 %shared_ptr(FeaturesAPI_RemoveSubShapes)
@@ -215,6 +216,7 @@
 %include "FeaturesAPI_MultiTranslation.h"
 %include "FeaturesAPI_Partition.h"
 %include "FeaturesAPI_Pipe.h"
+%include "FeaturesAPI_Loft.h"
 %include "FeaturesAPI_Placement.h"
 %include "FeaturesAPI_Recover.h"
 %include "FeaturesAPI_RemoveSubShapes.h"
