@@ -37,6 +37,7 @@ SET(PROJECT_HEADERS
   FeaturesAPI_MultiTranslation.h
   FeaturesAPI_Partition.h
   FeaturesAPI_Pipe.h
+  FeaturesAPI_Loft.h
   FeaturesAPI_Placement.h
   FeaturesAPI_Recover.h
   FeaturesAPI_RemoveResults.h
@@ -74,6 +75,7 @@ SET(PROJECT_SOURCES
   FeaturesAPI_MultiTranslation.cpp
   FeaturesAPI_Partition.cpp
   FeaturesAPI_Pipe.cpp
+  FeaturesAPI_Loft.cpp
   FeaturesAPI_Placement.cpp
   FeaturesAPI_Recover.cpp
   FeaturesAPI_RemoveResults.cpp
