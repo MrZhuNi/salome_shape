@@ -23,6 +23,7 @@ Features plug-in provides a set of common topological operations. It implements 
    fuseFeatureFaces.rst
    importResultFeature.rst
    linearCopyFeature.rst
+   loftFeature.rst
    measurementFeature.rst
    pipeFeature.rst
    placementFeature.rst
