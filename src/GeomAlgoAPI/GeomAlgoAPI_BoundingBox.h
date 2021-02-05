@@ -26,7 +26,6 @@
 
 /// get the boundin box of theshape.
   /// \param theShape   the shape
-  /// \param thePrecise precise TRUE for precise computation; FALSE for fast one.
   /// \param theXmin    X min of the box
   /// \param theXmax    X max of the box
   /// \param theYmin    Y min of the box
@@ -36,7 +35,6 @@
   /// \param theError  error
 GEOMALGOAPI_EXPORT
 bool GetBoundingBox(const std::shared_ptr<GeomAPI_Shape>& theShape,
-                    const bool thePrecise,
                     Standard_Real& theXmin,Standard_Real& theXmax,
                     Standard_Real& theYmin,Standard_Real& theYmax,
                     Standard_Real& theZmin,Standard_Real& theZmax,
