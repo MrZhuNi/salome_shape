@@ -121,7 +121,21 @@ static GProp_GProps props(const TopoDS_Shape& theShape)
 
   return aGProps;
 }
+//==================================================================================================
+double GeomAlgoAPI_ShapeTools::length(const std::shared_ptr<GeomAPI_Shape> theShape)
+{
+  GProp_GProps aGProps;
+  if(!theShape.get()) {
+    return 0.0;
+  }
+  const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
+  if(aShape.IsNull()) {
+    return 0.0;
+  }
 
+  BRepGProp::LinearProperties(aShape, aGProps, Standard_True);
+  return  aGProps.Mass();
+}
 //==================================================================================================
 double GeomAlgoAPI_ShapeTools::volume(const std::shared_ptr<GeomAPI_Shape> theShape)
 {
