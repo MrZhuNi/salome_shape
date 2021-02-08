@@ -27,6 +27,7 @@
 #include <Events_InfoMessage.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <SUIT_Session.h>
 
 #include <fstream>
 #include <sstream>
@@ -168,7 +169,8 @@ void Config_XMLReader::readAll()
   }
 
   // to load external modules dependencies (like GEOM for Connector Feature)
-  Config_ModuleReader::loadScript("salome.shaper.initConfig", false);
+  if(SUIT_Session::session()->executableAppName() == SUIT_Session::session()->salomeAppName())
+    Config_ModuleReader::loadScript("salome.shaper.initConfig", false);
 
   for(int aSolution = 0; true; aSolution++) {
     std::string aFoundFile = findConfigFile(myRootFileName, aSolution);

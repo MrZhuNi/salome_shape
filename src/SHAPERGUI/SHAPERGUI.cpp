@@ -56,6 +56,7 @@
 #include <SUIT_ViewWindow.h>
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_DataBrowser.h>
+#include <SUIT_Session.h>
 
 #include <QtxPopupMgr.h>
 #include <QtxActionMenuMgr.h>
@@ -1278,6 +1279,8 @@ void SHAPERGUI::resetToolbars()
 
 void SHAPERGUI::publishToStudy()
 {
-  if (isActiveModule() && ModelAPI_Session::get()->hasModuleDocument())
+  if ( (SUIT_Session::session()->executableAppName() == SUIT_Session::session()->salomeAppName())
+       // publish on salome executable mode
+       && isActiveModule() && ModelAPI_Session::get()->hasModuleDocument())
     myWorkshop->module()->launchOperation("PublishToStudy", false);
 }

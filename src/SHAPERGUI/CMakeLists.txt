@@ -59,7 +59,9 @@ SET(PROJECT_SOURCES
 
 SET(PROJECT_RESOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/LightApp.xml
+    ${CMAKE_CURRENT_BINARY_DIR}/LightShaperApp.xml
     resources/SalomeApp.xml
+    resources/ShaperApp.xml
     resources/shaper.png
 )
 
@@ -131,6 +133,12 @@ CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/resources/LightApp.xml.in"
   "${CMAKE_CURRENT_BINARY_DIR}/LightApp.xml"
   )
+
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/resources/LightShaperApp.xml.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/LightShaperApp.xml"
+  )
+
 
 INSTALL(TARGETS SHAPER DESTINATION ${SHAPER_INSTALL_BIN})
 INSTALL(FILES ${PROJECT_RESOURCES} DESTINATION ${SHAPER_INSTALL_RESOURCES})

@@ -17,6 +17,9 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
+# additional include directories
+INCLUDE_DIRECTORIES(${QT_INCLUDES})
+
 INCLUDE(Common)
 INCLUDE(UnitTest)
 INCLUDE(XMLProcessing)
@@ -24,7 +27,8 @@ FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 
 INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/src/Events
-                     ${PYTHON_INCLUDE_DIR})
+                     ${PYTHON_INCLUDE_DIR}
+                     ${SALOME_GUI_INCLUDE})
 
 SET(PROJECT_HEADERS
   Config_def.h
