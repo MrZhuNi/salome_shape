@@ -135,20 +135,13 @@ double GeomAlgoAPI_ShapeTools::volume(const std::shared_ptr<GeomAPI_Shape> theSh
     return 0.0;
   }
   const Standard_Real anEps = 1.e-6;
-  TopExp_Explorer anExp(aShape, TopAbs_SOLID);
-  if (anExp.More()) { // return volume if there is at least one solid
-    double aVolume = 0.0;
-    for (; anExp.More(); anExp.Next()) {
-      GProp_GProps aGProps;
-      BRepGProp::VolumeProperties(anExp.Current(), aGProps, anEps);
-      aVolume += aGProps.Mass();
-    }
-    return aVolume;
+  double aVolume = 0.0;
+  for (TopExp_Explorer anExp(aShape, TopAbs_SOLID); anExp.More(); anExp.Next()) {
+    GProp_GProps aGProps;
+    BRepGProp::VolumeProperties(anExp.Current(), aGProps, anEps);
+    aVolume += aGProps.Mass();
   }
-  // return surfaces area
-  GProp_GProps aGProps;
-  BRepGProp::SurfaceProperties(aShape, aGProps, anEps);
-  return aGProps.Mass();
+  return aVolume;
 }
 
 //==================================================================================================
