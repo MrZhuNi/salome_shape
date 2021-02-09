@@ -74,10 +74,10 @@ def generateTests(theFeature, theFeatureName, theTestsList = []):
 
   if "testResultsAreas" in theTestsList or len(theTestsList) == 0:
     aNbResults = len(theFeature.results())
-    aResultsVolumes = []
+    aResultsAreas = []
     for anIndex in range(0, aNbResults):
       aResultsAreas.append(GeomAlgoAPI_ShapeTools_area(theFeature.results()[anIndex].resultSubShapePair()[0].shape()))
-    print("model.testResultsAreas({}, [{}])".format(theFeatureName, ", ".join("{:0.27f}".format(i) for i in aResultsVolumes)))
+    print("model.testResultsAreas({}, [{}])".format(theFeatureName, ", ".join("{:0.27f}".format(i) for i in aResultsAreas)))
 
 
 def testNbResults(theFeature, theExpectedNbResults):
@@ -140,10 +140,10 @@ def testResultsVolumes(theFeature, theExpectedResultsVolumes, theNbSignificantDi
     assert math.fabs(aResultVolume - anExpectedResultVolume) <= aTolerance * math.fabs(anExpectedResultVolume), "Volume of result[{}]: {:0.27f}. Expected: {:0.27f}. The first {} significant digits not equal.".format(anIndex, aResultVolume, anExpectedResultVolume, theNbSignificantDigits)
 
 
-def testResultsAreas(theFeature, theExpectedResultsAreas, theNbSignificantDigits = 7):
+def testResultsAreas(theFeature, theExpectedResultsVolumes, theNbSignificantDigits = 7):
   """ Tests results areas.
   :param theFeature: feature to test.
-  :param theExpectedResultsAreas: list of results volumes. Size of list should be equal to len(theFeature.results()).
+  :param theExpectedResultsAreas: list of results areas. Size of list should be equal to len(theFeature.results()).
   """
   aTolerance = 10**(-theNbSignificantDigits)
   aNbResults = len(theFeature.results())
