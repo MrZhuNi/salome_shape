@@ -153,11 +153,11 @@ protected:
 
   /// \brief Sets status of builder.
   /// \param[in] theFlag new status.
-  void setDone(const bool theFlag);
+  GEOMALGOAPI_EXPORT void setDone(const bool theFlag);
 
   /// \brief Sets result shape.
   /// \param[in] theShape new shape.
-  void setShape(const GeomShapePtr theShape);
+  GEOMALGOAPI_EXPORT void setShape(const GeomShapePtr theShape);
 
   /// \return true if passed shape is valid for history.
   bool isValidForHistory(const GeomShapePtr theShape);
