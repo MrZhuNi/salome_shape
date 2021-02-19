@@ -91,13 +91,13 @@ public:
               zt, BuildPlugin_Interpolation::ZT_ID(),
               ModelAPI_AttributeString, /** zt expression*/,
               mint, BuildPlugin_Interpolation::MINT_ID(),
-              ModelAPI_AttributeDouble, /** zt expression*/,
+              ModelAPI_AttributeDouble, /** min expression*/,
               maxt, BuildPlugin_Interpolation::MAXT_ID(),
-              ModelAPI_AttributeDouble, /** zt expression*/,
+              ModelAPI_AttributeDouble, /** max expression*/,
               numstep, BuildPlugin_Interpolation::NUMSTEP_ID(),
-              ModelAPI_AttributeInteger, /** zt expression*/,
+              ModelAPI_AttributeInteger, /** Number step expression*/,
               creationmethod, BuildPlugin_Interpolation::CREATION_METHOD_ID(),
-              ModelAPI_AttributeString, /** zt expression*/)
+              ModelAPI_AttributeString, /** creation method*/)
 
   /// Modify base attribute of the feature.
   BUILDAPI_EXPORT
@@ -146,7 +146,7 @@ InterpolationPtr addInterpolation(const std::shared_ptr<ModelAPI_Document>& theP
                                   const bool theIsToReorder = false);
 
 /// \ingroup CPPHighAPI
-/// \brief Create Interpolation feature using tangents.
+/// \brief Create Interpolation feature using expression analytical.
 BUILDAPI_EXPORT
 InterpolationPtr addInterpolation(const std::shared_ptr<ModelAPI_Document>& thePart,
                                   const std::string & theXTexpression,

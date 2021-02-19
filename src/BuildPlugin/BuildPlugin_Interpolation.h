@@ -135,14 +135,14 @@ public:
     return MY_MAXT_ID;
   }
 
-  /// attribute of parameter name
+  /// attribute of parameter name of variable
   inline static const std::string& VARIABLE_ID()
   {
     static const std::string MY_VARIABLE_ID("variable");
     return MY_VARIABLE_ID;
   }
 
-  /// attribute of parameter name
+  /// attribute of parameter name of value
   inline static const std::string& VALUE_ID()
   {
     static const std::string MY_VALUE_ID("value");
@@ -156,7 +156,7 @@ public:
     return MY_EXPRESSION_ERROR_ID;
   }
 
-  /// Attribute name of max t.
+  /// Attribute name of number step.
   inline static const std::string& NUMSTEP_ID()
   {
     static const std::string MY_NUMSTEP_ID("numstep");

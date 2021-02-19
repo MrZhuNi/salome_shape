@@ -116,14 +116,14 @@ void BuildAPI_Interpolation::setReorder(const bool theIsToReorder)
 
   execIfBaseNotEmpty();
 }
-
+//==================================================================================================
 void BuildAPI_Interpolation::setUseTangents(const bool theIsToUseTangents)
 {
   fillAttribute(theIsToUseTangents ? "true" : "", myuseTangents);
 
   execIfBaseNotEmpty();
 }
-
+//==================================================================================================
 void BuildAPI_Interpolation::setTangents(const ModelHighAPI_Selection& theStartTangent,
                                          const ModelHighAPI_Selection& theEndTangent)
 {
@@ -210,7 +210,7 @@ InterpolationPtr addInterpolation(const std::shared_ptr<ModelAPI_Document>& theP
                                                      theIsClosed,
                                                      theIsToReorder));
 }
-
+//==================================================================================================
 InterpolationPtr addInterpolation(const std::shared_ptr<ModelAPI_Document>& thePart,
                                   const std::string & theXTexpression,
                                   const std::string & theYTexpression,
