@@ -95,7 +95,7 @@ public:
               maxt, BuildPlugin_Interpolation::MAXT_ID(),
               ModelAPI_AttributeDouble, /** max expression*/,
               numstep, BuildPlugin_Interpolation::NUMSTEP_ID(),
-              ModelAPI_AttributeInteger, /** Number step expression*/,
+              ModelAPI_AttributeInteger, /** Number of steps expression*/,
               creationmethod, BuildPlugin_Interpolation::CREATION_METHOD_ID(),
               ModelAPI_AttributeString, /** creation method*/)
 

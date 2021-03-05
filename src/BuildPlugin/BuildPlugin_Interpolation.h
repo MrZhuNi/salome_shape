@@ -156,7 +156,7 @@ public:
     return MY_EXPRESSION_ERROR_ID;
   }
 
-  /// Attribute name of number step.
+  /// Attribute name of number of steps.
   inline static const std::string& NUMSTEP_ID()
   {
     static const std::string MY_NUMSTEP_ID("numstep");

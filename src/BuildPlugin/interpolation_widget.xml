@@ -57,7 +57,6 @@
         </doublevalue>
         <integervalue id="numstep"
                     label="Number of steps"
-                    tooltip="Fillet radius."
                     min="0"
                     default="10">
           <validator id="GeomValidators_Positive"/>
