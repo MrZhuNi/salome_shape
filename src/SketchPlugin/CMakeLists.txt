@@ -56,6 +56,7 @@ SET(PROJECT_HEADERS
     SketchPlugin_Feature.h
     SketchPlugin_IntersectionPoint.h
     SketchPlugin_Line.h
+    SketchPlugin_Polyline.h
     SketchPlugin_MacroArc.h
     SketchPlugin_MacroArcReentrantMessage.h
     SketchPlugin_MacroBSpline.h
@@ -112,6 +113,7 @@ SET(PROJECT_SOURCES
     SketchPlugin_Feature.cpp
     SketchPlugin_IntersectionPoint.cpp
     SketchPlugin_Line.cpp
+    SketchPlugin_Polyline.cpp
     SketchPlugin_MacroArc.cpp
     SketchPlugin_MacroBSpline.cpp
     SketchPlugin_MacroCircle.cpp

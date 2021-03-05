@@ -23,6 +23,7 @@
 #include "PartSet_Tools.h"
 #include "PartSet_PreviewPlanes.h"
 #include "PartSet_WidgetBSplinePoints.h"
+#include "PartSet_WidgetPolylinePoints.h"
 #include "PartSet_WidgetPoint2d.h"
 #include "PartSet_WidgetPoint2DFlyout.h"
 #include "PartSet_WidgetShapeSelector.h"
@@ -927,6 +928,13 @@ ModuleBase_ModelWidget* PartSet_Module::createWidgetByType(const std::string& th
     aBSplineWgt->setSketch(mySketchMgr->activeSketch());
     aWgt = aBSplineWgt;
   }
+  else if (theType == "sketch-polyline_selector") {
+    PartSet_WidgetPolylinePoints* aBSplineWgt =
+        new PartSet_WidgetPolylinePoints(theParent, aWorkshop, theWidgetApi);
+    aBSplineWgt->setSketch(mySketchMgr->activeSketch());
+    aWgt = aBSplineWgt;
+  }
+
   else if (theType == WDG_DOUBLEVALUE_EDITOR) {
     aWgt = new PartSet_WidgetEditor(theParent, aWorkshop, theWidgetApi);
   } else if (theType == "export_file_selector") {

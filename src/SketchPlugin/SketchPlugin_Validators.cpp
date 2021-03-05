@@ -1966,6 +1966,18 @@ bool SketchPlugin_BSplineValidator::isValid(const AttributePtr& theAttribute,
   return true;
 }
 
+bool SketchPlugin_PolylineValidator::isValid(const AttributePtr& theAttribute,
+                                            const std::list<std::string>& theArguments,
+                                            Events_InfoMessage& theError) const
+{
+  AttributePoint2DArrayPtr aPolesArray =
+      std::dynamic_pointer_cast<GeomDataAPI_Point2DArray>(theAttribute);
+  if (!aPolesArray)
+    return false;
+
+  return true;
+}
+
 bool SketchPlugin_CurveFittingValidator::isValid(const FeaturePtr& theFeature,
                                                  const std::list<std::string>& theArguments,
                                                  Events_InfoMessage& theError) const

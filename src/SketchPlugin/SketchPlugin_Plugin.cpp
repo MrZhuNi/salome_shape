@@ -49,6 +49,7 @@
 #include <SketchPlugin_MacroArc.h>
 #include <SketchPlugin_MacroBSpline.h>
 #include <SketchPlugin_MacroCircle.h>
+#include <SketchPlugin_Polyline.h>
 #include <SketchPlugin_MultiRotation.h>
 #include <SketchPlugin_MultiTranslation.h>
 #include <SketchPlugin_Offset.h>
@@ -155,6 +156,8 @@ SketchPlugin_Plugin::SketchPlugin_Plugin()
                               new SketchPlugin_MultiRotationAngleValidator);
   aFactory->registerValidator("SketchPlugin_BSplineValidator",
                               new SketchPlugin_BSplineValidator);
+  aFactory->registerValidator("SketchPlugin_PolylineValidator",
+                              new SketchPlugin_PolylineValidator);
   aFactory->registerValidator("SketchPlugin_CurveFittingValidator",
                               new SketchPlugin_CurveFittingValidator);
 
@@ -279,6 +282,8 @@ FeaturePtr SketchPlugin_Plugin::createFeature(std::string theFeatureID)
     return FeaturePtr(new SketchPlugin_EllipticArc);
   } else if (theFeatureID == SketchPlugin_MacroEllipticArc::ID()) {
     return FeaturePtr(new SketchPlugin_MacroEllipticArc);
+  } else if (theFeatureID == SketchPlugin_Polyline::ID()) {
+    return FeaturePtr(new SketchPlugin_Polyline);
   } else if (theFeatureID == SketchPlugin_CurveFitting::ID()) {
     return FeaturePtr(new SketchPlugin_CurveFitting);
   } else if (theFeatureID == SketchPlugin_SketchDrawer::ID()) {
@@ -362,6 +367,7 @@ std::shared_ptr<ModelAPI_FeatureStateMessage> SketchPlugin_Plugin
       aMsg->setState(SketchPlugin_MacroCircle::ID(), aHasSketchPlane);
       aMsg->setState(SketchPlugin_MacroEllipse::ID(), aHasSketchPlane);
       aMsg->setState(SketchPlugin_MacroEllipticArc::ID(), aHasSketchPlane);
+      aMsg->setState(SketchPlugin_Polyline::ID(), aHasSketchPlane);
       aMsg->setState(SketchPlugin_ConstraintDistanceHorizontal::ID(), aHasSketchPlane);
       aMsg->setState(SketchPlugin_ConstraintDistanceVertical::ID(), aHasSketchPlane);
       aMsg->setState(SketchPlugin_CurveFitting::ID(), aHasSketchPlane);

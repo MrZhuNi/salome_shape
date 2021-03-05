@@ -3,7 +3,7 @@
     <group id="Linear geometry">
       <feature
         id="Sketch"
-        nested="SketchPoint SketchIntersectionPoint SketchLine
+        nested="SketchPoint SketchIntersectionPoint SketchLine SketchPolyline
                 SketchCircle SketchMacroCircle SketchArc SketchMacroArc
                 SketchEllipse SketchMacroEllipse SketchEllipticArc SketchMacroEllipticArc
                 SketchBSpline SketchMacroBSpline SketchMacroBSplinePeriodic SketchBSplinePeriodic
@@ -51,6 +51,17 @@
                      tooltip="Line length" obligatory="0" enable_value="false"/>
         <boolvalue id="Auxiliary" label="Auxiliary" default="false" tooltip="Construction element" obligatory="0" change_visual_attributes="true"/>
         <validator id="GeomValidators_Different" parameters="StartPoint,EndPoint"/>
+      </feature>
+      <!-- SketchPolyline -->
+      <feature id="SketchPolyline" title="Polyline" tooltip="Create polyline" icon="icons/Sketch/polyline.png"
+               helpfile="lineFeature.html">
+        <sketch-polyline_selector id="points"
+                          title="Points"
+                          tooltip="Polyline points"
+                          enable_value="enable_by_preferences">
+          <validator id="SketchPlugin_PolylineValidator"/>
+        </sketch-polyline_selector>
+        <boolvalue id="Auxiliary" label="Auxiliary" default="false" tooltip="Construction element" obligatory="0" change_visual_attributes="true"/>
       </feature>
     </group>
     <group id="Conical geometry">
