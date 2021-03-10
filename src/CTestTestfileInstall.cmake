@@ -27,5 +27,8 @@ SUBDIRS(ConnectorAPI
         HDFs
         FeaturesPlugin
         ConstructionPlugin
+<<<<<<< HEAD
         SketchPlugin
+=======
+>>>>>>> 1b131e186e0924f233cdfac8d052622740da30e8
 )
