@@ -1,4 +1,4 @@
-# Copyright (C) 2020  CEA/DEN, EDF R&D
+# Copyright (C) 2021  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,22 +17,18 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-SET(SALOME_TEST_DRIVER "$ENV{KERNEL_ROOT_DIR}/bin/salome/appliskel/salome_test_driver.py")
-
-SET(COMPONENT_NAME SHAPER)
-set(SALOME_TEST_LABEL_ADV SHAPER_ADV)
-
-# Add all test subdirs
-SUBDIRS(ConnectorAPI
-        HDFs
-        FeaturesPlugin
-        ConstructionPlugin
-        SketchPlugin
-        ModelAPI
-        FiltersPlugin
-        CollectionPlugin
-        BuildPlugin
-        ExchangePlugin
-        PythonAPI
-        GeomAPI
+SET(TEST_NAMES
+  TestAx123.py
+  TestBox.py
+  TestBuilders.py
+  TestCone.py
+  TestCylinder.py
+  TestEllipse2d.py
+  TestLine.py
+  TestPlanarEdge.py
+  TestPolygon.py
+  TestSphere.py
+  TestTorus.py
+  Test2675.py
+  Test2879.py
 )
