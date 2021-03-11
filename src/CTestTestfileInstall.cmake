@@ -46,4 +46,5 @@ SUBDIRS(ConnectorAPI
         ExchangeAPI
         ModelGeomAlgo
         Locale
+        test_API
 )

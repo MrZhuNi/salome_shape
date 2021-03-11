@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2020  CEA/DEN, EDF R&D
+# Copyright (C) 2021  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,20 +17,11 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-INCLUDE(UnitTest)
-
 include(tests.set)
 
-ADD_UNIT_TESTS(${TEST_NAMES})
-
-if(${HAVE_SALOME})
-  enable_testing()
-  set(TEST_INSTALL_DIRECTORY "${SALOME_SHAPER_INSTALL_TESTS}/test_API")
-  
-  install(FILES CTestTestfileInstall.cmake
-  DESTINATION ${TEST_INSTALL_DIRECTORY}
-  RENAME CTestTestfile.cmake)
-  install(FILES tests.set DESTINATION ${TEST_INSTALL_DIRECTORY})
-  message(${TEST_NAMES})
-  install(FILES ${TEST_NAMES} DESTINATION ${TEST_INSTALL_DIRECTORY})
-endif(${HAVE_SALOME})
+foreach(tfile ${TEST_NAMES})
+  set(TEST_NAME ${COMPONENT_NAME}_${tfile})
+  get_filename_component(tfile_without_dir ${tfile} NAME)
+  add_test(${TEST_NAME} python ${tfile_without_dir})
+  set_tests_properties(${TEST_NAME} PROPERTIES LABELS "${SALOME_TEST_LABEL_ADV}")
+endforeach()
