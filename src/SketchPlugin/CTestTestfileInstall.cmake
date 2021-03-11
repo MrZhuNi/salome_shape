@@ -18,6 +18,9 @@
 #
 
 include(tests.set)
+include(tests_change_radius.set)
+
+set(TEST_NAMES ${TEST_NAMES} ${TEST_NAMES_CHANGE_RADIUS})
 
 foreach(tfile ${TEST_NAMES})
   set(TEST_NAME ${COMPONENT_NAME}_${tfile})

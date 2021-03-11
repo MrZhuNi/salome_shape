@@ -187,18 +187,11 @@ include(tests.set)
 
 ADD_UNIT_TESTS(${TEST_NAMES})
 
+include(tests.set)
+
 if(${SKETCHER_CHANGE_RADIUS_WHEN_MOVE})
-  ADD_UNIT_TESTS(
-    TestMoveArc.py
-    TestMoveBSpline.py
-    TestMoveBSplinePeriodic.py
-    TestMoveCircle.py
-    TestMoveEllipse.py
-    TestMoveEllipticArc.py
-    TestMoveLine.py
-    TestMovementComplex.py
-    TestMovePoint.py
-  )
+  include(tests_change_radius.set)
+  ADD_UNIT_TESTS(${TEST_NAMES_CHANGE_RADIUS})
 endif()
 
 ADD_RESTRICTED_TESTS(
@@ -212,6 +205,10 @@ if(${HAVE_SALOME})
   install(FILES CTestTestfileInstall.cmake
   DESTINATION ${TEST_INSTALL_DIRECTORY}
   RENAME CTestTestfile.cmake)
+  if(${SKETCHER_CHANGE_RADIUS_WHEN_MOVE})
+    set(TEST_NAMES ${TEST_NAMES} ${TEST_NAMES_CHANGE_RADIUS})
+    install(FILES tests_change_radius.set DESTINATION ${TEST_INSTALL_DIRECTORY})
+  endif()
   install(FILES tests.set DESTINATION ${TEST_INSTALL_DIRECTORY})
   
   set(TMP_TESTS_NAMES)
