@@ -105,11 +105,10 @@ void FeaturesPlugin_Loft::execute()
       ResultBodyPtr aResultBody = document()->createBody(data());
       aResultBody->store(aCreatedFace);
       // store edges
-      int anEdgeInd = 0;
       for(GeomAPI_ShapeExplorer anExp(aCreatedFace, GeomAPI_Shape::EDGE);
                                 anExp.more(); anExp.next()) {
         GeomShapePtr anEdge = anExp.current();
-        aResultBody->generated(anEdge, "Loft_Edge_" + std::to_string((long long)anEdgeInd));
+        aResultBody->generated(anEdge, "Loft_Edge");
       }
       setResult(aResultBody, 0);
 
@@ -131,18 +130,11 @@ void FeaturesPlugin_Loft::execute()
       ResultBodyPtr aResultBody = document()->createBody(data());
 
       aResultBody->store(aLoftAlgo->shape());
-      // store edges
-      int anEdgeInd = 0;
-      for(GeomAPI_ShapeExplorer anExp(aLoftAlgo->shape(), GeomAPI_Shape::EDGE);
-                                anExp.more(); anExp.next()) {
-        GeomShapePtr anEdge = anExp.current();
-        aResultBody->generated(anEdge, "Loft_Edge_" + std::to_string((long long)anEdgeInd));
-      }
-      int anFaceInd = 0;
+      // store Faces
       for(GeomAPI_ShapeExplorer anExp(aLoftAlgo->shape(), GeomAPI_Shape::FACE);
                                 anExp.more(); anExp.next()) {
         GeomShapePtr anEdge = anExp.current();
-        aResultBody->generated(anEdge, "Loft_Face_" + std::to_string((long long)anFaceInd));
+        aResultBody->generated(anEdge, "Loft_Face");
       }
       setResult(aResultBody, 0);
     }
