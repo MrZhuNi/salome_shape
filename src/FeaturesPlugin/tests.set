@@ -521,4 +521,6 @@ SET(TEST_NAMES
                TestGeometryCalculation.py
                TestBoundingBox.py
                Test23885.py
+               Test23885_Ciseaux.py
+               Test23885_grille_de_melange.py
 )
