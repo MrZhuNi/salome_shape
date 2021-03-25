@@ -87,6 +87,7 @@ The plug-in includes the following features for creation of 2D objects:
 
    pointFeature.rst
    lineFeature.rst
+   polylineFeature.rst
    rectangleFeature.rst
    circleFeature.rst
    arcFeature.rst

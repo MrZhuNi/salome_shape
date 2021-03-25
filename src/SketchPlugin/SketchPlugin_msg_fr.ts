@@ -2980,7 +2980,20 @@
       <translation>Élément de construction</translation>
     </message>
   </context>
-
+  <context>
+    <name>SketchPolyline</name>
+    <message>
+      <source>Polyline</source>
+      <translation>Polyligne</translation>
+    </message>
+  </context>
+  <context>
+    <name>SketchPolyline:Auxiliary</name>
+    <message>
+      <source>Auxiliary</source>
+      <translation>Auxiliaire</translation>
+    </message>
+  </context>
   <context>
     <name>SketchMacroArc</name>
     <message>

@@ -23,6 +23,8 @@
 #include "SketchPlugin_Sketch.h"
 
 #include "SketchPlugin_ConstraintCoincidence.h"
+#include "SketchPlugin_ConstraintVertical.h"
+#include "SketchPlugin_ConstraintHorizontal.h"
 
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeBoolean.h>
@@ -38,7 +40,7 @@
 #include <GeomAlgoAPI_CompoundBuilder.h>
 #include <SketchPlugin_Tools.h>
 
-#include <iostream>
+#include <cmath>
 
 SketchPlugin_Polyline::SketchPlugin_Polyline()
     : SketchPlugin_SketchEntity()
@@ -61,14 +63,14 @@ void SketchPlugin_Polyline::execute()
   createLineFeature();
 }
 
-void  SketchPlugin_Polyline::createLineFeature()
+void SketchPlugin_Polyline::createLineFeature()
 {
   AttributePoint2DArrayPtr aPointsArray =
       std::dynamic_pointer_cast<GeomDataAPI_Point2DArray>(attribute(POINTS_ID()));
 
   getAISObject(AISObjectPtr());
 
-  if (aPointsArray->isInitialized())
+  if (aPointsArray->isInitialized() && aPointsArray->size() > 1)
   {
     FeaturePtr aLastline;
     FeaturePtr aFirstline;
@@ -79,13 +81,15 @@ void  SketchPlugin_Polyline::createLineFeature()
       if (anIndex ==1) {
         aFirstline = aLine;
       }
-      std::shared_ptr<GeomDataAPI_Point2D> aStartA = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-        aLine->attribute(SketchPlugin_Line::START_ID()));
+      std::shared_ptr<GeomDataAPI_Point2D> aStartA =
+                              std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+                                      aLine->attribute(SketchPlugin_Line::START_ID()));
 
       aStartA->setValue(aPointsArray->pnt(anIndex-1));
 
-      std::shared_ptr<GeomDataAPI_Point2D> aEndA = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-        aLine->attribute(SketchPlugin_Line::END_ID()));
+      std::shared_ptr<GeomDataAPI_Point2D> aEndA =
+                              std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+                                         aLine->attribute(SketchPlugin_Line::END_ID()));
 
       aEndA->setValue(aPointsArray->pnt(anIndex));
 
@@ -96,31 +100,36 @@ void  SketchPlugin_Polyline::createLineFeature()
         // Initialize new line with first point equal to end of previous
         std::shared_ptr<ModelAPI_Data> aSFData = aLastline->data();
         std::shared_ptr<GeomDataAPI_Point2D> aSPoint =
-                                    std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-                                                aSFData->attribute(SketchPlugin_Line::END_ID()));
+                              std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+                                               aSFData->attribute(SketchPlugin_Line::END_ID()));
         std::shared_ptr<ModelAPI_Data> aNFData = aLine->data();
         std::shared_ptr<GeomDataAPI_Point2D> aNPoint =
-                                    std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-                                              aNFData->attribute(SketchPlugin_Line::START_ID()));
+                              std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+                                             aNFData->attribute(SketchPlugin_Line::START_ID()));
         aNPoint->setValue(aSPoint->x(), aSPoint->y());
         SketchPlugin_ConstraintCoincidence::createCoincidenceFeature(sketch(), aSPoint, aNPoint);
       }
 
       aLine->execute();
+
+      if (fabs(aPointsArray->pnt(anIndex-1)->x() - aPointsArray->pnt(anIndex)->x()) <  1.0) {
+        SketchPlugin_ConstraintVertical::createVerticalFeature(sketch(),aLine->firstResult());
+      } else if (fabs(aPointsArray->pnt(anIndex-1)->y() - aPointsArray->pnt(anIndex)->y()) < 1.0) {
+        SketchPlugin_ConstraintHorizontal::createHorizontalFeature(sketch(),aLine->firstResult());
+      }
+
       aLastline = aLine;
     }
     // Initialize new line with first point equal to end of previous
     std::shared_ptr<ModelAPI_Data> aSFData = aLastline->data();
-    std::shared_ptr<GeomDataAPI_Point2D> aSPoint =
-                                           std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+    std::shared_ptr<GeomDataAPI_Point2D> aSPoint = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
                                                 aSFData->attribute(SketchPlugin_Line::END_ID()));
     std::shared_ptr<ModelAPI_Data> aNFData = aFirstline->data();
-    std::shared_ptr<GeomDataAPI_Point2D> aNPoint =
-                                           std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-                                              aNFData->attribute(SketchPlugin_Line::START_ID()));
+    std::shared_ptr<GeomDataAPI_Point2D> aNPoint = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+                                                aNFData->attribute(SketchPlugin_Line::START_ID()));
 
     double aDistance = aSPoint->pnt()->distance(aNPoint->pnt());
-    if (aDistance < 1) {
+    if (aDistance < 2) {
       aNPoint->setValue(aSPoint->x(), aSPoint->y());
       SketchPlugin_ConstraintCoincidence::createCoincidenceFeature(sketch(), aSPoint, aNPoint);
     }

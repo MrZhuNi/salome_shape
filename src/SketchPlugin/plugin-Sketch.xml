@@ -42,7 +42,7 @@
 
       <!-- SketchLine -->
       <feature id="SketchLine" title="Line" tooltip="Create line" icon="icons/Sketch/line.png"
-               helpfile="lineFeature.html">
+               helpfile="lineFeature.html" >
         <sketch-2dpoint_selector id="StartPoint" accept_expressions="0" title="Start point" tooltip="Start point coordinates"
                                  enable_value="enable_by_preferences"/>
         <sketch-2dpoint_selector id="EndPoint" accept_expressions="0" title="End point" tooltip="End point coordinates"
@@ -54,7 +54,7 @@
       </feature>
       <!-- SketchPolyline -->
       <feature id="SketchPolyline" title="Polyline" tooltip="Create polyline" icon="icons/Sketch/polyline.png"
-               helpfile="lineFeature.html">
+               helpfile="polylineFeature.html">
         <sketch-polyline_selector id="points"
                           title="Points"
                           tooltip="Polyline points"

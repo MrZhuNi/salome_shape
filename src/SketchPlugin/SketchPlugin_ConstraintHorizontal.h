@@ -56,6 +56,12 @@ class SketchPlugin_ConstraintHorizontal : public SketchPlugin_ConstraintBase
   /// Returns the AIS preview
   SKETCHPLUGIN_EXPORT virtual AISObjectPtr getAISObject(AISObjectPtr thePrevious);
 
+  /// Creates a horizontal constraint on line
+  /// \param theSketch a sketch feature
+  /// \param theLine the line
+  static void createHorizontalFeature(SketchPlugin_Sketch* theSketch,
+                                    const std::shared_ptr<ModelAPI_Result>& theLine);
+
   /// \brief Use plugin manager for features creation
   SketchPlugin_ConstraintHorizontal();
 };

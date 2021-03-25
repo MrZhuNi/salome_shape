@@ -36,7 +36,7 @@ class GeomAPI_Pnt2d;
  * \brief Feature for creation of polyline in PartSet.
  */
 class SketchPlugin_Polyline : public SketchPlugin_SketchEntity,
-                               public GeomAPI_IPresentable
+                              public GeomAPI_IPresentable
 {
  public:
   /// Arc feature kind

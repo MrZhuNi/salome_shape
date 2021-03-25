@@ -21,6 +21,7 @@
 
 #include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_Data.h>
+#include <ModelAPI_Events.h>
 #include <ModelAPI_ResultConstruction.h>
 
 #include <SketchPlugin_Line.h>
@@ -29,6 +30,7 @@
 #include <SketcherPrs_Factory.h>
 
 #include <Config_PropManager.h>
+#include <Events_Loop.h>
 
 SketchPlugin_ConstraintVertical::SketchPlugin_ConstraintVertical()
 {
@@ -53,4 +55,24 @@ AISObjectPtr SketchPlugin_ConstraintVertical::getAISObject(AISObjectPtr thePrevi
   return anAIS;
 }
 
+void SketchPlugin_ConstraintVertical::createVerticalFeature(SketchPlugin_Sketch* theSketch,
+                                          const std::shared_ptr<ModelAPI_Result>& theLine)
+{
+  FeaturePtr aFeature;
+  if (theSketch) {
+    aFeature = theSketch->addFeature(SketchPlugin_ConstraintVertical::ID());
+  } else {
+    std::shared_ptr<ModelAPI_Document> aDoc = theSketch->document();
+    aFeature = aDoc->addFeature(SketchPlugin_ConstraintVertical::ID());
+  }
+
+  std::shared_ptr<ModelAPI_Data> aData = aFeature->data();
+
+  std::shared_ptr<ModelAPI_AttributeRefAttr> aRef = std::dynamic_pointer_cast<
+      ModelAPI_AttributeRefAttr>(aData->attribute(SketchPlugin_Constraint::ENTITY_A()));
+  aRef->setObject(theLine);
+
+  // we need to flush created signal in order to coincidence is processed by solver
+  Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_CREATED));
+}
 
