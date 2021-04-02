@@ -40,6 +40,9 @@
 #include <GeomAlgoAPI_CompoundBuilder.h>
 #include <SketchPlugin_Tools.h>
 
+#include "GeomAPI_Lin2d.h"
+#include "GeomAPI_Dir2d.h"
+
 #include <cmath>
 
 SketchPlugin_Polyline::SketchPlugin_Polyline()
@@ -72,28 +75,29 @@ void SketchPlugin_Polyline::createLineFeature()
 
   if (aPointsArray->isInitialized() && aPointsArray->size() > 1)
   {
+    static GeomDir2dPtr myHorDir(new GeomAPI_Dir2d(1, 0));
+    static GeomDir2dPtr myVertDir(new GeomAPI_Dir2d(0, 1));
+
     FeaturePtr aLastline;
     FeaturePtr aFirstline;
     // collect points
     for (int anIndex = 1; anIndex < aPointsArray->size(); ++anIndex) {
 
-      FeaturePtr aLine = sketch()->addFeature(SketchPlugin_Line::ID());
+      FeaturePtr aLineFtr = sketch()->addFeature(SketchPlugin_Line::ID());
       if (anIndex ==1) {
-        aFirstline = aLine;
+        aFirstline = aLineFtr;
       }
-      std::shared_ptr<GeomDataAPI_Point2D> aStartA =
-                              std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-                                      aLine->attribute(SketchPlugin_Line::START_ID()));
+      std::shared_ptr<GeomDataAPI_Point2D> aStartA = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+        aLineFtr->attribute(SketchPlugin_Line::START_ID()));
 
       aStartA->setValue(aPointsArray->pnt(anIndex-1));
 
-      std::shared_ptr<GeomDataAPI_Point2D> aEndA =
-                              std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
-                                         aLine->attribute(SketchPlugin_Line::END_ID()));
+      std::shared_ptr<GeomDataAPI_Point2D> aEndA = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
+        aLineFtr->attribute(SketchPlugin_Line::END_ID()));
 
       aEndA->setValue(aPointsArray->pnt(anIndex));
 
-      aLine->boolean(SketchPlugin_SketchEntity::AUXILIARY_ID())->setValue(
+      aLineFtr->boolean(SketchPlugin_SketchEntity::AUXILIARY_ID())->setValue(
           boolean(AUXILIARY_ID())->value());
 
       if (aLastline) {
@@ -102,7 +106,7 @@ void SketchPlugin_Polyline::createLineFeature()
         std::shared_ptr<GeomDataAPI_Point2D> aSPoint =
                               std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
                                                aSFData->attribute(SketchPlugin_Line::END_ID()));
-        std::shared_ptr<ModelAPI_Data> aNFData = aLine->data();
+        std::shared_ptr<ModelAPI_Data> aNFData = aLineFtr->data();
         std::shared_ptr<GeomDataAPI_Point2D> aNPoint =
                               std::dynamic_pointer_cast<GeomDataAPI_Point2D>(
                                              aNFData->attribute(SketchPlugin_Line::START_ID()));
@@ -110,16 +114,30 @@ void SketchPlugin_Polyline::createLineFeature()
         SketchPlugin_ConstraintCoincidence::createCoincidenceFeature(sketch(), aSPoint, aNPoint);
       }
 
-      aLine->execute();
+      aLineFtr->execute();
 
-      if (fabs(aPointsArray->pnt(anIndex-1)->x() - aPointsArray->pnt(anIndex)->x()) <  1.0) {
-        SketchPlugin_ConstraintVertical::createVerticalFeature(sketch(),aLine->firstResult());
-      } else if (fabs(aPointsArray->pnt(anIndex-1)->y() - aPointsArray->pnt(anIndex)->y()) < 1.0) {
-        SketchPlugin_ConstraintHorizontal::createHorizontalFeature(sketch(),aLine->firstResult());
+      GeomLine2dPtr aLine(new GeomAPI_Lin2d(aPointsArray->pnt(anIndex-1),
+                                            aPointsArray->pnt(anIndex)));
+      GeomDir2dPtr aDir = aLine->direction();
+      double aHorAngle = fabs(myHorDir->angle(aDir));
+      double aVertAngle = fabs(myVertDir->angle(aDir));
+      if (aHorAngle > M_PI/2.)
+      aHorAngle = M_PI - aHorAngle;
+      if (aVertAngle > M_PI/2.)
+      aVertAngle = M_PI - aVertAngle;
+      double aTolerance = Config_PropManager::real(SKETCH_TAB_NAME,
+                                                   "angular_tolerance") * M_PI/180.0;
+
+      if (aHorAngle < aTolerance) {
+        SketchPlugin_ConstraintHorizontal::createHorizontalFeature(sketch(),
+                                                                   aLineFtr->firstResult());
+      } else if (aVertAngle < aTolerance) {
+        SketchPlugin_ConstraintVertical::createVerticalFeature(sketch(),
+                                                               aLineFtr->firstResult());
       }
-
-      aLastline = aLine;
+      aLastline = aLineFtr;
     }
+
     // Initialize new line with first point equal to end of previous
     std::shared_ptr<ModelAPI_Data> aSFData = aLastline->data();
     std::shared_ptr<GeomDataAPI_Point2D> aSPoint = std::dynamic_pointer_cast<GeomDataAPI_Point2D>(

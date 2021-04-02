@@ -61,7 +61,7 @@ ConstructionPlugin_Plugin::ConstructionPlugin_Plugin()
   Config_PropManager::registerProp(SKETCH_TAB_NAME, "planes_thickness", "Thickness",
     Config_Prop::IntSpin, SKETCH_WIDTH);
   Config_PropManager::registerProp(SKETCH_TAB_NAME, "angular_tolerance", "Angular tolerance",
-    Config_Prop::DblSpin, "0.04");
+    Config_Prop::DblSpin, "4.0");
   Config_PropManager::registerProp(SKETCH_TAB_NAME, "spline_weight", "Default spline weight",
     Config_Prop::DblSpin, "1.0");
   Config_PropManager::registerProp(SKETCH_TAB_NAME, "rotate_to_plane",

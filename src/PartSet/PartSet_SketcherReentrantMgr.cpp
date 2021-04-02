@@ -867,7 +867,7 @@ void PartSet_SketcherReentrantMgr::addConstraints(const FeaturePtr& theFeature)
     if (aVertAngle > M_PI/2.)
       aVertAngle = M_PI - aVertAngle;
 
-    double aTolerance = Config_PropManager::real(SKETCH_TAB_NAME, "angular_tolerance");
+    double aTolerance = Config_PropManager::real(SKETCH_TAB_NAME, "angular_tolerance")* M_PI/180.0;
     CompositeFeaturePtr aSketch = module()->sketchMgr()->activeSketch();
     FeaturePtr aFeature;
     if (aHorAngle < aTolerance) {
