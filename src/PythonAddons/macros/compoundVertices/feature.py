@@ -78,6 +78,7 @@ class compoundVertices(model.Feature):
             self.separator = aseparator
 
         filepath = apath.value()
+        #print("filepath : '{}'".format(filepath))
         if filepath != "" :
             part = model.activeDocument()
             if self.lfeatures :

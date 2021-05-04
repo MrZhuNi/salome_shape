@@ -81,7 +81,7 @@ class importParameters(model.Feature):
         # Retrieving the user input
         apath    = self.string(self.FILE_ID())
         filepath = apath.value()
-        #print("filepath : ", filepath)
+        #print("filepath : '{}'".format(filepath))
         if filepath != "" :
 
             # Creating the parameters in the current document
