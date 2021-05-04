@@ -93,8 +93,8 @@ class compoundVertices(model.Feature):
             # Creating the construction points in the current document
             lVertices = []
 
-            with open(filepath) as file:
-                for line in file:
+            with open(filepath) as fic:
+                for line in fic:
                     coord = line.split(self.separator)
                     if len(coord) != 3:
                         return
@@ -102,7 +102,7 @@ class compoundVertices(model.Feature):
                     point = model.addPoint(part, x,y,z); point.execute(True); self.lfeatures.append(point)
                     #vertex = model.addVertex(part, [point.result()]); vertex.execute(True); self.lfeatures.append(vertex)
                     lVertices.append(point.result())
-                file.close()
+                fic.close()
                 compound = model.addCompound(part, lVertices)
                 compound.execute(True); self.lfeatures.append(compound)
                 compound.result().setName(nameRes)

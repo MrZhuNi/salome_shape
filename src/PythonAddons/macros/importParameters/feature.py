@@ -88,14 +88,14 @@ class importParameters(model.Feature):
             part = model.activeDocument()
             aNames = self.existingParameters()
 
-            with open(filepath) as file:
-                for line in file:
+            with open(filepath) as fic:
+                for line in fic:
                     defParameters = line.replace("\n","").split(' ')
                     if len(defParameters) == 2 :
                         if defParameters[0] not in aNames:
                             model.addParameter(part, defParameters[0], defParameters[1])
                             aNames.append(defParameters[0])
-                file.close()
+                fic.close()
                 return
 
             setError("The file does not exist")
