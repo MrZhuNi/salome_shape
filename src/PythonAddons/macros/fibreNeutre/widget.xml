@@ -3,7 +3,7 @@
     <group id="Samples">
       <feature id="fibreNeutre"
         title="Fibre neutre"
-        tooltip="Création de fibres neutres"
+        tooltip="Create"
         icon="icons/Addons/fibreNeutre.png"
         helpfile="importFibreNeutreFeature.html">
         <file_selector id="file_path" title="Import file" path="">

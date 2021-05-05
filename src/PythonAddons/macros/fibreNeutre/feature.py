@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2016-2021  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
@@ -23,9 +24,9 @@ Author: Gérald NICOLAS
 import os
 
 from salome.shaper import model
-from salome.shaper import geom
+from salome.geom import geomBuilder
+
 import ModelAPI
-import ParametersAPI
 
 class fibreNeutre(model.Feature):
     """Création des fibres neutres"""
@@ -65,20 +66,19 @@ class fibreNeutre(model.Feature):
         """F.execute() -- execute the Feature"""
         # Retrieving the user input
         apath    = self.string(self.FILE_ID())
-        print("apath : '{}'".format(apath))
         filepath = apath.value()
-        print("filepath : '{}'".format(filepath))
+        #print("filepath : '{}'".format(filepath))
         if filepath != "" :
             if os.path.isfile(filepath):
+                geompy = geomBuilder.New()
                 (_, objet, _, _, _) = geompy.ImportXAO(filepath)
-                geompy.addToStudy( objet, nom_objet )
+                #geompy.addToStudy( objet, nom_objet )
 
                 #l_options = list()
                 #if self._verbose_max:
                   #l_options.append("-v")
-                return
             else:
-                setError("The file '{}' does not exist".format(filepath))
+                self.setError("The file '{}' does not exist".format(filepath))
 
     def isMacro(self):
         """Override Feature.initAttributes().

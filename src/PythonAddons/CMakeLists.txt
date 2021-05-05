@@ -19,6 +19,7 @@
 
 SET(TEXT_RESOURCES
 	PythonAddons_msg_en.ts
+	PythonAddons_msg_fr.ts
 )
 
 # configuration

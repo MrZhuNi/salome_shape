@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2016-2021  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
@@ -20,9 +21,10 @@
 """importParameters
 Author: Nathalie Gore
 """
+import os
 
 from salome.shaper import model
-from salome.shaper import geom
+
 import ModelAPI
 import ParametersAPI
 
@@ -64,10 +66,10 @@ class importParameters(model.Feature):
     def existingParameters(self):
         """ Returns list of already existing parameters names"""
         aDoc = model.activeDocument()
-        aNbFeatures = aDoc.numInternalFeatures();
-        aNames = []
+        aNbFeatures = aDoc.numInternalFeatures()
+        aNames = list()
         for i in range(aNbFeatures):
-            aParamFeature = aDoc.internalFeature(i);
+            aParamFeature = aDoc.internalFeature(i)
             if aParamFeature is not None:
                 if aParamFeature.getKind() == ParametersAPI.ParametersAPI_Parameter.ID():
                     aNames.append(aParamFeature.name())
@@ -83,22 +85,20 @@ class importParameters(model.Feature):
         filepath = apath.value()
         #print("filepath : '{}'".format(filepath))
         if filepath != "" :
-
-            # Creating the parameters in the current document
-            part = model.activeDocument()
-            aNames = self.existingParameters()
-
-            with open(filepath) as fic:
-                for line in fic:
-                    defParameters = line.replace("\n","").split(' ')
-                    if len(defParameters) == 2 :
-                        if defParameters[0] not in aNames:
-                            model.addParameter(part, defParameters[0], defParameters[1])
-                            aNames.append(defParameters[0])
-                fic.close()
-                return
-
-            setError("The file does not exist")
+            if os.path.isfile(filepath):
+                # Creating the parameters in the current document
+                part = model.activeDocument()
+                aNames = self.existingParameters()
+                with open(filepath) as fic:
+                    for line in fic:
+                        defParameters = line.replace("\n","").split(' ')
+                        if len(defParameters) == 2 :
+                            if defParameters[0] not in aNames:
+                                model.addParameter(part, defParameters[0], defParameters[1])
+                                aNames.append(defParameters[0])
+                    fic.close()
+            else:
+                self.setError("The file does not exist")
 
     def isMacro(self):
         """Override Feature.initAttributes().
