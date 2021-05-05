@@ -5,8 +5,8 @@
         title="Fibre neutre"
         tooltip="Create"
         icon="icons/Addons/fibreNeutre.png"
-        helpfile="importFibreNeutreFeature.html">
-        <file_selector id="file_path" title="Import file" path="">
+        helpfile="fibreNeutreFeature.html">
+        <file_selector id="file_path" title="Import file" tooltip="Select file" path="">
         </file_selector>
       </feature>
     </group>

@@ -7,7 +7,7 @@
     <name>compoundVertices</name>
     <message>
       <source>Points set</source>
-      <translation>Points set</translation>
+      <translation>Import points</translation>
     </message>
     <message>
       <source>Import a set of construction points</source>
@@ -15,17 +15,26 @@
     </message>
   </context>
   <context>
-    <name>compoundVertices:file_selector</name>
+    <name>compoundVertices:file_path</name>
     <message>
       <source>Import file</source>
       <translation>Import txt file (X Y Z)</translation>
     </message>
+    <message>
+      <source>Select file</source>
+      <translation>Select the file of the points,
+      defined by their coordinates X Y Z</translation>
+    </message>
   </context>
   <context>
-    <name>compoundVertices:stringvalue</name>
+    <name>compoundVertices:separator</name>
     <message>
       <source>Separator (optional):</source>
       <translation>Separator (optional):</translation>
+    </message>
+    <message>
+      <source>"Select separator"</source>
+      <translation>Select a separator; the default value is white spaces.</translation>
     </message>
   </context>
 
@@ -33,8 +42,8 @@
   <context>
     <name>importParameters</name>
     <message>
-      <source>List of Parameters</source>
-      <translation>List of Parameters</translation>
+      <source>Import Parameters</source>
+      <translation>Import parameters</translation>
     </message>
     <message>
       <source>Import a set of parameters</source>
@@ -42,10 +51,15 @@
     </message>
   </context>
   <context>
-    <name>importParameters:file_selector</name>
+    <name>importParameters:file_path</name>
     <message>
       <source>Import file</source>
       <translation>Import file</translation>
+    </message>
+    <message>
+      <source>Select file</source>
+      <translation>Select the file of the parameters,
+      defined by couples: name, value</translation>
     </message>
   </context>
 
@@ -54,18 +68,22 @@
     <name>fibreNeutre</name>
     <message>
       <source>Fibre neutre</source>
-      <translation>Neutral fibers</translation>
+      <translation>Create midsurfaces</translation>
     </message>
     <message>
       <source>Create</source>
-      <translation>Create neutral fibers</translation>
+      <translation>Create midsurfaces</translation>
     </message>
   </context>
   <context>
-    <name>fibreNeutre:file_selector</name>
+    <name>fibreNeutre:file_path</name>
     <message>
       <source>Import file</source>
       <translation>XAO file of the object</translation>
+    </message>
+    <message>
+      <source>Select file</source>
+      <translation>Select the XAO file of the object</translation>
     </message>
   </context>
 

@@ -7,7 +7,7 @@
     <name>compoundVertices</name>
     <message>
       <source>Points set</source>
-      <translation>Ensemble de points</translation>
+      <translation>Importer des points</translation>
     </message>
     <message>
       <source>Import a set of construction points</source>
@@ -15,17 +15,26 @@
     </message>
   </context>
   <context>
-    <name>compoundVertices:file_selector</name>
+    <name>compoundVertices:file_path</name>
     <message>
       <source>Import file</source>
       <translation>Fichier des points à importer (X Y Z)</translation>
     </message>
+    <message>
+      <source>Select file</source>
+      <translation>Choisir le fichier contenant les points à importer,
+      définis par leurs coordonnées X Y Z</translation>
+    </message>
   </context>
   <context>
-    <name>compoundVertices:stringvalue</name>
+    <name>compoundVertices:separator</name>
     <message>
       <source>Separator (optional):</source>
       <translation>Séparateur (optionnel) :</translation>
+    </message>
+    <message>
+      <source>"Select separator"</source>
+      <translation>Choisir éventuellement un séparateur ; par défaut ce sont des blancs.</translation>
     </message>
   </context>
 
@@ -33,8 +42,8 @@
   <context>
     <name>importParameters</name>
     <message>
-      <source>List of Parameters</source>
-      <translation>Liste des paramètres</translation>
+      <source>Import Parameters</source>
+      <translation>Importer des paramètres</translation>
     </message>
     <message>
       <source>Import a set of parameters</source>
@@ -42,10 +51,15 @@
     </message>
   </context>
   <context>
-    <name>importParameters:file_selector</name>
+    <name>importParameters:file_path</name>
     <message>
       <source>Import file</source>
       <translation>Fichier des paramètres à importer</translation>
+    </message>
+    <message>
+      <source>Select file</source>
+      <translation>Choisir le fichier contenant les paramètres à importer,
+      définis par les paires : nom, valeur</translation>
     </message>
   </context>
 
@@ -54,18 +68,22 @@
     <name>fibreNeutre</name>
     <message>
       <source>Fibre neutre</source>
-      <translation>Fibre neutre</translation>
+      <translation>Créer des fibres neutres</translation>
     </message>
     <message>
       <source>Create</source>
-      <translation>Créer les fibres neutres</translation>
+      <translation>Créer des fibres neutres</translation>
     </message>
   </context>
   <context>
-    <name>fibreNeutre:file_selector</name>
+    <name>fibreNeutre:file_path</name>
     <message>
       <source>Import file</source>
       <translation>Fichier XAO de l'objet à traiter</translation>
+    </message>
+    <message>
+      <source>Select file</source>
+      <translation>Choisir le fichier de type XAO contenant l'objet à traiter</translation>
     </message>
   </context>
 
