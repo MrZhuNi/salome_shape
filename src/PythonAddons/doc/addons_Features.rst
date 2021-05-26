@@ -1,4 +1,3 @@
-
 Python addons
 =============
 
@@ -21,5 +20,5 @@ Some examples of already created custom features are:
 
    compoundVerticesFeature.rst
    importParametersFeature.rst
-   fibreNeutre.rst
+   fibreNeutreFeature.rst
    rectangleFeature.rst
