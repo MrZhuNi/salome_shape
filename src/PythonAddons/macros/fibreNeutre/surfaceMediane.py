@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V08.05"
+__revision__ = "V09.04"
 
 #========================= Les imports - Début ===================================
 
@@ -93,6 +93,9 @@ Options facultatives
 . Suppression des solides et faces créés par l'explosion des objets. Par défaut, la suppression est faite.
 -menage/-no_menage
 
+. Retour dans Shaper. Par défaut, les faces restent dans GEOM.
+-retour_shaper/-no_retour_shaper
+
   """
 
 # A. La base
@@ -106,10 +109,10 @@ Options facultatives
 # B. Les variables
 
   _choix_objet = 0
-  _nom_objet_geom = None
-  _nom_objet_shaper = None
+  _retour_shaper = False
   nom_solide = None
   epsilon = 5.e-3
+  part_doc = None
 
   objet_geom = None
 
@@ -121,15 +124,13 @@ Options facultatives
 
 Décodage des arguments
 On cherche ici les arguments généraux : aide, verbeux
-Le reste est stocké dans une liste qui sera décodée plus tard en tant que de besoin
     """
-
-    l_arg = list()
 
     for option in liste_option :
 
       #print (option)
-      saux = option.upper()
+      if isinstance(option,str):
+        saux = option.upper()
       #print (saux)
       if saux in ( "-H", "-HELP" ):
         self.affiche_aide_globale = 1
@@ -142,10 +143,10 @@ Le reste est stocké dans une liste qui sera décodée plus tard en tant que de 
         self._menage = True
       elif saux == "-NO_MENAGE" :
         self._menage = False
-      else :
-        l_arg.append(option)
-
-    self.commande_arg = l_arg
+      elif saux == "-RETOUR_SHAPER":
+        self._retour_shaper = True
+      elif saux == "-NO_RETOUR_SHAPER":
+        self._retour_shaper = False
 
 #===========================  Fin de la méthode ==================================
 
@@ -155,46 +156,6 @@ Le reste est stocké dans une liste qui sera décodée plus tard en tant que de 
     """A la suppression de l'instance de classe"""
     if self._verbose_max:
       print ("Suppression de l'instance de la classe.")
-
-#===========================  Fin de la méthode ==================================
-
-#=========================== Début de la méthode =================================
-#
-  def _arguments (self) :
-    """Décodage des arguments de cette commande
-
-Sorties :
-  :erreur: code d'erreur
-  :message: message d'erreur
-    """
-
-# 1. Préalables
-
-    nom_fonction = __name__ + "/_arguments"
-    blabla = "\nDans {} :\n".format(nom_fonction)
-    if self._verbose_max:
-      print (blabla+"arguments : {}".format(self.commande_arg))
-
-    erreur = 0
-    message = ""
-
-    while not erreur :
-
-# 2. Les arguments spécifiques de la commande
-
-      for argu in self.commande_arg :
-
-        #print ("\n", argu)
-        l_aux = argu.split("=")
-        #print (l_aux)
-        if ( len(l_aux) == 2 ) :
-          pass
-        else :
-          pass
-
-      break
-
-    return erreur, message
 
 #===========================  Fin de la méthode ==================================
 
@@ -379,17 +340,18 @@ Sorties :
 
     tb_caract = np.zeros((nb_faces,3), dtype = 'object')
     for iaux, face in enumerate(l_faces):
-      longueur, aire, volume = geompy.BasicProperties(face)
+      _, aire, _ = geompy.BasicProperties(face)
+      #longueur, aire, volume = geompy.BasicProperties(face)
       if self._verbose_max:
-        texte = "\t. Face numéro {}\n".format(iaux)
-        texte += "\t. longueur, aire, volume : {}, {}, {}".format(longueur,aire,volume)
+        texte = "\t. Face numéro {}".format(iaux)
+        #texte += "\n\t. longueur, aire, volume : {}, {}, {}".format(longueur,aire,volume)
         print (texte)
 
       tb_caract [iaux][0] = face
       tb_caract [iaux][1] = aire
       tb_caract [iaux][2] = geompy.KindOfShape(face)
       if self._verbose_max:
-        print (". tb_caract : {}".format(tb_caract[iaux][2]))
+        print ("\t. tb_caract : {} {}".format(aire,tb_caract[iaux][2]))
 
     return tb_caract
 
@@ -427,12 +389,12 @@ Sorties :
 
 # La surface suivante doit être différente, sinon ce n'est pas un solide mince
     if ( np.abs((tb_caract_1[-1][1]-tb_caract_1[-3][1])/tb_caract_1[-1][1]) < self.epsilon ):
-      if self._verbose:
-        message += ". Surface de la plus grande face : {}\n".format(tb_caract_1[-1][1])
-        message += ". Surface de la 3ème face suivante : {}\n".format(tb_caract_1[-3][1])
-        message += "==> L'écart est trop faible.\n"
-      message += "Impossible de créer la face médiane pour le solide '{}'\n".format(self.nom_solide)
-      message += "Le solide n'est pas assez mince."
+      message += ". Surface de la plus grande face   : {}\n".format(tb_caract_1[-1][1])
+      message += ". Surface de la face suivante      : {}\n".format(tb_caract_1[-2][1])
+      message += ". Surface de la 3ème face suivante : {}\n".format(tb_caract_1[-3][1])
+      message += "==> L'écart est trop faible.\n"
+      message += "Impossible de créer la face médiane pour le solide '{}' ".format(self.nom_solide)
+      message += "car le solide n'est pas assez mince."
       erreur = -1
 
     return erreur, message, tb_caract_1[-1], tb_caract_1[-2]
@@ -500,45 +462,106 @@ Sorties :
       texte += "face_2 : {}".format(caract_face_2)
       print (texte)
 
+    while not erreur:
+
 # 1. Forme de la face
-    forme = caract_face_1[2][0]
+      forme = caract_face_1[2][0]
+      if self._verbose_max:
+        print ("forme = {}".format(forme) )
+
+# 2. Traitement selon la forme de la face
+# 2.1. Faces planes
+      if forme in ( geompy.kind.DISK_CIRCLE, geompy.kind.DISK_ELLIPSE, geompy.kind.POLYGON, geompy.kind.PLANE, geompy.kind.PLANAR):
+        erreur, message, face = self._cree_face_mediane_polygone ( geompy, caract_face_1, caract_face_2 )
+
+# 2.2. Faces cylindriques
+      elif forme == geompy.kind.CYLINDER2D:
+        face = self._cree_face_mediane_cylindre ( geompy, solide, caract_face_1, caract_face_2 )
+
+# 2.3. Faces sphériques
+      elif forme == geompy.kind.SPHERE2D:
+        face = self._cree_face_mediane_sphere ( geompy, solide, caract_face_1, caract_face_2 )
+
+# 2.4. Faces toriques
+      elif forme == geompy.kind.TORUS2D:
+        face = self._cree_face_mediane_tore ( geompy, solide, caract_face_1, caract_face_2 )
+
+# 2.5. Faces coniques
+      elif forme == geompy.kind.CONE2D:
+        face = self._cree_face_mediane_cone ( geompy, solide, caract_face_1, caract_face_2 )
+
+# 2.N. Faces de forme inconnues
+      else:
+        message += "Impossible de créer la face médiane pour le solide '{}' ".format(self.nom_solide)
+        message += "car sa face la plus grande est de forme : {}".format(forme)
+        erreur = -1
+        break
+
+# 3. Gestion de la face produite
+
+      if face is not None:
+        erreur, message = self._cree_face_mediane_0 ( geompy, face )
+
+      break
+
+    return erreur, message, face
+
+#===========================  Fin de la méthode ==================================
+
+#=========================== Début de la méthode =================================
+
+  def _cree_face_mediane_0 ( self, geompy, face ):
+    """Crée la face médiane entre deux autres - gestion
+
+Entrées :
+  :geompy: environnement de GEOM
+  :face: la face médiane
+    """
+    erreur = 0
+    message = ""
+
+    nom_fonction = __name__ + "/_cree_face_mediane_0"
+    blabla = "\nDans {} :\n".format(nom_fonction)
+
     if self._verbose_max:
-      print (forme)
+      texte = blabla
+      print (texte)
 
-# 2. Faces planes
-    if forme in ( geompy.kind.DISK_CIRCLE, geompy.kind.DISK_ELLIPSE, geompy.kind.POLYGON, geompy.kind.PLANE, geompy.kind.PLANAR):
-      erreur, message, face = self._cree_face_mediane_polygone ( geompy, caract_face_1, caract_face_2 )
+    while not erreur:
 
-# 3. Faces cylindriques
-    elif forme == geompy.kind.CYLINDER2D:
-      face = self._cree_face_mediane_cylindre ( geompy, solide, caract_face_1, caract_face_2 )
-
-# 4. Faces sphériques
-    elif forme == geompy.kind.SPHERE2D:
-      face = self._cree_face_mediane_sphere ( geompy, solide, caract_face_1, caract_face_2 )
-
-# 5. Faces toriques
-    elif forme == geompy.kind.TORUS2D:
-      face = self._cree_face_mediane_tore ( geompy, solide, caract_face_1, caract_face_2 )
-
-# 6. Faces coniques
-    elif forme == geompy.kind.CONE2D:
-      face = self._cree_face_mediane_cone ( geompy, solide, caract_face_1, caract_face_2 )
-
-# N. Faces de forme inconnues
-    else:
-      message += "Impossible de créer la face médiane pour le solide '{}'\n".format(self.nom_solide)
-      message += "Sa face la plus grande est de forme : {}".format(forme)
-      erreur = -1
-
-#   Insertion dans l'étude
-    if face is not None:
+# 3.1. Insertion dans l'étude
       nom = self.nom_solide+"_M"
       geompy.addToStudy(face, nom )
       if ( erreur == -2 ):
         message += " Vérifier la face '{}'".format(nom)
 
-    return erreur, message, face
+# 3.2. Transfert éventuel de GEOM vers SHAPER
+      if self._retour_shaper:
+
+        fic_xao = tempfile.mkstemp(suffix=".xao")[1]
+
+        if self._verbose_max:
+          texte = "Exportation depuis GEOM de la face médiane {} dans le fichier {}".format(face.GetName(),fic_xao)
+          print (texte)
+        bilan = geompy.ExportXAO (face, [], [], "", fic_xao)
+        if not bilan:
+          message += "Impossible d'exporter en XAO la face {}".format(face.GetName())
+          erreur = 1
+          break
+
+        if self._verbose_max:
+          texte = "Importation dans SHAPER de la face médiane {} depuis le fichier {}".format(face.GetName(),fic_xao)
+          print (texte)
+        face_mediane = model.addImport(self.part_doc, fic_xao)
+        model.do()
+        face_mediane.setName(nom)
+        face_mediane.result().setName(nom)
+
+        os.remove(fic_xao)
+
+      break
+
+    return erreur, message
 
 #===========================  Fin de la méthode ==================================
 
@@ -602,7 +625,7 @@ Sorties :
         message += "ce n'est pas un véritable polyèdre."
         if self._verbose:
           message += "\nL'écart de surface entre les 2 plus grandes faces est trop grand : {:5.2f}%.\n".format(ecart*100.)
-          message += "\nCréation à partir de la plus grande des faces du solide."
+          message += "Tentative de création à partir de la plus grande des faces du solide."
         erreur = -2
       else:
         face.SetColor(SALOMEDS.Color(0,1,0))
@@ -1362,6 +1385,8 @@ Sorties :
 
     if self._verbose_max:
       print (blabla)
+    if self._verbose:
+      print ("Traitement du solide '{}'".format(solide.GetName()))
 
 # 1. Préalables
 
@@ -1388,7 +1413,7 @@ Sorties :
 
 # 5. Création de la face médiane
 
-      erreur, message, _ = self._cree_face_mediane ( geompy, solide, caract_face_1, caract_face_2 )
+      erreur, message, face = self._cree_face_mediane ( geompy, solide, caract_face_1, caract_face_2 )
       if erreur:
         break
 
@@ -1398,6 +1423,8 @@ Sorties :
 
     if salome.sg.hasDesktop():
       if ( erreur <= 0 ):
+        if self._retour_shaper:
+          l_faces.append(face)
         self._menage_faces ( gst, l_faces )
 
 # 7. La fin
@@ -1490,11 +1517,8 @@ Sorties :
 
     while not erreur :
 
-# 2. Les arguments
+# 2. L'aide
 
-      erreur, message = self._arguments ()
-      if erreur :
-        break
       if self.affiche_aide_globale :
         break
 
@@ -1565,7 +1589,10 @@ Sorties :
 
     while not erreur :
 
-# 1. Exportation dans GEOM
+# 1. Mémorisation de la pièce
+      self.part_doc = part_doc
+
+# 2. Exportation dans GEOM
       fic_xao = tempfile.mkstemp(suffix=".xao")[1]
 
       if self._verbose_max:
@@ -1584,7 +1611,7 @@ Sorties :
       os.remove(fic_xao)
       geompy.addToStudy( objet, nom_objet )
 
-# 2. Traitement de l'objet GEOM correspondant
+# 3. Traitement de l'objet GEOM correspondant
       erreur, message = self._traitement_objet ( 2, objet )
 
       if ( erreur and self._verbose_max ):
@@ -1665,8 +1692,7 @@ if __name__ == "__main__" :
   L_OPTIONS.append("-v")
   #L_OPTIONS.append("-vmax")
   #L_OPTIONS.append("-no_menage")
-  #L_OPTIONS.append("--objet_geom=Extrusion_1_1")
-  #L_OPTIONS.append("--objet_shaper=zome")
+  #L_OPTIONS.append("-retour_shaper")
 
 # 2. Lancement de la classe
 
