@@ -18,7 +18,7 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-"""Obtention des surfaces médianes à partir d'une CAO contenue dans un fichier XAO
+"""Obtention des surfaces médianes à partir d'une CAO contenue dans un fichier
 
 On sait traiter les faces :
   . planes
@@ -29,18 +29,11 @@ On sait traiter les faces :
 
 Author: Gérald NICOLAS
 """
-__revision__ = "V01.03"
+__revision__ = "V02.01"
 
 import os
-import tempfile
-import numpy as np
 
-import salome
 from salome.shaper import model
-from salome.geom import geomBuilder
-from salome.geom import geomtools
-from salome.kernel.studyedit import getStudyEditor
-import SALOMEDS
 
 import ModelAPI
 
@@ -62,7 +55,7 @@ class fibreNeutre(model.Feature):
 
     @staticmethod
     def FILE_ID():
-        """Returns ID of the file XAO."""
+        """Returns ID of the file."""
         return "file_path"
 
     def getKind(self):
@@ -74,7 +67,7 @@ class fibreNeutre(model.Feature):
 
     def initAttributes(self):
         """Override Feature.initAttributes()"""
-    #     Creating the input argument of the feature
+        # Creating the input argument of the feature
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
 
 
@@ -87,21 +80,38 @@ class fibreNeutre(model.Feature):
         #print("filepath : '{}'".format(filepath))
         if filepath != "" :
             if os.path.isfile(filepath):
-                geompy = geomBuilder.New()
-                (_, objet, _, _, _) = geompy.ImportXAO(filepath)
-                #print ("Lecture de {}".format(objet.GetName()))
-                geompy.addToStudy( objet, objet.GetName() )
+                saux = filepath.upper()
+                if ( ( saux[-3:] in ("XAO", "STP", "IGS" ) ) \
+                  or ( saux[-4:] in ("STEP", "IGES", "BREP" ) ) ):
 
-                l_options = list()
-                #l_options.append("-v")
-                #l_options.append("-vmax")
-                s_med = SurfaceMediane(l_options)
-                erreur, message = s_med.surf_objet_geom (objet)
-                del s_med
-                if erreur:
-                    self.setError(message)
+                # Importation de l'objet volumique
+                    Part_1_doc = model.activeDocument()
+                    try:
+                        objet = model.addImport(Part_1_doc, filepath)
+                    except OSError as err:
+                        print("Probleme : {}".format(err))
+                        message = "Impossible d'importer l'objet depuis '{}'".format(filepath)
+                        self.setError(message)
+                    model.do()
+
+                # Lancement du script de création des fibres neutres
+                    l_options = list()
+                    #l_options.append("-v")
+                    #l_options.append("-vmax")
+                    #l_options.append("-retour_shaper")
+                    #print("l_options : '{}'".format(l_options))
+                    s_med = SurfaceMediane(l_options)
+                    erreur, message = s_med.surf_objet_shaper (Part_1_doc, objet.result().name(), objet.result().shapeType())
+                    del s_med
+                    if erreur:
+                        self.setError(message)
+
+                else:
+                    self.setError("The format of the file '{}' is unknown".format(filepath))
             else:
                 self.setError("The file '{}' does not exist".format(filepath))
+
+        return
 
     def isMacro(self):
         """Override Feature.initAttributes().
@@ -110,4 +120,4 @@ class fibreNeutre(model.Feature):
         fibreNeutre feature is macro: removes itself on the creation transaction
         finish.
         """
-        return True
+        return False
