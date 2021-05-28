@@ -48,7 +48,7 @@ class compoundVertices(model.Feature):
 
     @staticmethod
     def FILE_ID():
-        """Returns ID of the file select parameter."""
+        """Returns ID of the file."""
         return "file_path"
 
     @staticmethod
@@ -116,6 +116,7 @@ class compoundVertices(model.Feature):
             else:
                 self.setError("The file '{}' does not exist".format(filepath))
 
+        return
 
     def isMacro(self):
         """Override Feature.initAttributes().

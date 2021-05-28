@@ -45,7 +45,7 @@ class importParameters(model.Feature):
 
     @staticmethod
     def FILE_ID():
-        """Returns ID of the file select parameter."""
+        """Returns ID of the file."""
         return "file_path"
 
     def getKind(self):
@@ -98,7 +98,9 @@ class importParameters(model.Feature):
                                 aNames.append(defParameters[0])
                     fic.close()
             else:
-                self.setError("The file does not exist")
+                self.setError("The file '{}' does not exist".format(filepath))
+
+        return
 
     def isMacro(self):
         """Override Feature.initAttributes().

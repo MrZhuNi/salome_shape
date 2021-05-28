@@ -17,8 +17,7 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-"""Registration of all user-defined Python features
-"""
+"""Registration of all user-defined Python features"""
 
 import ModelAPI
 from macros.rectangle.feature import SketchPlugin_Rectangle
