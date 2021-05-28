@@ -80,34 +80,17 @@ class fibreNeutre(model.Feature):
         #print("filepath : '{}'".format(filepath))
         if filepath != "" :
             if os.path.isfile(filepath):
-                saux = filepath.upper()
-                if ( ( saux[-3:] in ("XAO", "STP", "IGS" ) ) \
-                  or ( saux[-4:] in ("STEP", "IGES", "BREP" ) ) ):
-
-                # Importation de l'objet volumique
-                    Part_1_doc = model.activeDocument()
-                    try:
-                        objet = model.addImport(Part_1_doc, filepath)
-                    except OSError as err:
-                        print("Probleme : {}".format(err))
-                        message = "Impossible d'importer l'objet depuis '{}'".format(filepath)
-                        self.setError(message)
-                    model.do()
-
                 # Lancement du script de création des fibres neutres
-                    l_options = list()
-                    #l_options.append("-v")
-                    #l_options.append("-vmax")
-                    #l_options.append("-retour_shaper")
-                    #print("l_options : '{}'".format(l_options))
-                    s_med = SurfaceMediane(l_options)
-                    erreur, message = s_med.surf_objet_shaper (Part_1_doc, objet.result().name(), objet.result().shapeType())
-                    del s_med
-                    if erreur:
-                        self.setError(message)
-
-                else:
-                    self.setError("The format of the file '{}' is unknown".format(filepath))
+                l_options = list()
+                #l_options.append("-v")
+                l_options.append("-vmax")
+                #l_options.append("-retour_shaper")
+                #print("l_options : '{}'".format(l_options))
+                s_med = SurfaceMediane(l_options)
+                erreur, message = s_med.surf_fic_cao (filepath)
+                del s_med
+                if erreur:
+                    self.setError(message)
             else:
                 self.setError("The file '{}' does not exist".format(filepath))
 

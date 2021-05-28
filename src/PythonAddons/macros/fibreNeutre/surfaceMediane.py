@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V09.04"
+__revision__ = "V10.01"
 
 #========================= Les imports - Début ===================================
 
@@ -53,6 +53,89 @@ import numpy as np
 
 #========================== Les imports - Fin ====================================
 
+D_FMT = dict()
+D_FMT["stp"] = ["stp", "step"]
+D_FMT["igs"] = ["igs", "iges"]
+for CLE in ("brep", "xao"):
+  D_FMT[CLE] = [CLE]
+
+#========================= Début de la fonction ==================================
+
+def decode_cao (fmt_cao):
+  """Décode le format de la cao
+
+Entrées :
+  :fmt_cao: format du fichier, step, iges, etc.
+Sorties :
+  :fmt_cao_0: format décodé
+  """
+
+  fmt_cao_0 = ""
+
+  fmt_cao_low = fmt_cao.lower()
+
+  for cle, l_aux in D_FMT.items():
+    if ( fmt_cao_low in l_aux ):
+      fmt_cao_0 = cle
+      break
+
+  return fmt_cao_0
+
+#=========================  Fin de la fonction ===================================
+
+#========================= Début de la fonction ==================================
+
+def import_cao (part_doc, ficcao, verbose=False):
+  """Import au format step ou iges
+
+Entrées :
+  :part_doc: part
+  :ficcao: le fichier de la CAO
+Sorties :
+  :objet: l'objet importé dans SHAPER
+  """
+
+
+  erreur = 0
+  message = "Fichier '{}'\n".format(ficcao)
+  if verbose:
+    print (message)
+
+  objet = None
+
+  laux = ficcao.split(".")
+  fmt_cao_0 = decode_cao (laux[-1])
+
+  if ( fmt_cao_0 not in ("stp", "brep", "igs", "xao") ):
+    message += "Le format de CAO est inconnu"
+    erreur = 1
+
+  elif not ficcao:
+    message += "Le fichier de CAO n'a pas été décodé correctement."
+    erreur = 2
+
+  elif not os.path.isfile(ficcao):
+    message += "Le fichier de CAO est inconnu."
+    erreur = 3
+
+  else:
+
+    message = ""
+    if verbose:
+      print ("Appel de addImport")
+    objet = model.addImport(part_doc, ficcao)
+    model.do()
+
+    if verbose:
+      texte  = "Objet   : '{}'\n".format(objet.result().name())
+      texte += "De type : '{}'".format(objet.result().shapeType())
+      print (texte)
+
+
+  return erreur, message, objet
+
+#=========================  Fin de la fonction ===================================
+
 #=================================== La classe ===================================
 
 class SurfaceMediane (object):
@@ -66,7 +149,7 @@ Pour réaliser l'opération, deux façons de faire :
 1. On sélectionne la structure dans l'arbre d'étude ou dans la fenêtre graphique de GEOM, puis on lance le script.
 
 2. On écrit un script python dans lequel on réalise la création ou l'importation d'une CAO. \
-On insère cette classe dans le script, puis on lance surf_objet_shaper ou surf_objet_geom selon le point de départ.
+On insère cette classe dans le script, puis on lance surf_fic_cao, surf_objet_shaper ou surf_objet_geom selon le point de départ.
 
 Le programme crée les surfaces sous réserve que pour le solide envisagé, il a réussi à trouver deux faces \
 de taille identique et supérieure aux autres faces du solide pour des polyèdres ou \
@@ -1565,6 +1648,58 @@ Sorties :
 
 #=========================== Début de la méthode =================================
 
+  def surf_fic_cao (self, fic_cao):
+    """Calcule la surface médiane pour un objet dans un fichier passé en argument
+
+Entrées :
+  :fic_cao: fichier de l'objet à traiter
+
+Sorties :
+  :erreur: code d'erreur
+  :message: message d'erreur
+    """
+
+    nom_fonction = __name__ + "/surf_fic_cao"
+    blabla = "\nDans {} :\n".format(nom_fonction)
+
+    if self._verbose_max:
+      print (blabla)
+
+    erreur = 0
+    message = ""
+
+    while not erreur :
+
+# 1. Définition de la pièce
+
+      model.begin()
+      partSet = model.moduleDocument()
+      part = model.addPart(partSet)
+      self.part_doc = part.document()
+
+# 2. Import de la CAO
+
+      print ("Traitement du fichier {}".format(fic_cao))
+
+      erreur, message, objet = import_cao (self.part_doc, fic_cao, self._verbose_max)
+      if erreur:
+        break
+
+# 3. Calcul des surfaces
+
+      erreur, message = self.surf_objet_shaper ( self.part_doc, objet.result().name(), objet.result().shapeType() )
+
+      if ( erreur and self._verbose_max ):
+        print (blabla, message)
+
+      break
+
+    return erreur, message
+
+#===========================  Fin de la méthode ==================================
+
+#=========================== Début de la méthode =================================
+
   def surf_objet_shaper (self, part_doc, nom_objet, type_objet):
     """Calcule la surface médiane pour un objet SHAPER passé en argument
 
@@ -1596,11 +1731,14 @@ Sorties :
       fic_xao = tempfile.mkstemp(suffix=".xao")[1]
 
       if self._verbose_max:
-        print ('model.exportToXAO (part_doc, {}, model.selection({}, {}), "XAO")'.format(fic_xao,type_objet, nom_objet))
+        print ('fic_xao    = {}'.format(fic_xao))
+        print ('nom_objet  = {}'.format(nom_objet))
+        print ('type_objet = {}'.format(type_objet))
 
       _ = model.exportToXAO (part_doc, fic_xao, model.selection(type_objet, nom_objet), "XAO")
       taille = os.path.getsize(fic_xao)
-      if ( taille < 1 ):
+      #print("taille : {}".format(taille))
+      if ( taille <= 0 ):
         os.remove(fic_xao)
         message = "Export de SHAPER vers GEOM impossible pour l'objet '{}' de type '{}'".format(nom_objet, type_objet)
         erreur = 2
