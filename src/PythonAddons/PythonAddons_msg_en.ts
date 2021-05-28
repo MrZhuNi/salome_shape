@@ -79,11 +79,11 @@
     <name>fibreNeutre:file_path</name>
     <message>
       <source>Import file</source>
-      <translation>XAO file of the object</translation>
+      <translation>CAD file of the object</translation>
     </message>
     <message>
       <source>Select file</source>
-      <translation>Select the XAO file of the object</translation>
+      <translation>Select the CAD file of the object</translation>
     </message>
   </context>
 

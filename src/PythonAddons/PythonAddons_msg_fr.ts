@@ -79,11 +79,11 @@
     <name>fibreNeutre:file_path</name>
     <message>
       <source>Import file</source>
-      <translation>Fichier XAO de l'objet à traiter</translation>
+      <translation>Fichier CAO de l'objet à traiter</translation>
     </message>
     <message>
       <source>Select file</source>
-      <translation>Choisir le fichier de type XAO contenant l'objet à traiter</translation>
+      <translation>Choisir le fichier de type CAO contenant l'objet à traiter</translation>
     </message>
   </context>
 
