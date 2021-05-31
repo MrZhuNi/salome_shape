@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.01"
+__revision__ = "V10.02"
 
 #========================= Les imports - Début ===================================
 
@@ -121,8 +121,6 @@ Sorties :
   else:
 
     message = ""
-    if verbose:
-      print ("Appel de addImport")
     objet = model.addImport(part_doc, ficcao)
     model.do()
 
@@ -1672,10 +1670,7 @@ Sorties :
 
 # 1. Définition de la pièce
 
-      model.begin()
-      partSet = model.moduleDocument()
-      part = model.addPart(partSet)
-      self.part_doc = part.document()
+      self.part_doc = model.activeDocument()
 
 # 2. Import de la CAO
 
@@ -1687,7 +1682,7 @@ Sorties :
 
 # 3. Calcul des surfaces
 
-      erreur, message = self.surf_objet_shaper ( self.part_doc, objet.result().name(), objet.result().shapeType() )
+      erreur, message = self.surf_objet_shaper ( objet.result().name(), objet.result().shapeType() )
 
       if ( erreur and self._verbose_max ):
         print (blabla, message)
@@ -1700,11 +1695,10 @@ Sorties :
 
 #=========================== Début de la méthode =================================
 
-  def surf_objet_shaper (self, part_doc, nom_objet, type_objet):
+  def surf_objet_shaper (self, nom_objet, type_objet):
     """Calcule la surface médiane pour un objet SHAPER passé en argument
 
 Entrées :
-  :part_doc: la pièce
   :nom_objet: nom de l'objet à traiter
   :type_objet: type de l'objet à traiter "SOLID"/"COMPOUND"
 
@@ -1724,10 +1718,7 @@ Sorties :
 
     while not erreur :
 
-# 1. Mémorisation de la pièce
-      self.part_doc = part_doc
-
-# 2. Exportation dans GEOM
+# 1. Exportation dans GEOM
       fic_xao = tempfile.mkstemp(suffix=".xao")[1]
 
       if self._verbose_max:
@@ -1735,7 +1726,7 @@ Sorties :
         print ('nom_objet  = {}'.format(nom_objet))
         print ('type_objet = {}'.format(type_objet))
 
-      _ = model.exportToXAO (part_doc, fic_xao, model.selection(type_objet, nom_objet), "XAO")
+      _ = model.exportToXAO (self.part_doc, fic_xao, model.selection(type_objet, nom_objet), "XAO")
       taille = os.path.getsize(fic_xao)
       #print("taille : {}".format(taille))
       if ( taille <= 0 ):
@@ -1749,7 +1740,7 @@ Sorties :
       os.remove(fic_xao)
       geompy.addToStudy( objet, nom_objet )
 
-# 3. Traitement de l'objet GEOM correspondant
+# 2. Traitement de l'objet GEOM correspondant
       erreur, message = self._traitement_objet ( 2, objet )
 
       if ( erreur and self._verbose_max ):
