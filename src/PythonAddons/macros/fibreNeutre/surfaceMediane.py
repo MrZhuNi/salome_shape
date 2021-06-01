@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.02"
+__revision__ = "V10.03"
 
 #========================= Les imports - Début ===================================
 
@@ -122,6 +122,7 @@ Sorties :
 
     message = ""
     objet = model.addImport(part_doc, ficcao)
+    objet.execute(True)
     model.do()
 
     if verbose:
