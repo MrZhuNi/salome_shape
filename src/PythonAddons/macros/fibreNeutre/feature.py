@@ -83,8 +83,8 @@ class fibreNeutre(model.Feature):
                 # Lancement du script de création des fibres neutres
                 l_options = list()
                 #l_options.append("-v")
-                l_options.append("-vmax")
-                #l_options.append("-retour_shaper")
+                #l_options.append("-vmax")
+                l_options.append("-retour_shaper")
                 #print("l_options : '{}'".format(l_options))
                 s_med = SurfaceMediane(l_options)
                 erreur, message = s_med.surf_fic_cao (filepath)

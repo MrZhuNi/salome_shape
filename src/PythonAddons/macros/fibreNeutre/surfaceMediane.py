@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.03"
+__revision__ = "V10.06"
 
 #========================= Les imports - Début ===================================
 
@@ -86,7 +86,7 @@ Sorties :
 #========================= Début de la fonction ==================================
 
 def import_cao (part_doc, ficcao, verbose=False):
-  """Import au format step ou iges
+  """Importation d'une cao
 
 Entrées :
   :part_doc: part
@@ -196,7 +196,14 @@ Options facultatives
   epsilon = 5.e-3
   part_doc = None
 
+  ficcao = None
+  rep_trav = None
   objet_geom = None
+
+  l_faces_trans = list()
+
+  faces_pb_nb = 0
+  faces_pb_msg = ""
 
 #=========================== Début de la méthode =================================
 
@@ -552,32 +559,31 @@ Sorties :
         print ("forme = {}".format(forme) )
 
 # 2. Traitement selon la forme de la face
-# 2.1. Faces planes
+# 2.1. Face plane
       if forme in ( geompy.kind.DISK_CIRCLE, geompy.kind.DISK_ELLIPSE, geompy.kind.POLYGON, geompy.kind.PLANE, geompy.kind.PLANAR):
         erreur, message, face = self._cree_face_mediane_polygone ( geompy, caract_face_1, caract_face_2 )
 
-# 2.2. Faces cylindriques
+# 2.2. Face cylindrique
       elif forme == geompy.kind.CYLINDER2D:
         face = self._cree_face_mediane_cylindre ( geompy, solide, caract_face_1, caract_face_2 )
 
-# 2.3. Faces sphériques
+# 2.3. Face sphérique
       elif forme == geompy.kind.SPHERE2D:
         face = self._cree_face_mediane_sphere ( geompy, solide, caract_face_1, caract_face_2 )
 
-# 2.4. Faces toriques
+# 2.4. Face torique
       elif forme == geompy.kind.TORUS2D:
         face = self._cree_face_mediane_tore ( geompy, solide, caract_face_1, caract_face_2 )
 
-# 2.5. Faces coniques
+# 2.5. Face conique
       elif forme == geompy.kind.CONE2D:
         face = self._cree_face_mediane_cone ( geompy, solide, caract_face_1, caract_face_2 )
 
-# 2.N. Faces de forme inconnues
+# 2.N. Face de forme inconnue
       else:
-        message += "Impossible de créer la face médiane pour le solide '{}' ".format(self.nom_solide)
-        message += "car sa face la plus grande est de forme : {}".format(forme)
-        erreur = -1
-        break
+        self.faces_pb_msg += "Impossible de créer la face médiane pour le solide '{}' ".format(self.nom_solide)
+        self.faces_pb_msg += "car sa face la plus grande est de forme : {}\n".format(forme)
+        self.faces_pb_nb += 1
 
 # 3. Gestion de la face produite
 
@@ -593,11 +599,11 @@ Sorties :
 #=========================== Début de la méthode =================================
 
   def _cree_face_mediane_0 ( self, geompy, face ):
-    """Crée la face médiane entre deux autres - gestion
+    """Gestion de la face médiane créée entre deux autres
 
 Entrées :
   :geompy: environnement de GEOM
-  :face: la face médiane
+  :face: la face médiane créée
     """
     erreur = 0
     message = ""
@@ -612,34 +618,49 @@ Entrées :
     while not erreur:
 
 # 3.1. Insertion dans l'étude
-      nom = self.nom_solide+"_M"
-      geompy.addToStudy(face, nom )
-      if ( erreur == -2 ):
-        message += " Vérifier la face '{}'".format(nom)
+      nom_face = self.nom_solide+"_M"
+      geompy.addToStudy (face,nom_face)
 
 # 3.2. Transfert éventuel de GEOM vers SHAPER
       if self._retour_shaper:
 
-        fic_xao = tempfile.mkstemp(suffix=".xao")[1]
+# 3.2.1. Le fichier doit être différent à chaque fois
+        #print ("l_faces_trans = {}".format(self.l_faces_trans))
+        nom_fic = nom_face
+        iaux = 0
+        while True:
+          if nom_fic in self.l_faces_trans:
+            nom_fic = "{}_{}".format(nom_face,iaux)
+            iaux += 1
+          else:
+            break
+        self.l_faces_trans.append(nom_fic)
+        fichier = os.path.join(self.rep_trav, "{}.stp".format(nom_fic))
 
+# 3.2.2. Exportation depuis GEOM
         if self._verbose_max:
-          texte = "Exportation depuis GEOM de la face médiane {} dans le fichier {}".format(face.GetName(),fic_xao)
+          texte = "Exportation depuis GEOM de la face médiane '{}' dans le fichier {}".format(nom_face,fichier)
           print (texte)
-        bilan = geompy.ExportXAO (face, [], [], "", fic_xao)
-        if not bilan:
-          message += "Impossible d'exporter en XAO la face {}".format(face.GetName())
+        try:
+          geompy.ExportSTEP (face, fichier)
+        except OSError as err:
+          print (err)
+          message += "Impossible d'exporter la face médiane '{}' dans le fichier {}".format(nom_face,fichier)
           erreur = 1
           break
 
+# 3.2.3. Importation dans SHAPER
         if self._verbose_max:
-          texte = "Importation dans SHAPER de la face médiane {} depuis le fichier {}".format(face.GetName(),fic_xao)
+          texte = "Importation dans SHAPER de la face médiane '{}' depuis le fichier {}".format(nom_face,fichier)
           print (texte)
-        face_mediane = model.addImport(self.part_doc, fic_xao)
+        face_mediane = model.addImportSTEP(self.part_doc, fichier, False, False, False)
+        face_mediane.execute(True)
         model.do()
-        face_mediane.setName(nom)
-        face_mediane.result().setName(nom)
 
-        os.remove(fic_xao)
+        face_mediane.setName(nom_face)
+        face_mediane.result().setName(nom_face)
+        tbaux = np.array(face.GetColor()._tuple())*255.
+        face_mediane.result().setColor(int(tbaux[0]), int(tbaux[1]), int(tbaux[2]))
 
       break
 
@@ -1499,15 +1520,14 @@ Sorties :
       if erreur:
         break
 
-      break
-
 # 6. Ménage des faces
 
-    if salome.sg.hasDesktop():
-      if ( erreur <= 0 ):
+      if salome.sg.hasDesktop():
         if self._retour_shaper:
           l_faces.append(face)
         self._menage_faces ( gst, l_faces )
+
+      break
 
 # 7. La fin
 
@@ -1619,25 +1639,41 @@ Sorties :
       if erreur:
         break
 
-# 5. Liste des solides qui composent l'objet
+# 5. En cas de retour vers shaper, répertoire de travail associé à l'éventuel fichier de départ
+      if self._retour_shaper:
+        if self.ficcao is None:
+          self.rep_trav = tempfile.mkdtemp(prefix="{}_".format(objet.GetName()))
+        else:
+          self.rep_trav = tempfile.mkdtemp(prefix="{}_".format(objet.GetName()), dir=os.path.dirname(self.ficcao))
+        print ("Les fichiers CAO des surfaces seront dans le répertoire {}".format(self.rep_trav))
+
+# 6. Liste des solides qui composent l'objet
       erreur, message, l_solides = self._les_solides ( geompy, objet )
       if erreur:
         break
 
-# 6. Calcul des surfaces médianes pour chaque solide
+# 7. Calcul des surfaces médianes pour chaque solide
       l_solides_m = list()
       for solide in l_solides:
-        erreur_1, message_1 = self.face_mediane_solide (geompy, gst, solide)
-        if erreur_1:
-          message += message_1 + "\n"
-          erreur += erreur_1
-        else:
-          l_solides_m.append(solide)
+        erreur, message = self.face_mediane_solide (geompy, gst, solide)
+        if erreur:
+          break
+        l_solides_m.append(solide)
+      if erreur:
+        break
 
-# 7. Ménage des solides
+# 8. Ménage des solides
 
       if salome.sg.hasDesktop():
         self._menage_solides ( gst, l_solides, l_solides_m, type_selection, objet )
+
+# 9. Informations sur les faces à problème
+      if self.faces_pb_nb:
+        if ( self.faces_pb_nb == 1 ):
+          texte = "1 face pose"
+        else:
+          texte = "{} faces posent".format(self.faces_pb_nb)
+        print ("{} problème.\n{}".format(texte,self.faces_pb_msg))
 
       break
 
@@ -1647,11 +1683,11 @@ Sorties :
 
 #=========================== Début de la méthode =================================
 
-  def surf_fic_cao (self, fic_cao):
+  def surf_fic_cao (self, ficcao):
     """Calcule la surface médiane pour un objet dans un fichier passé en argument
 
 Entrées :
-  :fic_cao: fichier de l'objet à traiter
+  :ficcao: fichier de l'objet à traiter
 
 Sorties :
   :erreur: code d'erreur
@@ -1675,9 +1711,10 @@ Sorties :
 
 # 2. Import de la CAO
 
-      print ("Traitement du fichier {}".format(fic_cao))
+      self.ficcao = ficcao
+      print ("Traitement du fichier {}".format(self.ficcao))
 
-      erreur, message, objet = import_cao (self.part_doc, fic_cao, self._verbose_max)
+      erreur, message, objet = import_cao (self.part_doc, self.ficcao, self._verbose_max)
       if erreur:
         break
 
@@ -1719,27 +1756,40 @@ Sorties :
 
     while not erreur :
 
-# 1. Exportation dans GEOM
-      fic_xao = tempfile.mkstemp(suffix=".xao")[1]
+# 1. Transfert vers GEOM
+# 1.1. Le départ est-il un fichier au format step ?
+      deja_step = False
+      if self.ficcao is not None:
+        laux = self.ficcao.split(".")
+        fmt_cao_0 = decode_cao (laux[-1])
+        if ( fmt_cao_0 == "stp" ):
+          deja_step = True
 
-      if self._verbose_max:
-        print ('fic_xao    = {}'.format(fic_xao))
-        print ('nom_objet  = {}'.format(nom_objet))
-        print ('type_objet = {}'.format(type_objet))
+# 1.1. Exportation si le fichier de départ n'est pas au format step
+      if deja_step:
+        fichier = self.ficcao
+      else:
+        fichier = tempfile.mkstemp(suffix=".stp")[1]
+        if self._verbose_max:
+          print ('fichier    = {}'.format(fichier))
+          print ('nom_objet  = {}'.format(nom_objet))
+          print ('type_objet = {}'.format(type_objet))
+        export = model.exportToFile(self.part_doc, fichier, [model.selection(type_objet, nom_objet)])
+        export.execute(True)
+        model.do()
+        taille = os.path.getsize(fichier)
+        if ( taille <= 0 ):
+          message = "Export de SHAPER vers GEOM impossible pour l'objet '{}' de type '{}'\n".format(nom_objet, type_objet)
+          message += "Le fichier {} est de taille {}".format(fichier,taille)
+          erreur = 2
+          break
 
-      _ = model.exportToXAO (self.part_doc, fic_xao, model.selection(type_objet, nom_objet), "XAO")
-      taille = os.path.getsize(fic_xao)
-      #print("taille : {}".format(taille))
-      if ( taille <= 0 ):
-        os.remove(fic_xao)
-        message = "Export de SHAPER vers GEOM impossible pour l'objet '{}' de type '{}'".format(nom_objet, type_objet)
-        erreur = 2
-        break
-
+# 1.2. Importation
       geompy = geomBuilder.New()
-      (_, objet, _, _, _) = geompy.ImportXAO(fic_xao)
-      os.remove(fic_xao)
+      objet = geompy.ImportSTEP(fichier, False, True)
       geompy.addToStudy( objet, nom_objet )
+      if not deja_step:
+        os.remove(fichier)
 
 # 2. Traitement de l'objet GEOM correspondant
       erreur, message = self._traitement_objet ( 2, objet )
@@ -1819,7 +1869,7 @@ if __name__ == "__main__" :
 
   L_OPTIONS = list()
   #L_OPTIONS.append("-h")
-  L_OPTIONS.append("-v")
+  #L_OPTIONS.append("-v")
   #L_OPTIONS.append("-vmax")
   #L_OPTIONS.append("-no_menage")
   #L_OPTIONS.append("-retour_shaper")
