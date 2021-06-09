@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.06"
+__revision__ = "V10.07"
 
 #========================= Les imports - Début ===================================
 
@@ -659,8 +659,18 @@ Entrées :
 
         face_mediane.setName(nom_face)
         face_mediane.result().setName(nom_face)
-        tbaux = np.array(face.GetColor()._tuple())*255.
-        face_mediane.result().setColor(int(tbaux[0]), int(tbaux[1]), int(tbaux[2]))
+
+        while True:
+          tbaux = np.array(face.GetColor()._tuple())
+          np_aux = (tbaux<0.).nonzero()
+          if np.any(np_aux):
+            break
+          np_aux = (tbaux>1.).nonzero()
+          if np.any(np_aux):
+            break
+          tbaux *= 255.
+          face_mediane.result().setColor(int(tbaux[0]), int(tbaux[1]), int(tbaux[2]))
+          break
 
       break
 
@@ -772,6 +782,9 @@ Sorties :
 
 #   Gestion de l'intersection avec le solide initial
     face = self._cree_face_mediane_cylindre_2 ( geompy, solide, centre, axe, cylindre )
+
+#   Couleur verte
+    face.SetColor(SALOMEDS.Color(0,1,0))
 
     return face
 
@@ -946,6 +959,9 @@ Sorties :
 #   Création de la face
     face = self._cree_face_mediane_sphere_1 ( geompy, solide, coo_x, coo_y, coo_z, rayon )
 
+#   Couleur verte
+    face.SetColor(SALOMEDS.Color(0,1,0))
+
     return face
 
 #===========================  Fin de la méthode ==================================
@@ -1060,6 +1076,9 @@ Sorties :
 
 #   Création de la face
     face = self._cree_face_mediane_tore_1 ( geompy, solide, coo_x, coo_y, coo_z, axe_x, axe_y, axe_z, rayon_1, rayon_2 )
+
+#   Couleur verte
+    face.SetColor(SALOMEDS.Color(0,1,0))
 
     return face
 
@@ -1193,6 +1212,9 @@ Sorties :
 
 #   Gestion de l'intersection avec le solide initial
     face = self._cree_face_mediane_cone_2 ( geompy, solide, centre, axe, cone )
+
+#   Couleur verte
+    face.SetColor(SALOMEDS.Color(0,1,0))
 
     return face
 
