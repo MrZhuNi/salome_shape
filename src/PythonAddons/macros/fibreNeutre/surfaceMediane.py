@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.07"
+__revision__ = "V10.09"
 
 #========================= Les imports - Début ===================================
 
@@ -657,9 +657,11 @@ Entrées :
         face_mediane.execute(True)
         model.do()
 
+#       Le nom
         face_mediane.setName(nom_face)
         face_mediane.result().setName(nom_face)
 
+#       La couleur. Attention aux conventions différents entr GEOM et SHAPER
         while True:
           tbaux = np.array(face.GetColor()._tuple())
           np_aux = (tbaux<0.).nonzero()
@@ -1666,8 +1668,11 @@ Sorties :
         if self.ficcao is None:
           self.rep_trav = tempfile.mkdtemp(prefix="{}_".format(objet.GetName()))
         else:
-          self.rep_trav = tempfile.mkdtemp(prefix="{}_".format(objet.GetName()), dir=os.path.dirname(self.ficcao))
-        print ("Les fichiers CAO des surfaces seront dans le répertoire {}".format(self.rep_trav))
+          self.rep_trav = os.path.join(os.path.dirname(self.ficcao),"{}_M".format(objet.GetName()))
+          if not os.path.isdir(self.rep_trav):
+            os.mkdir(self.rep_trav)
+        if self._verbose_max:
+          print ("Les fichiers CAO des surfaces seront dans le répertoire {}".format(self.rep_trav))
 
 # 6. Liste des solides qui composent l'objet
       erreur, message, l_solides = self._les_solides ( geompy, objet )
@@ -1696,6 +1701,9 @@ Sorties :
         else:
           texte = "{} faces posent".format(self.faces_pb_nb)
         print ("{} problème.\n{}".format(texte,self.faces_pb_msg))
+
+# 10. Final
+      print ("Les fichiers CAO des surfaces sont dans le répertoire {}".format(self.rep_trav))
 
       break
 
@@ -1786,6 +1794,8 @@ Sorties :
         fmt_cao_0 = decode_cao (laux[-1])
         if ( fmt_cao_0 == "stp" ):
           deja_step = True
+      if self._verbose_max:
+        print ("deja_step = {}".format(deja_step))
 
 # 1.1. Exportation si le fichier de départ n'est pas au format step
       if deja_step:
