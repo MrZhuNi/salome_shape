@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.09"
+__revision__ = "V10.10"
 
 #========================= Les imports - Début ===================================
 
@@ -85,7 +85,7 @@ Sorties :
 
 #========================= Début de la fonction ==================================
 
-def import_cao (part_doc, ficcao, verbose=False):
+def import_cao (part_doc, ficcao, nom_objet=None, verbose=False):
   """Importation d'une cao
 
 Entrées :
@@ -124,6 +124,9 @@ Sorties :
     objet = model.addImport(part_doc, ficcao)
     objet.execute(True)
     model.do()
+
+    if nom_objet is not None:
+      objet.result().setName(nom_objet)
 
     if verbose:
       texte  = "Objet   : '{}'\n".format(objet.result().name())
@@ -1669,7 +1672,11 @@ Sorties :
           self.rep_trav = tempfile.mkdtemp(prefix="{}_".format(objet.GetName()))
         else:
           self.rep_trav = os.path.join(os.path.dirname(self.ficcao),"{}_M".format(objet.GetName()))
-          if not os.path.isdir(self.rep_trav):
+          if os.path.isdir(self.rep_trav):
+            l_aux = os.listdir(self.rep_trav)
+            for nomfic in l_aux:
+              os.remove(os.path.join(self.rep_trav,nomfic))
+          else:
             os.mkdir(self.rep_trav)
         if self._verbose_max:
           print ("Les fichiers CAO des surfaces seront dans le répertoire {}".format(self.rep_trav))
@@ -1713,11 +1720,12 @@ Sorties :
 
 #=========================== Début de la méthode =================================
 
-  def surf_fic_cao (self, ficcao):
+  def surf_fic_cao (self, ficcao, nom_objet=None):
     """Calcule la surface médiane pour un objet dans un fichier passé en argument
 
 Entrées :
   :ficcao: fichier de l'objet à traiter
+  :nom_objet: un nom à donner à l'objet à traiter
 
 Sorties :
   :erreur: code d'erreur
@@ -1744,7 +1752,7 @@ Sorties :
       self.ficcao = ficcao
       print ("Traitement du fichier {}".format(self.ficcao))
 
-      erreur, message, objet = import_cao (self.part_doc, self.ficcao, self._verbose_max)
+      erreur, message, objet = import_cao (self.part_doc, self.ficcao, nom_objet, self._verbose_max)
       if erreur:
         break
 

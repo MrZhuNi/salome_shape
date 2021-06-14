@@ -40,8 +40,8 @@ aSession.startOperation("Import file")
 aFeatureKind = "fibreNeutre"
 anImportFeature = aPart.addFeature(aFeatureKind)
 aFieldName = "file_path"
-file = anImportFeature.string(aFieldName)
-file.setValue(theFile)
+aFile = anImportFeature.string(aFieldName)
+aFile.setValue(theFile)
 aSession.finishOperation()
 
 assert(model.checkPythonDump())
