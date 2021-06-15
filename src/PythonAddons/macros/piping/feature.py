@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2016-2020  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
@@ -30,6 +31,14 @@ from GeomAPI import *
 class piping(model.Feature):
     """Import of Construction points
     """
+    lfeatures = list()
+    folder = None
+    isHexa = False
+    twopartwo = "2par2"
+    parligne = "par_ligne"
+    radius = 0.5
+    infoPoints = dict()
+    connectivities = dict()
 
 # Feature initializations
 
@@ -65,77 +74,69 @@ class piping(model.Feature):
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
         self.data().addAttribute(self.HEXAS_ID(), ModelAPI.ModelAPI_AttributeBoolean_typeId())
 
-        self.lfeatures = []
-        self.folder = None
-        self.isHexa = False
-        self.twopartwo = "2par2"
-        self.parligne = "par_ligne"
-        self.radius = 0.5
+        #self.lfeatures = []
+        #self.folder = None
+        #self.isHexa = False
+        #self.twopartwo = "2par2"
+        #self.parligne = "par_ligne"
+        #self.radius = 0.5
         #self.paramRadius = None
         #self.paramFillet = None
-
-# Get existing parameters names
-
-    def existingParameters(self, aDoc):
-        """ Returns list of already existing parameters names"""
-        #aDoc = model.activeDocument()
-        aNbFeatures = aDoc.numInternalFeatures();
-        aNames = []
-        for i in range(aNbFeatures):
-            aParamFeature = aDoc.internalFeature(i);
-            if aParamFeature is not None:
-                if aParamFeature.getKind() == ParametersAPI.ParametersAPI_Parameter.ID():
-                    aNames.append(aParamFeature.name())
-        return aNames
 
 # Retrieve parent pipe
 
     def decodingCode(self, code):
+        """decodingCode"""
         splitCode = code.split(".")
         if len(splitCode) <= 1:
-           return ""
+            return ""
         previousCode = code[:len(code)-len(splitCode[-1])-1]
         return previousCode
 
 
     def readNodeInfo(self, line):
+        """readNodeInfo"""
         #print(line)
+        diagno = False
         splitLine = line.split(" ")
         if len(splitLine) != 5:
-           print(line) ; return False
-        if splitLine[0] in self.infoPoints:
-           print(line) ; return False
-        if splitLine[1] not in self.infoPoints and splitLine[1] != "-":
-           print(line) ; return False
-        self.infoPoints[splitLine[0]] = {}
-        self.infoPoints[splitLine[0]]["Ref"] = splitLine[1]
-        if splitLine[1] == "-":
-            self.infoPoints[splitLine[0]]["X"] = float(splitLine[2])
-            self.infoPoints[splitLine[0]]["Y"] = float(splitLine[3])
-            self.infoPoints[splitLine[0]]["Z"] = float(splitLine[4])
-        else :
-            self.infoPoints[splitLine[0]]["X"] = self.infoPoints[splitLine[1]]["X"] + float(splitLine[2])
-            self.infoPoints[splitLine[0]]["Y"] = self.infoPoints[splitLine[1]]["Y"] + float(splitLine[3])
-            self.infoPoints[splitLine[0]]["Z"] = self.infoPoints[splitLine[1]]["Z"] + float(splitLine[4])
-        self.infoPoints[splitLine[0]]["isEnd"] = False
-        return True
+            print(line)
+        elif splitLine[0] in self.infoPoints:
+            print(line)
+        elif splitLine[1] not in self.infoPoints and splitLine[1] != "-":
+            print(line)
+        else:
+            diagno = True
+            self.infoPoints[splitLine[0]] = {}
+            self.infoPoints[splitLine[0]]["Ref"] = splitLine[1]
+            if splitLine[1] == "-":
+                self.infoPoints[splitLine[0]]["X"] = float(splitLine[2])
+                self.infoPoints[splitLine[0]]["Y"] = float(splitLine[3])
+                self.infoPoints[splitLine[0]]["Z"] = float(splitLine[4])
+            else :
+                self.infoPoints[splitLine[0]]["X"] = self.infoPoints[splitLine[1]]["X"] + float(splitLine[2])
+                self.infoPoints[splitLine[0]]["Y"] = self.infoPoints[splitLine[1]]["Y"] + float(splitLine[3])
+                self.infoPoints[splitLine[0]]["Z"] = self.infoPoints[splitLine[1]]["Z"] + float(splitLine[4])
+            self.infoPoints[splitLine[0]]["isEnd"] = False
+        return diagno
 
     def readConnectivity(self, line, method):
+        """readConnectivity"""
         splitLine = line.split(" ")
         print(line)
         if method == self.twopartwo :
             if self.connectivities == {} :
-               print("nouvelle ligne - Cas 1")
-               self.newConnectivity(splitLine[0], splitLine)
+                print("nouvelle ligne - Cas 1")
+                self.newConnectivity(splitLine[0], splitLine)
             else :
                 # Recherche si ligne déjà existante ou si nouvelle ligne
                 print("Lignes existantes")
                 for key, val in self.connectivities.items():
                     print(key, " ******* ",val)
                     if val['chainage'][-1] == splitLine[0]:
-                       # La ligne existe
-                       val['chainage'].append(splitLine[1])
-                       return True
+                        # La ligne existe
+                        val['chainage'].append(splitLine[1])
+                        return True
                 # La ligne n'existe pas
                 print("nouvelle ligne - Cas 2")
                 self.newConnectivity(splitLine[0], splitLine)
@@ -144,25 +145,31 @@ class piping(model.Feature):
         return True
 
     def newConnectivity(self, key, value):
-         self.connectivities[key] = {}
-         self.connectivities[key]['chainage'] = value
+        """newConnectivity"""
+        self.connectivities[key] = {}
+        self.connectivities[key]['chainage'] = value
 
     def readFillet(self, line):
+        """readFillet"""
+        diagno = False
         splitLine = line.split(" ")
         if len(splitLine) != 2:
-           print(line) ; return False
-        if not splitLine[0] in self.infoPoints:
-           print(line) ; return False
-        if splitLine[1] == "angular_connection":
-           self.infoPoints[splitLine[0]]["Fillet"] = "angular_connection"
-           return True
+            print(line)
+        elif not splitLine[0] in self.infoPoints:
+            print(line)
+        elif splitLine[1] == "angular_connection":
+            self.infoPoints[splitLine[0]]["Fillet"] = "angular_connection"
+            diagno = True
         elif splitLine[1][:7] == "radius=":
-           self.infoPoints[splitLine[0]]["Fillet"] = "radius"
-           self.infoPoints[splitLine[0]]["Radius"] = float(splitLine[1][7:])
-           return True
-        print(line) ; return False
+            self.infoPoints[splitLine[0]]["Fillet"] = "radius"
+            self.infoPoints[splitLine[0]]["Radius"] = float(splitLine[1][7:])
+            diagno = True
+        else:
+            print(line)
+        return diagno
 
     def retrieveSubshapesforWire(self, copy, key, ind):
+        """retrieveSubshapesforWire"""
         exp = GeomAPI_ShapeExplorer(copy.defaultResult().shape(), GeomAPI_Shape.EDGE)
 
         end = False
@@ -223,21 +230,23 @@ class piping(model.Feature):
         return subshapesForWire, currentInd, isPipe, self.connectivities[key]['chainage'][currentInd]
 
     def retrieveLastElement(self, obj, typeOfElement):
+        """retrieveLastElement"""
         exp = GeomAPI_ShapeExplorer(obj.defaultResult().shape(), typeOfElement)
         while exp.more():
-           if typeOfElement == GeomAPI_Shape.VERTEX :
+            if typeOfElement == GeomAPI_Shape.VERTEX :
                 cur = exp.current().vertex(); exp.next()
-           elif typeOfElement == GeomAPI_Shape.EDGE :
+            elif typeOfElement == GeomAPI_Shape.EDGE :
                 cur = exp.current().edge(); exp.next()
-           elif typeOfElement == GeomAPI_Shape.FACE :
+            elif typeOfElement == GeomAPI_Shape.FACE :
                 cur = exp.current().face(); exp.next()
-           elif typeOfElement == GeomAPI_Shape.SOLID :
+            elif typeOfElement == GeomAPI_Shape.SOLID :
                 cur = exp.current().solid(); exp.next()
-           else :
+            else :
                 return None
         return model.selection(obj.defaultResult(), cur)
 
     def retrieveFirstElement(self, obj, typeOfElement):
+        """retrieveFirstElement"""
         exp = GeomAPI_ShapeExplorer(obj.defaultResult().shape(), typeOfElement)
         if typeOfElement == GeomAPI_Shape.VERTEX :
             cur = exp.current().vertex()
@@ -252,6 +261,7 @@ class piping(model.Feature):
         return model.selection(obj.defaultResult(), cur)
 
     def createPiping(self, part, connectivityInfos):
+        """createPiping"""
         lPipes = []
         startFace = None
         fuse = None
@@ -296,7 +306,7 @@ class piping(model.Feature):
 
             if self.lfeatures :
                 for feature in self.lfeatures:
-                   part.removeFeature(feature.feature())
+                    part.removeFeature(feature.feature())
                 self.lfeatures = []
                 model.removeFolder(self.folder)
 
@@ -314,12 +324,14 @@ class piping(model.Feature):
             lPipeSupports = {}
             lPipes = []
 
-            with open(filepath) as file:
+            with open(filepath) as afile:
                 summary = 0
                 method = ""
-                for line in file:
+                for line in afile:
+                    print (line[:-1])
                     if line == "\n":
-                        continue                    
+                        print("========================= Saut de ligne =========================")
+                        continue
                     if line[0] == "#" or line[:3] == "...":
                         continue
                     if summary == 0 and line[:-1] == "nodes section" :
@@ -331,6 +343,7 @@ class piping(model.Feature):
                         summary = 2
                         continue
                     if summary == 2 and line[:6] == "method" :
+                        print("===================== summary == 2 method =========================")
                         method = line[7:-1]
                         print(method)
                         if method != self.twopartwo and method != self.parligne:
@@ -342,24 +355,26 @@ class piping(model.Feature):
                         continue
 
                     if summary == 1:
+                        print("===================== summary == 1 =========================")
                         isOK = self.readNodeInfo(line[:-1])
                         if not isOK:
                             raiseException("Problem with description of nodes")
                         continue
                     if summary == 2:
+                        print("===================== summary == 2 =========================")
                         isOK = self.readConnectivity(line[:-1],method)
                         if not isOK:
                             raiseException("Problem with description of connectivities")
                         continue
                     if summary == 3:
+                        print("===================== summary == 3 =========================")
                         isOK = self.readFillet(line[:-1])
                         if not isOK:
                             raiseException("Problem with description of fillets")
                         continue
-                file.close()
 
                 for key, value in self.connectivities.items():
-                   self.infoPoints[value['chainage'][-1]]["isEnd"] = True
+                    self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
                 print("infos points = " , self.infoPoints)
                 print("connectivities = " , self.connectivities)
@@ -449,7 +464,7 @@ class piping(model.Feature):
                     copy = value['fillet']
                     while ind < len(value['chainage'])-1:
                         value["starts"].append(self.connectivities[key]['chainage'][ind])
-                        objectsForPath, ind, isPipe, end_noeud = self.retrieveSubshapesforWire(copy, key, ind)                     
+                        objectsForPath, ind, isPipe, end_noeud = self.retrieveSubshapesforWire(copy, key, ind)
                         print("************************* ind = ", ind)
                         print("************************* objectsForPath = ", objectsForPath)
                         path = model.addWire(part, objectsForPath, False); path.execute(True); self.lfeatures.append(path)
@@ -457,8 +472,8 @@ class piping(model.Feature):
                         value["isPipe"].append(isPipe)
                         value["ends"].append(end_noeud)
                         if ind < len(value['chainage'])-1:
-                           copy = model.addCopy(part, [model.selection(copy.defaultResult())], 1); copy.execute(True); self.lfeatures.append(copy)                           
-            
+                            copy = model.addCopy(part, [model.selection(copy.defaultResult())], 1); copy.execute(True); self.lfeatures.append(copy)
+
 
                 # Création des sketchs pour le piping
                 print("========================= Création des sketchs =========================")
