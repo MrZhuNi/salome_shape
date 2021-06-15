@@ -1,4 +1,4 @@
-# Copyright (C) 2021  CEA/DEN, EDF R&D
+# Copyright (C) 2014-2021  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,10 +17,31 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-SET(TEST_NAMES
-  TestRectangle.py
-  TestRectangleCentered.py
-  TestcompoundVertices.py
-  TestimportParameters.py
-  Testpiping.py
-)
+from salome.shaper import model
+from salome.shaper import geom
+from ModelAPI import *
+
+import os
+
+aSession = ModelAPI_Session.get()
+
+def getFilePath(fileName):
+    path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "piping")
+    return os.path.join(path, fileName)
+
+theFile = getFilePath("piping.txt")
+
+aSession.startOperation("Create part for import")
+aPartFeature = aSession.moduleDocument().addFeature("Part")
+aSession.finishOperation()
+aPart = aSession.activeDocument()
+
+aSession.startOperation("Import file")
+aFeatureKind = "piping"
+anImportFeature = aPart.addFeature(aFeatureKind)
+aFieldName = "file_path"
+aFile = anImportFeature.string(aFieldName)
+aFile.setValue(theFile)
+aSession.finishOperation()
+
+assert(model.checkPythonDump())
