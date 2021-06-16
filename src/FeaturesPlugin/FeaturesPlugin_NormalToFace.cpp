@@ -42,9 +42,7 @@
 #include <sstream>
 
 //=================================================================================================
-FeaturesPlugin_NormalToFace::FeaturesPlugin_NormalToFace()
-{
-}
+FeaturesPlugin_NormalToFace::FeaturesPlugin_NormalToFace() {}
 
 //=================================================================================================
 void FeaturesPlugin_NormalToFace::initAttributes()

@@ -77,7 +77,7 @@ void FeaturesAPI_NormalToFace::dump(ModelHighAPI_Dumper& theDumper) const
 
   theDumper << aBase << " = model.getNormal(" << aDocName << ", " << anAttrObject;
 
-  if (!aBase->string(FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID())->value().empty()){
+  if (!aBase->string(FeaturesPlugin_CreateNormalToFace::VERTEX_OPTION_ID())->value().empty()) {
 
     AttributeSelectionPtr anAttrVertex =
             aBase->selection(FeaturesPlugin_CreateNormalToFace::VERTEX_SELECTED_ID());

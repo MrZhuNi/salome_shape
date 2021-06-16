@@ -37,9 +37,7 @@
 #include <sstream>
 
 //=================================================================================================
-FeaturesPlugin_CreateNormalToFace::FeaturesPlugin_CreateNormalToFace()
-{
-}
+FeaturesPlugin_CreateNormalToFace::FeaturesPlugin_CreateNormalToFace() {}
 
 //=================================================================================================
 void FeaturesPlugin_CreateNormalToFace::initAttributes()
@@ -51,7 +49,6 @@ void FeaturesPlugin_CreateNormalToFace::initAttributes()
   data()->addAttribute(VERTEX_OPTION_ID(), ModelAPI_AttributeString::typeId());
 
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), VERTEX_SELECTED_ID());
-
 }
 
 //=================================================================================================
@@ -107,8 +104,6 @@ void FeaturesPlugin_CreateNormalToFace::execute()
 }
 
 //=================================================================================================
-void FeaturesPlugin_CreateNormalToFace::attributeChanged(const std::string& theID)
-{
-}
+void FeaturesPlugin_CreateNormalToFace::attributeChanged(const std::string& theID) {}
 
 
