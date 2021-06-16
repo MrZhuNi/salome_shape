@@ -22,6 +22,8 @@
 Author: Nathalie Gore
 """
 
+__revision__ = "V02.01"
+
 from salome.shaper import model
 from salome.shaper import geom
 import ModelAPI
@@ -97,16 +99,18 @@ class piping(model.Feature):
     def readNodeInfo(self, line):
         """readNodeInfo"""
         #print(line)
-        diagno = False
         splitLine = line.split(" ")
         if len(splitLine) != 5:
             print(line)
+            diagno = 1
         elif splitLine[0] in self.infoPoints:
             print(line)
+            diagno = 2
         elif splitLine[1] not in self.infoPoints and splitLine[1] != "-":
             print(line)
+            diagno = 3
         else:
-            diagno = True
+            diagno = 0
             self.infoPoints[splitLine[0]] = {}
             self.infoPoints[splitLine[0]]["Ref"] = splitLine[1]
             if splitLine[1] == "-":
@@ -118,12 +122,14 @@ class piping(model.Feature):
                 self.infoPoints[splitLine[0]]["Y"] = self.infoPoints[splitLine[1]]["Y"] + float(splitLine[3])
                 self.infoPoints[splitLine[0]]["Z"] = self.infoPoints[splitLine[1]]["Z"] + float(splitLine[4])
             self.infoPoints[splitLine[0]]["isEnd"] = False
+        #print ("Retour de readNodeInfo = {}".format(diagno))
         return diagno
 
     def readConnectivity(self, line, method):
         """readConnectivity"""
         splitLine = line.split(" ")
         print(line)
+        diagno = 0
         if method == self.twopartwo :
             if self.connectivities == {} :
                 print("nouvelle ligne - Cas 1")
@@ -136,13 +142,14 @@ class piping(model.Feature):
                     if val['chainage'][-1] == splitLine[0]:
                         # La ligne existe
                         val['chainage'].append(splitLine[1])
-                        return True
+                        return diagno
                 # La ligne n'existe pas
                 print("nouvelle ligne - Cas 2")
                 self.newConnectivity(splitLine[0], splitLine)
         else :
             self.newConnectivity(splitLine[0], splitLine)
-        return True
+        #print ("Retour de readConnectivity = {}".format(diagno))
+        return diagno
 
     def newConnectivity(self, key, value):
         """newConnectivity"""
@@ -151,21 +158,24 @@ class piping(model.Feature):
 
     def readFillet(self, line):
         """readFillet"""
-        diagno = False
         splitLine = line.split(" ")
         if len(splitLine) != 2:
             print(line)
+            diagno = 1
         elif not splitLine[0] in self.infoPoints:
             print(line)
+            diagno = 2
         elif splitLine[1] == "angular_connection":
             self.infoPoints[splitLine[0]]["Fillet"] = "angular_connection"
-            diagno = True
+            diagno = 0
         elif splitLine[1][:7] == "radius=":
             self.infoPoints[splitLine[0]]["Fillet"] = "radius"
             self.infoPoints[splitLine[0]]["Radius"] = float(splitLine[1][7:])
-            diagno = True
+            diagno = 0
         else:
             print(line)
+            diagno = 3
+        #print ("Retour de readFillet = {}".format(diagno))
         return diagno
 
     def retrieveSubshapesforWire(self, copy, key, ind):
@@ -353,25 +363,25 @@ class piping(model.Feature):
                         print("========================= Lecture des fillets =========================")
                         summary = 3
                         continue
-
                     if summary == 1:
                         print("===================== summary == 1 =========================")
-                        isOK = self.readNodeInfo(line[:-1])
-                        if not isOK:
+                        diagno = self.readNodeInfo(line[:-1])
+                        if diagno:
                             raiseException("Problem with description of nodes")
                         continue
                     if summary == 2:
                         print("===================== summary == 2 =========================")
-                        isOK = self.readConnectivity(line[:-1],method)
-                        if not isOK:
+                        diagno = self.readConnectivity(line[:-1],method)
+                        if diagno:
                             raiseException("Problem with description of connectivities")
                         continue
                     if summary == 3:
                         print("===================== summary == 3 =========================")
-                        isOK = self.readFillet(line[:-1])
-                        if not isOK:
+                        diagno = self.readFillet(line[:-1])
+                        if diagno:
                             raiseException("Problem with description of fillets")
                         continue
+                    print("===================== Rien =========================")
 
                 for key, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
