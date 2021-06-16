@@ -46,13 +46,13 @@ bool FiltersPlugin_VolumeSize::isOk(const GeomShapePtr& theShape, const ResultPt
 {
   AttributePtr anAttr = theArgs.argument("value");
   AttributeDoublePtr aValue = std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(anAttr);
-  if (!aValue.get()|| !anAttr->isInitialized() )
+  if (!aValue.get()|| !anAttr->isInitialized())
     return false;
   double aVal = aValue->value();
 
   anAttr = theArgs.argument("valueMax");
   aValue = std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(anAttr);
-  if (!aValue.get()|| !anAttr->isInitialized() )
+  if (!aValue.get()|| !anAttr->isInitialized())
     return false;
   double aValMax = aValue->value();
 
@@ -64,12 +64,12 @@ bool FiltersPlugin_VolumeSize::isOk(const GeomShapePtr& theShape, const ResultPt
   double aSurfArea;
   double aVolume;
   std::string aError;
-  if( !GetBasicProperties(theShape,
+  if (!GetBasicProperties(theShape,
                           aTolerance,
                           aLength,
                           aSurfArea,
                           aVolume,
-                          aError) )
+                          aError))
       return false;
 
   anAttr = theArgs.argument("comparatorType");

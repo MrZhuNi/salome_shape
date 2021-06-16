@@ -77,7 +77,7 @@ static void cacheFeatureEdge(const GeomShapePtr theTopLevelShape,
                                  anEdge->middlePoint(),
                                  theAngle,
                                  anError)) {
-            if( anError.empty())
+            if (anError.empty())
               theCache.insert(anEdge);
           }
         }

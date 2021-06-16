@@ -56,7 +56,7 @@ bool FiltersPlugin_FaceSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
     return false;
   double aValMax = aValue->value();
 
-    if (aVal < 0.0)
+  if (aVal < 0.0)
     return false;
 
   double aTolerance = 0.0001;
@@ -64,12 +64,12 @@ bool FiltersPlugin_FaceSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   double aSurfArea;
   double aVolume;
   std::string aError;
-  if( !GetBasicProperties(theShape,
+  if (!GetBasicProperties(theShape,
                           aTolerance,
                           aLength,
                           aSurfArea,
                           aVolume,
-                          aError) )
+                          aError))
       return false;
 
   anAttr = theArgs.argument("comparatorType");

@@ -51,7 +51,7 @@ static void separateArguments(const std::list<FiltersAPI_Argument>& theArguments
     else if (anIt->dble().value() > -100000000000) {
       theDoubleArgs.push_back(anIt->dble());
     }
-    else if (anIt->string().empty()){
+    else if (anIt->string().empty()) {
       theBoolArgs.push_back(anIt->boolean());
     }
     else
@@ -108,7 +108,7 @@ void FiltersAPI_Feature::setFilters(const std::list<FilterAPIPtr>& theFilters)
               if (aBoolean) {
                 if (aBools.size() == 1)
                   fillAttribute(aBools.front(), aBoolean);
-              }else {
+              } else {
                 AttributeDoublePtr aDouble =
                     std::dynamic_pointer_cast<ModelAPI_AttributeDouble>(*aFIt);
                 if (aDouble) {
