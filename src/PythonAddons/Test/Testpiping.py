@@ -19,18 +19,29 @@
 
 from salome.shaper import model
 from salome.shaper import geom
+from ModelAPI import *
 
-model.begin()
-partSet = model.moduleDocument()
-part = model.addPart(partSet).document()
+import os
 
-sketch = model.addSketch(part, model.defaultPlane("XOY"))
-rectangle_1 = sketch.addRectangle(0, 0, 50, 50)
+aSession = ModelAPI_Session.get()
 
-startPoint = geom.Pnt2d(50, 50)
-endPoint = geom.Pnt2d(100, 100)
+def getFilePath(fileName):
+    path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "piping")
+    return os.path.join(path, fileName)
 
-rectangle_2 = sketch.addRectangle(startPoint, endPoint)
-model.end()
+theFile = getFilePath("piping.txt")
+
+aSession.startOperation("Create part for import")
+aPartFeature = aSession.moduleDocument().addFeature("Part")
+aSession.finishOperation()
+aPart = aSession.activeDocument()
+
+aSession.startOperation("Import file")
+aFeatureKind = "piping"
+anImportFeature = aPart.addFeature(aFeatureKind)
+aFieldName = "file_path"
+aFile = anImportFeature.string(aFieldName)
+aFile.setValue(theFile)
+aSession.finishOperation()
 
 assert(model.checkPythonDump())
