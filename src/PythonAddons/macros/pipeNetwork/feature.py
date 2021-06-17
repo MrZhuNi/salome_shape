@@ -22,17 +22,16 @@
 Author: Nathalie Gore
 """
 
-__revision__ = "V02.01"
+__revision__ = "V02.02"
 
 from salome.shaper import model
-from salome.shaper import geom
+
 import ModelAPI
-import ParametersAPI
+
 from GeomAPI import *
 
 class pipeNetwork(model.Feature):
-    """Import of Construction points
-    """
+    """Creation of a network of pipes"""
     lfeatures = list()
     folder = None
     isHexa = False
@@ -41,6 +40,8 @@ class pipeNetwork(model.Feature):
     radius = 0.5
     infoPoints = dict()
     connectivities = dict()
+
+    _verbose = False
 
 # Feature initializations
 
@@ -102,7 +103,7 @@ class pipeNetwork(model.Feature):
             diagno = 3
         else:
             diagno = 0
-            self.infoPoints[splitLine[0]] = {}
+            self.infoPoints[splitLine[0]] = dict()
             self.infoPoints[splitLine[0]]["Ref"] = splitLine[1]
             if splitLine[1] == "-":
                 self.infoPoints[splitLine[0]]["X"] = float(splitLine[2])
@@ -122,7 +123,7 @@ class pipeNetwork(model.Feature):
         print(line)
         diagno = 0
         if method == self.twopartwo :
-            if self.connectivities == {} :
+            if isinstance(self.connectivities,dict) :
                 print("nouvelle ligne - Cas 1")
                 self.newConnectivity(splitLine[0], splitLine)
             else :
@@ -144,7 +145,7 @@ class pipeNetwork(model.Feature):
 
     def newConnectivity(self, key, value):
         """newConnectivity"""
-        self.connectivities[key] = {}
+        self.connectivities[key] = dict()
         self.connectivities[key]['chainage'] = value
 
     def readFillet(self, line):
@@ -174,7 +175,7 @@ class pipeNetwork(model.Feature):
         exp = GeomAPI_ShapeExplorer(copy.defaultResult().shape(), GeomAPI_Shape.EDGE)
 
         end = False
-        subshapesForWire = []
+        subshapesForWire = list()
         currentInd = 0
         isPipe = True
         print("Current chainage : ", self.connectivities[key]['chainage'][ind:])
@@ -270,7 +271,7 @@ class pipeNetwork(model.Feature):
 
     def createPipe(self, part, connectivityInfos):
         """createPipe"""
-        lPipes = []
+        lPipes = list()
         startFace = None
         fuse = None
         for ind in range(len(connectivityInfos['paths'])):
@@ -324,22 +325,22 @@ class pipeNetwork(model.Feature):
             if self.lfeatures :
                 for feature in self.lfeatures:
                     part.removeFeature(feature.feature())
-                self.lfeatures = []
+                self.lfeatures = list()
                 model.removeFolder(self.folder)
 
-            self.infoPoints = {}
-            self.connectivities = {}
+            self.infoPoints = dict()
+            self.connectivities = dict()
 
             from os.path import basename
             filename = basename(filepath)
             nameRes = "pipeNetwork_" + filename
 
             # Creating the construction points in the current document
-            lFeatures = []
-            lVertices = []
-            lCodesPipes = []
-            lPipeSupports = {}
-            lPipes = []
+            lFeatures = list()
+            lVertices = list()
+            lCodesPipes = list()
+            lPipeSupports = dict()
+            lPipes = list()
 
             with open(filepath) as afile:
                 summary = 0
@@ -393,8 +394,9 @@ class pipeNetwork(model.Feature):
                 for key, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
-                print("infos points = " , self.infoPoints)
-                print("connectivities = " , self.connectivities)
+                if self._verbose:
+                    print("infos points = " , self.infoPoints)
+                    print("connectivities = " , self.connectivities)
 
 
                 # Creation des points
@@ -408,8 +410,9 @@ class pipeNetwork(model.Feature):
                 # Creation des polylines
                 print("========================= Creation des polylines =========================")
                 for key, value in self.connectivities.items():
-                    print("key = ", key)
-                    lPoints = []
+                    if self._verbose:
+                        print("key = ", key)
+                    lPoints = list()
                     for id_noeud in value['chainage']:
                         lPoints.append(self.infoPoints[id_noeud]["point"])
                     polyline = model.addPolyline3D(part, lPoints, False)
@@ -420,7 +423,8 @@ class pipeNetwork(model.Feature):
                 # Creation des fillets
                 print("========================= Creation des fillets =========================")
                 for key, value in self.connectivities.items():
-                    print("key = ", key)
+                    if self._verbose:
+                        print("key = ", key)
                     # recherche des noeuds fillets
                     value["fillet"] = value["polyline"]
                     for id_noeud in value['chainage']:
@@ -435,7 +439,8 @@ class pipeNetwork(model.Feature):
                 # Trouver les coudes droits
                 print("========================= Recherche des coudes droits =========================")
                 for key, value in self.connectivities.items():
-                    print("key = ", key, value['chainage'])
+                    if self._verbose:
+                        print("key = ", key, value['chainage'])
                     # recherche des noeuds fillets
                     for ind, id_noeud in enumerate(value['chainage']):
                         #print("Info sur : " id_noeud, " => ", self.infoPoints[id_noeud]["Fillet"])
@@ -491,19 +496,21 @@ class pipeNetwork(model.Feature):
                 # Création des paths pour le pipeNetwork
                 print("========================= Création des paths =========================")
                 for key, value in self.connectivities.items():
-                    print("================================================================================= key = ", key, value['chainage'], value['fillet'])
+                    if self._verbose:
+                      print("================================================================================= key = ", key, value['chainage'], value['fillet'])
                     # recherche des noeuds fillets
-                    value["paths"] = []
-                    value["isPipe"] = []
-                    value["starts"] = []
-                    value["ends"] = []
+                    value["paths"] = list()
+                    value["isPipe"] = list()
+                    value["starts"] = list()
+                    value["ends"] = list()
                     ind = 0
                     copy = value['fillet']
                     while ind < len(value['chainage'])-1:
                         value["starts"].append(self.connectivities[key]['chainage'][ind])
                         objectsForPath, ind, isPipe, end_noeud = self.retrieveSubshapesforWire(copy, key, ind)
-                        print("************************* ind = ", ind)
-                        print("************************* objectsForPath = ", objectsForPath)
+                        if self._verbose:
+                            print("************************* ind = ", ind)
+                            print("************************* objectsForPath = ", objectsForPath)
                         path = model.addWire(part, objectsForPath, False)
                         path.execute(True)
                         self.lfeatures.append(path)
@@ -519,7 +526,8 @@ class pipeNetwork(model.Feature):
                 # Création des sketchs pour le pipeNetwork
                 print("========================= Création des sketchs =========================")
                 for key, value in self.connectivities.items():
-                    print("================================================================================= key = ", key)
+                    if self._verbose:
+                        print("================================================================================= key = ", key)
                     # Creating sketch
                     edge = model.addEdge(part, self.infoPoints[value["chainage"][0]]["point"], self.infoPoints[value["chainage"][1]]["point"])
                     edge.execute(True)
@@ -543,22 +551,24 @@ class pipeNetwork(model.Feature):
                     value["sketch"] = sketch.result()
 
 
-                print("infos points = " , self.infoPoints)
-                print("********************************")
-                print("connectivities = " , self.connectivities)
+                if self._verbose:
+                    print("infos points = " , self.infoPoints)
+                    print("********************************")
+                    print("connectivities = " , self.connectivities)
 
 
                 # Création des pipes
                 print("========================= Création des pipes =========================")
                 for key, value in self.connectivities.items():
-                    print("================================================================================= key = ", key)
+                    if self._verbose:
+                        print("================================================================================= key = ", key)
                     pipe = self.createPipe(part, value)
                     value["pipe"] = pipe.result()
 
 
                 # Fusion des pipes
                 print("========================= Fusion des pipes =========================")
-                lPipes = []
+                lPipes = list()
                 for key, value in self.connectivities.items():
                     lPipes.append(value["pipe"])
                 fuse = model.addFuse(part, lPipes, False)
