@@ -1,5 +1,5 @@
-.. _create_fibreNeutre:
-.. |fibreNeutre.icon|    image:: images/fibreNeutre.png
+.. _create_midSurface:
+.. |midSurface.icon|    image:: images/midSurface.png
 
 Fibre neutre
 ============
@@ -10,11 +10,11 @@ Elle permet de créer les surfaces médianes à des solides minces, encore appel
 Pour créer les fibres neutres d'un objet :
 
 #. Choisir dans le menu principal *Macros - > Fibre neutre* item  ou
-#. cliquer le bouton |fibreNeutre.icon| **Fibre neutre** dans la barre des macros.
+#. cliquer le bouton |midSurface.icon| **Fibre neutre** dans la barre des macros.
 
 Le menu suivant apparaît :
 
-.. figure:: images/fibreNeutrePanel.png
+.. figure:: images/midSurfacePanel.png
    :align: center
 
    Fibre neutre
@@ -48,20 +48,20 @@ Exemple :
 
 A partir d'un ensemble de 4 solides de forme torique :
 
-.. figure:: images/fibreNeutre_solide.png
+.. figure:: images/midSurface_solide.png
    :align: center
 
    Solides à traiter
 
 on obtient 4 surfaces indépendantes :
 
-.. figure:: images/fibreNeutre_surfaces.png
+.. figure:: images/midSurface_surfaces.png
    :align: center
 
    Surfaces
 
 
-.. figure:: images/fibreNeutre_solide_surfaces.png
+.. figure:: images/midSurface_solide_surfaces.png
    :align: center
 
    Surfaces dans les solides
