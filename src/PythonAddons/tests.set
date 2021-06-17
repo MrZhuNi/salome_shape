@@ -22,5 +22,5 @@ SET(TEST_NAMES
   TestRectangleCentered.py
   TestcompoundVertices.py
   TestimportParameters.py
-  TestfibreNeutre.py
+  TestmidSurface.py
 )

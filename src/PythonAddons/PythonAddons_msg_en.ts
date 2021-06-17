@@ -63,9 +63,9 @@
     </message>
   </context>
 
-  <!-- fibreNeutre -->
+  <!-- midSurface -->
   <context>
-    <name>fibreNeutre</name>
+    <name>midSurface</name>
     <message>
       <source>Fibre neutre</source>
       <translation>Create midsurfaces</translation>
@@ -76,7 +76,7 @@
     </message>
   </context>
   <context>
-    <name>fibreNeutre:file_path</name>
+    <name>midSurface:file_path</name>
     <message>
       <source>Import file</source>
       <translation>CAD file of the object</translation>

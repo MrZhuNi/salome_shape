@@ -26,10 +26,10 @@ import os
 aSession = ModelAPI_Session.get()
 
 def getFilePath(fileName):
-    path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "fibreNeutre")
+    path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "midSurface")
     return os.path.join(path, fileName)
 
-theFile = getFilePath("fibreNeutre.stp")
+theFile = getFilePath("midSurface.stp")
 
 aSession.startOperation("Create part for mid surface")
 aPartFeature = aSession.moduleDocument().addFeature("Part")
@@ -37,7 +37,7 @@ aSession.finishOperation()
 aPart = aSession.activeDocument()
 
 aSession.startOperation("Import file")
-aFeatureKind = "fibreNeutre"
+aFeatureKind = "midSurface"
 anImportFeature = aPart.addFeature(aFeatureKind)
 aFieldName = "file_path"
 aFile = anImportFeature.string(aFieldName)
