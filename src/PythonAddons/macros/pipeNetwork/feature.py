@@ -76,25 +76,16 @@ class pipeNetwork(model.Feature):
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
         self.data().addAttribute(self.HEXAS_ID(), ModelAPI.ModelAPI_AttributeBoolean_typeId())
 
-        #self.lfeatures = []
-        #self.folder = None
-        #self.isHexa = False
-        #self.twopartwo = "2par2"
-        #self.parligne = "par_ligne"
-        #self.radius = 0.5
-        #self.paramRadius = None
-        #self.paramFillet = None
-
 # Retrieve parent pipe
 
     def decodingCode(self, code):
         """decodingCode"""
         splitCode = code.split(".")
         if len(splitCode) <= 1:
-            return ""
-        previousCode = code[:len(code)-len(splitCode[-1])-1]
+            previousCode = ""
+        else:
+            previousCode = code[:len(code)-len(splitCode[-1])-1]
         return previousCode
-
 
     def readNodeInfo(self, line):
         """readNodeInfo"""
@@ -199,7 +190,8 @@ class pipeNetwork(model.Feature):
                 print("test si fillet : ", currentInd+1, ind, self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["Fillet"])
                 if currentInd+1 <= ind and self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["Fillet"] == "radius" and not self.infoPoints[self.connectivities[key]['chainage'][currentInd]]["isAngular"]:
                     print("Fillet à ne pas prendre en compte")
-                    exp.next() ; cur = exp.current().edge()
+                    exp.next()
+                    cur = exp.current().edge()
             else :
                 subshapesForWire.append(model.selection(copy.defaultResult(), cur))
                 print("Mode normal - Nb segments dans le wire : ", len(subshapesForWire))
@@ -209,20 +201,22 @@ class pipeNetwork(model.Feature):
                     print("Nb segments dans le wire : ", len(subshapesForWire))
                     if len(subshapesForWire) == 1:
                         print("Coude droit en cours")
-                        currentInd = currentInd+1
+                        currentInd += 1
                         isPipe = False
                     else :
                         print("Coude droit à venir")
                         subshapesForWire = subshapesForWire[:-1]
                 elif self.infoPoints[self.connectivities[key]['chainage'][currentInd]]["Fillet"] == "radius":
                     print("Ajout edge start Fillet")
-                    exp.next() ; cur = exp.current().edge()
+                    exp.next()
+                    cur = exp.current().edge()
                     subshapesForWire.append(model.selection(copy.defaultResult(), cur))
                     #currentInd = currentInd+1
                     print("Mode Fillet - Nb segments dans le wire : ", len(subshapesForWire))
                 elif self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["Fillet"] == "radius":
                     print("Ajout edge end Fillet")
-                    exp.next() ; cur = exp.current().edge()
+                    exp.next()
+                    cur = exp.current().edge()
                     subshapesForWire.append(model.selection(copy.defaultResult(), cur))
                     print("Mode Fillet - Nb segments dans le wire : ", len(subshapesForWire))
                 else :
@@ -243,21 +237,24 @@ class pipeNetwork(model.Feature):
         """retrieveLastElement"""
         exp = GeomAPI_ShapeExplorer(obj.defaultResult().shape(), typeOfElement)
         while exp.more():
+            cur = None
             if typeOfElement == GeomAPI_Shape.VERTEX :
-                cur = exp.current().vertex(); exp.next()
+                cur = exp.current().vertex()
             elif typeOfElement == GeomAPI_Shape.EDGE :
-                cur = exp.current().edge(); exp.next()
+                cur = exp.current().edge()
             elif typeOfElement == GeomAPI_Shape.FACE :
-                cur = exp.current().face(); exp.next()
+                cur = exp.current().face()
             elif typeOfElement == GeomAPI_Shape.SOLID :
-                cur = exp.current().solid(); exp.next()
-            else :
-                return None
-        return model.selection(obj.defaultResult(), cur)
+                cur = exp.current().solid()
+            if cur is not None:
+                exp.next()
+                cur = model.selection(obj.defaultResult(), cur)
+        return cur
 
     def retrieveFirstElement(self, obj, typeOfElement):
         """retrieveFirstElement"""
         exp = GeomAPI_ShapeExplorer(obj.defaultResult().shape(), typeOfElement)
+        cur = None
         if typeOfElement == GeomAPI_Shape.VERTEX :
             cur = exp.current().vertex()
         elif typeOfElement == GeomAPI_Shape.EDGE :
@@ -266,12 +263,13 @@ class pipeNetwork(model.Feature):
             cur = exp.current().face()
         elif typeOfElement == GeomAPI_Shape.SOLID :
             cur = exp.current().solid()
-        else :
-            return None
-        return model.selection(obj.defaultResult(), cur)
+        if cur is not None:
+            exp.next()
+            cur = model.selection(obj.defaultResult(), cur)
+        return cur
 
-    def createPiping(self, part, connectivityInfos):
-        """createPiping"""
+    def createPipe(self, part, connectivityInfos):
+        """createPipe"""
         lPipes = []
         startFace = None
         fuse = None
@@ -287,18 +285,27 @@ class pipeNetwork(model.Feature):
                     pipe = model.addExtrusion(part, [startFace], model.selection(), self.infoPoints[connectivityInfos['ends'][ind]]['plane'], 0, model.selection(), 0, "Faces|Wires")
                 else :
                     # le plan cible n'existe pas
-                    edge = model.addAxis(part, self.infoPoints[connectivityInfos['starts'][ind]]['point'], self.infoPoints[connectivityInfos['ends'][ind]]['point']); edge.execute(True); self.lfeatures.append(edge)# self.retrieveFirstElement(connectivityInfos['paths'][ind], GeomAPI_Shape.EDGE)
+                    edge = model.addAxis(part, self.infoPoints[connectivityInfos['starts'][ind]]['point'], self.infoPoints[connectivityInfos['ends'][ind]]['point'])
+                    edge.execute(True)
+                    self.lfeatures.append(edge)# self.retrieveFirstElement(connectivityInfos['paths'][ind], GeomAPI_Shape.EDGE)
                     point = self.retrieveLastElement(connectivityInfos['paths'][ind], GeomAPI_Shape.VERTEX)
-                    plane = model.addPlane(part, edge.result(), point, True); plane.execute(True); self.lfeatures.append(plane)
+                    plane = model.addPlane(part, edge.result(), point, True)
+                    plane.execute(True)
+                    self.lfeatures.append(plane)
                     pipe = model.addExtrusion(part, [startFace], edge.result(), plane.result(), 0, model.selection(), 0, "Faces|Wires")
-            pipe.execute(True); self.lfeatures.append(pipe)
+            pipe.execute(True)
+            self.lfeatures.append(pipe)
             lPipes.append(pipe.result())
             if ind < len(connectivityInfos['paths'])-1:
-                copy = model.addCopy(part, [model.selection(pipe.defaultResult())], 1); copy.execute(True); self.lfeatures.append(copy)
+                copy = model.addCopy(part, [model.selection(pipe.defaultResult())], 1)
+                copy.execute(True)
+                self.lfeatures.append(copy)
                 startFace = self.retrieveLastElement(copy, GeomAPI_Shape.FACE)
 
         if len(lPipes) > 1 :
-            fuse = model.addFuse(part, lPipes, False); fuse.execute(True); self.lfeatures.append(fuse)
+            fuse = model.addFuse(part, lPipes, False)
+            fuse.execute(True)
+            self.lfeatures.append(fuse)
         else :
             return pipe
         return fuse
@@ -393,9 +400,10 @@ class pipeNetwork(model.Feature):
                 # Creation des points
                 print("========================= Creation des noeuds =========================")
                 for key, value in self.infoPoints.items():
-                    point = model.addPoint(part, value['X'], value['Y'], value['Z']); point.execute(True); self.lfeatures.append(point)
+                    point = model.addPoint(part, value['X'], value['Y'], value['Z'])
+                    point.execute(True)
+                    self.lfeatures.append(point)
                     value["point"] = point.result()
-
 
                 # Creation des polylines
                 print("========================= Creation des polylines =========================")
@@ -404,9 +412,10 @@ class pipeNetwork(model.Feature):
                     lPoints = []
                     for id_noeud in value['chainage']:
                         lPoints.append(self.infoPoints[id_noeud]["point"])
-                    polyline = model.addPolyline3D(part, lPoints, False); polyline.execute(True); self.lfeatures.append(polyline)
+                    polyline = model.addPolyline3D(part, lPoints, False)
+                    polyline.execute(True)
+                    self.lfeatures.append(polyline)
                     value["polyline"] = polyline
-
 
                 # Creation des fillets
                 print("========================= Creation des fillets =========================")
@@ -417,7 +426,9 @@ class pipeNetwork(model.Feature):
                     for id_noeud in value['chainage']:
                         if self.infoPoints[id_noeud]["Fillet"] == "radius" :
                             print(self.infoPoints[id_noeud])
-                            fillet1D = model.addFillet(part, [model.selection("VERTEX", (self.infoPoints[id_noeud]["X"],self.infoPoints[id_noeud]["Y"],self.infoPoints[id_noeud]["Z"]))], self.infoPoints[id_noeud]["Radius"]); fillet1D.execute(True); self.lfeatures.append(fillet1D)
+                            fillet1D = model.addFillet(part, [model.selection("VERTEX", (self.infoPoints[id_noeud]["X"],self.infoPoints[id_noeud]["Y"],self.infoPoints[id_noeud]["Z"]))], self.infoPoints[id_noeud]["Radius"])
+                            fillet1D.execute(True)
+                            self.lfeatures.append(fillet1D)
                             value["fillet"] = fillet1D
 
 
@@ -444,20 +455,36 @@ class pipeNetwork(model.Feature):
                                     print(value["chainage"][ind-1], id_noeud, value["chainage"][ind+1])
                                     print(self.infoPoints[value["chainage"][ind-1]]["point"])
 
-                                    tmpPlane = model.addPlane(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"]); tmpPlane.execute(True); self.lfeatures.append(tmpPlane)
-                                    axis =  model.addAxis(part, tmpPlane.result(), self.infoPoints[id_noeud]["point"]); axis.execute(True); self.lfeatures.append(axis)
+                                    tmpPlane = model.addPlane(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
+                                    tmpPlane.execute(True)
+                                    self.lfeatures.append(tmpPlane)
+                                    axis =  model.addAxis(part, tmpPlane.result(), self.infoPoints[id_noeud]["point"])
+                                    axis.execute(True)
+                                    self.lfeatures.append(axis)
                                     self.infoPoints[id_noeud]["axis"] = axis.result()
 
                                     # Edge a extruder
-                                    tmpEdge = model.addEdge(part, self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"]); tmpEdge.execute(True); self.lfeatures.append(tmpEdge)
+                                    tmpEdge = model.addEdge(part, self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
+                                    tmpEdge.execute(True)
+                                    self.lfeatures.append(tmpEdge)
                                     length = model.measureDistance(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"])
-                                    point =  model.addPoint(part, tmpEdge.result(), length, False, False); point.execute(True); self.lfeatures.append(point)
-                                    baseEdge = model.addEdge(part, self.infoPoints[value["chainage"][ind-1]]["point"], point.result()); baseEdge.execute(True); self.lfeatures.append(baseEdge)
-                                    middlePoint = model.addPoint(part, baseEdge.result(), 0.5, True, False); middlePoint.execute(True); self.lfeatures.append(middlePoint)
-                                    Edge = model.addEdge(part, self.infoPoints[id_noeud]["point"], middlePoint.result()); Edge.execute(True); self.lfeatures.append(Edge)
+                                    point =  model.addPoint(part, tmpEdge.result(), length, False, False)
+                                    point.execute(True)
+                                    self.lfeatures.append(point)
+                                    baseEdge = model.addEdge(part, self.infoPoints[value["chainage"][ind-1]]["point"], point.result())
+                                    baseEdge.execute(True)
+                                    self.lfeatures.append(baseEdge)
+                                    middlePoint = model.addPoint(part, baseEdge.result(), 0.5, True, False)
+                                    middlePoint.execute(True)
+                                    self.lfeatures.append(middlePoint)
+                                    Edge = model.addEdge(part, self.infoPoints[id_noeud]["point"], middlePoint.result())
+                                    Edge.execute(True)
+                                    self.lfeatures.append(Edge)
 
                                     # Extrusion
-                                    plane = model.addExtrusion(part, [Edge.result()], axis.result(), 10, 0); plane.execute(True); self.lfeatures.append(plane)
+                                    plane = model.addExtrusion(part, [Edge.result()], axis.result(), 10, 0)
+                                    plane.execute(True)
+                                    self.lfeatures.append(plane)
                                     self.infoPoints[id_noeud]["plane"] = plane.result()
 
 
@@ -477,12 +504,16 @@ class pipeNetwork(model.Feature):
                         objectsForPath, ind, isPipe, end_noeud = self.retrieveSubshapesforWire(copy, key, ind)
                         print("************************* ind = ", ind)
                         print("************************* objectsForPath = ", objectsForPath)
-                        path = model.addWire(part, objectsForPath, False); path.execute(True); self.lfeatures.append(path)
+                        path = model.addWire(part, objectsForPath, False)
+                        path.execute(True)
+                        self.lfeatures.append(path)
                         value["paths"].append(path)
                         value["isPipe"].append(isPipe)
                         value["ends"].append(end_noeud)
                         if ind < len(value['chainage'])-1:
-                            copy = model.addCopy(part, [model.selection(copy.defaultResult())], 1); copy.execute(True); self.lfeatures.append(copy)
+                            copy = model.addCopy(part, [model.selection(copy.defaultResult())], 1)
+                            copy.execute(True)
+                            self.lfeatures.append(copy)
 
 
                 # Création des sketchs pour le pipeNetwork
@@ -490,12 +521,21 @@ class pipeNetwork(model.Feature):
                 for key, value in self.connectivities.items():
                     print("================================================================================= key = ", key)
                     # Creating sketch
-                    edge = model.addEdge(part, self.infoPoints[value["chainage"][0]]["point"], self.infoPoints[value["chainage"][1]]["point"]); edge.execute(True); self.lfeatures.append(edge)
-                    plane = model.addPlane(part, edge.result(), self.infoPoints[value["chainage"][0]]["point"], True); plane.execute(True); self.lfeatures.append(plane)
-                    sketch = model.addSketch(part, plane.result()); sketch.execute(True); self.lfeatures.append(sketch)
-                    SketchProjection = sketch.addProjection(self.infoPoints[value["chainage"][0]]["point"], False); SketchProjection.execute(True)
-                    SketchPoint = SketchProjection.createdFeature(); SketchPoint.execute(True)
-                    SketchCircle = sketch.addCircle(0,0,self.radius); SketchCircle.execute(True)
+                    edge = model.addEdge(part, self.infoPoints[value["chainage"][0]]["point"], self.infoPoints[value["chainage"][1]]["point"])
+                    edge.execute(True)
+                    self.lfeatures.append(edge)
+                    plane = model.addPlane(part, edge.result(), self.infoPoints[value["chainage"][0]]["point"], True)
+                    plane.execute(True)
+                    self.lfeatures.append(plane)
+                    sketch = model.addSketch(part, plane.result())
+                    sketch.execute(True)
+                    self.lfeatures.append(sketch)
+                    SketchProjection = sketch.addProjection(self.infoPoints[value["chainage"][0]]["point"], False)
+                    SketchProjection.execute(True)
+                    SketchPoint = SketchProjection.createdFeature()
+                    SketchPoint.execute(True)
+                    SketchCircle = sketch.addCircle(0,0,self.radius)
+                    SketchCircle.execute(True)
                     sketch.setCoincident(SketchPoint.result(), SketchCircle.center())
                     sketch.setRadius(SketchCircle.results()[1], self.radius)
                     sketch.execute(True)
@@ -512,7 +552,7 @@ class pipeNetwork(model.Feature):
                 print("========================= Création des pipes =========================")
                 for key, value in self.connectivities.items():
                     print("================================================================================= key = ", key)
-                    pipe = self.createPiping(part, value)
+                    pipe = self.createPipe(part, value)
                     value["pipe"] = pipe.result()
 
 
@@ -522,7 +562,8 @@ class pipeNetwork(model.Feature):
                 for key, value in self.connectivities.items():
                     lPipes.append(value["pipe"])
                 fuse = model.addFuse(part, lPipes, False)
-                fuse.execute(True); self.lfeatures.append(fuse)
+                fuse.execute(True)
+                self.lfeatures.append(fuse)
                 fuse.result().setName(nameRes)
                 self.folder = model.addFolder(part, self.lfeatures[0], self.lfeatures[-1])
                 self.folder.setName(nameRes)

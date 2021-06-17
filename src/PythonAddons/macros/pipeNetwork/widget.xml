@@ -3,13 +3,17 @@
     <group id="Samples">
       <feature
         id="pipeNetwork"
-        title="Piping"
-        tooltip="Import a set of pipes"
+        title="Pipe Network"
+        tooltip="Create"
         icon="icons/Addons/pipeNetwork.png"
         helpfile="pipeNetworkFeature.html">
-        <file_selector id="file_path" title="Import txt file (pipe)" path="">
+        <file_selector id="file_path" title="Import file" path="">
         </file_selector>
-        <boolvalue id="blocking" label="for hexa meshes" default="false" tooltip="To partition CAD for hexa meshes" obligatory="0"/>
+        <boolvalue id="blocking"
+                   label="Hexa"
+                   default="false"
+                   tooltip="Partition"
+                   obligatory="0"/>
       </feature>
     </group>
   </workbench>

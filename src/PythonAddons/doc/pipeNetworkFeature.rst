@@ -1,8 +1,8 @@
 .. _pipeNetwork:
 .. |compoundVertices.icon|    image:: images/compound.png
 
-Piping
-======
+Pipe network
+============
 
 Compound Vertices is a feature and can be edited after execution.
 It allows creation of several points basing on XYZ coords file.

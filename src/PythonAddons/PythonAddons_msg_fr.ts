@@ -63,4 +63,39 @@
     </message>
   </context>
 
+  <!-- pipeNetwork -->
+  <context>
+    <name>pipeNetwork</name>
+    <message>
+      <source>Pipe Network</source>
+      <translation>Réseau de tuyaux</translation>
+    </message>
+    <message>
+      <source>Create</source>
+      <translation>Créer un réseau de tuyaux</translation>
+    </message>
+  </context>
+  <context>
+    <name>pipeNetwork:file_path</name>
+    <message>
+      <source>Import file</source>
+      <translation>Fichier texte de la description du réseau</translation>
+    </message>
+    <message>
+      <source>Select file</source>
+      <translation>Choisir le fichier texte de la description du réseau</translation>
+    </message>
+  </context>
+  <context>
+    <name>pipeNetwork:blocking</name>
+    <message>
+      <source>Hexa</source>
+      <translation>Pour mailler en hexaèdres</translation>
+    </message>
+    <message>
+      <source>Partition</source>
+      <translation>Partitionner la CAO pour mailler en hexaèdres</translation>
+    </message>
+  </context>
+
 </TS>

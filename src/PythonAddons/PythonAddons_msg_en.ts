@@ -63,4 +63,39 @@
     </message>
   </context>
 
+  <!-- pipeNetwork -->
+  <context>
+    <name>pipeNetwork</name>
+    <message>
+      <source>Pipe Network</source>
+      <translation>Pipe network</translation>
+    </message>
+    <message>
+      <source>Create</source>
+      <translation>Create a network of pipes</translation>
+    </message>
+  </context>
+  <context>
+    <name>pipeNetwork:file_path</name>
+    <message>
+      <source>Import file</source>
+      <translation>Text file of the network</translation>
+    </message>
+    <message>
+      <source>Select file</source>
+      <translation>Select the text file of the network</translation>
+    </message>
+  </context>
+  <context>
+    <name>pipeNetwork:blocking</name>
+    <message>
+      <source>Hexa</source>
+      <translation>Mesh with hexaadra</translation>
+    </message>
+    <message>
+      <source>Partition</source>
+      <translation>Partition of the CAD to mesh with hexaadra</translation>
+    </message>
+  </context>
+
 </TS>

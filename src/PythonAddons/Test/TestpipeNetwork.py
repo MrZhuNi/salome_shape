@@ -31,7 +31,7 @@ def getFilePath(fileName):
 
 theFile = getFilePath("pipeNetwork.txt")
 
-aSession.startOperation("Create part for import")
+aSession.startOperation("Create part for pipe network")
 aPartFeature = aSession.moduleDocument().addFeature("Part")
 aSession.finishOperation()
 aPart = aSession.activeDocument()
