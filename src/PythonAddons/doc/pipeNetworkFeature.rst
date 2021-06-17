@@ -1,37 +1,24 @@
 .. _pipeNetwork:
-.. |compoundVertices.icon|    image:: images/compound.png
+.. |pipeNetwork.icon|    image:: images/pipeNetwork.png
 
-Pipe network
-============
+Réseau de tuyaux
+================
 
-Compound Vertices is a feature and can be edited after execution.
-It allows creation of several points basing on XYZ coords file.
+Cette macro crée les objets SHAPER correspondant à un réseau de tuyauteries décrit dans un fichier texte.
 
-.. warning::
-  Please note that it is better to limit yourself to create a maximum of 100 points.
+Pour créer l'objet de la tuyauterie :
 
-These set of points will be grouped in a compound and can be used for others features.
+#. Choisir dans le menu principal *Macros - > Réseau de tuyaux* item  ou
+#. cliquer le bouton |pipeNetwork.icon| **Réseau de tuyaux** dans la barre des macros.
 
-To add a new set of points:
+Le menu suivant apparaît :
 
-#. select in the Main Menu *Macros - > Points set* item  or
-#. click |compoundVertices.icon| **Points set** button in Macros toolbar:
-
-The following property panel appears:
-
-.. figure:: images/compoundVerticesPanel.png
+.. figure:: images/pipeNetworkPanel.png
    :align: center
 
-   set of Points
+   Réseau de tuyaux
 
-Select your points file and define a separator if it's different that " " in your points file
+On doit fournir le fichier de type texte qui contient le réseau. Sa syntaxe est décrite plus bas.
 
-Result
-""""""
-
-A resulting compound will contain the points
-
-.. figure:: images/compoundVertices.png
-   :align: center
-
-   Points
+Syntaxe du fichier de données
+"""""""""""""""""""""""""""""
