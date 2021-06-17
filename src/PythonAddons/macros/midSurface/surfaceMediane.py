@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.10"
+__revision__ = "V10.11"
 
 #========================= Les imports - Début ===================================
 
@@ -46,7 +46,7 @@ import salome
 import SALOMEDS
 from salome.shaper import model
 from salome.geom import geomBuilder
-from salome.geom import geomtools
+#from salome.geom import geomtools
 from salome.kernel.studyedit import getStudyEditor
 
 import numpy as np
@@ -1485,7 +1485,7 @@ Entrées :
       for face in l_faces:
         if self._verbose_max:
           print ("\tSuppression de {}".format(face.GetName()))
-        gst.deleteShape(face.GetStudyEntry())
+        #gst.deleteShape(face.GetStudyEntry())
 
 # Rafraichissement de l'affichage
     salome.sg.updateObjBrowser()
@@ -1594,7 +1594,7 @@ Entrées :
         for solide in l_solides_m:
           if self._verbose_max:
             print ("\tSuppression de {}".format(solide.GetName()))
-          gst.deleteShape(solide.GetStudyEntry())
+          #gst.deleteShape(solide.GetStudyEntry())
 
 # Suppression de l'objet initial quand il vient d'une exportation depuis SHAPER si ça s'est mal passé
       if ( type_selection == 2 ):
@@ -1603,7 +1603,7 @@ Entrées :
         else:
           if self._verbose_max:
             print ("\tSuppression de {}".format(objet.GetName()))
-          gst.deleteShape(objet.GetStudyEntry())
+          #gst.deleteShape(objet.GetStudyEntry())
 
 # Mise en évidence des solides non détruits
       for solide in l_solides:
@@ -1653,7 +1653,8 @@ Sorties :
 
 # 3. Les imports pour salomé
       geompy = geomBuilder.New()
-      gst = geomtools.GeomStudyTools(getStudyEditor())
+      #gst = geomtools.GeomStudyTools(getStudyEditor())
+      gst = None
 
 # 4. Sélection de l'objet
       if ( type_selection == 0 ):
