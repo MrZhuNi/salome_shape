@@ -109,18 +109,17 @@ bool isContinuousFaces(const GeomShapePtr& theFace1,
   try {
     OCC_CATCH_SIGNALS;
     LocalAnalysis_SurfaceContinuity aLocAnal(aSurf1,
-                                            aPointOnFace1.X(),
-                                            aPointOnFace1.Y(),
-                                            aSurf2,
-                                            aPointOnFace2.X(),
-                                            aPointOnFace2.Y(),
-                                            GeomAbs_Shape::GeomAbs_G1, // Order
-                                            0.001, // EpsNul
-                                            0.001, // EpsC0
-                                            0.001, // EpsC1
-                                            0.001, // EpsC2
-                                            theAngle * PI/ 180.0); //EpsG1
-
+                                             aPointOnFace1.X(),
+                                             aPointOnFace1.Y(),
+                                             aSurf2,
+                                             aPointOnFace2.X(),
+                                             aPointOnFace2.Y(),
+                                             GeomAbs_Shape::GeomAbs_G1, // Order
+                                             0.001, // EpsNul
+                                             0.001, // EpsC0
+                                             0.001, // EpsC1
+                                             0.001, // EpsC2
+                                             theAngle * PI/ 180.0); //EpsG1
     aRes = aLocAnal.IsG1();
   }
   catch (Standard_Failure const& anException) {

@@ -21,20 +21,19 @@
 
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeDouble.h>
-
 #include <ModelAPI_ResultBody.h>
 #include <ModelAPI_Tools.h>
 
 #include <GeomAPI_Edge.h>
 #include <GeomAPI_Shape.h>
-#include <GeomAlgoAPI_ShapeTools.h>
 #include <GeomAPI_Wire.h>
+
+#include <GeomAlgoAPI_ShapeTools.h>
 
 #include <Precision.hxx>
 
 #include <map>
 #include <iostream>
-
 
 bool FiltersPlugin_EdgeSize::isSupported(GeomAPI_Shape::ShapeType theType) const
 {

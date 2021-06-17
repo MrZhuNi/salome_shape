@@ -84,7 +84,6 @@ FiltersAPI_Filter::FiltersAPI_Filter(const std::string& theName,
       myFilterArguments.push_back(FiltersAPI_Argument(aBoolean->value()));
       continue;
     }
-
   }
 }
 

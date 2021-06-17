@@ -17,24 +17,24 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "FiltersPlugin_Plugin.h"
-#include "FiltersPlugin_Selection.h"
-#include "FiltersPlugin_HorizontalFace.h"
-#include "FiltersPlugin_VerticalFace.h"
 #include "FiltersPlugin_BelongsTo.h"
-#include "FiltersPlugin_OnPlane.h"
-#include "FiltersPlugin_OnLine.h"
-#include "FiltersPlugin_OnGeometry.h"
-#include "FiltersPlugin_OnPlaneSide.h"
-#include "FiltersPlugin_OppositeToEdge.h"
+#include "FiltersPlugin_ContinuousFaces.h"
 #include "FiltersPlugin_EdgeSize.h"
+#include "FiltersPlugin_ExternalFaces.h"
 #include "FiltersPlugin_FaceSize.h"
 #include "FiltersPlugin_FeatureEdges.h"
-#include "FiltersPlugin_ContinuousFaces.h"
-#include "FiltersPlugin_VolumeSize.h"
+#include "FiltersPlugin_HorizontalFace.h"
+#include "FiltersPlugin_OnGeometry.h"
+#include "FiltersPlugin_OnLine.h"
+#include "FiltersPlugin_OnPlane.h"
+#include "FiltersPlugin_OnPlaneSide.h"
+#include "FiltersPlugin_OppositeToEdge.h"
+#include "FiltersPlugin_Plugin.h"
 #include "FiltersPlugin_RelativeToSolid.h"
-#include "FiltersPlugin_ExternalFaces.h"
+#include "FiltersPlugin_Selection.h"
 #include "FiltersPlugin_Validators.h"
+#include "FiltersPlugin_VerticalFace.h"
+#include "FiltersPlugin_VolumeSize.h"
 
 #include <Config_ModuleReader.h>
 

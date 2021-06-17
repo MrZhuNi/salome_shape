@@ -20,11 +20,11 @@
 #include "FiltersAPI_Feature.h"
 
 #include <ModelAPI_Feature.h>
+#include <ModelAPI_FiltersFactory.h>
+#include <ModelAPI_Session.h>
 
 #include <ModelHighAPI_Dumper.h>
 #include <ModelHighAPI_Tools.h>
-#include <ModelAPI_Session.h>
-#include <ModelAPI_FiltersFactory.h>
 
 FiltersAPI_Feature::FiltersAPI_Feature(
     const std::shared_ptr<ModelAPI_Feature> & theFeature)

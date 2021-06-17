@@ -21,14 +21,14 @@
 
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeDouble.h>
-
 #include <ModelAPI_Tools.h>
 
 #include <GeomAPI_Edge.h>
 #include <GeomAPI_Shape.h>
-#include <GeomAlgoAPI_ShapeTools.h>
 #include <GeomAPI_Wire.h>
+
 #include <GeomAlgoAPI_BasicProperties.h>
+#include <GeomAlgoAPI_ShapeTools.h>
 
 #include <Precision.hxx>
 

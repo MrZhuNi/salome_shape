@@ -22,16 +22,15 @@
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeDouble.h>
-
 #include <ModelAPI_Tools.h>
 
 #include <GeomAPI_Edge.h>
 #include <GeomAPI_Shape.h>
-#include <GeomAlgoAPI_ShapeTools.h>
+#include <GeomAPI_ShapeExplorer.h>
 #include <GeomAPI_Wire.h>
 
-#include <GeomAPI_ShapeExplorer.h>
 #include <GeomAlgoAPI_ContinuousFaces.h>
+#include <GeomAlgoAPI_ShapeTools.h>
 
 #include <map>
 #include <math.h>
@@ -75,10 +74,10 @@ static void cacheContinuousFace(const GeomShapePtr theFace,
       if (theCache.find(*aFIt) == theCache.end()) {
        GeomPointPtr aPoint = anEdge->middlePoint();
        if (isContinuousFaces(theFace,
-                              *aFIt,
-                              aPoint,
-                              theAngle,
-                              anError)) {
+                             *aFIt,
+                             aPoint,
+                             theAngle,
+                             anError)) {
           theCache.insert(*aFIt);
           cacheContinuousFace(*aFIt, theEdgeToFaces, theCache, theAngle);
         }

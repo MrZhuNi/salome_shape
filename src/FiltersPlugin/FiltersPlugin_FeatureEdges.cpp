@@ -21,15 +21,15 @@
 
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeDouble.h>
-
 #include <ModelAPI_ResultBody.h>
 #include <ModelAPI_Tools.h>
-#include <GeomAPI_ShapeExplorer.h>
-#include <GeomAlgoAPI_ContinuousFaces.h>
 
 #include <GeomAPI_Edge.h>
 #include <GeomAPI_Shape.h>
+#include <GeomAPI_ShapeExplorer.h>
 #include <GeomAPI_Wire.h>
+
+#include <GeomAlgoAPI_ContinuousFaces.h>
 
 #include <map>
 #include <math.h>

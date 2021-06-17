@@ -79,6 +79,5 @@ bool GeomValidators_Positive::isValid(const AttributePtr& theAttribute,
       return false;
     }
   }
-
   return true;
 }
