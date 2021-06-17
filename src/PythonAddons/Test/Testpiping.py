@@ -26,10 +26,10 @@ import os
 aSession = ModelAPI_Session.get()
 
 def getFilePath(fileName):
-    path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "piping")
+    path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "pipeNetwork")
     return os.path.join(path, fileName)
 
-theFile = getFilePath("piping.txt")
+theFile = getFilePath("pipeNetwork.txt")
 
 aSession.startOperation("Create part for import")
 aPartFeature = aSession.moduleDocument().addFeature("Part")
@@ -37,7 +37,7 @@ aSession.finishOperation()
 aPart = aSession.activeDocument()
 
 aSession.startOperation("Import file")
-aFeatureKind = "piping"
+aFeatureKind = "pipeNetwork"
 anImportFeature = aPart.addFeature(aFeatureKind)
 aFieldName = "file_path"
 aFile = anImportFeature.string(aFieldName)

@@ -18,7 +18,7 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-"""piping Feature
+"""pipeNetwork Feature
 Author: Nathalie Gore
 """
 
@@ -30,7 +30,7 @@ import ModelAPI
 import ParametersAPI
 from GeomAPI import *
 
-class piping(model.Feature):
+class pipeNetwork(model.Feature):
     """Import of Construction points
     """
     lfeatures = list()
@@ -51,7 +51,7 @@ class piping(model.Feature):
     @staticmethod
     def ID():
         """Return Id of the Feature."""
-        return "piping"
+        return "pipeNetwork"
 
     @staticmethod
     def FILE_ID():
@@ -65,7 +65,7 @@ class piping(model.Feature):
 
     def getKind(self):
         """Override Feature.getKind()"""
-        return piping.ID()
+        return pipeNetwork.ID()
 
 
 # Initialization of the dialog panel
@@ -325,7 +325,7 @@ class piping(model.Feature):
 
             from os.path import basename
             filename = basename(filepath)
-            nameRes = "piping_" + filename
+            nameRes = "pipeNetwork_" + filename
 
             # Creating the construction points in the current document
             lFeatures = []
@@ -461,7 +461,7 @@ class piping(model.Feature):
                                     self.infoPoints[id_noeud]["plane"] = plane.result()
 
 
-                # Création des paths pour le piping
+                # Création des paths pour le pipeNetwork
                 print("========================= Création des paths =========================")
                 for key, value in self.connectivities.items():
                     print("================================================================================= key = ", key, value['chainage'], value['fillet'])
@@ -485,7 +485,7 @@ class piping(model.Feature):
                             copy = model.addCopy(part, [model.selection(copy.defaultResult())], 1); copy.execute(True); self.lfeatures.append(copy)
 
 
-                # Création des sketchs pour le piping
+                # Création des sketchs pour le pipeNetwork
                 print("========================= Création des sketchs =========================")
                 for key, value in self.connectivities.items():
                     print("================================================================================= key = ", key)
@@ -535,7 +535,7 @@ class piping(model.Feature):
         """Override Feature.initAttributes().
         F.isMacro() -> True
 
-        piping feature is macro: removes itself on the creation transaction
+        pipeNetwork feature is macro: removes itself on the creation transaction
         finish.
         """
         return False

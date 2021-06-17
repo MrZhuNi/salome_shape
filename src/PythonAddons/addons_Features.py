@@ -23,7 +23,7 @@ import ModelAPI
 from macros.rectangle.feature import SketchPlugin_Rectangle
 from macros.compoundVertices.feature import compoundVertices
 from macros.importParameters.feature import importParameters
-from macros.piping.feature import piping
+from macros.pipeNetwork.feature import pipeNetwork
 
 
 class PythonFeaturesPlugin(ModelAPI.ModelAPI_Plugin):
@@ -49,8 +49,8 @@ class PythonFeaturesPlugin(ModelAPI.ModelAPI_Plugin):
             aFeature = compoundVertices().__disown__()
         elif theFeatureID == importParameters.ID():
             aFeature = importParameters().__disown__()
-        elif theFeatureID == piping.ID():
-            aFeature = piping().__disown__()
+        elif theFeatureID == pipeNetwork.ID():
+            aFeature = pipeNetwork().__disown__()
         else:
             raise Exception("No such feature %s" % theFeatureID)
 

@@ -2,11 +2,11 @@
   <workbench id="Macros" document="Part">
     <group id="Samples">
       <feature
-        id="piping"
+        id="pipeNetwork"
         title="Piping"
         tooltip="Import a set of pipes"
-        icon="icons/Addons/piping.png"
-        helpfile="pipingFeature.html">
+        icon="icons/Addons/pipeNetwork.png"
+        helpfile="pipeNetworkFeature.html">
         <file_selector id="file_path" title="Import txt file (pipe)" path="">
         </file_selector>
         <boolvalue id="blocking" label="for hexa meshes" default="false" tooltip="To partition CAD for hexa meshes" obligatory="0"/>

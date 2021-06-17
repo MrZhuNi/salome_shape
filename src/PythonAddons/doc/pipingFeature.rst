@@ -1,4 +1,4 @@
-.. _piping:
+.. _pipeNetwork:
 .. |compoundVertices.icon|    image:: images/compound.png
 
 Piping
