@@ -29,7 +29,6 @@
 /// \class FeaturesPlugin_CreateNormalToFace
 /// \ingroup Plugins
 /// \brief Feature for construct normal to face
-
 class FeaturesPlugin_CreateNormalToFace : public ModelAPI_Feature
 {
 public:

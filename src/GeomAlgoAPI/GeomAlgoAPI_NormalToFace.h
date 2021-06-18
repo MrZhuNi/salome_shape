@@ -32,7 +32,7 @@
 class GEOMALGOAPI_EXPORT GeomAlgoAPI_NormalToFace
 {
  public:
-  /// get the normal to face-shapes
+  /// Get the normal to face-shapes
   /// \param theface   the face
   /// \param theOptionnelPoint the optionnel point
   /// \param theNormal the normal

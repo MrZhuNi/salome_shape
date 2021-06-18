@@ -40,11 +40,13 @@ public:
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_NormalToFace(const std::shared_ptr<ModelAPI_Feature>& theFeature);
 
+  /// Constructor with values.
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_NormalToFace(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                     const ModelHighAPI_Selection& theBaseFace,
                                     const ModelHighAPI_Selection& theOptionnelPoint);
 
+  /// Constructor with values.
   FEATURESAPI_EXPORT
   explicit FeaturesAPI_NormalToFace(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                     const ModelHighAPI_Selection& theBaseFace);
