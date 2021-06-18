@@ -19,24 +19,26 @@
 
 #include "FeaturesPlugin_NormalToFace.h"
 
+#include <FeaturesPlugin_CreateNormalToFace.h>
+
 #include <ModelAPI_AttributeSelection.h>
 #include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_Data.h>
+#include <ModelAPI_ResultConstruction.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Validator.h>
 
-#include <GeomAlgoAPI_PointBuilder.h>
-#include <GeomAPI_Vertex.h>
-#include <GeomAPI_Edge.h>
-#include <Config_PropManager.h>
-#include <GeomAlgoAPI_NormalToFace.h>
-#include <GeomAPI_Lin.h>
 #include <GeomAPI_Dir.h>
-#include <GeomAlgoAPI_EdgeBuilder.h>
-#include <ModelAPI_ResultConstruction.h>
+#include <GeomAPI_Edge.h>
+#include <GeomAPI_Lin.h>
+#include <GeomAPI_Vertex.h>
 
-#include <FeaturesPlugin_CreateNormalToFace.h>
+#include <GeomAlgoAPI_EdgeBuilder.h>
+#include <GeomAlgoAPI_NormalToFace.h>
+#include <GeomAlgoAPI_PointBuilder.h>
+
+#include <Config_PropManager.h>
 
 #include <iomanip>
 #include <sstream>

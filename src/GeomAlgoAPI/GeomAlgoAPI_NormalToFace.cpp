@@ -18,6 +18,7 @@
 //
 
 #include "GeomAlgoAPI_NormalToFace.h"
+
 #include <TopoDS_Shape.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS.hxx>
