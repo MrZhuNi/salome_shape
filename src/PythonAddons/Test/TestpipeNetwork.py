@@ -16,6 +16,7 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+__revision__ = "V01.02"
 
 from salome.shaper import model
 from salome.shaper import geom
@@ -29,7 +30,8 @@ def getFilePath(fileName):
     path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "pipeNetwork")
     return os.path.join(path, fileName)
 
-theFile = getFilePath("pipeNetwork.txt")
+#theFile = getFilePath("pipeNetwork_2par2.txt")
+theFile = getFilePath("pipeNetwork_ligne.txt")
 
 aSession.startOperation("Create part for pipe network")
 aPartFeature = aSession.moduleDocument().addFeature("Part")
