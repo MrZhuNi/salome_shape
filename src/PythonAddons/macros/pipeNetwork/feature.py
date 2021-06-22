@@ -25,9 +25,7 @@ Author: Nathalie Gore
 __revision__ = "V02.02"
 
 from salome.shaper import model
-
 import ModelAPI
-
 from GeomAPI import *
 
 class pipeNetwork(model.Feature):
@@ -123,7 +121,7 @@ class pipeNetwork(model.Feature):
         print(line)
         diagno = 0
         if method == self.twopartwo :
-            if isinstance(self.connectivities,dict) :
+            if self.connectivities == {} :
                 print("nouvelle ligne - Cas 1")
                 self.newConnectivity(splitLine[0], splitLine)
             else :
