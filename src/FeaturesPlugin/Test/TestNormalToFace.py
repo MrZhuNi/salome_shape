@@ -34,33 +34,44 @@ from salome.shaper import model
 
 __updated__ = "2020-11-12"
 
+#=========================================================================
+# Initialization of the test
+#=========================================================================
+model.begin()
+partSet = model.moduleDocument()
+
+### Create Part
+Part_1 = model.addPart(partSet)
+Part_1_doc = Part_1.document()
+
+### Create Box
+Box_1 = model.addBox(Part_1_doc, 10, 10, 10)
+model.do()
 
 #=========================================================================
-# test creating normal to face
+# Test 1. Create a normal to a face with only a face
 #=========================================================================
-def test_Normal_to_face():
+Normal_1 = model.getNormal(Part_1_doc, model.selection("FACE", "Box_1_1/Top"))
+model.do()
 
-    model.begin()
-    file_path = os.path.join(os.getenv("DATA_DIR"),"Shapes","Brep","box1.brep")
-    partSet = model.moduleDocument()
-    Part_1 = model.addPart(partSet)
-    Part_1_doc = Part_1.document()
-    Import_1 = model.addImport(Part_1_doc,file_path)
-    model.do()
-    ### Create Normal
-    Normal_1 = model.getNormal(Part_1_doc, model.selection("FACE", "box1_1/Shape_6"))
-    model.end()
+#=========================================================================
+# Test 2. Create a normal to a face with a face and a vertex
+#=========================================================================
+Normal_2 = model.getNormal(Part_1_doc, model.selection("FACE", "Box_1_1/Front"), model.selection("VERTEX", "[Box_1_1/Front][Box_1_1/Right][Box_1_1/Bottom]"))
+model.do()
 
-    assert (len(Normal_1.results()) > 0)
-    assert(Normal_1.feature().error() == "")
-    anAxisResult = modelAPI_ResultConstruction(Normal_1.feature().firstResult())
-    assert (anAxisResult is not None)
+model.end()
 
+assert (len(Normal_1.results()) > 0)
+assert(Normal_1.feature().error() == "")
+anAxisResult = modelAPI_ResultConstruction(Normal_1.feature().firstResult())
+assert (anAxisResult is not None)
 
-if __name__ == '__main__':
+assert (len(Normal_2.results()) > 0)
+assert(Normal_2.feature().error() == "")
+anAxisResult = modelAPI_ResultConstruction(Normal_2.feature().firstResult())
+assert (anAxisResult is not None)
 
-    test_Normal_to_face()
-
-    #=========================================================================
-    # End of test
-    #=========================================================================
+#=========================================================================
+# End of test
+#=========================================================================

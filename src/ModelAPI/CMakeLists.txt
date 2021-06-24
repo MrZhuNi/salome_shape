@@ -117,7 +117,7 @@ SET(PROJECT_SOURCES
 SET(PROJECT_LIBRARIES
     Config
     GeomAPI
-    ${OpenCASCADE_ApplicationFramework_LIBRARIES}
+    Locale
 )
 SET(CMAKE_SWIG_FLAGS -threads -w325,321,362,383,302,403,451,473)
 ADD_DEFINITIONS(-DMODELAPI_EXPORTS)
@@ -131,10 +131,6 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Config
                     ${PROJECT_SOURCE_DIR}/src/GeomAPI
                     ${PROJECT_SOURCE_DIR}/src/GeomAlgoAPI
                     ${PROJECT_SOURCE_DIR}/src/Locale
-                    ${OpenCASCADE_INCLUDE_DIR}
-                    ${OpenCASCADE_DataExchange_LIBRARIES}
-                    ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
-                    ${OpenCASCADE_ApplicationFramework_LIBRARIES}
 )
 
 
