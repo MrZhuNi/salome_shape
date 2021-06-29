@@ -16,17 +16,18 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-__revision__ = "V01.02"
+"""Test de la création du réseau de tuyaux"""
 
-from salome.shaper import model
-from salome.shaper import geom
-from ModelAPI import *
+__revision__ = "V01.03"
 
 import os
+
+from ModelAPI import *
 
 aSession = ModelAPI_Session.get()
 
 def getFilePath(fileName):
+    """Le fichier décrivant le réseau"""
     path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "pipeNetwork")
     return os.path.join(path, fileName)
 
@@ -46,4 +47,6 @@ aFile = anImportFeature.string(aFieldName)
 aFile.setValue(theFile)
 aSession.finishOperation()
 
-assert(model.checkPythonDump())
+assert(aPart.size("Construction") == 21), "Wrong number of construction: {}".format(aPart.size("Construction"))
+
+assert(aPart.size("Folders") == 1), "Wrong number of folders: {}".format(aPart.size("Folders"))

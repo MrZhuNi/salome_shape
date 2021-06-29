@@ -22,7 +22,7 @@
 Author: Nathalie Gore
 """
 
-__revision__ = "V02.03"
+__revision__ = "V02.04"
 
 from salome.shaper import model
 import ModelAPI
@@ -501,7 +501,7 @@ class pipeNetwork(model.Feature):
                 print("========================= Création des paths =========================")
                 for key, value in self.connectivities.items():
                     if self._verbose:
-                      print("================================================================================= key = ", key, value['chainage'], value['fillet'])
+                        print("================================================================================= key = ", key, value['chainage'], value['fillet'])
                     # recherche des noeuds fillets
                     value["paths"] = list()
                     value["isPipe"] = list()
@@ -579,7 +579,6 @@ class pipeNetwork(model.Feature):
                 fuse.execute(True)
                 self.lfeatures.append(fuse)
                 fuse.result().setName(nameRes)
-                print (dir(fuse))
                 self.folder = model.addFolder(part, self.lfeatures[0], self.lfeatures[-1])
                 self.folder.setName(nameRes)
 
