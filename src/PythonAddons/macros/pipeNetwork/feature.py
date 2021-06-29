@@ -22,7 +22,7 @@
 Author: Nathalie Gore
 """
 
-__revision__ = "V02.02"
+__revision__ = "V02.03"
 
 from salome.shaper import model
 import ModelAPI
@@ -331,7 +331,13 @@ class pipeNetwork(model.Feature):
 
             from os.path import basename
             filename = basename(filepath)
-            nameRes = "pipeNetwork_" + filename
+            if ( "." in filename ):
+                laux= filename.split(".")
+                nameRes = laux[0]
+                for saux in laux[1:-1]:
+                    nameRes+="."+saux
+            else:
+                nameRes = filename
 
             # Creating the construction points in the current document
             lFeatures = list()
@@ -573,6 +579,7 @@ class pipeNetwork(model.Feature):
                 fuse.execute(True)
                 self.lfeatures.append(fuse)
                 fuse.result().setName(nameRes)
+                print (dir(fuse))
                 self.folder = model.addFolder(part, self.lfeatures[0], self.lfeatures[-1])
                 self.folder.setName(nameRes)
 
