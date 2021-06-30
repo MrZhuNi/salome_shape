@@ -4,19 +4,19 @@
 Create normal to a face
 =======================
 
-.. literalinclude:: examples/createNormalToFace.py 
+.. literalinclude:: examples/create_normal_to_face.py
     :linenos:
     :language: python
 
-:download:`Download this script <examples/createNormalToFace.py>`
+:download:`Download this script <examples/create_normal_to_face.py>`
 
   .. _tui_create_normal_to_face_at_vertex:
 
 Create normal to a face at vertex
 =================================
 
-.. literalinclude:: examples/createNormalToFaceAtVertex.py 
+.. literalinclude:: examples/create_normal_to_face_at_vertex.py
     :linenos:
     :language: python
 
-:download:`Download this script <examples/createNormalToFaceAtVertex.py>`
+:download:`Download this script <examples/create_normal_to_face_at_vertex.py>`

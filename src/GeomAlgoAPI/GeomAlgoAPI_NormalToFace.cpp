@@ -29,6 +29,7 @@
 #include <TopoDS_Iterator.hxx>
 #include <GProp_GProps.hxx>
 #include <BRepGProp.hxx>
+#include <ShapeAnalysis.hxx>
 #include <ShapeAnalysis_Surface.hxx>
 #include <BRepAdaptor_Surface.hxx>
 #include <BRepBndLib.hxx>
@@ -145,7 +146,17 @@ static bool GeomAlgoAPI_NormalToFace::normal(GeomShapePtr theFace,
 
   // Point
   gp_Pnt p1 (0,0,0);
+  // Point parameters on surface
+  double u1, u2, v1, v2;
+  Handle(Geom_Surface) aSurf = BRep_Tool::Surface(aFace);
+  Handle(ShapeAnalysis_Surface) aSurfAna = new ShapeAnalysis_Surface (aSurf);
+  gp_Ax3 aPos = GetPosition(aFace);
+  p1 = aPos.Location();
+  // Set default starting point using UV bounds
+  ShapeAnalysis::GetFaceUVBounds(aFace, u1, u2, v1, v2);
+  gp_Pnt2d pUV ((u2 + u1) * 0.5, (v2 + v1) * 0.5);
 
+  // Change to Vertex coord if selected
   if (theOptionnelPoint.get()) {
     TopoDS_Shape anOptPnt = theOptionnelPoint->impl<TopoDS_Shape>();
     if (anOptPnt.IsNull()) {
@@ -153,15 +164,8 @@ static bool GeomAlgoAPI_NormalToFace::normal(GeomShapePtr theFace,
       return false;
     }
     p1 = BRep_Tool::Pnt(TopoDS::Vertex(anOptPnt));
-  } else {
-    gp_Ax3 aPos = GetPosition(aFace);
-    p1 = aPos.Location();
+    pUV = aSurfAna->ValueOfUV(p1, Precision::Confusion());
   }
-
-  // Point parameters on surface
-  Handle(Geom_Surface) aSurf = BRep_Tool::Surface(aFace);
-  Handle(ShapeAnalysis_Surface) aSurfAna = new ShapeAnalysis_Surface (aSurf);
-  gp_Pnt2d pUV = aSurfAna->ValueOfUV(p1, Precision::Confusion());
 
   // Normal direction
   gp_Vec Vec1,Vec2;
