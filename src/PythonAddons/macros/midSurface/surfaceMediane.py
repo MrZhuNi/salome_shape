@@ -1616,7 +1616,7 @@ Sorties :
 
 # 9. Final
       self.folder = model.addFolder(self.part_doc, self.lfeatures[0], self.lfeatures[-1])
-      self.folder.setName(nom_objet+"_S")
+      self.folder.setName(nom_objet+"_M")
       print ("Les fichiers CAO des surfaces sont dans le répertoire {}".format(self.rep_trav))
 
       break

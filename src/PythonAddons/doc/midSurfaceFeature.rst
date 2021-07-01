@@ -1,5 +1,5 @@
 .. _create_midSurface:
-.. |midSurface.icon|    figure:: images/midSurface.png
+.. |midSurface.icon|    image:: images/midSurface.png
 
 Fibre neutre
 ============
@@ -9,7 +9,7 @@ Elle permet de créer les surfaces médianes à des solides minces, encore appel
 
 Pour créer les fibres neutres d'un objet :
 
-#. Choisir dans le menu principal *Macros - > Fibre neutre* item  ou
+#. Choisir dans le menu principal *Macros - > Créer des fibres neutres* item  ou
 #. Cliquer le bouton |midSurface.icon| **Fibre neutre** dans la barre des macros.
 
 Le menu suivant apparaît :
@@ -20,7 +20,7 @@ Le menu suivant apparaît :
 
    Fibre neutre
 
-On doit fournir le fichier de type **CAO** qui contient l'objet. On retrouve dans l'arbre d'étude du module SHAPER cet objet de départ et un nouvel objet formé des fibres neutres. Son nom est celui de l'objet de départ, suffixé par **_M**.
+On doit fournir le fichier de type **CAO** qui contient l'objet. On retrouve dans l'arbre d'étude du module SHAPER cet objet de départ et un dossier contenant toutes les surfaces correspondant à des fibres neutres. Son nom est celui de l'objet de départ, suffixé par **_M**.
 
 .. note::
   Les surfaces ainsi créées ne sont pas reliées entre elles. Il reste ensuite un travail de jonction à effectuer.
@@ -38,11 +38,12 @@ crée néanmoins une face basée sur la plus grande de ces faces. Un message est
 est coloriée en bleu. Le volume correspondant n'est pas détruit et est colorié en rouge.
 
 On sait traiter les faces :
-  . planes
-  . cylindriques
-  . sphériques
-  . toriques
-  . coniques
+
+- planes
+- cylindriques
+- sphériques
+- toriques
+- coniques
 
 Exemple :
 """""""""
@@ -51,7 +52,7 @@ A partir d'un ensemble de 4 solides de forme torique :
 
 .. figure:: images/midSurface_solide.png
    :align: center
-   :alt:: Les solides à traiter
+   :alt: Les solides à traiter
 
    Solides à traiter
 
@@ -59,10 +60,9 @@ on obtient 4 surfaces indépendantes :
 
 .. figure:: images/midSurface_surfaces.png
    :align: center
-   :alt:: Les surfaces
+   :alt: Les surfaces créées
 
    Surfaces
-
 
 .. figure:: images/midSurface_solide_surfaces.png
    :align: center
