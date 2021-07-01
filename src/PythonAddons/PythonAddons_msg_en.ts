@@ -90,11 +90,11 @@
     <name>pipeNetwork:blocking</name>
     <message>
       <source>Hexa</source>
-      <translation>Mesh with hexaadra</translation>
+      <translation>Mesh with hexadra</translation>
     </message>
     <message>
       <source>Partition</source>
-      <translation>Partition of the CAD to mesh with hexaadra</translation>
+      <translation>Partition of the CAD to mesh with hexadra</translation>
     </message>
   </context>
 
