@@ -63,6 +63,21 @@ Chaque tronçon est décrit par les 2 noeuds repérés par leurs identifiants :
 
 ``Identifiant du noeud n°1 , identifiant du noeud n°2``
 
+Le raccordement entre tuyaux
+----------------------------
+
+- Repérage avec **fillets section**
+- Pour chaque noeud à la jonction de 2 tuyaux :
+
+Si la jonction est directe : ``Identifiant du noeud, angular_connection``
+
+Si la jonction est courbe : ``Identifiant du noeud, radius=xxx`` où xxx est le rayon de courbure.
+
 Exemple
 -------
-.. literalinclude:: ../../../../../../bin/salome/macros/pipeNetwork/pipeNetwork_ligne.txt
+.. literalinclude:: examples/pipeNetwork_ligne.txt
+    :linenos:
+    :language: text
+
+:download:`Téléchargez cet exemple <examples/pipeNetwork_ligne.txt>`
+
