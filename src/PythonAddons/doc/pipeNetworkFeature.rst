@@ -1,5 +1,5 @@
 .. _pipeNetwork:
-.. |pipeNetwork.icon|    image:: images/pipeNetwork.png
+.. |pipeNetwork.icon|    figure:: images/pipeNetwork.png
 
 Réseau de tuyaux
 ================
@@ -15,8 +15,9 @@ Le menu suivant apparaît :
 
 .. figure:: images/pipeNetworkPanel.png
    :align: center
+   :alt: Menu de création du réseau
 
-   Réseau de tuyaux
+   Menu de création du réseau de tuyaux
 
 On doit fournir le fichier de type texte qui contient le réseau. Sa syntaxe est décrite plus bas.
 
@@ -73,11 +74,21 @@ Si la jonction est directe : ``Identifiant du noeud, angular_connection``
 
 Si la jonction est courbe : ``Identifiant du noeud, radius=xxx`` où xxx est le rayon de courbure.
 
+.. note::
+  Une jonction avec un rayon de courbure ne peut avoir lieu que sur un noeud auquel aboutit exactement 2 tuyaux. L'arc de cercle est tracé dans le plan formé par les deux tuyaux.
+
 Exemple
 -------
 .. literalinclude:: examples/pipeNetwork_ligne.txt
     :linenos:
     :language: text
 
-:download:`Téléchargez cet exemple <examples/pipeNetwork_ligne.txt>`
+:download:`Téléchargement de cet exemple <examples/pipeNetwork_ligne.txt>`
+
+.. figure:: images/pipeNetworkExemple.png
+   :align: center
+   :alt: Exemple de réseau
+
+   Exemple de réseau
+
 
