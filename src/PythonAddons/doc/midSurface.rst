@@ -1,5 +1,5 @@
 .. _create_midSurface:
-.. |midSurface.icon|    image:: images/midSurface.png
+.. |midSurface.icon|    figure:: images/midSurface.png
 
 Fibre neutre
 ============
@@ -16,6 +16,7 @@ Le menu suivant apparaît :
 
 .. figure:: images/midSurfacePanel.png
    :align: center
+   :alt: Menu de création des fibres neutres
 
    Fibre neutre
 
@@ -50,6 +51,7 @@ A partir d'un ensemble de 4 solides de forme torique :
 
 .. figure:: images/midSurface_solide.png
    :align: center
+   :alt:: Les solides à traiter
 
    Solides à traiter
 
@@ -57,12 +59,14 @@ on obtient 4 surfaces indépendantes :
 
 .. figure:: images/midSurface_surfaces.png
    :align: center
+   :alt:: Les surfaces
 
    Surfaces
 
 
 .. figure:: images/midSurface_solide_surfaces.png
    :align: center
+   :alt: Exemple de surfaces dans les solides
 
    Surfaces dans les solides
 
