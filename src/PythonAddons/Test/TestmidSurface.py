@@ -16,16 +16,18 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+"""Test de la création de surfaces médianes"""
 
-from salome.shaper import model
-from salome.shaper import geom
-from ModelAPI import *
+__revision__ = "V01.02"
 
 import os
+
+from ModelAPI import *
 
 aSession = ModelAPI_Session.get()
 
 def getFilePath(fileName):
+    """Le fichier décrivant l'objet"""
     path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "midSurface")
     return os.path.join(path, fileName)
 
@@ -44,4 +46,6 @@ aFile = anImportFeature.string(aFieldName)
 aFile.setValue(theFile)
 aSession.finishOperation()
 
-assert(model.checkPythonDump())
+#print ("Nombre de dossiers : {}".format(aPart.size("Folders")))
+
+assert(aPart.size("Folders") == 1), "Wrong number of folders: {}".format(aPart.size("Folders"))
