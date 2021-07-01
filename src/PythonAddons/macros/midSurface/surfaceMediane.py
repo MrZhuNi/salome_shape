@@ -1652,6 +1652,8 @@ Sorties :
 
 # 1. Définition de la pièce
 
+      with open("/tmp/grr_a", "w") as fic :
+        fic.write("a")
       self.part_doc = model.activeDocument()
 
 # 2. Import de la CAO
