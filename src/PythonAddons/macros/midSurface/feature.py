@@ -29,7 +29,7 @@ On sait traiter les faces :
 
 Author: Gérald NICOLAS
 """
-__revision__ = "V02.02"
+__revision__ = "V02.03"
 
 import os
 
@@ -55,7 +55,7 @@ class midSurface(model.Feature):
 
     @staticmethod
     def FILE_ID():
-        """Returns ID of the file."""
+        """Returns ID of the CAD file."""
         return "file_path"
 
     def getKind(self):
@@ -69,7 +69,6 @@ class midSurface(model.Feature):
         """Override Feature.initAttributes()"""
         # Creating the input argument of the feature
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
-
 
 # Execution
 
