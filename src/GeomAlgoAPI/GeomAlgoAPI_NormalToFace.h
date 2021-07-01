@@ -37,10 +37,10 @@ class GEOMALGOAPI_EXPORT GeomAlgoAPI_NormalToFace
   /// \param theOptionnelPoint the optionnel point
   /// \param theNormal the normal
   /// \param theError the error
-  static bool GeomAlgoAPI_NormalToFace::normal(GeomShapePtr theFace,
-                                               GeomShapePtr theOptionnelPoint,
-                                               GeomEdgePtr  theNormal,
-                                               std::string& theError);
+  static bool normal(GeomShapePtr theFace,
+                     GeomShapePtr theOptionnelPoint,
+                     GeomEdgePtr  theNormal,
+                     std::string& theError);
 };
 
 #endif
