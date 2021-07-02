@@ -1,16 +1,14 @@
-.. _box_feature:
+.. |Box_button.icon|    image:: images/Box_button.png
 
 Box
 ===
-
-.. |box.icon|    image:: images/box.png
 
 Box feature creates a box solid.
 
 To create a Box in the active part:
 
 #. select in the Main Menu *Primitives - > Box* item  or
-#. click |box.icon| **Box** button in the toolbar:
+#. click |Box_button.icon| **Box** button in the toolbar:
 
 There are 3 algorithms for creation of a Box:
 

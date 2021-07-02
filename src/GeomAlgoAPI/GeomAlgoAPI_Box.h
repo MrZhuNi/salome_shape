@@ -50,7 +50,7 @@ class GeomAlgoAPI_Box : public GeomAlgoAPI_MakeShape
   /// \param theSecondPoint The other extremity of the diagonal
   GEOMALGOAPI_EXPORT GeomAlgoAPI_Box(std::shared_ptr<GeomAPI_Pnt> theFirstPoint,
                                      std::shared_ptr<GeomAPI_Pnt> theSecondPoint);
-  
+
   /// Creates a box using coordinates of a point (the center of gravity) andthe dimensions.
   /// \param theOx The X coordinate of the point
   /// \param theOy The Y coordinate of the point

@@ -71,7 +71,7 @@ void PrimitivesPlugin_Box::execute()
 
   if (aMethodType == CREATION_METHOD_BY_TWO_POINTS())
     createBoxByTwoPoints();
-  
+
   if (aMethodType == CREATION_METHOD_BY_ONE_POINT_AND_DIMS())
     createBoxByOnePointAndDims();
 }
@@ -168,7 +168,7 @@ void PrimitivesPlugin_Box::createBoxByOnePointAndDims()
   double aDx = real(PrimitivesPlugin_Box::HALF_DX_ID())->value();
   double aDy = real(PrimitivesPlugin_Box::HALF_DY_ID())->value();
   double aDz = real(PrimitivesPlugin_Box::HALF_DZ_ID())->value();
-  
+
   // Getting point coordinates
   double x = real(PrimitivesPlugin_Box::OX_ID())->value();
   double y = real(PrimitivesPlugin_Box::OY_ID())->value();
@@ -176,7 +176,7 @@ void PrimitivesPlugin_Box::createBoxByOnePointAndDims()
 
   std::shared_ptr<GeomAlgoAPI_Box> aBoxAlgo;
   aBoxAlgo = std::shared_ptr<GeomAlgoAPI_Box>(new GeomAlgoAPI_Box(x,y,z,aDx,aDy,aDz));
-  
+
   // These checks should be made to the GUI for the feature but
   // the corresponding validator does not exist yet.
   if (!aBoxAlgo->check()) {

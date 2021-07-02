@@ -31,7 +31,7 @@ class ModelAPI_ResultBody;
  * \ingroup Plugins
  * \brief Feature for creation of a box primitive using various methods.
  *
- * Box creates a cuboid - Parallelepiped with 6 rectangular faces. It can be built via two
+ * Box creates a cuboid - Parallelepiped with 6 rectangular faces. It can be built via three
  * methods : using two points that define a diagonal, a point that define a center and 3 lengths
  * that define the half-lengths on X, Y and Z-axes, or using 3 lengths that define the 
  * rectangular dimensions.
@@ -108,7 +108,7 @@ class PrimitivesPlugin_Box : public ModelAPI_Feature
     static const std::string MY_DZ_ID("dz");
     return MY_DZ_ID;
   }
-  
+
   /// Attribute name of the first coordinate of the center
   inline static const std::string& OX_ID()
   {
@@ -129,7 +129,7 @@ class PrimitivesPlugin_Box : public ModelAPI_Feature
     static const std::string MY_OZ_ID("oz");
     return MY_OZ_ID;
   }
-  
+
   /// Attribute name of the half-length on X axis
   inline static const std::string& HALF_DX_ID()
   {
@@ -178,7 +178,7 @@ class PrimitivesPlugin_Box : public ModelAPI_Feature
   ///Perform the creation of the box using three cordinates
   void createBoxByDimensions();
 
-  ///Perform the creation of the box using a center and three half-lenths 
+  ///Perform the creation of the box using a center and three half-lenths
   void createBoxByOnePointAndDims();
 
 };

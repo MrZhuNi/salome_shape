@@ -40,6 +40,16 @@ class GeomAlgoAPI_Sphere : public GeomAlgoAPI_MakeShape
   /// \param theRadius The radius of the sphere
   GEOMALGOAPI_EXPORT GeomAlgoAPI_Sphere(std::shared_ptr<GeomAPI_Pnt> theCenterPoint,
                                         const double theRadius);
+  /// Creates a sphere.
+  /// \param theRMin The inner radius of the sphere
+  /// \param theRMax The outer radius of the sphere
+  /// \param thePhiMin The lower phi limit
+  /// \param thePhiMax The higher phi limit
+  /// \param theThetaMin The lower theta limit
+  /// \param theThetaMax The higher theta limit
+  GEOMALGOAPI_EXPORT GeomAlgoAPI_Sphere(const double theRMin, const double theRMax,
+                                        const double thePhiMin, const double thePhiMax,
+                                        const double theThetaMin, const double theThetaMax);
 
   /// Checks if data for the sphere construction is OK.
   GEOMALGOAPI_EXPORT bool check();
@@ -47,9 +57,19 @@ class GeomAlgoAPI_Sphere : public GeomAlgoAPI_MakeShape
   /// Builds the sphere.
   GEOMALGOAPI_EXPORT void build();
 
+  /// Builds the sphere.
+  GEOMALGOAPI_EXPORT void buildSphere();
+
+  /// Builds the section of sphere.
+  GEOMALGOAPI_EXPORT void buildSectionSphere();
+
  private:
-  std::shared_ptr<GeomAPI_Pnt> myCenterPoint; /// Center of the sphere.
-  double myRadius;
+  bool isSectionSphere; // Boolean to define if the second mode is used.
+  std::shared_ptr<GeomAPI_Pnt> myCenterPoint; /// Center of the sphere for the first mode.
+  double myRadius; /// Radius of the sphere for the first mode.
+  double myRMin, myRMax; /// Inner and outer radius for the second mode.
+  double myPhiMin, myPhiMax; /// Lower and higher phi limit for the second mode.
+  double myThetaMin, myThetaMax; /// Lower and higher theta limit for the second mode.
 };
 
 #endif // GEOMALGOAPI_SPHERE_H_
