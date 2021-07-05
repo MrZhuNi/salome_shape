@@ -23,7 +23,7 @@ import ModelAPI
 from macros.rectangle.feature import SketchPlugin_Rectangle
 from macros.compoundVertices.feature import compoundVertices
 from macros.importParameters.feature import importParameters
-from macros.fibreNeutre.feature import fibreNeutre
+from macros.midSurface.feature import midSurface
 
 
 class PythonFeaturesPlugin(ModelAPI.ModelAPI_Plugin):
@@ -49,8 +49,8 @@ class PythonFeaturesPlugin(ModelAPI.ModelAPI_Plugin):
             aFeature = compoundVertices().__disown__()
         elif theFeatureID == importParameters.ID():
             aFeature = importParameters().__disown__()
-        elif theFeatureID == fibreNeutre.ID():
-            aFeature = fibreNeutre().__disown__()
+        elif theFeatureID == midSurface.ID():
+            aFeature = midSurface().__disown__()
         else:
             raise Exception("No such feature %s" % theFeatureID)
 

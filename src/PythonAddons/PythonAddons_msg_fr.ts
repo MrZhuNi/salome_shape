@@ -63,9 +63,9 @@
     </message>
   </context>
 
-  <!-- fibreNeutre -->
+  <!-- midSurface -->
   <context>
-    <name>fibreNeutre</name>
+    <name>midSurface</name>
     <message>
       <source>Fibre neutre</source>
       <translation>Créer des fibres neutres</translation>
@@ -76,7 +76,7 @@
     </message>
   </context>
   <context>
-    <name>fibreNeutre:file_path</name>
+    <name>midSurface:file_path</name>
     <message>
       <source>Import file</source>
       <translation>Fichier CAO de l'objet à traiter</translation>

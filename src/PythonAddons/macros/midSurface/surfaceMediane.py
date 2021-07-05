@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.09"
+__revision__ = "V10.12"
 
 #========================= Les imports - Début ===================================
 
@@ -46,8 +46,7 @@ import salome
 import SALOMEDS
 from salome.shaper import model
 from salome.geom import geomBuilder
-from salome.geom import geomtools
-from salome.kernel.studyedit import getStudyEditor
+#from salome.kernel.studyedit import getStudyEditor
 
 import numpy as np
 
@@ -85,7 +84,7 @@ Sorties :
 
 #========================= Début de la fonction ==================================
 
-def import_cao (part_doc, ficcao, verbose=False):
+def import_cao (part_doc, ficcao, nom_objet=None, verbose=False):
   """Importation d'une cao
 
 Entrées :
@@ -124,6 +123,9 @@ Sorties :
     objet = model.addImport(part_doc, ficcao)
     objet.execute(True)
     model.do()
+
+    if nom_objet is not None:
+      objet.result().setName(nom_objet)
 
     if verbose:
       texte  = "Objet   : '{}'\n".format(objet.result().name())
@@ -195,9 +197,12 @@ Options facultatives
   nom_solide = None
   epsilon = 5.e-3
   part_doc = None
+  folder = None
+  lfeatures = list()
 
   ficcao = None
   rep_trav = None
+  objet_nom = None
   objet_geom = None
 
   l_faces_trans = list()
@@ -656,6 +661,7 @@ Entrées :
         face_mediane = model.addImportSTEP(self.part_doc, fichier, False, False, False)
         face_mediane.execute(True)
         model.do()
+        self.lfeatures.append(face_mediane)
 
 #       Le nom
         face_mediane.setName(nom_face)
@@ -1461,45 +1467,12 @@ Sorties :
 
 #=========================== Début de la méthode =================================
 
-  def _menage_faces ( self, gst, l_faces ):
-    """Fait le ménage des faces dans l'étude
-
-Entrées :
-  :gst: environnement de GeomStudyTools
-  :l_faces: liste des faces du solide
-    """
-
-    nom_fonction = __name__ + "/_menage_faces"
-    blabla = "\nDans {} :\n".format(nom_fonction)
-
-    if self._verbose_max:
-      texte = blabla
-      texte += "Nombre de faces à supprimer : {}\n".format(len(l_faces))
-      print (texte)
-
-# Suppression des faces incluses dans l'étude
-    if self._menage:
-      for face in l_faces:
-        if self._verbose_max:
-          print ("\tSuppression de {}".format(face.GetName()))
-        gst.deleteShape(face.GetStudyEntry())
-
-# Rafraichissement de l'affichage
-    salome.sg.updateObjBrowser()
-
-    return
-
-#===========================  Fin de la méthode ==================================
-
-#=========================== Début de la méthode =================================
-
-  def face_mediane_solide (self, geompy, gst, solide):
+  def face_mediane_solide (self, geompy, solide):
 
     """Calcul de la face médiane pour un solide
 
 Entrées :
   :geompy: environnement de GEOM
-  :gst: environnement de GeomStudyTools
   :solide: l'objet solide à traiter
 
 Sorties :
@@ -1540,20 +1513,12 @@ Sorties :
 
 # 5. Création de la face médiane
 
-      erreur, message, face = self._cree_face_mediane ( geompy, solide, caract_face_1, caract_face_2 )
+      erreur, message, _ = self._cree_face_mediane ( geompy, solide, caract_face_1, caract_face_2 )
       if erreur:
         break
-
-# 6. Ménage des faces
-
-      if salome.sg.hasDesktop():
-        if self._retour_shaper:
-          l_faces.append(face)
-        self._menage_faces ( gst, l_faces )
-
       break
 
-# 7. La fin
+# 6. La fin
 
     if ( erreur and self._verbose_max ):
       print (blabla, message)
@@ -1564,64 +1529,13 @@ Sorties :
 
 #=========================== Début de la méthode =================================
 
-  def _menage_solides ( self, gst, l_solides, l_solides_m, type_selection, objet ):
-    """Fait le ménage des solides dans l'étude
-
-Entrées :
-  :gst: environnement de GeomStudyTools
-  :l_solides: liste des solides de l'objet
-  :l_solides_m: liste des solides de l'objet dont on veut le ménage
-  :type_selection: type de sélection de l'objet à traiter (0: graphique, 1: GEOM, 2;SHAPER)
-  :objet: l'objet à traiter
-    """
-
-    nom_fonction = __name__ + "/_menage_solides"
-    blabla = "\nDans {} :\n".format(nom_fonction)
-
-    if self._verbose_max:
-      texte = blabla
-      texte += "Nombre de solides de l'objet  : {}\n".format(len(l_solides))
-      texte += "Nombre de solides à supprimer : {}".format(len(l_solides_m))
-      print (texte)
-
-    if self._menage:
-
-# Suppression des solides inclus dans l'étude dans le cas d'un assemblage explosé
-      if ( len(l_solides) > 1 ):
-        for solide in l_solides_m:
-          if self._verbose_max:
-            print ("\tSuppression de {}".format(solide.GetName()))
-          gst.deleteShape(solide.GetStudyEntry())
-
-# Suppression de l'objet initial quand il vient d'une exportation depuis SHAPER si ça s'est mal passé
-      if ( type_selection == 2 ):
-        if ( len(l_solides) != len(l_solides_m) ):
-          pass
-        else:
-          if self._verbose_max:
-            print ("\tSuppression de {}".format(objet.GetName()))
-          gst.deleteShape(objet.GetStudyEntry())
-
-# Mise en évidence des solides non détruits
-      for solide in l_solides:
-        if solide not in l_solides_m:
-          solide.SetColor(SALOMEDS.Color(1,0,0))
-
-# Rafraichissement de l'affichage
-    salome.sg.updateObjBrowser()
-
-    return
-
-#===========================  Fin de la méthode ==================================
-
-#=========================== Début de la méthode =================================
-
-  def _traitement_objet (self, type_selection=0, objet=None ):
+  def _traitement_objet (self, type_selection=0, objet=None, nom_objet="SOLIDE" ):
     """Traitement d'un objet
 
 Entrées :
   :type_selection: type de sélection de l'objet à traiter (0: graphique, 1: GEOM, 2;SHAPER)
   :objet: l'objet à traiter quand il passe par argument
+  :nom_objet: le nom de l'objet à traiter quand il passe par argument
 
 Sorties :
   :erreur: code d'erreur
@@ -1650,7 +1564,6 @@ Sorties :
 
 # 3. Les imports pour salomé
       geompy = geomBuilder.New()
-      gst = geomtools.GeomStudyTools(getStudyEditor())
 
 # 4. Sélection de l'objet
       if ( type_selection == 0 ):
@@ -1669,7 +1582,11 @@ Sorties :
           self.rep_trav = tempfile.mkdtemp(prefix="{}_".format(objet.GetName()))
         else:
           self.rep_trav = os.path.join(os.path.dirname(self.ficcao),"{}_M".format(objet.GetName()))
-          if not os.path.isdir(self.rep_trav):
+          if os.path.isdir(self.rep_trav):
+            l_aux = os.listdir(self.rep_trav)
+            for nomfic in l_aux:
+              os.remove(os.path.join(self.rep_trav,nomfic))
+          else:
             os.mkdir(self.rep_trav)
         if self._verbose_max:
           print ("Les fichiers CAO des surfaces seront dans le répertoire {}".format(self.rep_trav))
@@ -1682,19 +1599,14 @@ Sorties :
 # 7. Calcul des surfaces médianes pour chaque solide
       l_solides_m = list()
       for solide in l_solides:
-        erreur, message = self.face_mediane_solide (geompy, gst, solide)
+        erreur, message = self.face_mediane_solide (geompy, solide)
         if erreur:
           break
         l_solides_m.append(solide)
       if erreur:
         break
 
-# 8. Ménage des solides
-
-      if salome.sg.hasDesktop():
-        self._menage_solides ( gst, l_solides, l_solides_m, type_selection, objet )
-
-# 9. Informations sur les faces à problème
+# 8. Informations sur les faces à problème
       if self.faces_pb_nb:
         if ( self.faces_pb_nb == 1 ):
           texte = "1 face pose"
@@ -1702,7 +1614,9 @@ Sorties :
           texte = "{} faces posent".format(self.faces_pb_nb)
         print ("{} problème.\n{}".format(texte,self.faces_pb_msg))
 
-# 10. Final
+# 9. Final
+      self.folder = model.addFolder(self.part_doc, self.lfeatures[0], self.lfeatures[-1])
+      self.folder.setName(nom_objet+"_M")
       print ("Les fichiers CAO des surfaces sont dans le répertoire {}".format(self.rep_trav))
 
       break
@@ -1713,11 +1627,12 @@ Sorties :
 
 #=========================== Début de la méthode =================================
 
-  def surf_fic_cao (self, ficcao):
+  def surf_fic_cao (self, ficcao, nom_objet=None):
     """Calcule la surface médiane pour un objet dans un fichier passé en argument
 
 Entrées :
   :ficcao: fichier de l'objet à traiter
+  :nom_objet: un nom à donner à l'objet à traiter
 
 Sorties :
   :erreur: code d'erreur
@@ -1737,6 +1652,8 @@ Sorties :
 
 # 1. Définition de la pièce
 
+      with open("/tmp/grr_a", "w") as fic :
+        fic.write("a")
       self.part_doc = model.activeDocument()
 
 # 2. Import de la CAO
@@ -1744,7 +1661,7 @@ Sorties :
       self.ficcao = ficcao
       print ("Traitement du fichier {}".format(self.ficcao))
 
-      erreur, message, objet = import_cao (self.part_doc, self.ficcao, self._verbose_max)
+      erreur, message, objet = import_cao (self.part_doc, self.ficcao, nom_objet, self._verbose_max)
       if erreur:
         break
 
@@ -1824,7 +1741,7 @@ Sorties :
         os.remove(fichier)
 
 # 2. Traitement de l'objet GEOM correspondant
-      erreur, message = self._traitement_objet ( 2, objet )
+      erreur, message = self._traitement_objet ( 2, objet, nom_objet )
 
       if ( erreur and self._verbose_max ):
         print (blabla, message)

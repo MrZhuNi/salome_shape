@@ -29,7 +29,7 @@ On sait traiter les faces :
 
 Author: Gérald NICOLAS
 """
-__revision__ = "V02.01"
+__revision__ = "V02.03"
 
 import os
 
@@ -37,9 +37,9 @@ from salome.shaper import model
 
 import ModelAPI
 
-from macros.fibreNeutre.surfaceMediane import SurfaceMediane
+from macros.midSurface.surfaceMediane import SurfaceMediane
 
-class fibreNeutre(model.Feature):
+class midSurface(model.Feature):
     """Création des fibres neutres"""
 
 # Feature initializations
@@ -51,16 +51,16 @@ class fibreNeutre(model.Feature):
     @staticmethod
     def ID():
         """Return Id of the Feature."""
-        return "fibreNeutre"
+        return "midSurface"
 
     @staticmethod
     def FILE_ID():
-        """Returns ID of the file."""
+        """Returns ID of the CAD file."""
         return "file_path"
 
     def getKind(self):
         """Override Feature.getKind()"""
-        return fibreNeutre.ID()
+        return midSurface.ID()
 
 
 # Initialization of the dialog panel
@@ -69,7 +69,6 @@ class fibreNeutre(model.Feature):
         """Override Feature.initAttributes()"""
         # Creating the input argument of the feature
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
-
 
 # Execution
 
@@ -87,7 +86,11 @@ class fibreNeutre(model.Feature):
                 l_options.append("-retour_shaper")
                 #print("l_options : '{}'".format(l_options))
                 s_med = SurfaceMediane(l_options)
+                with open("/tmp/grr_1", "w") as fic :
+                      fic.write("{}".format(dir(s_med)))
                 erreur, message = s_med.surf_fic_cao (filepath)
+                with open("/tmp/grr_2", "w") as fic :
+                      fic.write("erreur = {}, message = '{}'".format(erreur, message))
                 del s_med
                 if erreur:
                     self.setError(message)
@@ -100,7 +103,7 @@ class fibreNeutre(model.Feature):
         """Override Feature.initAttributes().
         F.isMacro() -> True
 
-        fibreNeutre feature is macro: removes itself on the creation transaction
+        midSurface feature is macro: removes itself on the creation transaction
         finish.
         """
         return False

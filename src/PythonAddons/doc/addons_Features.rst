@@ -20,5 +20,5 @@ Some examples of already created custom features are:
 
    compoundVerticesFeature.rst
    importParametersFeature.rst
-   fibreNeutreFeature.rst
+   midSurfaceFeature.rst
    rectangleFeature.rst
