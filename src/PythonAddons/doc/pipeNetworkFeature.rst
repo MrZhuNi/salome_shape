@@ -31,7 +31,7 @@ Règles générales
 - Une information par ligne
 - Sur une ligne, les données sont séparés par des blancs
 - Les données sont regroupées en 3 sections : les noeuds, la connectivité, les raccordements
-- Une section débute par **mot-clé section** est finit par *............*
+- Une section débute par **mot-clé section**
 
 Les noeuds
 ----------
