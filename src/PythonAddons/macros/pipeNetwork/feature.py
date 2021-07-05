@@ -20,9 +20,10 @@
 
 """pipeNetwork Feature
 Author: Nathalie Gore
+Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.04"
+__revision__ = "V02.05"
 
 from salome.shaper import model
 import ModelAPI
@@ -57,10 +58,10 @@ class pipeNetwork(model.Feature):
         """Returns ID of the file select parameter."""
         return "file_path"
 
-    @staticmethod
-    def HEXAS_ID():
-        """Returns ID of the radius parameter."""
-        return "blocking"
+    #@staticmethod
+    #def HEXAS_ID():
+        #"""Returns ID of the radius parameter."""
+        #return "blocking"
 
     def getKind(self):
         """Override Feature.getKind()"""
@@ -73,7 +74,7 @@ class pipeNetwork(model.Feature):
         """Override Feature.initAttributes()"""
         # Creating the input argument of the feature
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
-        self.data().addAttribute(self.HEXAS_ID(), ModelAPI.ModelAPI_AttributeBoolean_typeId())
+        #self.data().addAttribute(self.HEXAS_ID(), ModelAPI.ModelAPI_AttributeBoolean_typeId())
 
 # Retrieve parent pipe
 
