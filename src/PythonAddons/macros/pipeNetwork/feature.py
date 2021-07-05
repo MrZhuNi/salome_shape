@@ -23,11 +23,17 @@ Author: Nathalie Gore
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.05"
+__revision__ = "V02.06"
 
 from salome.shaper import model
 import ModelAPI
 from GeomAPI import *
+
+# Si erreur :
+
+def raiseException(texte):
+    """En cas d'erreur"""
+    print (texte)
 
 class pipeNetwork(model.Feature):
     """Creation of a network of pipes"""
@@ -76,6 +82,7 @@ class pipeNetwork(model.Feature):
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
         #self.data().addAttribute(self.HEXAS_ID(), ModelAPI.ModelAPI_AttributeBoolean_typeId())
 
+
 # Retrieve parent pipe
 
     def decodingCode(self, code):
@@ -88,17 +95,23 @@ class pipeNetwork(model.Feature):
         return previousCode
 
     def readNodeInfo(self, line):
-        """readNodeInfo"""
+        """Lecture des noeuds
+
+La ligne est formée des informations :
+. l'identifiant du noeud
+. si les coordonnées sont données en absolu : "-" suivi des 3 coordonnées
+. si les coordonnées sont données en relatif : l'identifiant du noeud de départ, suivi des 3 coordonnées de la translation
+        """
         #print(line)
+        texte = line
         splitLine = line.split(" ")
-        if len(splitLine) != 5:
-            print(line)
+        if ( len(splitLine) != 5 ):
             diagno = 1
         elif splitLine[0] in self.infoPoints:
-            print(line)
+            texte += "\nThis node was already declared."
             diagno = 2
-        elif splitLine[1] not in self.infoPoints and splitLine[1] != "-":
-            print(line)
+        elif ( splitLine[1] not in self.infoPoints ) and ( splitLine[1] != "-" ):
+            texte += "\nThe starting point was not seen before."
             diagno = 3
         else:
             diagno = 0
@@ -114,10 +127,10 @@ class pipeNetwork(model.Feature):
                 self.infoPoints[splitLine[0]]["Z"] = self.infoPoints[splitLine[1]]["Z"] + float(splitLine[4])
             self.infoPoints[splitLine[0]]["isEnd"] = False
         #print ("Retour de readNodeInfo = {}".format(diagno))
-        return diagno
+        return diagno, texte
 
     def readConnectivity(self, line, method):
-        """readConnectivity"""
+        """Lecture des connectivités"""
         splitLine = line.split(" ")
         print(line)
         diagno = 0
@@ -148,7 +161,12 @@ class pipeNetwork(model.Feature):
         self.connectivities[key]['chainage'] = value
 
     def readFillet(self, line):
-        """readFillet"""
+        """Décodage des caractéristiques de la connection entre deux tuyaux
+
+La ligne est formée de deux informations :
+. l'identifiant du noeud
+. la caractérisation de la connection : "angular_connection" ou "radius=xxx"
+        """
         splitLine = line.split(" ")
         if len(splitLine) != 2:
             print(line)
@@ -310,6 +328,107 @@ class pipeNetwork(model.Feature):
             return pipe
         return fuse
 
+#==========================================================
+# Création des différents éléments
+    def createPoints(self, part):
+        """Création des points"""
+        print("========================= Creation des noeuds =========================")
+        for key, value in self.infoPoints.items():
+            if self._verbose:
+                print("key = ", key)
+            point = model.addPoint(part, value['X'], value['Y'], value['Z'])
+            point.execute(True)
+            self.lfeatures.append(point)
+            value["point"] = point.result()
+
+    def createPolylines(self, part):
+        """Création des polylines"""
+        print("========================= Creation des polylines =========================")
+        for key, value in self.connectivities.items():
+            if self._verbose:
+                print("key = ", key)
+            lPoints = list()
+            for id_noeud in value['chainage']:
+                lPoints.append(self.infoPoints[id_noeud]["point"])
+            polyline = model.addPolyline3D(part, lPoints, False)
+            polyline.execute(True)
+            self.lfeatures.append(polyline)
+            value["polyline"] = polyline
+
+    def createFillets(self, part):
+        """Création des fillets"""
+        print("========================= Creation des fillets =========================")
+        for key, value in self.connectivities.items():
+            if self._verbose:
+                print("key = ", key)
+            # recherche des noeuds fillets
+            value["fillet"] = value["polyline"]
+            for id_noeud in value['chainage']:
+                if self.infoPoints[id_noeud]["Fillet"] == "radius" :
+                    print(self.infoPoints[id_noeud])
+                    fillet1D = model.addFillet(part, [model.selection("VERTEX", (self.infoPoints[id_noeud]["X"],self.infoPoints[id_noeud]["Y"],self.infoPoints[id_noeud]["Z"]))], self.infoPoints[id_noeud]["Radius"])
+                    fillet1D.execute(True)
+                    self.lfeatures.append(fillet1D)
+                    value["fillet"] = fillet1D
+
+    def searchRightConnections(self, part):
+        """Recherche des coudes droits"""
+        print("========================= Recherche des coudes droits =========================")
+        for key, value in self.connectivities.items():
+            if self._verbose:
+                print("key = ", key, value['chainage'])
+            # recherche des noeuds fillets
+            for ind, id_noeud in enumerate(value['chainage']):
+                #print("Info sur : " id_noeud, " => ", self.infoPoints[id_noeud]["Fillet"])
+                if ind == 0 or ind == len(value['chainage'])-1 :
+                    self.infoPoints[id_noeud]["isAngular"] = False
+                else :
+                    if self.infoPoints[id_noeud]["Fillet"] == "radius" :
+                        self.infoPoints[id_noeud]["isAngular"] = False
+                    else :
+                        if id_noeud in self.connectivities:
+                            self.infoPoints[id_noeud]["isAngular"] = False
+                        else :
+                            self.infoPoints[id_noeud]["isAngular"] = True
+                            print("========================= Création du plan =========================")
+                            # Axe d'extrusion
+                            print(ind-1, ind, ind+1)
+                            print(value["chainage"][ind-1], id_noeud, value["chainage"][ind+1])
+                            print(self.infoPoints[value["chainage"][ind-1]]["point"])
+
+                            tmpPlane = model.addPlane(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
+                            tmpPlane.execute(True)
+                            self.lfeatures.append(tmpPlane)
+                            axis =  model.addAxis(part, tmpPlane.result(), self.infoPoints[id_noeud]["point"])
+                            axis.execute(True)
+                            self.lfeatures.append(axis)
+                            self.infoPoints[id_noeud]["axis"] = axis.result()
+
+                            # Edge a extruder
+                            tmpEdge = model.addEdge(part, self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
+                            tmpEdge.execute(True)
+                            self.lfeatures.append(tmpEdge)
+                            length = model.measureDistance(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"])
+                            point =  model.addPoint(part, tmpEdge.result(), length, False, False)
+                            point.execute(True)
+                            self.lfeatures.append(point)
+                            baseEdge = model.addEdge(part, self.infoPoints[value["chainage"][ind-1]]["point"], point.result())
+                            baseEdge.execute(True)
+                            self.lfeatures.append(baseEdge)
+                            middlePoint = model.addPoint(part, baseEdge.result(), 0.5, True, False)
+                            middlePoint.execute(True)
+                            self.lfeatures.append(middlePoint)
+                            Edge = model.addEdge(part, self.infoPoints[id_noeud]["point"], middlePoint.result())
+                            Edge.execute(True)
+                            self.lfeatures.append(Edge)
+
+                            # Extrusion
+                            plane = model.addExtrusion(part, [Edge.result()], axis.result(), 10, 0)
+                            plane.execute(True)
+                            self.lfeatures.append(plane)
+                            self.infoPoints[id_noeud]["plane"] = plane.result()
+#==========================================================
+
 # Execution of the Import
 
     def execute(self):
@@ -347,54 +466,63 @@ class pipeNetwork(model.Feature):
             lPipeSupports = dict()
             lPipes = list()
 
-            with open(filepath) as afile:
-                summary = 0
-                method = ""
-                for line in afile:
-                    print (line[:-1])
-                    if line == "\n":
-                        print("========================= Saut de ligne =========================")
-                        continue
-                    if line[0] == "#" or line[:3] == "...":
-                        continue
-                    if summary == 0 and line[:-1] == "nodes section" :
-                        print("========================= Lecture des noeuds =========================")
-                        summary = 1
-                        continue
-                    if summary == 1 and line[:-1] == "connectivity section" :
-                        print("========================= Lecture de la connectivite =========================")
-                        summary = 2
-                        continue
-                    if summary == 2 and line[:6] == "method" :
-                        print("===================== summary == 2 method =========================")
-                        method = line[7:-1]
-                        print(method)
-                        if method != self.twopartwo and method != self.parligne:
-                            raiseException("Problem with type of connectivity")
-                        continue
-                    if summary == 2 and line[:-1] == "fillets section" :
-                        print("========================= Lecture des fillets =========================")
-                        summary = 3
-                        continue
-                    if summary == 1:
-                        print("===================== summary == 1 =========================")
-                        diagno = self.readNodeInfo(line[:-1])
+            # Décodage du fichier
+            error = 0
+            while not error:
+                with open(filepath) as afile:
+                    summary = 0
+                    method = ""
+                    for line in afile:
+                        print (line[:-1])
+                        if line == "\n":
+                            print("========================= Saut de ligne =========================")
+                            continue
+                        if line[0] == "#" or line[:3] == "...":
+                            continue
+                        if summary == 0 and line[:-1] == "nodes section" :
+                            print("========================= Lecture des noeuds =========================")
+                            summary = 1
+                            continue
+                        if summary == 1 and line[:-1] == "connectivity section" :
+                            print("========================= Lecture de la connectivite =========================")
+                            summary = 2
+                            continue
+                        if summary == 2 and line[:6] == "method" :
+                            print("===================== summary == 2 method =========================")
+                            method = line[7:-1]
+                            print(method)
+                            if method != self.twopartwo and method != self.parligne:
+                                raiseException("Problem with type of connectivity")
+                            continue
+                        if summary == 2 and line[:-1] == "fillets section" :
+                            print("========================= Lecture des fillets =========================")
+                            summary = 3
+                            continue
+                        if summary == 1:
+                            print("===================== summary == 1 =========================")
+                            diagno, texte = self.readNodeInfo(line[:-1])
+                            if diagno:
+                                raiseException("{}\nProblem with description of nodes.".format(texte))
+                            continue
+                        if summary == 2:
+                            print("===================== summary == 2 =========================")
+                            diagno = self.readConnectivity(line[:-1],method)
+                            if diagno:
+                                raiseException("Problem with description of connectivities")
+                            continue
+                        if summary == 3:
+                            print("===================== summary == 3 =========================")
+                            diagno = self.readFillet(line[:-1])
+                            if diagno:
+                                raiseException("Problem with description of fillets")
+                            continue
+                        print("===================== Rien =========================")
                         if diagno:
-                            raiseException("Problem with description of nodes")
-                        continue
-                    if summary == 2:
-                        print("===================== summary == 2 =========================")
-                        diagno = self.readConnectivity(line[:-1],method)
-                        if diagno:
-                            raiseException("Problem with description of connectivities")
-                        continue
-                    if summary == 3:
-                        print("===================== summary == 3 =========================")
-                        diagno = self.readFillet(line[:-1])
-                        if diagno:
-                            raiseException("Problem with description of fillets")
-                        continue
-                    print("===================== Rien =========================")
+                            error = diagno
+                            break
+
+                if error:
+                    break
 
                 for key, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
@@ -405,97 +533,16 @@ class pipeNetwork(model.Feature):
 
 
                 # Creation des points
-                print("========================= Creation des noeuds =========================")
-                for key, value in self.infoPoints.items():
-                    point = model.addPoint(part, value['X'], value['Y'], value['Z'])
-                    point.execute(True)
-                    self.lfeatures.append(point)
-                    value["point"] = point.result()
+                self.createPoints(part)
 
                 # Creation des polylines
-                print("========================= Creation des polylines =========================")
-                for key, value in self.connectivities.items():
-                    if self._verbose:
-                        print("key = ", key)
-                    lPoints = list()
-                    for id_noeud in value['chainage']:
-                        lPoints.append(self.infoPoints[id_noeud]["point"])
-                    polyline = model.addPolyline3D(part, lPoints, False)
-                    polyline.execute(True)
-                    self.lfeatures.append(polyline)
-                    value["polyline"] = polyline
+                self.createPolylines(part)
 
                 # Creation des fillets
-                print("========================= Creation des fillets =========================")
-                for key, value in self.connectivities.items():
-                    if self._verbose:
-                        print("key = ", key)
-                    # recherche des noeuds fillets
-                    value["fillet"] = value["polyline"]
-                    for id_noeud in value['chainage']:
-                        if self.infoPoints[id_noeud]["Fillet"] == "radius" :
-                            print(self.infoPoints[id_noeud])
-                            fillet1D = model.addFillet(part, [model.selection("VERTEX", (self.infoPoints[id_noeud]["X"],self.infoPoints[id_noeud]["Y"],self.infoPoints[id_noeud]["Z"]))], self.infoPoints[id_noeud]["Radius"])
-                            fillet1D.execute(True)
-                            self.lfeatures.append(fillet1D)
-                            value["fillet"] = fillet1D
-
+                self.createFillets(part)
 
                 # Trouver les coudes droits
-                print("========================= Recherche des coudes droits =========================")
-                for key, value in self.connectivities.items():
-                    if self._verbose:
-                        print("key = ", key, value['chainage'])
-                    # recherche des noeuds fillets
-                    for ind, id_noeud in enumerate(value['chainage']):
-                        #print("Info sur : " id_noeud, " => ", self.infoPoints[id_noeud]["Fillet"])
-                        if ind == 0 or ind == len(value['chainage'])-1 :
-                            self.infoPoints[id_noeud]["isAngular"] = False
-                        else :
-                            if self.infoPoints[id_noeud]["Fillet"] == "radius" :
-                                self.infoPoints[id_noeud]["isAngular"] = False
-                            else :
-                                if id_noeud in self.connectivities:
-                                    self.infoPoints[id_noeud]["isAngular"] = False
-                                else :
-                                    self.infoPoints[id_noeud]["isAngular"] = True
-                                    print("========================= Création du plan =========================")
-                                    # Axe d'extrusion
-                                    print(ind-1, ind, ind+1)
-                                    print(value["chainage"][ind-1], id_noeud, value["chainage"][ind+1])
-                                    print(self.infoPoints[value["chainage"][ind-1]]["point"])
-
-                                    tmpPlane = model.addPlane(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
-                                    tmpPlane.execute(True)
-                                    self.lfeatures.append(tmpPlane)
-                                    axis =  model.addAxis(part, tmpPlane.result(), self.infoPoints[id_noeud]["point"])
-                                    axis.execute(True)
-                                    self.lfeatures.append(axis)
-                                    self.infoPoints[id_noeud]["axis"] = axis.result()
-
-                                    # Edge a extruder
-                                    tmpEdge = model.addEdge(part, self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
-                                    tmpEdge.execute(True)
-                                    self.lfeatures.append(tmpEdge)
-                                    length = model.measureDistance(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"])
-                                    point =  model.addPoint(part, tmpEdge.result(), length, False, False)
-                                    point.execute(True)
-                                    self.lfeatures.append(point)
-                                    baseEdge = model.addEdge(part, self.infoPoints[value["chainage"][ind-1]]["point"], point.result())
-                                    baseEdge.execute(True)
-                                    self.lfeatures.append(baseEdge)
-                                    middlePoint = model.addPoint(part, baseEdge.result(), 0.5, True, False)
-                                    middlePoint.execute(True)
-                                    self.lfeatures.append(middlePoint)
-                                    Edge = model.addEdge(part, self.infoPoints[id_noeud]["point"], middlePoint.result())
-                                    Edge.execute(True)
-                                    self.lfeatures.append(Edge)
-
-                                    # Extrusion
-                                    plane = model.addExtrusion(part, [Edge.result()], axis.result(), 10, 0)
-                                    plane.execute(True)
-                                    self.lfeatures.append(plane)
-                                    self.infoPoints[id_noeud]["plane"] = plane.result()
+                self.searchRightConnections(part)
 
 
                 # Création des paths pour le pipeNetwork
@@ -583,9 +630,9 @@ class pipeNetwork(model.Feature):
                 self.folder = model.addFolder(part, self.lfeatures[0], self.lfeatures[-1])
                 self.folder.setName(nameRes)
 
-                return
+                break
 
-            raiseException("The file does not exist")
+            return
 
     def isMacro(self):
         """Override Feature.initAttributes().
