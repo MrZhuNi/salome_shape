@@ -1,5 +1,5 @@
 .. _pipeNetwork:
-.. |pipeNetwork.icon|    figure:: images/pipeNetwork.png
+.. |pipeNetwork.icon|    image:: images/pipeNetwork.png
 
 Réseau de tuyaux
 ================
