@@ -39,6 +39,7 @@ class ModelAPI_Feature : public ModelAPI_Object
 {
   ///< list of current results of this feature
   std::list<std::shared_ptr<ModelAPI_Result> > myResults;
+  std::list<std::shared_ptr<ModelAPI_Result> > myVolumes;
   ///< is feature disabled or not
   bool myIsDisabled;
   ///< is feature is stable (not editing)
@@ -109,6 +110,12 @@ class ModelAPI_Feature : public ModelAPI_Object
   /// removes the result from the list of feature (not doing in disabled): normally this
   /// method is not used from features. only internally
   MODELAPI_EXPORT void eraseResultFromList(const std::shared_ptr<ModelAPI_Result>& theResult);
+  
+  /// sets the alone volume
+  MODELAPI_EXPORT void setVolume(const std::shared_ptr<ModelAPI_Result>& theResult);
+  /// sets the result by index (zero based), results before this must be set before
+  MODELAPI_EXPORT void setVolume(const std::shared_ptr<ModelAPI_Result>& theResult,
+                                 const int theIndex);
 
   /// Returns true if result is persistent (stored in document) and on undo-redo, save-open
   /// it is not needed to recompute it.

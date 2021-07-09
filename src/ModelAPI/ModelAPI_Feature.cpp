@@ -87,6 +87,21 @@ void ModelAPI_Feature::setResult(const std::shared_ptr<ModelAPI_Result>& theResu
   theResult->setDisabled(theResult, false);
 }
 
+void ModelAPI_Feature::setVolume(const std::shared_ptr<ModelAPI_Result>& theResult,
+                                 const int theIndex)
+{
+  std::list<std::shared_ptr<ModelAPI_Result> >::iterator aResIter = myVolumes.begin();
+  for (int anIndex = 0; anIndex < theIndex; anIndex++) {
+    aResIter++;
+  }
+  if (aResIter == myVolumes.end()) {  // append
+    myVolumes.push_back(theResult);
+  } else {  // update
+    *aResIter = theResult;
+  }
+  theResult->setDisabled(theResult, false);
+}
+
 void ModelAPI_Feature::eraseResultFromList(const std::shared_ptr<ModelAPI_Result>& theResult)
 {
   std::list<std::shared_ptr<ModelAPI_Result> >::iterator aResIter = myResults.begin();

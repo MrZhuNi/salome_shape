@@ -203,6 +203,7 @@ void PrimitivesPlugin_Box::createBoxByOnePointAndDims()
   ResultBodyPtr aResultBox = document()->createBody(data(), aResultIndex);
   loadNamingDS(aBoxAlgo, aResultBox);
   setResult(aResultBox, aResultIndex);
+  setVolume(aResultBox, aResultIndex);
 }
 
 //=================================================================================================

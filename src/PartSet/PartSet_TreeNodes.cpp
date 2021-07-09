@@ -439,6 +439,8 @@ QString PartSet_FolderNode::name() const
     return QObject::tr("Fields");
   case GroupsFolder:
     return QObject::tr("Groups");
+  case VolumesFolder:
+    return QObject::tr("Volumes");
   }
   return "NoName";
 }
@@ -466,6 +468,8 @@ QVariant PartSet_FolderNode::data(int theColumn, int theRole) const
       case FieldsFolder:
         return aConstrIco;
       case GroupsFolder:
+        return aConstrIco;
+      case VolumesFolder:
         return aConstrIco;
       }
     }
@@ -571,6 +575,8 @@ std::string PartSet_FolderNode::groupName() const
     return ModelAPI_ResultField::group();
   case GroupsFolder:
     return ModelAPI_ResultGroup::group();
+  case VolumesFolder:
+    return ModelAPI_ResultBody::group();
   }
   return "";
 }
@@ -863,10 +869,12 @@ PartSet_PartRootNode::PartSet_PartRootNode(const ObjectPtr& theObj, ModuleBase_I
   myResultsFolder = new PartSet_FolderNode(this, PartSet_FolderNode::ResultsFolder);
   myFieldsFolder = new PartSet_FolderNode(this, PartSet_FolderNode::FieldsFolder);
   myGroupsFolder = new PartSet_FolderNode(this, PartSet_FolderNode::GroupsFolder);
+  myVolumesFolder = new PartSet_FolderNode(this, PartSet_FolderNode::VolumesFolder);
 
   myChildren.append(myParamsFolder);
   myChildren.append(myConstrFolder);
   myChildren.append(myResultsFolder);
+  myChildren.append(myVolumesFolder);
 
   update();
 }
@@ -894,6 +902,7 @@ void PartSet_PartRootNode::update()
   myResultsFolder->update();
   myFieldsFolder->update();
   myGroupsFolder->update();
+  myVolumesFolder->update();
 
   bool aHasFields = myFieldsFolder->childrenCount() > 0;
   bool aHasGroups = myGroupsFolder->childrenCount() > 0;

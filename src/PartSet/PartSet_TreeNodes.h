@@ -113,7 +113,8 @@ public:
     PartsFolder,
     ResultsFolder,
     FieldsFolder,
-    GroupsFolder
+    GroupsFolder,
+    VolumesFolder
   };
 
   PartSet_FolderNode(ModuleBase_ITreeNode* theParent, FolderType theType);
@@ -296,6 +297,7 @@ private:
   PartSet_FolderNode* myResultsFolder;
   PartSet_FolderNode* myFieldsFolder;
   PartSet_FolderNode* myGroupsFolder;
+  PartSet_FolderNode* myVolumesFolder;
 
   ObjectPtr myObject;
 };
