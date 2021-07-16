@@ -647,11 +647,11 @@ La ligne est formée de deux informations :
                 self.folder.setName("{}_inter".format(nameRes))
 
                 # Ménage des résultats inutiles
-                print("================== Ménage des résultats inutiles ==================")
-                laux = list()
-                for iaux in range(len(self.ledges)):
-                  laux.append(model.selection("EDGE", "Edge_{}_1".format(iaux)))
-                _ = model.addRemoveResults(part, laux)
+                #print("================== Ménage des résultats inutiles ==================")
+                #laux = list()
+                #for iaux in range(len(self.ledges)):
+                  #laux.append(model.selection("EDGE", "Edge_{}_1".format(iaux)))
+                #_ = model.addRemoveResults(part, laux)
 
                 break
 
