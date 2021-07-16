@@ -19,11 +19,11 @@
 #
 
 """pipeNetwork Feature
-Author: Nathalie Gore
+Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.07"
+__revision__ = "V02.08"
 
 from salome.shaper import model
 import ModelAPI
@@ -102,6 +102,7 @@ La ligne est formée des informations :
 . l'identifiant du noeud
 . si les coordonnées sont données en absolu : "-" suivi des 3 coordonnées
 . si les coordonnées sont données en relatif : l'identifiant du noeud de départ, suivi des 3 coordonnées de la translation
+Par défaut, on supposera que la connection est angulaire et que ce n'est pas une extrémité.
         """
         #print(line)
         texte = line
@@ -126,6 +127,7 @@ La ligne est formée des informations :
                 self.infoPoints[splitLine[0]]["X"] = self.infoPoints[splitLine[1]]["X"] + float(splitLine[2])
                 self.infoPoints[splitLine[0]]["Y"] = self.infoPoints[splitLine[1]]["Y"] + float(splitLine[3])
                 self.infoPoints[splitLine[0]]["Z"] = self.infoPoints[splitLine[1]]["Z"] + float(splitLine[4])
+            self.infoPoints[splitLine[0]]["Fillet"] = "angular_connection"
             self.infoPoints[splitLine[0]]["isEnd"] = False
         #print ("Retour de readNodeInfo = {}".format(diagno))
         return diagno, texte

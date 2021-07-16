@@ -19,21 +19,12 @@ connectivity section
 # Choix entre 2 méthodes=soit 2par2 soit par_ligne
 method=par_ligne
 id_noeud1 id_noeud2 id_noeud3 id_noeud4 id_noeud5 id_noeud6 id_noeud7
-#id_noeud2 id_noeudA
 id_noeud2 id_noeudA id_noeudB
-#id_noeud6 id_noeudC
 id_noeud6 id_noeudC id_noeudD
 
 # Congés de raccordement :
 fillets section
-id_noeud1 angular_connection
 id_noeud2 angular_connection
 id_noeud3 radius=1
 id_noeud4 angular_connection
 id_noeud5 radius=2
-id_noeud6 angular_connection
-id_noeud7 angular_connection
-id_noeudA angular_connection
-id_noeudB angular_connection
-id_noeudC angular_connection
-id_noeudD angular_connection
