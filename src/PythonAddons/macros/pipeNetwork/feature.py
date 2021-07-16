@@ -23,7 +23,7 @@ Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.10"
+__revision__ = "V02.11"
 
 from salome.shaper import model
 import ModelAPI
@@ -356,8 +356,12 @@ La ligne est formée de deux informations :
             lPoints = list()
             for id_noeud in value['chainage']:
                 lPoints.append(self.infoPoints[id_noeud]["point"])
+                id_noeud_fin = id_noeud
             polyline = model.addPolyline3D(part, lPoints, False)
             polyline.execute(True)
+            nom = "L_{}_{}".format(key,id_noeud_fin)
+            polyline.setName(nom)
+            polyline.result().setName(nom)
             self.lfeatures.append(polyline)
             value["polyline"] = polyline
 
@@ -374,6 +378,9 @@ La ligne est formée de deux informations :
                     print(self.infoPoints[id_noeud])
                     fillet1D = model.addFillet(part, [model.selection("VERTEX", (self.infoPoints[id_noeud]["X"],self.infoPoints[id_noeud]["Y"],self.infoPoints[id_noeud]["Z"]))], self.infoPoints[id_noeud]["Radius"])
                     fillet1D.execute(True)
+                    nom = "F_{}".format(id_noeud)
+                    fillet1D.setName(nom)
+                    fillet1D.result().setName(nom)
                     self.lfeatures.append(fillet1D)
                     value["fillet"] = fillet1D
 
