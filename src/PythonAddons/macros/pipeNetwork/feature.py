@@ -23,7 +23,7 @@ Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.08"
+__revision__ = "V02.09"
 
 from salome.shaper import model
 import ModelAPI
@@ -342,6 +342,7 @@ La ligne est formée de deux informations :
                 print("key = {}".format(key))
             point = model.addPoint(part, value['X'], value['Y'], value['Z'])
             point.execute(True)
+            point.result().setName(key)
             self.lfeatures.append(point)
             value["point"] = point.result()
 
@@ -641,7 +642,6 @@ La ligne est formée de deux informations :
                 print("================== Ménage des résultats inutiles ==================")
                 laux = list()
                 for iaux in range(len(self.ledges)):
-                  print (iaux)
                   laux.append(model.selection("EDGE", "Edge_{}_1".format(iaux)))
                 _ = model.addRemoveResults(part, laux)
 
