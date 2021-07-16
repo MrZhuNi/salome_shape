@@ -23,7 +23,7 @@ Author: Nathalie Gore
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.06"
+__revision__ = "V02.07"
 
 from salome.shaper import model
 import ModelAPI
@@ -38,6 +38,7 @@ def raiseException(texte):
 class pipeNetwork(model.Feature):
     """Creation of a network of pipes"""
     lfeatures = list()
+    ledges = list()
     folder = None
     isHexa = False
     twopartwo = "2par2"
@@ -142,7 +143,7 @@ La ligne est formée des informations :
                 # Recherche si ligne déjà existante ou si nouvelle ligne
                 print("Lignes existantes")
                 for key, val in self.connectivities.items():
-                    print(key, " ******* ",val)
+                    print(key, " ******* {}".format(val))
                     if val['chainage'][-1] == splitLine[0]:
                         # La ligne existe
                         val['chainage'].append(splitLine[1])
@@ -195,8 +196,8 @@ La ligne est formée de deux informations :
         subshapesForWire = list()
         currentInd = 0
         isPipe = True
-        print("Current chainage : ", self.connectivities[key]['chainage'][ind:])
-        print("Indice de démarrage = ", ind)
+        print("Current chainage : {}".format(self.connectivities[key]['chainage'][ind:]))
+        print("Indice de démarrage = {}".format(ind))
 
         while exp.more() and not end :
             print("Analyse Edge n°", currentInd)
@@ -212,11 +213,11 @@ La ligne est formée de deux informations :
                     cur = exp.current().edge()
             else :
                 subshapesForWire.append(model.selection(copy.defaultResult(), cur))
-                print("Mode normal - Nb segments dans le wire : ", len(subshapesForWire))
+                print("Mode normal - Nb segments dans le wire : {}".format(len(subshapesForWire)))
                 # Cas du fillet : on récupère l'edge suivante
                 if self.infoPoints[self.connectivities[key]['chainage'][currentInd]]["isAngular"] or self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["isAngular"]:
                     end = True
-                    print("Nb segments dans le wire : ", len(subshapesForWire))
+                    print("Nb segments dans le wire : {}".format(len(subshapesForWire)))
                     if len(subshapesForWire) == 1:
                         print("Coude droit en cours")
                         currentInd += 1
@@ -230,13 +231,13 @@ La ligne est formée de deux informations :
                     cur = exp.current().edge()
                     subshapesForWire.append(model.selection(copy.defaultResult(), cur))
                     #currentInd = currentInd+1
-                    print("Mode Fillet - Nb segments dans le wire : ", len(subshapesForWire))
+                    print("Mode Fillet - Nb segments dans le wire : {}".format(len(subshapesForWire)))
                 elif self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["Fillet"] == "radius":
                     print("Ajout edge end Fillet")
                     exp.next()
                     cur = exp.current().edge()
                     subshapesForWire.append(model.selection(copy.defaultResult(), cur))
-                    print("Mode Fillet - Nb segments dans le wire : ", len(subshapesForWire))
+                    print("Mode Fillet - Nb segments dans le wire : {}".format(len(subshapesForWire)))
                 else :
                     if self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["isEnd"]:
                         print("Fin detectee")
@@ -247,7 +248,7 @@ La ligne est formée de deux informations :
             if not end:
                 currentInd = currentInd+1
             exp.next()
-            print("End = ", end, self.connectivities[key]['chainage'][currentInd])
+            print("End = {} {}".format(end,self.connectivities[key]['chainage'][currentInd]))
 
         return subshapesForWire, currentInd, isPipe, self.connectivities[key]['chainage'][currentInd]
 
@@ -292,7 +293,7 @@ La ligne est formée de deux informations :
         startFace = None
         fuse = None
         for ind in range(len(connectivityInfos['paths'])):
-            print("Step = ", ind)
+            print("Step = {}".format(ind))
             if ind == 0:
                 startFace = connectivityInfos['sketch']
             if connectivityInfos['isPipe'][ind] :
@@ -306,6 +307,7 @@ La ligne est formée de deux informations :
                     edge = model.addAxis(part, self.infoPoints[connectivityInfos['starts'][ind]]['point'], self.infoPoints[connectivityInfos['ends'][ind]]['point'])
                     edge.execute(True)
                     self.lfeatures.append(edge)# self.retrieveFirstElement(connectivityInfos['paths'][ind], GeomAPI_Shape.EDGE)
+                    self.ledges.append(edge)
                     point = self.retrieveLastElement(connectivityInfos['paths'][ind], GeomAPI_Shape.VERTEX)
                     plane = model.addPlane(part, edge.result(), point, True)
                     plane.execute(True)
@@ -335,7 +337,7 @@ La ligne est formée de deux informations :
         print("========================= Creation des noeuds =========================")
         for key, value in self.infoPoints.items():
             if self._verbose:
-                print("key = ", key)
+                print("key = {}".format(key))
             point = model.addPoint(part, value['X'], value['Y'], value['Z'])
             point.execute(True)
             self.lfeatures.append(point)
@@ -346,7 +348,7 @@ La ligne est formée de deux informations :
         print("========================= Creation des polylines =========================")
         for key, value in self.connectivities.items():
             if self._verbose:
-                print("key = ", key)
+                print("key = {}".format(key))
             lPoints = list()
             for id_noeud in value['chainage']:
                 lPoints.append(self.infoPoints[id_noeud]["point"])
@@ -360,7 +362,7 @@ La ligne est formée de deux informations :
         print("========================= Creation des fillets =========================")
         for key, value in self.connectivities.items():
             if self._verbose:
-                print("key = ", key)
+                print("key = {}".format(key))
             # recherche des noeuds fillets
             value["fillet"] = value["polyline"]
             for id_noeud in value['chainage']:
@@ -376,7 +378,7 @@ La ligne est formée de deux informations :
         print("========================= Recherche des coudes droits =========================")
         for key, value in self.connectivities.items():
             if self._verbose:
-                print("key = ", key, value['chainage'])
+                print("key = {} {}".format(key,value['chainage']))
             # recherche des noeuds fillets
             for ind, id_noeud in enumerate(value['chainage']):
                 #print("Info sur : " id_noeud, " => ", self.infoPoints[id_noeud]["Fillet"])
@@ -421,6 +423,7 @@ La ligne est formée de deux informations :
                             Edge = model.addEdge(part, self.infoPoints[id_noeud]["point"], middlePoint.result())
                             Edge.execute(True)
                             self.lfeatures.append(Edge)
+                            self.ledges.append(Edge)
 
                             # Extrusion
                             plane = model.addExtrusion(part, [Edge.result()], axis.result(), 10, 0)
@@ -528,8 +531,8 @@ La ligne est formée de deux informations :
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
                 if self._verbose:
-                    print("infos points = " , self.infoPoints)
-                    print("connectivities = " , self.connectivities)
+                    print("infos points = {}".format(self.infoPoints))
+                    print("connectivities = {}".format(self.connectivities))
 
 
                 # Creation des points
@@ -549,7 +552,7 @@ La ligne est formée de deux informations :
                 print("========================= Création des paths =========================")
                 for key, value in self.connectivities.items():
                     if self._verbose:
-                        print("================================================================================= key = ", key, value['chainage'], value['fillet'])
+                        print("================================================================================= key = {}".format(key), value['chainage'], value['fillet'])
                     # recherche des noeuds fillets
                     value["paths"] = list()
                     value["isPipe"] = list()
@@ -561,8 +564,8 @@ La ligne est formée de deux informations :
                         value["starts"].append(self.connectivities[key]['chainage'][ind])
                         objectsForPath, ind, isPipe, end_noeud = self.retrieveSubshapesforWire(copy, key, ind)
                         if self._verbose:
-                            print("************************* ind = ", ind)
-                            print("************************* objectsForPath = ", objectsForPath)
+                            print("************************* ind = {}".format(ind))
+                            print("************************* objectsForPath = {}".format(objectsForPath))
                         path = model.addWire(part, objectsForPath, False)
                         path.execute(True)
                         self.lfeatures.append(path)
@@ -579,7 +582,7 @@ La ligne est formée de deux informations :
                 print("========================= Création des sketchs =========================")
                 for key, value in self.connectivities.items():
                     if self._verbose:
-                        print("================================================================================= key = ", key)
+                        print("================================================================================= key = {}".format(key))
                     # Creating sketch
                     edge = model.addEdge(part, self.infoPoints[value["chainage"][0]]["point"], self.infoPoints[value["chainage"][1]]["point"])
                     edge.execute(True)
@@ -613,10 +616,9 @@ La ligne est formée de deux informations :
                 print("========================= Création des pipes =========================")
                 for key, value in self.connectivities.items():
                     if self._verbose:
-                        print("================================================================================= key = ", key)
+                        print("================================================================================= key = {}".format(key))
                     pipe = self.createPipe(part, value)
                     value["pipe"] = pipe.result()
-
 
                 # Fusion des pipes
                 print("========================= Fusion des pipes =========================")
@@ -625,10 +627,21 @@ La ligne est formée de deux informations :
                     lPipes.append(value["pipe"])
                 fuse = model.addFuse(part, lPipes, False)
                 fuse.execute(True)
-                self.lfeatures.append(fuse)
+                fuse.setName(nameRes)
                 fuse.result().setName(nameRes)
+
+                # Dossier pour les opérations internes
+                print("========================= Mise en dossier =========================")
                 self.folder = model.addFolder(part, self.lfeatures[0], self.lfeatures[-1])
-                self.folder.setName(nameRes)
+                self.folder.setName("{}_inter".format(nameRes))
+
+                # Ménage des résultats inutiles
+                print("================== Ménage des résultats inutiles ==================")
+                laux = list()
+                for iaux in range(len(self.ledges)):
+                  print (iaux)
+                  laux.append(model.selection("EDGE", "Edge_{}_1".format(iaux)))
+                _ = model.addRemoveResults(part, laux)
 
                 break
 
