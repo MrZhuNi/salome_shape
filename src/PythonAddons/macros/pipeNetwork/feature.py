@@ -335,8 +335,12 @@ La ligne est formée de deux informations :
 #==========================================================
 # Création des différents éléments
     def createPoints(self, part):
-        """Création des points"""
-        print("========================= Creation des noeuds =========================")
+        """Création des points
+
+Le point est créé en tant qu'objet de construction avec ses coordonnées.
+Il est nommé conformément au texte donné dans le fichier de données. Cela n'a qu'un intérêt graphique mais agréable en débogage.
+"""
+        print("========================= Création des noeuds =========================")
         for key, value in self.infoPoints.items():
             if self._verbose:
                 print("key = {}".format(key))
@@ -348,8 +352,12 @@ La ligne est formée de deux informations :
             value["point"] = point.result()
 
     def createPolylines(self, part):
-        """Création des polylines"""
-        print("========================= Creation des polylines =========================")
+        """Création des polylines
+
+La polyligne est créée en tant que résultat en enchaînant ses points.
+Elle est nommée conformément aux des 1er et dernier noeud. Cela n'a qu'un intérêt graphique mais agréable en débogage.
+"""
+        print("========================= Création des polylines =========================")
         for key, value in self.connectivities.items():
             if self._verbose:
                 print("key = {}".format(key))
@@ -366,8 +374,12 @@ La ligne est formée de deux informations :
             value["polyline"] = polyline
 
     def createFillets(self, part):
-        """Création des fillets"""
-        print("========================= Creation des fillets =========================")
+        """Création des fillets
+
+Le fillet est créé en tant que résultat.
+Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt graphique mais agréable en débogage.
+"""
+        print("========================= Création des fillets =========================")
         for key, value in self.connectivities.items():
             if self._verbose:
                 print("key = {}".format(key))
