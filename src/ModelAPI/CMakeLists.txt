@@ -61,6 +61,9 @@ SET(PROJECT_HEADERS
     ModelAPI_Plugin.h
     ModelAPI_Result.h
     ModelAPI_ResultBody.h
+
+    ModelAPI_ResultVolume.h
+
     ModelAPI_ResultConstruction.h
     ModelAPI_ResultField.h
     ModelAPI_ResultGroup.h
@@ -172,16 +175,16 @@ ADD_UNIT_TESTS(${TEST_NAMES})
 if(${HAVE_SALOME})
   enable_testing()
   set(TEST_INSTALL_DIRECTORY "${SALOME_SHAPER_INSTALL_TESTS}/ModelAPI")
-  
+
   install(FILES CTestTestfileInstall.cmake
   DESTINATION ${TEST_INSTALL_DIRECTORY}
   RENAME CTestTestfile.cmake)
   install(FILES tests.set DESTINATION ${TEST_INSTALL_DIRECTORY})
-  
+
   set(TMP_TESTS_NAMES)
   foreach(tfile ${TEST_NAMES})
     list(APPEND TMP_TESTS_NAMES "Test/${tfile}")
   endforeach(tfile ${TEST_NAMES})
-  
+
   install(FILES ${TMP_TESTS_NAMES} DESTINATION ${TEST_INSTALL_DIRECTORY})
 endif(${HAVE_SALOME})

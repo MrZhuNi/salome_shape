@@ -153,6 +153,9 @@ private:
 
 private:
   friend class Model_ResultBody;
+
+  friend class Model_ResultVolume;
+
   friend class Model_ResultCompSolid;
 };
 

@@ -96,6 +96,9 @@ class Model_Data : public ModelAPI_Data
   friend class Model_SelectionNaming;
   friend class Model_ResultConstruction;
   friend class Model_ResultBody;
+
+  friend class Model_ResultVolume;
+
   friend class Model_Tools;
 
  public:

@@ -203,6 +203,9 @@ class Model_Document : public ModelAPI_Document
   /// Creates a body results
   MODEL_EXPORT virtual std::shared_ptr<ModelAPI_ResultBody> createBody(
       const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0);
+  /// Creates a volume results
+  MODEL_EXPORT virtual std::shared_ptr<ModelAPI_ResultVolume> createVolume(
+      const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0);
   /// Creates a part results
   MODEL_EXPORT virtual std::shared_ptr<ModelAPI_ResultPart> createPart(
       const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0);
@@ -421,6 +424,9 @@ class Model_Document : public ModelAPI_Document
   friend class Model_AttributeSelectionList;
   friend class Model_ResultPart;
   friend class Model_ResultBody;
+
+  friend class Model_ResultVolume;
+
   friend class Model_ResultConstruction;
   friend class Model_SelectionNaming;
   friend class Model_BodyBuilder;

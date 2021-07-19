@@ -125,6 +125,10 @@ class Model_Objects
   std::shared_ptr<ModelAPI_ResultBody> createBody(
       const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0,
       const std::wstring& theNameShape = L"");
+  /// Creates a body result
+  std::shared_ptr<ModelAPI_ResultVolume> createVolume(
+      const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0,
+      const std::wstring& theNameShape = L"");
   /// Creates a part result
   std::shared_ptr<ModelAPI_ResultPart> createPart(
       const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex = 0);

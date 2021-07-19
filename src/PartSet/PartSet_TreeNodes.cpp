@@ -33,6 +33,9 @@
 #include <ModelAPI_ResultConstruction.h>
 #include <ModelAPI_ResultPart.h>
 #include <ModelAPI_ResultBody.h>
+
+#include <ModelAPI_ResultVolume.h>
+
 #include <ModelAPI_Tools.h>
 #include <ModelAPI_ResultBody.h>
 #include <ModelAPI_CompositeFeature.h>
@@ -576,7 +579,7 @@ std::string PartSet_FolderNode::groupName() const
   case GroupsFolder:
     return ModelAPI_ResultGroup::group();
   case VolumesFolder:
-    return ModelAPI_ResultBody::group();
+    return ModelAPI_ResultVolume::group();
   }
   return "";
 }

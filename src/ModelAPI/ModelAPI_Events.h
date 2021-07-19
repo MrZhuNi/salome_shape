@@ -344,7 +344,7 @@ class ModelAPI_ParameterEvalMessage : public Events_Message
     const double theResult, const std::string& theError);
   MODELAPI_EXPORT void setVolumes(
     const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
-    const double theResult, const std::string& theError);
+    const double theVolume, const std::string& theError);
   /// Returns true if the expression is processed
   MODELAPI_EXPORT bool isProcessed();
   /// Returns the results of processing: list of parameters found in the expression
@@ -398,7 +398,7 @@ class ModelAPI_BuildEvalMessage : public Events_Message
   MODELAPI_EXPORT void setResults(
                        const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
                        const std::string& theError);
-  /// Sets the results of processing
+  /// Sets the volumes of processing
   MODELAPI_EXPORT void setVolumes(
                        const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
                        const std::string& theError);

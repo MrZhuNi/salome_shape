@@ -169,10 +169,10 @@ void ModelAPI_ParameterEvalMessage::setResults(
 
 void ModelAPI_ParameterEvalMessage::setVolumes(
     const std::list<std::shared_ptr<ModelAPI_ResultParameter> >& theParamsList,
-    const double theResult, const std::string& theError)
+    const double theVolume, const std::string& theError)
 {
   myParamsList = theParamsList;
-  myResult = theResult;
+  myResult = theVolume;
   myError = theError;
   myIsProcessed = true;
 }

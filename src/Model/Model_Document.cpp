@@ -1577,6 +1577,12 @@ std::shared_ptr<ModelAPI_ResultBody> Model_Document::createBody(
   return myObjs->createBody(theFeatureData, theIndex);
 }
 
+std::shared_ptr<ModelAPI_ResultVolume> Model_Document::createVolume(
+    const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex)
+{
+  return myObjs->createVolume(theFeatureData, theIndex);
+}
+
 std::shared_ptr<ModelAPI_ResultPart> Model_Document::createPart(
     const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex)
 {

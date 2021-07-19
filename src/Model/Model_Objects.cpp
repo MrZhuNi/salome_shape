@@ -25,6 +25,9 @@
 #include <Model_ResultPart.h>
 #include <Model_ResultConstruction.h>
 #include <Model_ResultBody.h>
+
+#include <Model_ResultVolume.h>
+
 #include <Model_ResultGroup.h>
 #include <Model_ResultField.h>
 #include <Model_ResultParameter.h>
@@ -33,7 +36,6 @@
 #include <ModelAPI_CompositeFeature.h>
 #include <ModelAPI_Tools.h>
 #include <ModelAPI_Filter.h>
-
 
 #include <Events_Loop.h>
 #include <Events_InfoMessage.h>
@@ -1287,6 +1289,25 @@ std::shared_ptr<ModelAPI_ResultBody> Model_Objects::createBody(
   }
   if (!aResult.get()) {
     aResult = std::shared_ptr<ModelAPI_ResultBody>(new Model_ResultBody);
+    storeResult(theFeatureData, aResult, theIndex, theNameShape);
+  }
+  return aResult;
+}
+
+std::shared_ptr<ModelAPI_ResultVolume> Model_Objects::createVolume(
+    const std::shared_ptr<ModelAPI_Data>& theFeatureData,
+    const int theIndex,
+    const std::wstring& theNameShape)
+{
+  TDF_Label aLab = resultLabel(theFeatureData, theIndex);
+  TDataStd_Comment::Set(aLab, ModelAPI_ResultVolume::group().c_str());
+  ObjectPtr anOldObject = object(aLab);
+  std::shared_ptr<ModelAPI_ResultVolume> aResult;
+  if (anOldObject.get()) {
+    aResult = std::dynamic_pointer_cast<ModelAPI_ResultVolume>(anOldObject);
+  }
+  if (!aResult.get()) {
+    aResult = std::shared_ptr<ModelAPI_ResultVolume>(new Model_ResultVolume);
     storeResult(theFeatureData, aResult, theIndex, theNameShape);
   }
   return aResult;
