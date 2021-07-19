@@ -1,0 +1,10 @@
+<plugin>
+  <workbench id="Opera" document="Part">
+    <group id="Opera">
+      <feature id="addVolume" title="addVolume" tooltip="Create a volume" icon="icons/Opera/addVolume.png"
+               helpfile="addvolumeFeature.html">
+        <source path="addvolume_widget.xml"/>
+      </feature>
+    </group>
+  </workbench>
+</plugin>
