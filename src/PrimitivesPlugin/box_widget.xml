@@ -47,21 +47,21 @@
           label="OX"
           step="1."
           default="0."
-          tooltip="Enter the coordinate X for the origin">
+          tooltip="Enter the coordinate X for the center">
         </doublevalue>
         <doublevalue
           id="oy"
           label="OY"
           step="1."
           default="0."
-          tooltip="Enter the coordinate Y for the origin">
+          tooltip="Enter the coordinate Y for the center">
         </doublevalue>
         <doublevalue
           id="oz"
           label="OZ"
           step="1."
           default="0."
-          tooltip="Enter the coordinate Z for the origin">
+          tooltip="Enter the coordinate Z for the center">
         </doublevalue>
       </groupbox>
       <groupbox title="Half-lengths">

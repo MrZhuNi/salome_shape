@@ -91,6 +91,7 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Chamfer.h
     GeomAlgoAPI_Defeaturing.h
     GeomAlgoAPI_BoundingBox.h
+    GeomAlgoAPI_Tube.h
 )
 
 SET(PROJECT_SOURCES
@@ -161,6 +162,7 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Chamfer.cpp
     GeomAlgoAPI_Defeaturing.cpp
     GeomAlgoAPI_BoundingBox.cpp
+    GeomAlgoAPI_Tube.cpp
 )
 
 SET(PROJECT_LIBRARIES

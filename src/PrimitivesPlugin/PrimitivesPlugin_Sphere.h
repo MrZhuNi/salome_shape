@@ -79,42 +79,42 @@ class PrimitivesPlugin_Sphere : public ModelAPI_Feature
     static const std::string MY_RADIUS_ID("radius");
     return MY_RADIUS_ID;
   }
-  
+
   /// attribute name of the inner radius
   inline static const std::string& RMIN_ID()
   {
     static const std::string MY_RMIN_ID("rmin");
     return MY_RMIN_ID;
   }
-  
+
   /// attribute name of the outer radius
   inline static const std::string& RMAX_ID()
   {
     static const std::string MY_RMAX_ID("rmax");
     return MY_RMAX_ID;
   }
-  
+
   /// attribute name of the lower phi limit
   inline static const std::string& PHIMIN_ID()
   {
     static const std::string MY_PHIMIN_ID("phimin");
     return MY_PHIMIN_ID;
   }
-  
+
   /// attribute name of the higher phi limit
   inline static const std::string& PHIMAX_ID()
   {
     static const std::string MY_PHIMAX_ID("phimax");
     return MY_PHIMAX_ID;
   }
-  
+
   /// attribute name of the lower theta limit
   inline static const std::string& THETAMIN_ID()
   {
     static const std::string MY_THETAMIN_ID("thetamin");
     return MY_THETAMIN_ID;
   }
-  
+
   /// attribute name of the higher theta limit
   inline static const std::string& THETAMAX_ID()
   {
@@ -142,11 +142,12 @@ class PrimitivesPlugin_Sphere : public ModelAPI_Feature
   /// Load Naming data structure of the feature to the document
   void loadNamingDS(std::shared_ptr<GeomAlgoAPI_Sphere> theSphereAlgo,
                     std::shared_ptr<ModelAPI_ResultBody> theResultSphere);
-  
+
   /// Perform the creation of the sphere using a point and a radius
   void createSphereByPtRadius();
-  
-  /// Perform the creation of the sphere using radii (inner and outer) and angle limits (theta and phi)
+
+  /// Perform the creation of the sphere using radii (inner and outer) and angle limits
+  /// (theta and phi)
   void createShereByDimensions();
 
 };

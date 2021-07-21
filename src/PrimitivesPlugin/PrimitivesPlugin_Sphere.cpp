@@ -44,7 +44,8 @@ PrimitivesPlugin_Sphere::PrimitivesPlugin_Sphere()
 //=================================================================================================
 void PrimitivesPlugin_Sphere::initAttributes()
 {
-  data()->addAttribute(PrimitivesPlugin_Sphere::CREATION_METHOD(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(PrimitivesPlugin_Sphere::CREATION_METHOD(),
+                       ModelAPI_AttributeString::typeId());
 
   // data for the first mode : by a point and a radius
   data()->addAttribute(PrimitivesPlugin_Sphere::CENTER_POINT_ID(),

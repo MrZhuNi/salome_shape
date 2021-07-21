@@ -80,7 +80,7 @@ bool GeomAlgoAPI_Sphere::check()
 void GeomAlgoAPI_Sphere::build()
 {
   myCreatedFaces.clear();
-  
+
   if (isSectionSphere) {
     buildSectionSphere();
   } else {
@@ -129,7 +129,8 @@ void GeomAlgoAPI_Sphere::buildSectionSphere()
   gp_Pnt anOrigin(0., 0., 0.);
   gp_Dir aNormal(-sin(aStartPhiRad), cos(aStartPhiRad), 0.);
 
-  //The section is defined by 4 points and up to 4 wires. In the rmin = 0 case, two of the points will actually be the origin
+  // The section is defined by 4 points and up to 4 wires. In the rmin = 0 case, two of the points
+  // will actually be the origin
   double aX = myRMax*sin(myThetaMin * M_PI/180.);
   double aZ = myRMax*cos(myThetaMin * M_PI/180.);
   gp_Pnt aTopOuterStart(aX*cos(aStartPhiRad), aX*sin(aStartPhiRad), aZ);
@@ -155,9 +156,11 @@ void GeomAlgoAPI_Sphere::buildSectionSphere()
     anArcOuterBuilder = BRepBuilderAPI_MakeEdge(anOuterCircle, aTopOuterStart, aBaseOuterEnd);
   anArcOuterBuilder.Build();
 
-  //Two cases : either we need four edges (one being an arc with curvature radius rmin) or we need three (if rmin=0).
-  // In the later case the top and bottom edges intersect at the origin
-  // Add the edges to the wire in consecutive order (very important for the face to make sense topologically)
+  // Two cases : either we need four edges (one being an arc with curvature radius rmin)
+  // or we need three (if rmin=0).
+  // In the later case the top and bottom edges intersect at the origin, add the
+  // edges to the wire in consecutive order (very important for the face to make sense
+  // topologically)
   if(myRMin >= Precision::Confusion()){
     gp_Circ anInnerCircle(gp_Ax2(anOrigin, aNormal), myRMin);
     BRepBuilderAPI_MakeEdge anArcInnerBuilder;
@@ -202,7 +205,9 @@ void GeomAlgoAPI_Sphere::buildSectionSphere()
   gp_Ax1 aZAxis(anOrigin, aZDir);
 
   // Build the solid using the section face we've created and a revolution builder
-  BRepPrimAPI_MakeRevol* aRevolBuilder = new BRepPrimAPI_MakeRevol(aFaceBuilder.Face(), aZAxis, myPhiMax * M_PI / 180., Standard_True);
+  BRepPrimAPI_MakeRevol* aRevolBuilder = new BRepPrimAPI_MakeRevol(aFaceBuilder.Face(), aZAxis,
+                                                                   myPhiMax * M_PI / 180.,
+                                                                   Standard_True);
   if(!aRevolBuilder) {
     return;
     myError = "Sphere builder :: section revolution did not succeed";
@@ -213,7 +218,8 @@ void GeomAlgoAPI_Sphere::buildSectionSphere()
   }
 
   // Get the shape, verify it, build a GeomAPI_Shape.
-  std::shared_ptr<GeomAPI_Shape> aResultShape =  std::shared_ptr<GeomAPI_Shape>(new GeomAPI_Shape()) ;
+  std::shared_ptr<GeomAPI_Shape> aResultShape =
+           std::shared_ptr<GeomAPI_Shape>(new GeomAPI_Shape());
   aResultShape->setImpl(new TopoDS_Shape(aRevolBuilder->Shape()));
   setShape(aResultShape);
 
