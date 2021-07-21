@@ -165,27 +165,6 @@ void PrimitivesPlugin_Box::createBoxByTwoPoints()
 }
 
 //=================================================================================================
-static void toto(std::shared_ptr<GeomAlgoAPI_Box> theBoxAlgo,
-                                        std::shared_ptr<ModelAPI_ResultVolume> theResultBox)
-{
-  // Load the result
-  theResultBox->store(theBoxAlgo->shape());
-
-  // Prepare the naming
-  theBoxAlgo->prepareNamingFaces();
-
-  // Insert to faces
-  std::map< std::string, std::shared_ptr<GeomAPI_Shape> > listOfFaces =
-    theBoxAlgo->getCreatedFaces();
-  for (std::map< std::string, std::shared_ptr<GeomAPI_Shape> >::iterator it = listOfFaces.begin();
-       it != listOfFaces.end();
-       ++it)
-  {
-    theResultBox->generated((*it).second, (*it).first);
-  }
-}
-
-//=================================================================================================
 void PrimitivesPlugin_Box::createBoxByOnePointAndDims()
 {
   // Getting dx, dy and dz
@@ -224,9 +203,9 @@ void PrimitivesPlugin_Box::createBoxByOnePointAndDims()
   }
 
   int aResultIndex = 0;
-  ResultVolumePtr aResultBox = document()->createVolume(data(), aResultIndex);
-  toto(aBoxAlgo, aResultBox);
-  setVolume(aResultBox, aResultIndex);
+  ResultBodyPtr aResultBox = document()->createBody(data(), aResultIndex);
+  loadNamingDS(aBoxAlgo, aResultBox);
+  setResult(aResultBox, aResultIndex);
 }
 
 //=================================================================================================

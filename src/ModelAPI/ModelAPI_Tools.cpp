@@ -25,6 +25,7 @@
 #include <ModelAPI_AttributeDouble.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_ResultBody.h>
+#include <ModelAPI_ResultVolume.h>
 #include <ModelAPI_ResultParameter.h>
 #include <ModelAPI_ResultPart.h>
 #include <ModelAPI_ResultGroup.h>
@@ -302,6 +303,23 @@ int bodyIndex(const ResultPtr& theSub)
       return anIndex;
   }
   return anIndex; // not found
+}
+
+ResultVolumePtr volumeOwner(const ResultPtr& theSub, const bool theRoot)
+{
+  if (theSub.get()) {
+    ObjectPtr aParent = theSub->document()->parent(theSub);
+    if (aParent.get()) {
+      if (theRoot) { // try to find parent of parent
+        ResultPtr aResultParent = std::dynamic_pointer_cast<ModelAPI_Result>(aParent);
+        ResultVolumePtr aGrandParent = volumeOwner(aResultParent, true);
+        if (aGrandParent.get())
+          aParent = aGrandParent;
+      }
+      return std::dynamic_pointer_cast<ModelAPI_ResultVolume>(aParent);
+    }
+  }
+  return ResultVolumePtr(); // not found
 }
 
 bool hasSubResults(const ResultPtr& theResult)

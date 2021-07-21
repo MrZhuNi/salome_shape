@@ -1571,16 +1571,17 @@ std::shared_ptr<ModelAPI_ResultConstruction> Model_Document::createConstruction(
   return myObjs->createConstruction(theFeatureData, theIndex);
 }
 
-std::shared_ptr<ModelAPI_ResultBody> Model_Document::createBody(
-    const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex)
-{
-  return myObjs->createBody(theFeatureData, theIndex);
-}
-
 std::shared_ptr<ModelAPI_ResultVolume> Model_Document::createVolume(
     const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex)
 {
   return myObjs->createVolume(theFeatureData, theIndex);
+}
+
+
+std::shared_ptr<ModelAPI_ResultBody> Model_Document::createBody(
+    const std::shared_ptr<ModelAPI_Data>& theFeatureData, const int theIndex)
+{
+  return myObjs->createBody(theFeatureData, theIndex);
 }
 
 std::shared_ptr<ModelAPI_ResultPart> Model_Document::createPart(

@@ -108,6 +108,7 @@ SET(PROJECT_SOURCES
     ModelAPI_Plugin.cpp
     ModelAPI_Result.cpp
     ModelAPI_ResultBody.cpp
+    ModelAPI_ResultVolume.cpp
     ModelAPI_ResultConstruction.cpp
     ModelAPI_ResultField.cpp
     ModelAPI_ResultGroup.cpp

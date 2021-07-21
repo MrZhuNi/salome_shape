@@ -19,20 +19,16 @@
 
 #include <OperaPlugin_Volume.h>
 
-#include <ModelAPI_Data.h>
-#include <ModelAPI_ResultBody.h>
-#include <ModelAPI_AttributeDouble.h>
-#include <ModelAPI_AttributeSelection.h>
-#include <ModelAPI_AttributeSelectionList.h>
+#include <ModelAPI_AttributeInteger.h>
 #include <ModelAPI_AttributeString.h>
+#include <ModelAPI_AttributeSelectionList.h>
+#include <ModelAPI_AttributeIntArray.h>
+#include <ModelAPI_Data.h>
+#include <ModelAPI_Document.h>
+#include <ModelAPI_ResultVolume.h>
+#include <ModelAPI_Tools.h>
 
-#include <GeomAlgoAPI_PointBuilder.h>
-
-
-#include <ModelAPI_ResultPart.h>
-#include <GeomAPI_ShapeHierarchy.h>
-
-
+#include <sstream>
 #include <memory>
 #include <iostream>
 
@@ -44,26 +40,24 @@ OperaPlugin_Volume::OperaPlugin_Volume() // Nothing to do during instantiation
 //=================================================================================================
 void OperaPlugin_Volume::initAttributes()
 {
+  //Get Medium
   data()->addAttribute(OperaPlugin_Volume::MEDIUM(), ModelAPI_AttributeString::typeId());
-
-  // AttributeSelectionListPtr aList =
-  //   std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(data()->addAttribute(
-  //   OperaPlugin_Volume::LIST_ID(), ModelAPI_AttributeSelectionList::typeId()));
-
+  //Get Objects
   AttributeSelectionListPtr aList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(
-    data()->addAttribute(OperaPlugin_Volume::LIST_ID(), ModelAPI_AttributeSelectionList::typeId()));
+    data()->addAttribute(LIST_ID(), ModelAPI_AttributeSelectionList::typeId()));
   aList->setWholeResultAllowed(true); // allow to select the whole result
-
 }
 
-#include <GeomAlgoAPI_MakeShapeList.h>
 //=================================================================================================
 void OperaPlugin_Volume::execute()
 {
   // Getting objects.
   std::cout << "Before" << std::endl;
 
-  std::cout << "EXECUTE" << std::endl;
+  if (results().empty() || firstResult()->isDisabled()) { // just create result if not exists
+    ResultPtr aGroup = document()->createVolume(data());
+    setResult(aGroup);
+  }
 
   std::cout << "After" << std::endl;
 }

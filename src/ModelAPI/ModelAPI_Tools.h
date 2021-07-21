@@ -28,6 +28,7 @@ class ModelAPI_Feature;
 class ModelAPI_Result;
 class ModelAPI_ResultParameter;
 class ModelAPI_ResultBody;
+class ModelAPI_ResultVolume;
 
 class GeomAPI_Shape;
 class GeomAPI_ShapeHierarchy;
@@ -50,7 +51,7 @@ MODELAPI_EXPORT std::shared_ptr<GeomAPI_Shape> shape(
 MODELAPI_EXPORT std::string getFeatureError(const std::shared_ptr<ModelAPI_Feature>& theFeature);
 
 /*!
- * Searches for variable with name \param theName in \param theDocument. 
+ * Searches for variable with name \param theName in \param theDocument.
  * If found, set it value in the \param outValue and returns true.
  * theSearcher must be located later in the history than the found variable.
  */
@@ -113,6 +114,15 @@ MODELAPI_EXPORT std::shared_ptr<ModelAPI_ResultBody>
  * \returns zero-base index, or -1 if not found
  */
 MODELAPI_EXPORT int bodyIndex(const std::shared_ptr<ModelAPI_Result>& theSub);
+
+/*!
+ * Returns the result - parent of this result.
+ * \param theSub the sub-element of composit result
+ * \param theRoot if it is true, returns the root father
+ * \returns null if it is not sub-element of composite
+ */
+MODELAPI_EXPORT std::shared_ptr<ModelAPI_ResultVolume>
+  volumeOwner(const std::shared_ptr<ModelAPI_Result>& theSub, const bool theRoot = false);
 
 /*!
 * Returns true if the result contains a not empty list of sub results.
