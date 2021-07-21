@@ -16,7 +16,6 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 #include <OperaPlugin_Volume.h>
 
 #include <ModelAPI_AttributeInteger.h>
@@ -51,34 +50,8 @@ void OperaPlugin_Volume::initAttributes()
 //=================================================================================================
 void OperaPlugin_Volume::execute()
 {
-  // Getting objects.
-  std::cout << "Before" << std::endl;
-
   if (results().empty() || firstResult()->isDisabled()) { // just create result if not exists
-    ResultPtr aGroup = document()->createVolume(data());
-    setResult(aGroup);
-  }
-
-  std::cout << "After" << std::endl;
-}
-
-//=================================================================================================
-void OperaPlugin_Volume::loadNamingDS(std::shared_ptr<GeomAlgoAPI_Box> theBoxAlgo,
-                                        std::shared_ptr<ModelAPI_ResultBody> theResultBox)
-{
-  // Load the result
-  theResultBox->store(theBoxAlgo->shape());
-
-  // Prepare the naming
-  theBoxAlgo->prepareNamingFaces();
-
-  // Insert to faces
-  std::map< std::string, std::shared_ptr<GeomAPI_Shape> > listOfFaces =
-    theBoxAlgo->getCreatedFaces();
-  for (std::map< std::string, std::shared_ptr<GeomAPI_Shape> >::iterator it = listOfFaces.begin();
-       it != listOfFaces.end();
-       ++it)
-  {
-    theResultBox->generated((*it).second, (*it).first);
+    ResultPtr aVolume = document()->createVolume(data());
+    setResult(aVolume);
   }
 }
