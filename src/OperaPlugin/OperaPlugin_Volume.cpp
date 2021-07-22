@@ -27,6 +27,9 @@
 #include <ModelAPI_ResultVolume.h>
 #include <ModelAPI_Tools.h>
 
+#include <GeomAlgoAPI_Copy.h>
+#include <GeomAlgoAPI_Tools.h>
+
 #include <sstream>
 #include <memory>
 #include <iostream>
@@ -37,21 +40,87 @@ OperaPlugin_Volume::OperaPlugin_Volume() // Nothing to do during instantiation
 }
 
 //=================================================================================================
+static GeomShapePtr shapeOfSelection(AttributeSelectionPtr theSel) {
+  GeomShapePtr aResult;
+  FeaturePtr aSelFeature = theSel->contextFeature();
+  if (aSelFeature.get()) {
+    if (aSelFeature->results().empty()) // if selected feature has no results, make nothing
+      return aResult;
+    if (aSelFeature->results().size() == 1) { // for one sub-result don't make compound
+      aResult = aSelFeature->firstResult()->shape();
+    }
+  }
+  if (!aResult.get())
+    aResult = theSel->value();
+  if (!aResult.get()) {
+    if (theSel->context().get())
+      aResult = theSel->context()->shape();
+  }
+  return aResult;
+}
+
+//=================================================================================================
 void OperaPlugin_Volume::initAttributes()
 {
   //Get Medium
-  data()->addAttribute(OperaPlugin_Volume::MEDIUM(), ModelAPI_AttributeString::typeId());
-  //Get Objects
-  AttributeSelectionListPtr aList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(
-    data()->addAttribute(LIST_ID(), ModelAPI_AttributeSelectionList::typeId()));
-  aList->setWholeResultAllowed(true); // allow to select the whole result
+  data()->addAttribute(MEDIUM(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
+
+  // // //Get Objects
+  // AttributeSelectionListPtr aList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(
+  //   data()->addAttribute(LIST_ID(), ModelAPI_AttributeSelectionList::typeId()));
+  // aList->setWholeResultAllowed(true); // allow to select the whole result
 }
 
 //=================================================================================================
 void OperaPlugin_Volume::execute()
 {
-  if (results().empty() || firstResult()->isDisabled()) { // just create result if not exists
-    ResultPtr aVolume = document()->createVolume(data());
-    setResult(aVolume);
+  std::string aCopiesMedium = string(MEDIUM())->value();
+  if (aCopiesMedium.empty())
+  {
+    setError("Error: Medium cannot be empty.");
+    return;
   }
+
+  AttributeSelectionListPtr aList = selectionList(LIST_ID());
+  int aResultIndex = 0;
+  std::set<std::wstring> anExistingNames; // to avoid names duplication
+  for (int aSelIndex = 0; aSelIndex < aList->size(); aSelIndex++) {
+    AttributeSelectionPtr aSel = aList->value(aSelIndex);
+    GeomShapePtr aShape = shapeOfSelection(aSel);
+    if (!aShape.get())
+      continue;
+    std::shared_ptr<GeomAlgoAPI_Copy> aCopyBuilder(new GeomAlgoAPI_Copy(aShape, false, false));
+    std::string anError;
+    if (GeomAlgoAPI_Tools::AlgoError::isAlgorithmFailed(aCopyBuilder, getKind(), anError)) {
+      setError(anError);
+      return;
+    }
+    GeomShapePtr aResult = aCopyBuilder->shape();
+
+    std::wstring aBaseName = aSel->context() ? aSel->context()->data()->name() :
+      aSel->contextFeature()->firstResult()->data()->name();
+    std::wstring aName;
+    int anInd = 0;
+    do {
+      anInd++;
+      std::wostringstream aNameStr;
+      aNameStr << "Volume_" << aBaseName << "_" << (aSelIndex + anInd);
+      aName = aNameStr.str();
+    } while (anExistingNames.count(aName));
+    anExistingNames.insert(aName);
+
+    std::shared_ptr<ModelAPI_ResultVolume> aResultVolume = document()->createVolume(data(), aResultIndex);
+    aResultVolume->data()->setName(aName);
+    // to make sub-results also names with a similar name temporarily rename the feature
+    std::wstring anOrigName = name();
+    data()->setName(aBaseName);
+
+    aResultVolume->store(aResult); //TODO : CRASH, works with BODY
+
+    data()->setName(anOrigName);
+    aResultVolume->loadFirstLevel(aResult, "Copy");
+    setResult(aResultVolume, aResultIndex++);
+  }
+  removeResults(aResultIndex);
 }
