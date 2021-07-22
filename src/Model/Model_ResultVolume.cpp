@@ -156,7 +156,7 @@ void Model_ResultVolume::colorConfigInfo(std::string& theSection, std::string& t
   std::string& theDefault)
 {
   theSection = "Visualization";
-  theName = "result_body_color";
+  theName = "result_volume_color";
   theDefault = DEFAULT_COLOR();
 }
 

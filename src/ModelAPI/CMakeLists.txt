@@ -60,10 +60,9 @@ SET(PROJECT_HEADERS
     ModelAPI_Object.h
     ModelAPI_Plugin.h
     ModelAPI_Result.h
+    ModelAPI_ResultMeta.h
     ModelAPI_ResultBody.h
-
     ModelAPI_ResultVolume.h
-
     ModelAPI_ResultConstruction.h
     ModelAPI_ResultField.h
     ModelAPI_ResultGroup.h
@@ -107,6 +106,7 @@ SET(PROJECT_SOURCES
     ModelAPI_Object.cpp
     ModelAPI_Plugin.cpp
     ModelAPI_Result.cpp
+    ModelAPI_ResultMeta.cpp
     ModelAPI_ResultBody.cpp
     ModelAPI_ResultVolume.cpp
     ModelAPI_ResultConstruction.cpp

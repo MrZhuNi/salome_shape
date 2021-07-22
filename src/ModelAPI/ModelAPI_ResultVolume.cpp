@@ -19,133 +19,13 @@
 
 #include "ModelAPI_ResultVolume.h"
 
-#include <ModelAPI_BodyBuilder.h>
-#include <Events_Loop.h>
-#include <ModelAPI_Events.h>
+ModelAPI_ResultVolume::ModelAPI_ResultVolume() {}
 
-ModelAPI_ResultVolume::ModelAPI_ResultVolume()
-  : myBuilder(0)
-{
-  myConnect = ConnectionNotComputed;
-}
-
-ModelAPI_ResultVolume::~ModelAPI_ResultVolume()
-{
-}
+ModelAPI_ResultVolume::~ModelAPI_ResultVolume() {}
 
 std::string ModelAPI_ResultVolume::groupName()
 {
-  return group();
-}
-
-void ModelAPI_ResultVolume::store(const GeomShapePtr& theShape,
-                                const bool theIsStoreSameShapes)
-{
-  myBuilder->store(theShape, theIsStoreSameShapes);
-  myConnect = ConnectionNotComputed;
-
-  static Events_Loop* aLoop = Events_Loop::loop();
-  static Events_ID aRedispEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
-  static const ModelAPI_EventCreator* aECreator = ModelAPI_EventCreator::get();
-  aECreator->sendUpdated(data()->owner(), aRedispEvent);
-
-  updateSubs(theShape);
-}
-
-void ModelAPI_ResultVolume::storeGenerated(const GeomShapePtr& theFromShape,
-                                         const GeomShapePtr& theToShape)
-{
-  myBuilder->storeGenerated(theFromShape, theToShape);
-  myConnect = ConnectionNotComputed;
-
-  static Events_Loop* aLoop = Events_Loop::loop();
-  static Events_ID aRedispEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
-  static const ModelAPI_EventCreator* aECreator = ModelAPI_EventCreator::get();
-  aECreator->sendUpdated(data()->owner(), aRedispEvent);
-
-  updateSubs(theToShape);
-}
-
-void ModelAPI_ResultVolume::storeGenerated(
-  const std::list<GeomShapePtr>& theFromShapes, const GeomShapePtr& theToShape,
-  const std::shared_ptr<GeomAlgoAPI_MakeShape> theMakeShape)
-{
-  myBuilder->storeGenerated(theFromShapes, theToShape, theMakeShape);
-  myConnect = ConnectionNotComputed;
-
-  static Events_Loop* aLoop = Events_Loop::loop();
-  static Events_ID aRedispEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
-  static const ModelAPI_EventCreator* aECreator = ModelAPI_EventCreator::get();
-  aECreator->sendUpdated(data()->owner(), aRedispEvent);
-
-  updateSubs(theToShape, theFromShapes, theMakeShape, true);
-}
-
-void ModelAPI_ResultVolume::storeModified(const GeomShapePtr& theOldShape,
-                                        const GeomShapePtr& theNewShape,
-                                        const bool theIsCleanStored)
-{
-  myBuilder->storeModified(theOldShape, theNewShape, theIsCleanStored);
-  myConnect = ConnectionNotComputed;
-
-  static Events_Loop* aLoop = Events_Loop::loop();
-  static Events_ID aRedispEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
-  static const ModelAPI_EventCreator* aECreator = ModelAPI_EventCreator::get();
-  aECreator->sendUpdated(data()->owner(), aRedispEvent);
-
-  updateSubs(theNewShape);
-}
-
-void ModelAPI_ResultVolume::storeModified(
-  const std::list<GeomShapePtr>& theOldShapes, const GeomShapePtr& theNewShape,
-  const std::shared_ptr<GeomAlgoAPI_MakeShape> theMakeShape)
-{
-  myBuilder->storeModified(theOldShapes, theNewShape, theMakeShape);
-  myConnect = ConnectionNotComputed;
-
-  static Events_Loop* aLoop = Events_Loop::loop();
-  static Events_ID aRedispEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
-  static const ModelAPI_EventCreator* aECreator = ModelAPI_EventCreator::get();
-  aECreator->sendUpdated(data()->owner(), aRedispEvent);
-
-  updateSubs(theNewShape, theOldShapes, theMakeShape, false);
-}
-
-GeomShapePtr ModelAPI_ResultVolume::shape()
-{
-  return myBuilder->shape();
-}
-
-void ModelAPI_ResultVolume::generated(const GeomShapePtr& theOldShape,
-                                    const GeomShapePtr& theNewShape,
-                                    const std::string& theName)
-{
-  myBuilder->generated(theOldShape, theNewShape, theName);
-}
-
-void ModelAPI_ResultVolume::modified(const GeomShapePtr& theOldShape,
-                                   const GeomShapePtr& theNewShape,
-                                   const std::string& theName)
-{
-  myBuilder->modified(theOldShape, theNewShape, theName);
-}
-
-
-void ModelAPI_ResultVolume::loadDeletedShapes(const GeomMakeShapePtr& theAlgo,
-                                            const GeomShapePtr& theOldShape,
-                                            const GeomAPI_Shape::ShapeType theShapeTypeToExplore,
-                                            const GeomShapePtr& theShapesToExclude)
-{
-  myBuilder->loadDeletedShapes(theAlgo, theOldShape, theShapeTypeToExplore, theShapesToExclude);
-}
-
-// LCOV_EXCL_START
-bool ModelAPI_ResultVolume::isConnectedTopology()
-{
-  if (myConnect == ConnectionNotComputed) {
-    myConnect = shape()->isConnectedTopology() ? IsConnected : IsNotConnected;
-  }
-  return myConnect == IsConnected;
+  return ModelAPI_ResultVolume::group();
 }
 
 void ModelAPI_ResultVolume::setDisplayed(const bool theDisplay)
@@ -154,4 +34,3 @@ void ModelAPI_ResultVolume::setDisplayed(const bool theDisplay)
   for (int i = 0; i < numberOfSubs(); i++)
     subResult(i)->setDisplayed(theDisplay);
 }
-// LCOV_EXCL_STOP

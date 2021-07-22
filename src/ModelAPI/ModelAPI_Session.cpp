@@ -42,6 +42,7 @@
 #include <ModelAPI_Events.h>
 #include <ModelAPI_Validator.h>
 #include <ModelAPI_ResultBody.h>
+#include <ModelAPI_ResultMeta.h>
 #include <ModelAPI_ResultConstruction.h>
 
 #include <Config_ModuleReader.h>

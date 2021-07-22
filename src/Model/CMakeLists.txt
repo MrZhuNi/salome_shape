@@ -48,9 +48,7 @@ SET(PROJECT_HEADERS
     Model_FeatureValidator.h
     Model_FiltersFactory.h
     Model_ResultBody.h
-
     Model_ResultVolume.h
-
     Model_ResultConstruction.h
     Model_ResultPart.h
     Model_ResultField.h
@@ -89,9 +87,7 @@ SET(PROJECT_SOURCES
     Model_FeatureValidator.cpp
     Model_FiltersFactory.cpp
     Model_ResultBody.cpp
-
     Model_ResultVolume.cpp
-
     Model_ResultConstruction.cpp
     Model_ResultPart.cpp
     Model_ResultField.cpp
