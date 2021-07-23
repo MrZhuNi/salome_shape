@@ -44,6 +44,13 @@ class ModelAPI_ResultBody : public ModelAPI_ResultMeta
   public:
     MODELAPI_EXPORT virtual ~ModelAPI_ResultBody();
 
+    /// \brief Stores the shape (called by the execution method).
+    /// param[in] theShape shape to store.
+    /// param[in] theIsStoreSameShapes if false stores reference to the same shape
+    ///                                if it is already in document.
+    MODELAPI_EXPORT virtual void store(const GeomShapePtr& theShape,
+                                      const bool theIsStoreSameShapes = true);
+
     // /// Returns the group identifier of this result
     MODELAPI_EXPORT virtual std::string groupName();
 

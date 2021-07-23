@@ -19,6 +19,10 @@
 
 #include "ModelAPI_ResultBody.h"
 
+#include <ModelAPI_BodyBuilder.h>
+#include <Events_Loop.h>
+#include <ModelAPI_Events.h>
+
 ModelAPI_ResultBody::ModelAPI_ResultBody() {}
 
 ModelAPI_ResultBody::~ModelAPI_ResultBody() {}
@@ -33,4 +37,18 @@ void ModelAPI_ResultBody::setDisplayed(const bool theDisplay)
   ModelAPI_Result::setDisplayed(theDisplay);
   for (int i = 0; i < numberOfSubs(); i++)
     subResult(i)->setDisplayed(theDisplay);
+}
+
+void ModelAPI_ResultBody::store(const GeomShapePtr& theShape,
+                                const bool theIsStoreSameShapes)
+{
+  myBuilder->store(theShape, theIsStoreSameShapes);
+  myConnect = ConnectionNotComputed;
+
+  static Events_Loop* aLoop = Events_Loop::loop();
+  static Events_ID aRedispEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
+  static const ModelAPI_EventCreator* aECreator = ModelAPI_EventCreator::get();
+  aECreator->sendUpdated(data()->owner(), aRedispEvent);
+
+  updateSubs(theShape);
 }

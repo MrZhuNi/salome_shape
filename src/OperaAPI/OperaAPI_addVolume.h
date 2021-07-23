@@ -44,7 +44,7 @@ public:
   OPERAAPI_EXPORT
   OperaAPI_addVolume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                      const ModelHighAPI_Double& theMedium,
-                     const std::list<ModelHighAPI_Selection>& theVolumeList);
+                     const std::list<ModelHighAPI_Selection>& theObjectList);
 
   /// Destructor.
   OPERAAPI_EXPORT
@@ -62,7 +62,7 @@ public:
 
   /// Set main objects list.
   OPERAAPI_EXPORT
-  void setVolumeList(const std::list<ModelHighAPI_Selection>& theVolumeList);
+  void setObjectList(const std::list<ModelHighAPI_Selection>& theObjectList);
 
   /// Dump wrapped feature
   OPERAAPI_EXPORT
@@ -77,6 +77,6 @@ typedef std::shared_ptr<OperaAPI_addVolume> VolumePtr;
 OPERAAPI_EXPORT
 VolumePtr addVolume(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Double& theMedium,
-                    const std::list<ModelHighAPI_Selection>& theVolumeList);
+                    const std::list<ModelHighAPI_Selection>& theObjectList);
 
 #endif // OperaAPI_addVolume_H_

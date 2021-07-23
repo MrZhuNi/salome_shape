@@ -76,7 +76,7 @@ public:
   /// param[in] theIsStoreSameShapes if false stores reference to the same shape
   ///                                if it is already in document.
   MODELAPI_EXPORT virtual void store(const GeomShapePtr& theShape,
-                                     const bool theIsStoreSameShapes = true);
+                                     const bool theIsStoreSameShapes = true) = 0;
 
   /// Stores the generated shape (called by the execution method).
   MODELAPI_EXPORT virtual void storeGenerated(const GeomShapePtr& theFromShape,

@@ -33,20 +33,6 @@ ModelAPI_ResultMeta::~ModelAPI_ResultMeta()
 {
 }
 
-void ModelAPI_ResultMeta::store(const GeomShapePtr& theShape,
-                                const bool theIsStoreSameShapes)
-{
-  myBuilder->store(theShape, theIsStoreSameShapes);
-  myConnect = ConnectionNotComputed;
-
-  static Events_Loop* aLoop = Events_Loop::loop();
-  static Events_ID aRedispEvent = aLoop->eventByName(EVENT_OBJECT_TO_REDISPLAY);
-  static const ModelAPI_EventCreator* aECreator = ModelAPI_EventCreator::get();
-  aECreator->sendUpdated(data()->owner(), aRedispEvent);
-
-  updateSubs(theShape);
-}
-
 void ModelAPI_ResultMeta::storeGenerated(const GeomShapePtr& theFromShape,
                                          const GeomShapePtr& theToShape)
 {
