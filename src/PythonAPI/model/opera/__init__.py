@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2021  CEA/DEN, EDF R&D
+# Copyright (C) 2016-2021  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -16,32 +16,7 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-"""This package defines the Parametric Geometry API of the Modeler.
-
-All features are available via model.add*() functions. Exceptions are:
-- exportToFile() - from Exchange plugin
-- duplicatePart(), removePart() - from PartSet plugin
-- exportToGEOM() - from Connection plugin
+"""Package for Opera plugin for SHAPER Opera.
 """
 
-# General purpose functions and abstract root classes
-
-from .services  import *
-from .roots     import *
-
-# Built-in features
-
-from .build import *
-from .sketcher import *
-from .connection import *
-from .construction import *
-from .exchange import *
-from .features import *
-from .filters import *
-from .collection import *
-from .parameter import *
-from .partset import *
-from .primitives import *
-from .opera import *
-from .gdml import *
-from .tests import *
+from OperaAPI import addVolume

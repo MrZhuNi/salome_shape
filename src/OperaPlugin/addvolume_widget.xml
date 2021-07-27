@@ -1,0 +1,12 @@
+<source>
+  <stringvalue id="medium"
+               label="Medium"
+               tooltip="Please input the volumes medium">
+  </stringvalue>
+  <multi_selector id="volume_list"
+                  label="Select solids"
+                  tooltip="Select solid objects"
+                  shape_types="solids">
+    <validator id="GeomValidators_ShapeType" parameters="solid"/>
+  </multi_selector>
+</source>
