@@ -6,6 +6,7 @@
   <plugin library="ConstructionPlugin" configuration="plugin-Construction.xml"/>
   <plugin library="BuildPlugin" configuration="plugin-Build.xml"/>
   <plugin library="PrimitivesPlugin" configuration="plugin-Primitives.xml"/>
+  <plugin library="OperaPlugin" configuration="plugin-Opera.xml"/>
   <!--<plugin library="GDMLPlugin" configuration="plugin-GDML.xml"/>-->
   <plugin library="FeaturesPlugin" configuration="plugin-Features.xml"/>
   <plugin library="CollectionPlugin" configuration="plugin-Collection.xml"/>

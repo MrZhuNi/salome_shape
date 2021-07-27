@@ -42,5 +42,6 @@ from .collection import *
 from .parameter import *
 from .partset import *
 from .primitives import *
+from .opera import *
 from .gdml import *
 from .tests import *
