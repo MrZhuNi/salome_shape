@@ -24,6 +24,8 @@
 #include <ModelAPI_AttributeIntArray.h>
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Document.h>
+
+#include <ModelAPI_ResultBody.h>
 #include <ModelAPI_ResultVolume.h>
 #include <ModelAPI_Tools.h>
 
@@ -105,22 +107,22 @@ void OperaPlugin_Volume::execute()
     do {
       anInd++;
       std::wostringstream aNameStr;
-      aNameStr << "Volume_" << aBaseName << "_" << (aSelIndex + anInd);
+      aNameStr << "Volume_" << aBaseName;
       aName = aNameStr.str();
     } while (anExistingNames.count(aName));
     anExistingNames.insert(aName);
 
-    std::shared_ptr<ModelAPI_ResultVolume> aResultVolume = document()->createVolume(data(), aResultIndex);
+    std::shared_ptr<ModelAPI_ResultBody> aResultVolume = document()->createBody(data(), aResultIndex);
     aResultVolume->data()->setName(aName);
     // to make sub-results also names with a similar name temporarily rename the feature
     std::wstring anOrigName = name();
     data()->setName(aBaseName);
 
-    aResultVolume->store(aResult); //TODO : CRASH, works with BODY
+    aResultVolume->store(aResult); //TODO : CRASH, works with Volume
 
     data()->setName(anOrigName);
     aResultVolume->loadFirstLevel(aResult, "Copy");
-    setResult(aResultVolume, aResultIndex++);
+    setResult(aResultVolume, ++aResultIndex);
   }
   removeResults(aResultIndex);
 }
