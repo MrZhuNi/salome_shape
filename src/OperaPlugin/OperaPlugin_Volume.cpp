@@ -62,14 +62,11 @@ static GeomShapePtr shapeOfSelection(AttributeSelectionPtr theSel) {
 //=================================================================================================
 void OperaPlugin_Volume::initAttributes()
 {
-  //Get Medium
+  // Get Medium
   data()->addAttribute(MEDIUM(), ModelAPI_AttributeString::typeId());
+  
+  // Get Objects
   data()->addAttribute(VOLUME_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
-
-  // // //Get Objects
-  // AttributeSelectionListPtr aList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(
-  //   data()->addAttribute(LIST_ID(), ModelAPI_AttributeSelectionList::typeId()));
-  // aList->setWholeResultAllowed(true); // allow to select the whole result
 }
 
 //=================================================================================================
@@ -85,13 +82,27 @@ void OperaPlugin_Volume::execute()
   int aResultIndex = 0;
 
   AttributeSelectionListPtr aList = selectionList(VOLUME_LIST_ID());
-
+  std::wstring aBaseName;
   for (int aSelIndex = 0; aSelIndex < aList->size(); aSelIndex++) {
     AttributeSelectionPtr aSel = aList->value(aSelIndex);
-    std::shared_ptr<ModelAPI_Result> aResult = aSel->context();
+    GeomShapePtr aResult;
+    FeaturePtr aSelFeature = aSel->contextFeature();
+    if (aSelFeature.get()) {
+      if (aSelFeature->results().empty()) // if selected feature has no results, make nothing
+        continue;
+      if (aSelFeature->results().size() == 1) { // for one sub-result don't make compound
+        aResult = aSelFeature->firstResult()->shape();
+      }
+    }
+    if (!aResult.get())
+      aResult = aSel->value();
+    if (!aResult.get()) {
+      if (aSel->context().get())
+        aResult = aSel->context()->shape();
+    }
 
     std::set<std::wstring> anExistingNames;
-    std::wstring aBaseName = aResult->data()->name();
+    std::wstring aBaseName = aSel->context()->name();
     std::wstring aName;
     int anInd = 0;
     do {
@@ -104,8 +115,9 @@ void OperaPlugin_Volume::execute()
 
     ResultBodyPtr aResultBody = document()->createBody(data(), aResultIndex);
     aResultBody->data()->setName(aName);
-    aResultBody->store(aResult->shape());
+    aResultBody->store(aResult);
     setResult(aResultBody, aResultIndex++);
-    aResult->setDisabled(aResult, true);
   }
+  // Remove the rest results if there were produced in the previous pass.
+  removeResults(aResultIndex);
 }
