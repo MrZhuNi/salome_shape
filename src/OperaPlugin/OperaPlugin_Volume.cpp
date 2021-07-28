@@ -82,24 +82,16 @@ void OperaPlugin_Volume::execute()
     return;
   }
 
-  AttributeSelectionListPtr aList = selectionList(VOLUME_LIST_ID());
   int aResultIndex = 0;
-  std::set<std::wstring> anExistingNames; // to avoid names duplication
+
+  AttributeSelectionListPtr aList = selectionList(VOLUME_LIST_ID());
+
   for (int aSelIndex = 0; aSelIndex < aList->size(); aSelIndex++) {
     AttributeSelectionPtr aSel = aList->value(aSelIndex);
-    GeomShapePtr aResult = shapeOfSelection(aSel);
-    if (!aResult.get())
-      continue;
-    // std::shared_ptr<GeomAlgoAPI_Copy> aCopyBuilder(new GeomAlgoAPI_Copy(aShape, false, false));
-    // std::string anError;
-    // if (GeomAlgoAPI_Tools::AlgoError::isAlgorithmFailed(aCopyBuilder, getKind(), anError)) {
-    //   setError(anError);
-    //   return;
-    // }
-    // GeomShapePtr aResult = aCopyBuilder->shape();
+    std::shared_ptr<ModelAPI_Result> aResult = aSel->context();
 
-    std::wstring aBaseName = aSel->context() ? aSel->context()->data()->name() :
-      aSel->contextFeature()->firstResult()->data()->name();
+    std::set<std::wstring> anExistingNames;
+    std::wstring aBaseName = aResult->data()->name();
     std::wstring aName;
     int anInd = 0;
     do {
@@ -110,15 +102,10 @@ void OperaPlugin_Volume::execute()
     } while (anExistingNames.count(aName));
     anExistingNames.insert(aName);
 
-    std::shared_ptr<ModelAPI_ResultBody> aResultBody = document()->createBody(data(), aResultIndex);
+    ResultBodyPtr aResultBody = document()->createBody(data(), aResultIndex);
     aResultBody->data()->setName(aName);
-    // to make sub-results also names with a similar name temporarily rename the feature
-    // std::wstring anOrigName = name();
-    // data()->setName(aBaseName);
-    aResultBody->store(aResult);
-    // data()->setName(anOrigName);
-    // aResultBody->loadFirstLevel(aResult, "Copy");
+    aResultBody->store(aResult->shape());
     setResult(aResultBody, aResultIndex++);
+    aResult->setDisabled(aResult, true);
   }
-  removeResults(aResultIndex);
 }
