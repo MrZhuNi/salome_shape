@@ -19,4 +19,4 @@
 """Package for Opera plugin for SHAPER Opera.
 """
 
-from OperaAPI import Volume
+from OperaAPI import addVolume

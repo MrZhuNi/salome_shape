@@ -41,7 +41,7 @@ public:
 
   /// Constructor with values.
   OPERAAPI_EXPORT
-  OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+  explicit OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                   const ModelHighAPI_Double& theMedium,
                   const std::list<ModelHighAPI_Selection>& theObjectList);
 

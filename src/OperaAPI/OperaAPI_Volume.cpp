@@ -84,6 +84,6 @@ VolumePtr addVolume(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const std::list<ModelHighAPI_Selection>& theObjectList)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(OperaAPI_Volume::ID());
-  aFeature->selectionList(OperaPlugin_Volume::VOLUME_LIST_ID())->setGeometricalSelection(true);
+  //aFeature->selectionList(OperaPlugin_Volume::VOLUME_LIST_ID())->setGeometricalSelection(true);
   return VolumePtr(new OperaAPI_Volume(aFeature, theMedium, theObjectList));
 }
