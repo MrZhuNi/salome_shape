@@ -67,7 +67,7 @@ void OperaAPI_Volume::dump(ModelHighAPI_Dumper& theDumper) const
   const std::string& aDocName = theDumper.name(aBase->document());
 
   AttributeStringPtr anAttrMedium = aBase->string(OperaPlugin_Volume::MEDIUM());
-  theDumper << aBase << " = model.Volume(" << aDocName << ", " << anAttrMedium << ", ";
+  theDumper << aBase << " = model.addVolume(" << aDocName << ", " << anAttrMedium << ", ";
 
   AttributeSelectionListPtr anAttrList = aBase->selectionList(OperaPlugin_Volume::VOLUME_LIST_ID());
   if (anAttrList->isWholeResultAllowed() && !anAttrList->selectionType().empty())
@@ -79,7 +79,7 @@ void OperaAPI_Volume::dump(ModelHighAPI_Dumper& theDumper) const
 }
 
 //==================================================================================================
-VolumePtr Volume(const std::shared_ptr<ModelAPI_Document>& thePart,
+VolumePtr addVolume(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Double& theMedium,
                     const std::list<ModelHighAPI_Selection>& theObjectList)
 {

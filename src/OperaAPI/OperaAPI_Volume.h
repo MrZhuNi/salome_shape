@@ -74,7 +74,7 @@ typedef std::shared_ptr<OperaAPI_Volume> VolumePtr;
 /// \ingroup CPPHighAPI
 /// \brief Create Volume feature.
 OPERAAPI_EXPORT
-VolumePtr Volume(const std::shared_ptr<ModelAPI_Document>& thePart,
+VolumePtr addVolume(const std::shared_ptr<ModelAPI_Document>& thePart,
                  const ModelHighAPI_Double& theMedium,
                  const std::list<ModelHighAPI_Selection>& theObjectList);
 
