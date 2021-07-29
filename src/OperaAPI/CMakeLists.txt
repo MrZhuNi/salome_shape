@@ -21,11 +21,11 @@ INCLUDE(Common)
 
 SET(PROJECT_HEADERS
   OperaAPI.h
-  OperaAPI_addVolume.h
+  OperaAPI_Volume.h
 )
 
 SET(PROJECT_SOURCES
-  OperaAPI_addVolume.cpp
+  OperaAPI_Volume.cpp
 )
 
 SET(PROJECT_LIBRARIES

@@ -17,8 +17,8 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef OPERAAPI_ADDVOLUME_H_
-#define OPERAAPI_ADDVOLUME_H_
+#ifndef OPERAAPI_VOLUME_H_
+#define OPERAAPI_VOLUME_H_
 
 #include "OperaAPI.h"
 #include <OperaPlugin_Volume.h>
@@ -29,31 +29,31 @@
 class ModelHighAPI_Double;
 class ModelHighAPI_Selection;
 
-/// \class OperaAPI_addVolume
+/// \class OperaAPI_Volume
 /// \ingroup CPPHighAPI
 /// \brief Interface for primitive Box feature.
-class OperaAPI_addVolume: public ModelHighAPI_Interface
+class OperaAPI_Volume: public ModelHighAPI_Interface
 {
 public:
   /// Constructor without values.
   OPERAAPI_EXPORT
-  explicit OperaAPI_addVolume(const std::shared_ptr<ModelAPI_Feature>& theFeature);
+  explicit OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature);
 
   /// Constructor with values.
   OPERAAPI_EXPORT
-  OperaAPI_addVolume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                     const ModelHighAPI_Double& theMedium,
-                     const std::list<ModelHighAPI_Selection>& theObjectList);
+  OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+                  const ModelHighAPI_Double& theMedium,
+                  const std::list<ModelHighAPI_Selection>& theObjectList);
 
   /// Destructor.
   OPERAAPI_EXPORT
-  virtual ~OperaAPI_addVolume();
+  virtual ~OperaAPI_Volume();
 
   INTERFACE_2(OperaPlugin_Volume::ID(),
-             medium, OperaPlugin_Volume::MEDIUM(),
-             ModelAPI_AttributeString, /** Volume medium */,
-             volumeList, OperaPlugin_Volume::VOLUME_LIST_ID(),
-             ModelAPI_AttributeSelectionList, /** Group list*/)
+              medium, OperaPlugin_Volume::MEDIUM(),
+              ModelAPI_AttributeString, /** Volume medium */,
+              volumeList, OperaPlugin_Volume::VOLUME_LIST_ID(),
+              ModelAPI_AttributeSelectionList, /** Group list*/)
 
   /// Set medium
   OPERAAPI_EXPORT
@@ -68,14 +68,14 @@ public:
   virtual void dump(ModelHighAPI_Dumper& theDumper) const;
 };
 
-/// Pointer addVolume feature
-typedef std::shared_ptr<OperaAPI_addVolume> VolumePtr;
+/// Pointer Volume feature
+typedef std::shared_ptr<OperaAPI_Volume> VolumePtr;
 
 /// \ingroup CPPHighAPI
-/// \brief Create addVolume feature.
+/// \brief Create Volume feature.
 OPERAAPI_EXPORT
-VolumePtr addVolume(const std::shared_ptr<ModelAPI_Document>& thePart,
-                    const ModelHighAPI_Double& theMedium,
-                    const std::list<ModelHighAPI_Selection>& theObjectList);
+VolumePtr Volume(const std::shared_ptr<ModelAPI_Document>& thePart,
+                 const ModelHighAPI_Double& theMedium,
+                 const std::list<ModelHighAPI_Selection>& theObjectList);
 
-#endif // OperaAPI_addVolume_H_
+#endif // OperaAPI_Volume_H_

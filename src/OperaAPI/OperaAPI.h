@@ -34,4 +34,4 @@
 #endif
 #endif
 
-#endif //PRIMITIVESAPI_H
+#endif //OPERAAPI_H

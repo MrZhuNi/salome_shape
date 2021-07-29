@@ -18,5 +18,5 @@
 #
 
 SET(TEST_NAMES
-              TestAddVolume.py
+              TestVolume.py
 )

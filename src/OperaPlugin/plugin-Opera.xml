@@ -2,13 +2,13 @@
   <workbench id="Opera" document="Part">
     <group id="Opera">
       <feature
-               id="addVolume"
-               title="addVolume"
+               id="Volume"
+               title="Volume"
                tooltip="Create a volume"
-               icon="icons/Opera/addVolume.png"
+               icon="icons/Opera/Volume.png"
                auto_preview="true"
-               helpfile="addvolumeFeature.html">
-        <source path="addvolume_widget.xml"/>
+               helpfile="volumeFeature.html">
+        <source path="volume_widget.xml"/>
       </feature>
     </group>
   </workbench>

@@ -17,20 +17,20 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "OperaAPI_addVolume.h"
+#include "OperaAPI_Volume.h"
 
 #include <ModelHighAPI_Dumper.h>
 #include <ModelHighAPI_Tools.h>
 
 //==================================================================================================
-OperaAPI_addVolume::OperaAPI_addVolume(const std::shared_ptr<ModelAPI_Feature>& theFeature)
+OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature)
 : ModelHighAPI_Interface(theFeature)
 {
   initialize();
 }
 
 //==================================================================================================
-OperaAPI_addVolume::OperaAPI_addVolume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
+OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                        const ModelHighAPI_Double& theMedium,
                                        const std::list<ModelHighAPI_Selection>& theObjectList)
 : ModelHighAPI_Interface(theFeature)
@@ -42,10 +42,10 @@ OperaAPI_addVolume::OperaAPI_addVolume(const std::shared_ptr<ModelAPI_Feature>& 
 }
 
 //==================================================================================================
-OperaAPI_addVolume::~OperaAPI_addVolume() {}
+OperaAPI_Volume::~OperaAPI_Volume() {}
 
 //==================================================================================================
-void OperaAPI_addVolume::setMedium(const ModelHighAPI_Double& theMedium)
+void OperaAPI_Volume::setMedium(const ModelHighAPI_Double& theMedium)
 {
   fillAttribute(OperaPlugin_Volume::MEDIUM(), medium());
 
@@ -53,7 +53,7 @@ void OperaAPI_addVolume::setMedium(const ModelHighAPI_Double& theMedium)
 }
 
 //==================================================================================================
-void OperaAPI_addVolume::setObjectList(const std::list<ModelHighAPI_Selection>& theObjectList)
+void OperaAPI_Volume::setObjectList(const std::list<ModelHighAPI_Selection>& theObjectList)
 {
   fillAttribute(theObjectList, myvolumeList);
 
@@ -61,13 +61,13 @@ void OperaAPI_addVolume::setObjectList(const std::list<ModelHighAPI_Selection>& 
 }
 
 //==================================================================================================
-void OperaAPI_addVolume::dump(ModelHighAPI_Dumper& theDumper) const
+void OperaAPI_Volume::dump(ModelHighAPI_Dumper& theDumper) const
 {
   FeaturePtr aBase = feature();
   const std::string& aDocName = theDumper.name(aBase->document());
 
   AttributeStringPtr anAttrMedium = aBase->string(OperaPlugin_Volume::MEDIUM());
-  theDumper << aBase << " = model.addVolume(" << aDocName << ", " << anAttrMedium << ", ";
+  theDumper << aBase << " = model.Volume(" << aDocName << ", " << anAttrMedium << ", ";
 
   AttributeSelectionListPtr anAttrList = aBase->selectionList(OperaPlugin_Volume::VOLUME_LIST_ID());
   if (anAttrList->isWholeResultAllowed() && !anAttrList->selectionType().empty())
@@ -79,11 +79,11 @@ void OperaAPI_addVolume::dump(ModelHighAPI_Dumper& theDumper) const
 }
 
 //==================================================================================================
-VolumePtr addVolume(const std::shared_ptr<ModelAPI_Document>& thePart,
+VolumePtr Volume(const std::shared_ptr<ModelAPI_Document>& thePart,
                     const ModelHighAPI_Double& theMedium,
                     const std::list<ModelHighAPI_Selection>& theObjectList)
 {
-  std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(OperaAPI_addVolume::ID());
+  std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(OperaAPI_Volume::ID());
   aFeature->selectionList(OperaPlugin_Volume::VOLUME_LIST_ID())->setGeometricalSelection(true);
-  return VolumePtr(new OperaAPI_addVolume(aFeature, theMedium, theObjectList));
+  return VolumePtr(new OperaAPI_Volume(aFeature, theMedium, theObjectList));
 }

@@ -18,8 +18,8 @@
 #
 
 """
-      TestAddVolume.py
-      Test case of OperaPlugin_addVolume
+      TestVolume.py
+      Test case of OperaPlugin_Volume
 """
 #=========================================================================
 # Initialization of the test
@@ -42,7 +42,7 @@ Cylinder_1 = model.addCylinder(Part_1_doc, model.selection("VERTEX", "PartSet/Or
 # Create one Volume
 #=========================================================================
 
-Volume_1 = model.addVolume(Part_1_doc, "Test_medium", [model.selection("SOLID", "Box_1")])
+Volume_1 = model.Volume(Part_1_doc, "Test_medium", [model.selection("SOLID", "Box_1")])
 
 #=========================================================================
 # Check results
@@ -62,7 +62,7 @@ model.testHaveNamingFaces(Volume_1, model, Part_1_doc)
 # Create two volumes at once
 #=========================================================================
 
-Volume_2 = model.addVolume(Part_1_doc, "Test_medium_2", [model.selection("SOLID", "Torus_1"),
+Volume_2 = model.Volume(Part_1_doc, "Test_medium_2", [model.selection("SOLID", "Torus_1"),
                                                          model.selection("SOLID", "Cylinder_1")])
 
 #=========================================================================

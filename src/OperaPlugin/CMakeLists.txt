@@ -31,7 +31,7 @@ SET(PROJECT_SOURCES
 
 SET(XML_RESOURCES
   plugin-Opera.xml
-  addvolume_widget.xml
+  volume_widget.xml
 )
 
 SET(TEXT_RESOURCES

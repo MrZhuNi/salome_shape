@@ -64,7 +64,7 @@ void OperaPlugin_Volume::initAttributes()
 {
   // Get Medium
   data()->addAttribute(MEDIUM(), ModelAPI_AttributeString::typeId());
-  
+
   // Get Objects
   data()->addAttribute(VOLUME_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
 }
@@ -101,9 +101,11 @@ void OperaPlugin_Volume::execute()
         aResult = aSel->context()->shape();
     }
 
-    std::set<std::wstring> anExistingNames;
-    std::wstring aBaseName = aSel->context()->name();
+    // Handle naming : Volume_<name_of_feature_used>
     std::wstring aName;
+    std::set<std::wstring> anExistingNames;
+    std::wstring aBaseName = aSel->context() ? aSel->context()->data()->name() :
+      aSel->contextFeature()->firstResult()->data()->name();
     int anInd = 0;
     do {
       anInd++;

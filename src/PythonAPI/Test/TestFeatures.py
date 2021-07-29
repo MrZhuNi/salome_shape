@@ -104,6 +104,9 @@ class FeaturesTestCase(FeaturesFixture):
         import PrimitivesAPI
         PrimitivesAPI.PrimitivesAPI_Box(self.part.addFeature("Box"))
 
+        import OperaAPI
+        OperaAPI.OperaAPI_Volume(self.part.addFeature("Volume"))
+
         import ParametersAPI
         ParametersAPI.ParametersAPI_Parameter(self.part.addFeature("Parameter"))
 
