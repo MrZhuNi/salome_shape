@@ -31,54 +31,35 @@ partSet = model.moduleDocument()
 Part_1 = model.addPart(partSet)
 Part_1_doc = Part_1.document()
 
-#=========================================================================
-# Create a Box, a Torus and a Cylinder
-#=========================================================================
+### Create a box
 Box_1 = model.addBox(Part_1_doc, 10, 10, 10)
-Torus_1 = model.addTorus(Part_1_doc, model.selection("VERTEX", "PartSet/Origin"), model.selection("EDGE", "PartSet/OZ"), 15, 3)
+
+### Create a cylinder
 Cylinder_1 = model.addCylinder(Part_1_doc, model.selection("VERTEX", "PartSet/Origin"), model.selection("EDGE", "PartSet/OZ"), 5, 10)
 
-#=========================================================================
-# Create one Volume
-#=========================================================================
+### Create a sphere
+Sphere_1 = model.addSphere(Part_1_doc, model.selection("VERTEX", "PartSet/Origin"), 10)
 
-Volume_1 = model.addVolume(Part_1_doc, "Test_medium", [model.selection("SOLID", "Box_1")])
+### Create a volume from the box
+Volume_1 = model.addVolume(Part_1_doc, "dede", [model.selection("SOLID", "Box_1_1")])
 
-#=========================================================================
-# Check results
-#=========================================================================
+### Create a volume from the cylinder and the sphere
+Volume_2 = model.addVolume(Part_1_doc, "frgt", [model.selection("SOLID", "Cylinder_1_1"), model.selection("SOLID", "Sphere_1_1")])
 
+# Checks
 from GeomAPI import GeomAPI_Shape
 
-print("TOTO")
-print(len(Volume_1.results()))
-#model.testNbResults(Volume_1, 1)
-#model.testNbSubResults(Volume_1, [0])
-#model.testNbSubShapes(Volume_1, GeomAPI_Shape.SOLID, [1])
-#model.testNbSubShapes(Volume_1, GeomAPI_Shape.FACE, [6])
-#model.testHaveNamingFaces(Volume_1, model, Part_1_doc)
+model.testNbResults(Volume_1, 1)
+model.testNbSubResults(Volume_1, [0])
+model.testNbSubShapes(Volume_1, GeomAPI_Shape.SOLID, [1])
+model.testNbSubShapes(Volume_1, GeomAPI_Shape.FACE, [6])
+model.testHaveNamingFaces(Volume_1, model, Part_1_doc)
 
-#=========================================================================
-# Create two volumes at once
-#=========================================================================
-
-Volume_2 = model.addVolume(Part_1_doc, "Test_medium_2", [model.selection("SOLID", "Torus_1"),
-                                                         model.selection("SOLID", "Cylinder_1")])
-
-#=========================================================================
-# Check results
-#=========================================================================
-
-print(len(Volume_2.results()))
-#model.testNbResults(Volume_2, 2)
-# model.testNbSubResults(Volume_2, [0])
-# model.testNbSubShapes(Volume_2, GeomAPI_Shape.SOLID, [1])
-# model.testNbSubShapes(Volume_2, GeomAPI_Shape.FACE, [6])
-# model.testHaveNamingFaces(Volume_2, model, Part_1_doc)
+model.testNbResults(Volume_2, 2)
+model.testNbSubResults(Volume_2, [0, 0])
+model.testNbSubShapes(Volume_2, GeomAPI_Shape.SOLID, [1, 1])
+model.testNbSubShapes(Volume_2, GeomAPI_Shape.FACE, [3, 1])
 
 #=========================================================================
 # End of test
 #=========================================================================
-
-from salome.shaper import model
-#assert(model.checkPythonDump())

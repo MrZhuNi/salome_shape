@@ -55,7 +55,7 @@ void OperaAPI_Volume::setMedium(const ModelHighAPI_Double& theMedium)
 //==================================================================================================
 void OperaAPI_Volume::setObjectList(const std::list<ModelHighAPI_Selection>& theObjectList)
 {
-  fillAttribute(theObjectList, myvolumeList);
+  fillAttribute(theObjectList, volumeList());
 
   execute();
 }
@@ -70,12 +70,7 @@ void OperaAPI_Volume::dump(ModelHighAPI_Dumper& theDumper) const
   theDumper << aBase << " = model.addVolume(" << aDocName << ", " << anAttrMedium << ", ";
 
   AttributeSelectionListPtr anAttrList = aBase->selectionList(OperaPlugin_Volume::VOLUME_LIST_ID());
-  if (anAttrList->isWholeResultAllowed() && !anAttrList->selectionType().empty())
-    theDumper<<"\""<<anAttrList->selectionType()<<"\", ";
-  theDumper << anAttrList;
-  if (anAttrList->isGeometricalSelection())
-    theDumper <<", True";
-  theDumper << ")" << std::endl;
+  theDumper << anAttrList << ")" << std::endl;
 }
 
 //==================================================================================================
