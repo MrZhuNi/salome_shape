@@ -31,8 +31,9 @@ partSet = model.moduleDocument()
 Part_1 = model.addPart(partSet)
 Part_1_doc = Part_1.document()
 
-### Create a box
+### Create two box (one for error case)
 Box_1 = model.addBox(Part_1_doc, 10, 10, 10)
+Box_2 = model.addBox(Part_1_doc, 10, 10, 10)
 
 ### Create a cylinder
 Cylinder_1 = model.addCylinder(Part_1_doc, model.selection("VERTEX", "PartSet/Origin"), model.selection("EDGE", "PartSet/OZ"), 5, 10)
@@ -41,12 +42,12 @@ Cylinder_1 = model.addCylinder(Part_1_doc, model.selection("VERTEX", "PartSet/Or
 Sphere_1 = model.addSphere(Part_1_doc, model.selection("VERTEX", "PartSet/Origin"), 10)
 
 ### Create a volume from the box
-Volume_1 = model.addVolume(Part_1_doc, "dede", [model.selection("SOLID", "Box_1_1")])
+Volume_1 = model.addVolume(Part_1_doc, "Air", [model.selection("SOLID", "Box_1_1")])
 
 ### Create a volume from the cylinder and the sphere
-Volume_2 = model.addVolume(Part_1_doc, "frgt", [model.selection("SOLID", "Cylinder_1_1"), model.selection("SOLID", "Sphere_1_1")])
+Volume_2 = model.addVolume(Part_1_doc, "Concrete", [model.selection("SOLID", "Cylinder_1_1"), model.selection("SOLID", "Sphere_1_1")])
 
-# Checks
+#Checks
 from GeomAPI import GeomAPI_Shape
 
 model.testNbResults(Volume_1, 1)
@@ -59,6 +60,21 @@ model.testNbResults(Volume_2, 2)
 model.testNbSubResults(Volume_2, [0, 0])
 model.testNbSubShapes(Volume_2, GeomAPI_Shape.SOLID, [1, 1])
 model.testNbSubShapes(Volume_2, GeomAPI_Shape.FACE, [3, 1])
+
+### Create a volume with no medium
+Volume_3 = model.addVolume(Part_1_doc, "", [model.selection("SOLID", "Box_2_1")])
+model.testNbResults(Volume_3, 0)
+assert(Volume_3.feature().error() == "Error: Medium cannot be empty.")
+
+### Create a volume with no shapes
+Volume_4 = model.addVolume(Part_1_doc, "Error", [])
+model.testNbResults(Volume_4, 0)
+assert(Volume_4.feature().error() == "Attribute \"volume_list\" is not initialized.")
+
+### Create a volume with bad shapes
+Volume_5 = model.addVolume(Part_1_doc, "Bad Shape", [model.selection("VERTEX", "PartSet/Origin")])
+model.testNbResults(Volume_5, 0)
+assert(Volume_5.feature().error() == "It does not contain element with acceptable shape type. The type should be one of the next: solid")
 
 #=========================================================================
 # End of test

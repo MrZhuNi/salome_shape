@@ -16,11 +16,16 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 #include "OperaAPI_Volume.h"
 
+
+
 #include <ModelHighAPI_Dumper.h>
+#include <ModelHighAPI_Double.h>
 #include <ModelHighAPI_Tools.h>
+
+#include <locale>         // std::wstring_convert
+#include <codecvt>        // std::codecvt_utf8
 
 //==================================================================================================
 OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature)
@@ -29,6 +34,7 @@ OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFea
   initialize();
 }
 
+
 //==================================================================================================
 OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                        const ModelHighAPI_Double& theMedium,
@@ -36,7 +42,12 @@ OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFea
 : ModelHighAPI_Interface(theFeature)
 {
   if(initialize()) {
-    fillAttribute(OperaPlugin_Volume::MEDIUM(), medium());
+
+    std::wstring w_medium = theMedium.string();
+    std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> cv;
+    std::string medium_str = cv.to_bytes(w_medium);
+
+    fillAttribute(medium_str, medium());
     setObjectList(theObjectList);
   }
 }
@@ -48,7 +59,6 @@ OperaAPI_Volume::~OperaAPI_Volume() {}
 void OperaAPI_Volume::setMedium(const ModelHighAPI_Double& theMedium)
 {
   fillAttribute(OperaPlugin_Volume::MEDIUM(), medium());
-
   execute();
 }
 
@@ -56,7 +66,6 @@ void OperaAPI_Volume::setMedium(const ModelHighAPI_Double& theMedium)
 void OperaAPI_Volume::setObjectList(const std::list<ModelHighAPI_Selection>& theObjectList)
 {
   fillAttribute(theObjectList, volumeList());
-
   execute();
 }
 
