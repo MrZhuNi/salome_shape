@@ -26,7 +26,7 @@
 
 /**\class OperaPlugin_Plugin
  * \ingroup Plugins
- * \brief The main class managing Primitive Features as plugins.
+ * \brief The main class managing Opera Features as plugins.
  */
 class OPERAPLUGIN_EXPORT OperaPlugin_Plugin : public ModelAPI_Plugin
 {

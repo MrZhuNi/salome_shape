@@ -29,17 +29,15 @@ class ModelAPI_ResultBody;
 
 /**\class OperaPlugin_Volume
  * \ingroup Plugins
- * \brief Feature for creation of a box primitive using various methods.
+ * \brief Feature for creation of a Volume using solids.
  *
- * Box creates a cuboid - Parallelepiped with 6 rectangular faces. It can be built via three
- * methods : using two points that define a diagonal, a point that define a center and 3 lengths
- * that define the half-lengths on X, Y and Z-axes, or using 3 lengths that define the
- * rectangular dimensions.
+ * Volume creates Volume object - This volume takes selected solids shape
+ * and transform the result to a volume with a medium for OPERA.
  */
 class OperaPlugin_Volume : public ModelAPI_Feature
 {
   public:
-    /// Box kind
+    /// Volume kind
     inline static const std::string& ID()
     {
       static const std::string MY_VOLUME_ID("Volume");
@@ -72,11 +70,6 @@ class OperaPlugin_Volume : public ModelAPI_Feature
 
     /// Use plugin manager for features creation
     OperaPlugin_Volume();
-
-    private:
-    //
-    void loadNamingDS(std::shared_ptr<GeomAlgoAPI_Box> theBoxAlgo,
-                      std::shared_ptr<ModelAPI_ResultBody> theResultBox);
 };
 
 #endif
