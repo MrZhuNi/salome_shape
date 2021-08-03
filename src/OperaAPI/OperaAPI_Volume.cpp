@@ -18,10 +18,7 @@
 //
 #include "OperaAPI_Volume.h"
 
-
-
 #include <ModelHighAPI_Dumper.h>
-#include <ModelHighAPI_Double.h>
 #include <ModelHighAPI_Tools.h>
 
 #include <locale>         // std::wstring_convert
@@ -37,17 +34,12 @@ OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFea
 
 //==================================================================================================
 OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                                       const ModelHighAPI_Double& theMedium,
+                                       const std::string& theMedium,
                                        const std::list<ModelHighAPI_Selection>& theObjectList)
 : ModelHighAPI_Interface(theFeature)
 {
   if(initialize()) {
-
-    std::wstring w_medium = theMedium.string();
-    std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t> cv;
-    std::string medium_str = cv.to_bytes(w_medium);
-
-    fillAttribute(medium_str, medium());
+    fillAttribute(theMedium, medium());
     setObjectList(theObjectList);
   }
 }
@@ -56,7 +48,7 @@ OperaAPI_Volume::OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFea
 OperaAPI_Volume::~OperaAPI_Volume() {}
 
 //==================================================================================================
-void OperaAPI_Volume::setMedium(const ModelHighAPI_Double& theMedium)
+void OperaAPI_Volume::setMedium(const std::string& theMedium)
 {
   fillAttribute(OperaPlugin_Volume::MEDIUM_ID(), medium());
   execute();
@@ -84,7 +76,7 @@ void OperaAPI_Volume::dump(ModelHighAPI_Dumper& theDumper) const
 
 //==================================================================================================
 VolumePtr addVolume(const std::shared_ptr<ModelAPI_Document>& thePart,
-                    const ModelHighAPI_Double& theMedium,
+                    const std::string& theMedium,
                     const std::list<ModelHighAPI_Selection>& theObjectList)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(OperaAPI_Volume::ID());

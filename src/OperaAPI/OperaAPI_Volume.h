@@ -26,7 +26,6 @@
 #include <ModelHighAPI_Interface.h>
 #include <ModelHighAPI_Macro.h>
 
-class ModelHighAPI_Double;
 class ModelHighAPI_Selection;
 
 /// \class OperaAPI_Volume
@@ -42,7 +41,7 @@ public:
   /// Constructor with values.
   OPERAAPI_EXPORT
   explicit OperaAPI_Volume(const std::shared_ptr<ModelAPI_Feature>& theFeature,
-                  const ModelHighAPI_Double& theMedium,
+                  const std::string& theMedium,
                   const std::list<ModelHighAPI_Selection>& theObjectList);
 
   /// Destructor.
@@ -57,7 +56,7 @@ public:
 
   /// Set medium
   OPERAAPI_EXPORT
-  void setMedium(const ModelHighAPI_Double& theMedium);
+  void setMedium(const std::string& theMedium);
 
   /// Set main objects list.
   OPERAAPI_EXPORT
@@ -75,7 +74,7 @@ typedef std::shared_ptr<OperaAPI_Volume> VolumePtr;
 /// \brief Create Volume feature.
 OPERAAPI_EXPORT
 VolumePtr addVolume(const std::shared_ptr<ModelAPI_Document>& thePart,
-                 const ModelHighAPI_Double& theMedium,
+                 const std::string& theMedium,
                  const std::list<ModelHighAPI_Selection>& theObjectList);
 
 #endif // OperaAPI_Volume_H_
