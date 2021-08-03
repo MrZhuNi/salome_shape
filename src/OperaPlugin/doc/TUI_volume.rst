@@ -1,7 +1,7 @@
 
   .. tui_create_volume:
 
-Create Volume
+Create Box by points
 ====================
 
 .. literalinclude:: examples/volume.py
