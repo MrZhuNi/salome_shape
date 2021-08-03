@@ -43,7 +43,7 @@ class OperaPlugin_Volume : public ModelAPI_Feature
       static const std::string MY_VOLUME_ID("Volume");
       return MY_VOLUME_ID;
     }
-    inline static const std::string& MEDIUM()
+    inline static const std::string& MEDIUM_ID()
     {
       static const std::string MY_MEDIUM_ID("medium");
       return MY_MEDIUM_ID;

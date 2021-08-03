@@ -50,7 +50,7 @@ public:
   virtual ~OperaAPI_Volume();
 
   INTERFACE_2(OperaPlugin_Volume::ID(),
-              medium, OperaPlugin_Volume::MEDIUM(),
+              medium, OperaPlugin_Volume::MEDIUM_ID(),
               ModelAPI_AttributeString, /** Volume medium */,
               volumeList, OperaPlugin_Volume::VOLUME_LIST_ID(),
               ModelAPI_AttributeSelectionList, /** Group list*/)

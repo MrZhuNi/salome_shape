@@ -63,7 +63,7 @@ static GeomShapePtr shapeOfSelection(AttributeSelectionPtr theSel) {
 void OperaPlugin_Volume::initAttributes()
 {
   // Get Medium
-  data()->addAttribute(MEDIUM(), ModelAPI_AttributeString::typeId());
+  data()->addAttribute(MEDIUM_ID(), ModelAPI_AttributeString::typeId());
 
   // Get Objects
   data()->addAttribute(VOLUME_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
@@ -72,7 +72,7 @@ void OperaPlugin_Volume::initAttributes()
 //=================================================================================================
 void OperaPlugin_Volume::execute()
 {
-  std::string aCopiesMedium = string(MEDIUM())->value();
+  std::string aCopiesMedium = string(MEDIUM_ID())->value();
   if (aCopiesMedium.empty())
   {
     setError("Error: Medium cannot be empty.");

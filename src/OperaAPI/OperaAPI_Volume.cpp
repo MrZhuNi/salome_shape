@@ -58,7 +58,7 @@ OperaAPI_Volume::~OperaAPI_Volume() {}
 //==================================================================================================
 void OperaAPI_Volume::setMedium(const ModelHighAPI_Double& theMedium)
 {
-  fillAttribute(OperaPlugin_Volume::MEDIUM(), medium());
+  fillAttribute(OperaPlugin_Volume::MEDIUM_ID(), medium());
   execute();
 }
 
@@ -75,7 +75,7 @@ void OperaAPI_Volume::dump(ModelHighAPI_Dumper& theDumper) const
   FeaturePtr aBase = feature();
   const std::string& aDocName = theDumper.name(aBase->document());
 
-  AttributeStringPtr anAttrMedium = aBase->string(OperaPlugin_Volume::MEDIUM());
+  AttributeStringPtr anAttrMedium = aBase->string(OperaPlugin_Volume::MEDIUM_ID());
   theDumper << aBase << " = model.addVolume(" << aDocName << ", " << anAttrMedium << ", ";
 
   AttributeSelectionListPtr anAttrList = aBase->selectionList(OperaPlugin_Volume::VOLUME_LIST_ID());

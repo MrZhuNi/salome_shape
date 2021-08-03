@@ -40,8 +40,6 @@ FeaturePtr OperaPlugin_Plugin::createFeature(std::string theFeatureID)
   if (theFeatureID == OperaPlugin_Volume::ID()) {
     return FeaturePtr(new OperaPlugin_Volume);
   } else {
-    // else if (theFeatureID == OperaPlugin_addNode::ID()){
-    // return FeaturePtr(new OperaPlugin_addNode);
     return FeaturePtr();
   }
 }

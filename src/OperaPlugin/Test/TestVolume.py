@@ -45,7 +45,7 @@ Sphere_1 = model.addSphere(Part_1_doc, model.selection("VERTEX", "PartSet/Origin
 Volume_1 = model.addVolume(Part_1_doc, "Air", [model.selection("SOLID", "Box_1_1")])
 
 ### Create a volume from the cylinder and the sphere
-Volume_2 = model.addVolume(Part_1_doc, "Concrete", [model.selection("SOLID", "Cylinder_1_1"), model.selection("SOLID", "Sphere_1_1")])
+Volume_2 = model.addVolume(Part_1_doc, "Eau", [model.selection("SOLID", "Cylinder_1_1"), model.selection("SOLID", "Sphere_1_1")])
 
 #Checks
 from GeomAPI import GeomAPI_Shape
