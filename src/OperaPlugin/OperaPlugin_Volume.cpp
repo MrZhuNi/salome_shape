@@ -18,21 +18,15 @@
 //
 #include <OperaPlugin_Volume.h>
 
-#include <ModelAPI_AttributeInteger.h>
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeSelectionList.h>
-#include <ModelAPI_AttributeIntArray.h>
 #include <ModelAPI_Data.h>
 #include <ModelAPI_Document.h>
 #include <ModelAPI_ResultBody.h>
 #include <ModelAPI_Tools.h>
 
-#include <GeomAlgoAPI_Copy.h>
-#include <GeomAlgoAPI_Tools.h>
-
 #include <sstream>
 #include <memory>
-#include <iostream>
 
 //=================================================================================================
 OperaPlugin_Volume::OperaPlugin_Volume() // Nothing to do during instantiation
@@ -66,7 +60,7 @@ void OperaPlugin_Volume::initAttributes()
   data()->addAttribute(MEDIUM_ID(), ModelAPI_AttributeString::typeId());
 
   // Get Objects
-  data()->addAttribute(VOLUME_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
+  data()->addAttribute(OBJECTS_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
 }
 
 //=================================================================================================
@@ -81,7 +75,7 @@ void OperaPlugin_Volume::execute()
 
   int aResultIndex = 0;
 
-  AttributeSelectionListPtr aList = selectionList(VOLUME_LIST_ID());
+  AttributeSelectionListPtr aList = selectionList(OBJECTS_LIST_ID());
   std::wstring aBaseName;
   for (int aSelIndex = 0; aSelIndex < aList->size(); aSelIndex++) {
     AttributeSelectionPtr aSel = aList->value(aSelIndex);
@@ -106,9 +100,7 @@ void OperaPlugin_Volume::execute()
     std::set<std::wstring> anExistingNames;
     std::wstring aBaseName = aSel->context() ? aSel->context()->data()->name() :
       aSel->contextFeature()->firstResult()->data()->name();
-    int anInd = 0;
     do {
-      anInd++;
       std::wostringstream aNameStr;
       aNameStr << "Volume_" << aBaseName;
       aName = aNameStr.str();

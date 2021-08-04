@@ -4,7 +4,7 @@
 Opera plug-in
 ==================
 
-The Opera plug-in contains features for creation of Opera items. Result of each feature is a solid. The plug-in includes the following features:
+The Opera plug-in provides a set of common operations to ROOT geometry. It implements the following features:
 
 .. toctree::
    :titlesonly:

@@ -22,7 +22,6 @@
 
 #include <OperaPlugin.h>
 #include <ModelAPI_Feature.h>
-#include <GeomAlgoAPI_Box.h>
 
 class GeomAPI_Shape;
 class ModelAPI_ResultBody;
@@ -49,10 +48,10 @@ class OperaPlugin_Volume : public ModelAPI_Feature
       return MY_MEDIUM_ID;
     }
     /// attribute name of selected entities list
-    inline static const std::string& VOLUME_LIST_ID()
+    inline static const std::string& OBJECTS_LIST_ID()
     {
-      static const std::string MY_VOLUME_LIST_ID("volume_list");
-      return MY_VOLUME_LIST_ID;
+      static const std::string MY_OBJECTS_LIST_ID("objects_list");
+      return MY_OBJECTS_LIST_ID;
     }
 
     // Creates a new part document if needed

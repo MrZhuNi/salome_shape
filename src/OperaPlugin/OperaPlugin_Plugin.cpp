@@ -23,8 +23,6 @@
 #include <ModelAPI_Session.h>
 
 #include <string>
-#include <memory>
-#include <iostream>
 
 // the only created instance of this plugin
 static OperaPlugin_Plugin* MY_PRIMITIVES_INSTANCE = new OperaPlugin_Plugin();

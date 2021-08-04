@@ -3,8 +3,8 @@
                label="Medium"
                tooltip="Please input the volumes medium">
   </stringvalue>
-  <multi_selector id="volume_list"
-                  label="Select solids"
+  <multi_selector id="objects_list"
+                  label="Objects"
                   tooltip="Select solid objects"
                   shape_types="solids"
                   concealment="true">

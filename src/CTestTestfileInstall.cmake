@@ -47,4 +47,5 @@ SUBDIRS(ConnectorAPI
         ModelGeomAlgo
         Locale
         test_API
+        OperaPlugin
 )
