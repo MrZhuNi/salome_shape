@@ -17,12 +17,12 @@ Volume is created by a value and a list of solids
 
 Input fields:
 
-- **Medium** defines the name of the medium; 
+- **Medium** defines the name of the medium;
 - **Objects** defines the list of solid objects
 
 **TUI Command**:
 
-.. py:function:: 
+.. py:function::
     model.addVolume(Part_doc, medium, model.selection[("SOLID", ...), ...])
 
     :param part: The current part object.
@@ -38,6 +38,6 @@ One solid for each selected solid in the volume list with according medium
 .. figure:: images/Volume1.png
    :align: center
 
-   Volume created  
+   Volume created
 
 **See Also** a sample TUI Script of :ref:`tui_create_volume` operation.

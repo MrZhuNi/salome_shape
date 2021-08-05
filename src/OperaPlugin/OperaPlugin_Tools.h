@@ -17,30 +17,21 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-/* OperaAPI.i */
+#ifndef OperaPlugin_Tools_H_
+#define OperaPlugin_Tools_H_
 
-%module OperaAPI
+#include <GeomAPI_Face.h>
+#include <GeomAPI_Shape.h>
 
-%{
-  #include "OperaAPI_swig.h"
-%}
+#include <GeomAlgoAPI_MakeShape.h>
+#include <GeomAlgoAPI_MakeShapeCustom.h>
+#include <GeomAlgoAPI_MakeShapeList.h>
+#include <GeomAlgoAPI_ShapeTools.h>
 
-%include "doxyhelp.i"
+#include <ModelAPI_AttributeSelection.h>
+#include <ModelAPI_Feature.h>
+#include <ModelAPI_ResultBody.h>
 
-// import other modules
-%import "ModelHighAPI.i"
+GeomShapePtr shapeOfSelection(AttributeSelectionPtr theSel);
 
-// to avoid error on this
-#define OPERAAPI_EXPORT
-
-// standard definitions
-%include "typemaps.i"
-%include "std_shared_ptr.i"
-
-// shared pointers
-%shared_ptr(OperaAPI_Volume)
-%shared_ptr(OperaAPI_AddNode)
-
-// all supported interfaces
-%include "OperaAPI_Volume.h"
-%include "OperaAPI_AddNode.h"
+#endif

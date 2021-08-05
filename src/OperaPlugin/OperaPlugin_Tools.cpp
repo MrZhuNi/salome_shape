@@ -17,30 +17,30 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-/* OperaAPI.i */
+#include "OperaPlugin_Tools.h"
 
-%module OperaAPI
+//=================================================================================================
+GeomShapePtr shapeOfSelection(AttributeSelectionPtr theSel)
+{
+  GeomShapePtr aResult;
+  FeaturePtr aSelFeature = theSel->contextFeature();
 
-%{
-  #include "OperaAPI_swig.h"
-%}
+  //Get result from selection
+  if (aSelFeature.get()) {
+    if (aSelFeature->results().empty()) // if selected feature has no results, make nothing
+      return aResult;
+    if (aSelFeature->results().size() == 1) { // for one sub-result don't make compound
+      aResult = aSelFeature->firstResult()->shape();
+    }
+  }
 
-%include "doxyhelp.i"
+  //Get shape from result
+  if (!aResult.get())
+    aResult = theSel->value();
+  if (!aResult.get()) {
+    if (theSel->context().get())
+      aResult = theSel->context()->shape();
+  }
 
-// import other modules
-%import "ModelHighAPI.i"
-
-// to avoid error on this
-#define OPERAAPI_EXPORT
-
-// standard definitions
-%include "typemaps.i"
-%include "std_shared_ptr.i"
-
-// shared pointers
-%shared_ptr(OperaAPI_Volume)
-%shared_ptr(OperaAPI_AddNode)
-
-// all supported interfaces
-%include "OperaAPI_Volume.h"
-%include "OperaAPI_AddNode.h"
+  return aResult;
+}

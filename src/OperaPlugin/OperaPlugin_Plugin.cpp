@@ -17,12 +17,11 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
+#include <OperaPlugin_AddNode.h>
 #include <OperaPlugin_Plugin.h>
 #include <OperaPlugin_Volume.h>
 
 #include <ModelAPI_Session.h>
-
-#include <string>
 
 // the only created instance of this plugin
 static OperaPlugin_Plugin* MY_PRIMITIVES_INSTANCE = new OperaPlugin_Plugin();
@@ -37,6 +36,8 @@ FeaturePtr OperaPlugin_Plugin::createFeature(std::string theFeatureID)
 {
   if (theFeatureID == OperaPlugin_Volume::ID()) {
     return FeaturePtr(new OperaPlugin_Volume);
+  } else if (theFeatureID == OperaPlugin_AddNode::ID()) {
+    return FeaturePtr(new OperaPlugin_AddNode);
   } else {
     return FeaturePtr();
   }

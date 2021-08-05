@@ -24,5 +24,6 @@
 
   #include "OperaAPI.h"
   #include "OperaAPI_Volume.h"
+  #include "OperaAPI_AddNode.h"
 
 #endif // OPERAAPI_SWIG_H_
