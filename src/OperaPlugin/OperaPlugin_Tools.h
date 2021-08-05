@@ -17,28 +17,21 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include <OperaPlugin_Plugin.h>
-#include <OperaPlugin_Volume.h>
-#include <OperaPlugin_AddNode.h>
+#ifndef OperaPlugin_Tools_H_
+#define OperaPlugin_Tools_H_
 
-#include <ModelAPI_Session.h>
+#include <GeomAPI_Face.h>
+#include <GeomAPI_Shape.h>
 
-// the only created instance of this plugin
-static OperaPlugin_Plugin* MY_PRIMITIVES_INSTANCE = new OperaPlugin_Plugin();
+#include <GeomAlgoAPI_MakeShape.h>
+#include <GeomAlgoAPI_MakeShapeCustom.h>
+#include <GeomAlgoAPI_MakeShapeList.h>
+#include <GeomAlgoAPI_ShapeTools.h>
 
-OperaPlugin_Plugin::OperaPlugin_Plugin()
-{
-  // register this plugin
-  ModelAPI_Session::get()->registerPlugin(this);
-}
+#include <ModelAPI_AttributeSelection.h>
+#include <ModelAPI_Feature.h>
+#include <ModelAPI_ResultBody.h>
 
-FeaturePtr OperaPlugin_Plugin::createFeature(std::string theFeatureID)
-{
-  if (theFeatureID == OperaPlugin_Volume::ID()) {
-    return FeaturePtr(new OperaPlugin_Volume);
-  } else if (theFeatureID == OperaPlugin_AddNode::ID()) {
-    return FeaturePtr(new OperaPlugin_AddNode);
-  } else {
-    return FeaturePtr();
-  }
-}
+GeomShapePtr shapeOfSelection(AttributeSelectionPtr theSel);
+
+#endif

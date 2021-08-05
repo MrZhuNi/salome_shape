@@ -17,28 +17,30 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include <OperaPlugin_Plugin.h>
-#include <OperaPlugin_Volume.h>
-#include <OperaPlugin_AddNode.h>
+#include "OperaPlugin_Tools.h"
 
-#include <ModelAPI_Session.h>
-
-// the only created instance of this plugin
-static OperaPlugin_Plugin* MY_PRIMITIVES_INSTANCE = new OperaPlugin_Plugin();
-
-OperaPlugin_Plugin::OperaPlugin_Plugin()
+//=================================================================================================
+GeomShapePtr shapeOfSelection(AttributeSelectionPtr theSel)
 {
-  // register this plugin
-  ModelAPI_Session::get()->registerPlugin(this);
-}
+  GeomShapePtr aResult;
+  FeaturePtr aSelFeature = theSel->contextFeature();
 
-FeaturePtr OperaPlugin_Plugin::createFeature(std::string theFeatureID)
-{
-  if (theFeatureID == OperaPlugin_Volume::ID()) {
-    return FeaturePtr(new OperaPlugin_Volume);
-  } else if (theFeatureID == OperaPlugin_AddNode::ID()) {
-    return FeaturePtr(new OperaPlugin_AddNode);
-  } else {
-    return FeaturePtr();
+  //Get result from selection
+  if (aSelFeature.get()) {
+    if (aSelFeature->results().empty()) // if selected feature has no results, make nothing
+      return aResult;
+    if (aSelFeature->results().size() == 1) { // for one sub-result don't make compound
+      aResult = aSelFeature->firstResult()->shape();
+    }
   }
+
+  //Get shape from result
+  if (!aResult.get())
+    aResult = theSel->value();
+  if (!aResult.get()) {
+    if (theSel->context().get())
+      aResult = theSel->context()->shape();
+  }
+
+  return aResult;
 }

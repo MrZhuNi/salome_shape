@@ -34,26 +34,6 @@ OperaPlugin_Volume::OperaPlugin_Volume() // Nothing to do during instantiation
 }
 
 //=================================================================================================
-static GeomShapePtr shapeOfSelection(AttributeSelectionPtr theSel) {
-  GeomShapePtr aResult;
-  FeaturePtr aSelFeature = theSel->contextFeature();
-  if (aSelFeature.get()) {
-    if (aSelFeature->results().empty()) // if selected feature has no results, make nothing
-      return aResult;
-    if (aSelFeature->results().size() == 1) { // for one sub-result don't make compound
-      aResult = aSelFeature->firstResult()->shape();
-    }
-  }
-  if (!aResult.get())
-    aResult = theSel->value();
-  if (!aResult.get()) {
-    if (theSel->context().get())
-      aResult = theSel->context()->shape();
-  }
-  return aResult;
-}
-
-//=================================================================================================
 void OperaPlugin_Volume::initAttributes()
 {
   // Get Medium

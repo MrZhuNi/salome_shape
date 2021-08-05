@@ -39,6 +39,8 @@
 
 // shared pointers
 %shared_ptr(OperaAPI_Volume)
+%shared_ptr(OperaAPI_AddNode)
 
 // all supported interfaces
 %include "OperaAPI_Volume.h"
+%include "OperaAPI_AddNode.h"

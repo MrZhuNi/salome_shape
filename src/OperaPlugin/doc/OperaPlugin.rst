@@ -11,3 +11,4 @@ The Opera plug-in provides a set of common operations to ROOT geometry. It imple
    :maxdepth: 1
 
    volumeFeature.rst
+   addnodeFeature.rst

@@ -20,3 +20,4 @@
 """
 
 from OperaAPI import addVolume
+from OperaAPI import addAddNode
