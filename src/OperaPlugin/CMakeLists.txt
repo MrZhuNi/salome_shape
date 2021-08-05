@@ -21,17 +21,19 @@ SET(PROJECT_HEADERS
     OperaPlugin.h
     OperaPlugin_Plugin.h
     OperaPlugin_Volume.h
+    OperaPlugin_Node.h
 )
 
 SET(PROJECT_SOURCES
     OperaPlugin_Plugin.cpp
     OperaPlugin_Volume.cpp
-
+    OperaPlugin_Node.cpp
 )
 
 SET(XML_RESOURCES
   plugin-Opera.xml
   volume_widget.xml
+  node_widget.xml
 )
 
 SET(TEXT_RESOURCES

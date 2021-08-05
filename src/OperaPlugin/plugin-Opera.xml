@@ -9,6 +9,14 @@
                helpfile="volumeFeature.html">
         <source path="volume_widget.xml"/>
       </feature>
+      <feature id="Node"
+               title="Node"
+               tooltip="Perform OPERA Add Node"
+               icon="icons/Opera/Node.png"
+               auto_preview="true"
+               helpfile="nodeFeature.html">
+        <source path="node_widget.xml"/>
+      </feature>
     </group>
   </workbench>
 </plugin>
