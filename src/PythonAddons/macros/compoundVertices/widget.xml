@@ -5,7 +5,7 @@
         id="compoundVertices"
         title="Points set"
         tooltip="Import a set of construction points"
-        icon="icons/Addons/import.png"
+        icon="icons/Addons/compound.png"
         helpfile="compoundVerticesFeature.html">
         <file_selector id="file_path" title="Import file" tooltip="Select file" path="">
         </file_selector>

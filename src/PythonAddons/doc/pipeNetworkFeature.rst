@@ -1,5 +1,5 @@
 .. _pipeNetwork:
-.. |pipeNetwork.icon|    figure:: images/pipeNetwork.png
+.. |pipeNetwork.icon|    image:: images/pipeNetwork.png
 
 Réseau de tuyaux
 ================
@@ -31,7 +31,7 @@ Règles générales
 - Une information par ligne
 - Sur une ligne, les données sont séparés par des blancs
 - Les données sont regroupées en 3 sections : les noeuds, la connectivité, les raccordements
-- Une section débute par **mot-clé section** est finit par *............*
+- Une section débute par **mot-clé section**
 
 Les noeuds
 ----------
@@ -75,6 +75,9 @@ Si la jonction est directe : ``Identifiant du noeud, angular_connection``
 Si la jonction est courbe : ``Identifiant du noeud, radius=xxx`` où xxx est le rayon de courbure.
 
 .. note::
+  Par défaut, la jonction entre deux tuyaux est directe, sans rayon de courbure. On peut donc se passer de l'information ``angular_connection``.
+
+.. note::
   Une jonction avec un rayon de courbure ne peut avoir lieu que sur un noeud auquel aboutit exactement 2 tuyaux. L'arc de cercle est tracé dans le plan formé par les deux tuyaux.
 
 Exemple
@@ -83,12 +86,12 @@ Exemple
     :linenos:
     :language: text
 
-:download:`Téléchargement de cet exemple <examples/pipeNetwork_ligne.txt>`
-
 .. figure:: images/pipeNetworkExemple.png
    :align: center
    :alt: Exemple de réseau
 
    Exemple de réseau
+
+:download:`Téléchargement de cet exemple <examples/pipeNetwork_ligne.txt>`
 
 
