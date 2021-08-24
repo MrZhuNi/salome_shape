@@ -79,3 +79,8 @@ if __name__ == "__main__":
   aTest = unittest.TestLoader().loadTestsFromTestCase(TestHDF)
   unittest.TextTestRunner(stream=errFile).run(aTest)
   errFile.close()
+  #import qtsalome
+  #qtsalome.qApp.closeAllWindows()
+  import signal
+  os.kill(os.getpid(),signal.SIGKILL)
+  
