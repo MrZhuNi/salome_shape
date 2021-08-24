@@ -32,8 +32,7 @@ class TestHDF(unittest.TestCase):
   reffile = ""
 
   def setUp(self):
-    salome.salome_close()
-
+    salome.standalone()
     salome.salome_init(self.testfile, embedded=1)
     myStudyName = salome.myStudy._get_Name()
     self.session = salome.naming_service.Resolve('/Kernel/Session')

@@ -37,16 +37,11 @@ if __name__ == '__main__':
 
   tempdir = tempfile.gettempdir()
   testlogfile = tempdir + "/test.log"
-  # remove port file if any
-  try:
-    os.remove(portlogfile)
-  except:
-    pass
 
   isOk = True
   error = ""
 
-  proc = subprocess.Popen(["runSalome.py", "--modules", "SHAPER,GEOM,SHAPERSTUDY", "--gui", "--splash", "0", "test_hdf.py", "args:" + hdffile + "," + testdatafile + "," + testlogfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  proc = subprocess.Popen(["runSalomeSL.py", "--modules", "SHAPER,GEOM,SHAPERSTUDY", "--gui", "--splash", "0", "test_hdf.py", "args:" + hdffile + "," + testdatafile + "," + testlogfile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   try:
     proc.communicate(timeout = testTimeout)
   except TimeoutExpired:
