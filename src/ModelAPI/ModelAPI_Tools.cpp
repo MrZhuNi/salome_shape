@@ -17,36 +17,37 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include <algorithm>
 
-#include "ModelAPI_Tools.h"
-#include <ModelAPI_Session.h>
+#include <ModelAPI_AttributeBoolean.h>
+#include <ModelAPI_AttributeDocRef.h>
+#include <ModelAPI_AttributeDouble.h>
+#include <ModelAPI_AttributeIntArray.h>
+#include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_CompositeFeature.h>
 #include <ModelAPI_Document.h>
+#include <ModelAPI_Events.h>
 #include <ModelAPI_Object.h>
-#include <ModelAPI_AttributeDouble.h>
-#include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_ResultBody.h>
+#include <ModelAPI_ResultConstruction.h>
+#include <ModelAPI_ResultGroup.h>
 #include <ModelAPI_ResultParameter.h>
 #include <ModelAPI_ResultPart.h>
-#include <ModelAPI_ResultGroup.h>
-#include <ModelAPI_AttributeDocRef.h>
+#include <ModelAPI_Session.h>
+#include "ModelAPI_Tools.h"
 #include <ModelAPI_Validator.h>
-#include <ModelAPI_AttributeIntArray.h>
-#include <ModelAPI_ResultConstruction.h>
-#include <ModelAPI_AttributeBoolean.h>
-#include <list>
-#include <map>
-#include <iostream>
-#include <sstream>
 
+#include <Config_Translator.h>
 #include <Events_Loop.h>
 #include <Locale_Convert.h>
-#include <ModelAPI_Events.h>
-#include <Config_Translator.h>
 
 #include <GeomAPI_ShapeHierarchy.h>
 #include <GeomAPI_ShapeIterator.h>
+
+#include <algorithm>
+#include <iostream>
+#include <list>
+#include <map>
+#include <sstream>
 
 #define RECURSE_TOP_LEVEL 50
 
@@ -1187,9 +1188,11 @@ void findRandomColor(std::vector<int>& theValues)
         aHSVColor = {rand() % 360 , rand()%(100 - 75 + 1) + 60, rand()%(100 - 60 + 1) + 75};
         aRGBColor = HSVtoRGB(aHSVColor[0], aHSVColor[1], aHSVColor[2]);
         timeout++;
-      } while (timeout < 20 &&
-               std::find(usedGeneratedColor.begin(), usedGeneratedColor.end(), aHSVColor) != usedGeneratedColor.end() &&
-               std::find(myColorTab.begin(), myColorTab.end(), aRGBColor) != myColorTab.end());
+      } while (
+        timeout < 20 &&
+        std::find(usedGeneratedColor.begin(), usedGeneratedColor.end(), aHSVColor)
+        != usedGeneratedColor.end() &&
+        std::find(myColorTab.begin(), myColorTab.end(), aRGBColor) != myColorTab.end());
       usedGeneratedColor.push_back(aHSVColor);
       theValues = aRGBColor;
   }

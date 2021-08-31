@@ -2570,7 +2570,8 @@ void XGUI_Workshop::changeAutoColor(const QObjectPtrList& theObjects)
             std::list<std::shared_ptr<ModelAPI_Result> >::const_iterator aIt;
             for (aIt = aResults.cbegin(); aIt != aResults.cend(); aIt++) {
               ResultPtr aGroupResult = *aIt;
-              if (aGroupResult.get() && aGroupResult->groupName() == ModelAPI_ResultGroup::group()) {
+              if (aGroupResult.get() &&
+                  aGroupResult->groupName() == ModelAPI_ResultGroup::group()) {
                 ModelAPI_Tools::findRandomColor(aColor);
                 ModelAPI_Tools::setColor(aGroupResult, aColor);
               }
