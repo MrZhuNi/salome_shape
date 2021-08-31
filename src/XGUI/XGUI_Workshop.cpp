@@ -2541,7 +2541,6 @@ void XGUI_Workshop::changeAutoColor(const QObjectPtrList& theObjects)
   return;
 
   std::vector<int> aColor;
-  ModelAPI_Tools::findRandomColor(aColor);
 
   // abort the previous operation and start a new one
   SessionPtr aMgr = ModelAPI_Session::get();
@@ -2552,7 +2551,7 @@ void XGUI_Workshop::changeAutoColor(const QObjectPtrList& theObjects)
 
   if (aProp) {
     bool anIsAutoColor = Config_PropManager::boolean("Visualization", "result_group_Auto_color");
-    
+
     if (anIsAutoColor) {
       contextMenuMgr()->action("AUTOCOLOR_CMD")->setText(tr("Auto color"));
       aProp->setValue("false");

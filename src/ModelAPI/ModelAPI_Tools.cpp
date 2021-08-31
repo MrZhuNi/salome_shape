@@ -17,6 +17,8 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
+#include <algorithm>
+
 #include "ModelAPI_Tools.h"
 #include <ModelAPI_Session.h>
 #include <ModelAPI_CompositeFeature.h>
@@ -1116,28 +1118,11 @@ std::list<FeaturePtr> referencedFeatures(
   return aResList;
 }
 
-// contains global cash for integer index of the color -> RGB of this color
-static std::map<int, std::vector<int> > myColorMap;
-
-void appendValues(std::vector<int>& theRGB, const int theRed, const int theGreen, const int theBlue)
+void setValues(std::vector<int>& theRGB, const int theRed, const int theGreen, const int theBlue)
 {
   theRGB.push_back(theRed);
   theRGB.push_back(theGreen);
   theRGB.push_back(theBlue);
-}
-
-bool containsValues(std::map<int, std::vector<int> >& theColorMap, std::vector<int>& theValues)
-{
-  std::map<int, std::vector<int> >::const_iterator anIt = theColorMap.begin(),
-                                                   aLast = theColorMap.end();
-  bool isFound = false;
-  for (; anIt != aLast && !isFound; anIt++) {
-    std::vector<int> aValues = anIt->second;
-    isFound = aValues[0] == theValues[0] &&
-              aValues[1] == theValues[1] &&
-              aValues[2] == theValues[2];
-  }
-  return isFound;
 }
 
 std::vector<int> HSVtoRGB(int theH, int theS, int theV)
@@ -1149,15 +1134,11 @@ std::vector<int> HSVtoRGB(int theH, int theS, int theV)
     return aRGB;
 
   int aHi = (int)theH/60;
-
   double aV = theV;
   double aVmin = (100 - theS)*theV/100;
-
   double anA = (theV - aVmin)* (theH % 60) / 60;
-
   double aVinc = aVmin + anA;
   double aVdec = theV - anA;
-
   double aPercentToValue = 255./100;
   int aV_int    = (int)(aV*aPercentToValue);
   int aVinc_int = (int)(aVinc*aPercentToValue);
@@ -1165,51 +1146,52 @@ std::vector<int> HSVtoRGB(int theH, int theS, int theV)
   int aVdec_int = (int)(aVdec*aPercentToValue);
 
   switch(aHi) {
-    case 0: appendValues(aRGB, aV_int,    aVinc_int, aVmin_int); break;
-    case 1: appendValues(aRGB, aVdec_int, aV_int,    aVmin_int); break;
-    case 2: appendValues(aRGB, aVmin_int, aV_int,    aVinc_int); break;
-    case 3: appendValues(aRGB, aVmin_int, aVdec_int, aV_int); break;
-    case 4: appendValues(aRGB, aVinc_int, aVmin_int, aV_int); break;
-    case 5: appendValues(aRGB, aV_int,    aVmin_int, aVdec_int); break;
+    case 0: setValues(aRGB, aV_int,    aVinc_int, aVmin_int); break;
+    case 1: setValues(aRGB, aVdec_int, aV_int,    aVmin_int); break;
+    case 2: setValues(aRGB, aVmin_int, aV_int,    aVinc_int); break;
+    case 3: setValues(aRGB, aVmin_int, aVdec_int, aV_int); break;
+    case 4: setValues(aRGB, aVinc_int, aVmin_int, aV_int); break;
+    case 5: setValues(aRGB, aV_int,    aVmin_int, aVdec_int); break;
     default: break;
   }
   return aRGB;
 }
 
-
-void fillColorMap()
-{
-  if (!myColorMap.empty())
-    return;
-
-  int i = 0;
-  for (int s = 100; s > 0; s = s - 50)
-  {
-    for (int v = 100; v >= 40; v = v - 20)
-    {
-      for (int h = 0; h < 359 ; h = h + 60)
-      {
-        std::vector<int> aColor = HSVtoRGB(h, s, v);
-        if (containsValues(myColorMap, aColor))
-          continue;
-        myColorMap[i] = aColor;
-        i++;
-      }
-    }
-  }
-}
+std::array<std::vector<int>, 10> myColorTab = {
+  std::vector<int> {255, 0, 0},
+  std::vector<int> {0, 255, 0},
+  std::vector<int> {0, 0, 255},
+  std::vector<int> {255, 255, 0},
+  std::vector<int> {0, 255, 255},
+  std::vector<int> {255, 0, 255},
+  std::vector<int> {255, 94, 0},
+  std::vector<int> {132, 255, 0},
+  std::vector<int> {132, 0, 255},
+  std::vector<int> {0, 0, 0},
+};
 
 void findRandomColor(std::vector<int>& theValues)
 {
-  theValues.clear();
-  if (myColorMap.empty()) {
-    fillColorMap();
-  }
+  static int i = 0;
+  static std::vector<std::vector<int>> usedGeneratedColor;
 
-  size_t aSize = myColorMap.size();
-  int anIndex = rand() % aSize;
-  if (myColorMap.find(anIndex) != myColorMap.end()) {
-    theValues = myColorMap.at(anIndex);
+  theValues.clear();
+  if (i < myColorTab.size()) {
+    theValues = myColorTab[i++];
+  } else {
+      int timeout = 0;
+      std::vector<int> aHSVColor;
+      std::vector<int> aRGBColor;
+
+      do {
+        aHSVColor = {rand() % 360 , rand()%(100 - 75 + 1) + 60, rand()%(100 - 60 + 1) + 75};
+        aRGBColor = HSVtoRGB(aHSVColor[0], aHSVColor[1], aHSVColor[2]);
+        timeout++;
+      } while (timeout < 20 &&
+               std::find(usedGeneratedColor.begin(), usedGeneratedColor.end(), aHSVColor) != usedGeneratedColor.end() &&
+               std::find(myColorTab.begin(), myColorTab.end(), aRGBColor) != myColorTab.end());
+      usedGeneratedColor.push_back(aHSVColor);
+      theValues = aRGBColor;
   }
 }
 
