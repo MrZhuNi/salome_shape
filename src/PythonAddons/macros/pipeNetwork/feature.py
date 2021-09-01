@@ -23,7 +23,7 @@ Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.11"
+__revision__ = "V02.12"
 
 from salome.shaper import model
 import ModelAPI
@@ -34,6 +34,11 @@ from GeomAPI import *
 def raiseException(texte):
     """En cas d'erreur"""
     print (texte)
+
+def printverbose (texte, verbose=False):
+    """Impression controlée"""
+    if verbose:
+        print (texte)
 
 class pipeNetwork(model.Feature):
     """Creation of a network of pipes"""
@@ -47,7 +52,8 @@ class pipeNetwork(model.Feature):
     infoPoints = dict()
     connectivities = dict()
 
-    _verbose = False
+    _verbose = True
+    _verbose_max = False
 
 # Feature initializations
 
@@ -127,6 +133,7 @@ Par défaut, on supposera que la connection est angulaire et que ce n'est pas un
                 self.infoPoints[splitLine[0]]["X"] = self.infoPoints[splitLine[1]]["X"] + float(splitLine[2])
                 self.infoPoints[splitLine[0]]["Y"] = self.infoPoints[splitLine[1]]["Y"] + float(splitLine[3])
                 self.infoPoints[splitLine[0]]["Z"] = self.infoPoints[splitLine[1]]["Z"] + float(splitLine[4])
+            printverbose ("Enregistrement du point ({},{},{})".format(self.infoPoints[splitLine[0]]["X"],self.infoPoints[splitLine[0]]["Y"],self.infoPoints[splitLine[0]]["Z"]), self._verbose)
             self.infoPoints[splitLine[0]]["Fillet"] = "angular_connection"
             self.infoPoints[splitLine[0]]["isEnd"] = False
         #print ("Retour de readNodeInfo = {}".format(diagno))
@@ -135,13 +142,10 @@ Par défaut, on supposera que la connection est angulaire et que ce n'est pas un
     def readConnectivity(self, line, method):
         """Lecture des connectivités"""
         splitLine = line.split(" ")
-        print(line)
+        printverbose ("Enregistrement de la ligne : {}".format(line),self._verbose)
         diagno = 0
         if method == self.twopartwo :
-            if self.connectivities == {} :
-                print("nouvelle ligne - Cas 1")
-                self.newConnectivity(splitLine[0], splitLine)
-            else :
+            if self.connectivities:
                 # Recherche si ligne déjà existante ou si nouvelle ligne
                 print("Lignes existantes")
                 for key, val in self.connectivities.items():
@@ -152,6 +156,9 @@ Par défaut, on supposera que la connection est angulaire et que ce n'est pas un
                         return diagno
                 # La ligne n'existe pas
                 print("nouvelle ligne - Cas 2")
+                self.newConnectivity(splitLine[0], splitLine)
+            else :
+                print("nouvelle ligne - Cas 1")
                 self.newConnectivity(splitLine[0], splitLine)
         else :
             self.newConnectivity(splitLine[0], splitLine)
@@ -464,6 +471,8 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
 
         filepath = apath.value()
         if filepath != "" :
+
+            # A. Initialisation
             part = model.activeDocument()
 
             if self.lfeatures :
@@ -492,57 +501,65 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
             lPipeSupports = dict()
             lPipes = list()
 
-            # Décodage du fichier
+            # B. Traitement du fichier
+            print ("\n=============== Traitement du fichier {}".format(filepath))
             error = 0
-            while not error:
+            while True:
+
+                # B.1. Lecture du fichier
                 with open(filepath) as afile:
                     summary = 0
-                    method = ""
+                    method = self.parligne
                     for line in afile:
-                        print (line[:-1])
+                        printverbose  (line[:-1], self._verbose_max)
+
+                        # B.1.1. Repérages
                         if line == "\n":
-                            print("========================= Saut de ligne =========================")
+                            printverbose ("========================= Saut de ligne =========================", self._verbose_max)
                             continue
                         if line[0] == "#" or line[:3] == "...":
                             continue
                         if summary == 0 and line[:-1] == "nodes section" :
-                            print("========================= Lecture des noeuds =========================")
+                            printverbose ("========================= Lecture des coordonnées =========================", self._verbose)
                             summary = 1
                             continue
                         if summary == 1 and line[:-1] == "connectivity section" :
-                            print("========================= Lecture de la connectivite =========================")
+                            printverbose ("========================= Lecture de la connectivité =========================", self._verbose)
                             summary = 2
                             continue
                         if summary == 2 and line[:6] == "method" :
-                            print("===================== summary == 2 method =========================")
+                            printverbose ("===================== summary == 2 method =========================", self._verbose_max)
                             method = line[7:-1]
-                            print(method)
-                            if method != self.twopartwo and method != self.parligne:
+                            printverbose ("\tMéthode : '{}'".format(method), self._verbose)
+                            if method not in (self.twopartwo, self.parligne):
                                 raiseException("Problem with type of connectivity")
                             continue
                         if summary == 2 and line[:-1] == "fillets section" :
-                            print("========================= Lecture des fillets =========================")
+                            printverbose ("========================= Lecture des fillets =========================", self._verbose)
                             summary = 3
                             continue
+
+                        # B.1.2. Enregistrement des données
                         if summary == 1:
-                            print("===================== summary == 1 =========================")
+                            printverbose ("===================== summary == 1 =========================", self._verbose_max)
                             diagno, texte = self.readNodeInfo(line[:-1])
                             if diagno:
                                 raiseException("{}\nProblem with description of nodes.".format(texte))
                             continue
                         if summary == 2:
-                            print("===================== summary == 2 =========================")
+                            printverbose ("===================== summary == 2 =========================", self._verbose_max)
                             diagno = self.readConnectivity(line[:-1],method)
                             if diagno:
                                 raiseException("Problem with description of connectivities")
                             continue
                         if summary == 3:
-                            print("===================== summary == 3 =========================")
+                            printverbose ("===================== summary == 3 =========================", self._verbose_max)
                             diagno = self.readFillet(line[:-1])
                             if diagno:
                                 raiseException("Problem with description of fillets")
                             continue
-                        print("===================== Rien =========================")
+
+                        printverbose ("===================== Rien =========================", self._verbose_max)
                         if diagno:
                             error = diagno
                             break
@@ -550,21 +567,26 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 if error:
                     break
 
+                # B.2. Signalement de la fin d'une chaine
                 for key, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
-                if self._verbose:
-                    print("infos points = {}".format(self.infoPoints))
-                    print("connectivities = {}".format(self.connectivities))
+                if self._verbose_max or True:
+                    texte = "infos points ="
+                    for key, value in self.infoPoints.items():
+                        texte += "\n{} : {}".format(key, value)
+                    texte += "\nconnectivities ="
+                    for key, value in self.connectivities.items():
+                        texte += "\n{} : {}".format(key, value)
+                    print(texte)
 
-
-                # Creation des points
+                # B.3. Creation des points
                 self.createPoints(part)
 
-                # Creation des polylines
+                # B.4. Creation des polylines
                 self.createPolylines(part)
 
-                # Creation des fillets
+                # B.5. Creation des fillets
                 self.createFillets(part)
 
                 # Trouver les coudes droits
