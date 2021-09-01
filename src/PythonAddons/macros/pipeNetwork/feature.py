@@ -23,7 +23,7 @@ Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.13"
+__revision__ = "V02.14"
 
 from salome.shaper import model
 import ModelAPI
@@ -147,12 +147,12 @@ Par défaut, on supposera que la connection est angulaire et que ce n'est pas un
         if method == self.twopartwo :
             if self.connectivities:
                 # Recherche si ligne déjà existante ou si nouvelle ligne
-                print("Lignes existantes")
                 for key, val in self.connectivities.items():
                     print(key, " ******* {}".format(val))
                     if val['chainage'][-1] == splitLine[0]:
                         # La ligne existe
                         val['chainage'].append(splitLine[1])
+                        print("La ligne existe déjà")
                         return diagno
                 # La ligne n'existe pas
                 print("nouvelle ligne - Cas 2")
@@ -365,7 +365,7 @@ Elle est nommée conformément aux 1er et dernier noeud. Cela n'a qu'un intérê
 """
         print("========================= Création des polylines =========================")
         for key, value in self.connectivities.items():
-            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            printverbose ("Ligne : {}".format(value['chainage']), self._verbose)
             lPoints = list()
             for id_noeud in value['chainage']:
                 lPoints.append(self.infoPoints[id_noeud]["point"])
@@ -386,12 +386,12 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
 """
         print("========================= Création des fillets =========================")
         for key, value in self.connectivities.items():
-            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            printverbose ("Examen de la ligne démarrant sur le noeud '{}'".format(key), self._verbose)
             # recherche des noeuds fillets
             value["fillet"] = value["polyline"]
             for id_noeud in value['chainage']:
                 if self.infoPoints[id_noeud]["Fillet"] == "radius" :
-                    printverbose ("Fillet sur le noeud '{}'".format(id_noeud), self._verbose)
+                    printverbose ("\tFillet sur le noeud '{}'".format(id_noeud), self._verbose)
                     fillet1D = model.addFillet(part, [model.selection("VERTEX", (self.infoPoints[id_noeud]["X"],self.infoPoints[id_noeud]["Y"],self.infoPoints[id_noeud]["Z"]))], self.infoPoints[id_noeud]["Radius"])
                     fillet1D.execute(True)
                     nom = "F_{}".format(id_noeud)
@@ -404,10 +404,10 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
         """Recherche des coudes droits"""
         print("========================= Recherche des coudes droits =========================")
         for key, value in self.connectivities.items():
-            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            printverbose ("Examen de la ligne démarrant sur le noeud '{}'".format(key), self._verbose)
             # recherche des noeuds fillets
             for ind, id_noeud in enumerate(value['chainage']):
-                print("\tNoeud '{}' : {}".format(id_noeud,self.infoPoints[id_noeud]["Fillet"]))
+                printverbose ("\tNoeud '{}' : {}".format(id_noeud,self.infoPoints[id_noeud]["Fillet"]), self._verbose)
                 if ind == 0 or ind == len(value['chainage'])-1 :
                     self.infoPoints[id_noeud]["isAngular"] = False
                 else :
@@ -673,7 +673,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 # B.8. Création des sketchs pour le pipeNetwork
                 self.createSketches(part)
 
-                self.print_info (self._verbose_max or True)
+                self.print_info (self._verbose_max)
 
                 # B.9. Création des pipes
                 self.createPipes(part, nameRes)
