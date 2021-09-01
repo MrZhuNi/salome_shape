@@ -23,7 +23,7 @@ Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.12"
+__revision__ = "V02.13"
 
 from salome.shaper import model
 import ModelAPI
@@ -302,7 +302,7 @@ La ligne est formée de deux informations :
         startFace = None
         fuse = None
         for ind in range(len(connectivityInfos['paths'])):
-            print("Step = {}".format(ind))
+            printverbose ("Step = {}".format(ind), self._verbose_max)
             if ind == 0:
                 startFace = connectivityInfos['sketch']
             if connectivityInfos['isPipe'][ind] :
@@ -349,8 +349,7 @@ Il est nommé conformément au texte donné dans le fichier de données. Cela n'
 """
         print("========================= Création des noeuds =========================")
         for key, value in self.infoPoints.items():
-            if self._verbose:
-                print("key = {}".format(key))
+            printverbose ("Noeud : '{}'".format(key), self._verbose)
             point = model.addPoint(part, value['X'], value['Y'], value['Z'])
             point.execute(True)
             point.setName(key)
@@ -362,12 +361,11 @@ Il est nommé conformément au texte donné dans le fichier de données. Cela n'
         """Création des polylines
 
 La polyligne est créée en tant que résultat en enchaînant ses points.
-Elle est nommée conformément aux des 1er et dernier noeud. Cela n'a qu'un intérêt graphique mais agréable en débogage.
+Elle est nommée conformément aux 1er et dernier noeud. Cela n'a qu'un intérêt graphique mais agréable en débogage.
 """
         print("========================= Création des polylines =========================")
         for key, value in self.connectivities.items():
-            if self._verbose:
-                print("key = {}".format(key))
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
             lPoints = list()
             for id_noeud in value['chainage']:
                 lPoints.append(self.infoPoints[id_noeud]["point"])
@@ -388,13 +386,12 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
 """
         print("========================= Création des fillets =========================")
         for key, value in self.connectivities.items():
-            if self._verbose:
-                print("key = {}".format(key))
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
             # recherche des noeuds fillets
             value["fillet"] = value["polyline"]
             for id_noeud in value['chainage']:
                 if self.infoPoints[id_noeud]["Fillet"] == "radius" :
-                    print(self.infoPoints[id_noeud])
+                    printverbose ("Fillet sur le noeud '{}'".format(id_noeud), self._verbose)
                     fillet1D = model.addFillet(part, [model.selection("VERTEX", (self.infoPoints[id_noeud]["X"],self.infoPoints[id_noeud]["Y"],self.infoPoints[id_noeud]["Z"]))], self.infoPoints[id_noeud]["Radius"])
                     fillet1D.execute(True)
                     nom = "F_{}".format(id_noeud)
@@ -407,11 +404,10 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
         """Recherche des coudes droits"""
         print("========================= Recherche des coudes droits =========================")
         for key, value in self.connectivities.items():
-            if self._verbose:
-                print("key = {} {}".format(key,value['chainage']))
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
             # recherche des noeuds fillets
             for ind, id_noeud in enumerate(value['chainage']):
-                #print("Info sur : " id_noeud, " => ", self.infoPoints[id_noeud]["Fillet"])
+                print("\tNoeud '{}' : {}".format(id_noeud,self.infoPoints[id_noeud]["Fillet"]))
                 if ind == 0 or ind == len(value['chainage'])-1 :
                     self.infoPoints[id_noeud]["isAngular"] = False
                 else :
@@ -422,11 +418,10 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                             self.infoPoints[id_noeud]["isAngular"] = False
                         else :
                             self.infoPoints[id_noeud]["isAngular"] = True
-                            print("========================= Création du plan =========================")
                             # Axe d'extrusion
-                            print(ind-1, ind, ind+1)
-                            print(value["chainage"][ind-1], id_noeud, value["chainage"][ind+1])
-                            print(self.infoPoints[value["chainage"][ind-1]]["point"])
+                            #print(ind-1, ind, ind+1)
+                            printverbose ("\t\tCréation du plan passant par les points : ('{}','{}','{}')".format(value["chainage"][ind-1], id_noeud, value["chainage"][ind+1]), self._verbose)
+                            #print(self.infoPoints[value["chainage"][ind-1]]["point"])
 
                             tmpPlane = model.addPlane(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
                             tmpPlane.execute(True)
@@ -460,6 +455,93 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                             plane.execute(True)
                             self.lfeatures.append(plane)
                             self.infoPoints[id_noeud]["plane"] = plane.result()
+
+    def createPaths(self, part):
+        """Création des paths pour le pipeNetwork"""
+        print("========================= Création des paths =========================")
+        for key, value in self.connectivities.items():
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            # recherche des noeuds fillets
+            value["paths"] = list()
+            value["isPipe"] = list()
+            value["starts"] = list()
+            value["ends"] = list()
+            ind = 0
+            copy = value['fillet']
+            while ind < len(value['chainage'])-1:
+                value["starts"].append(self.connectivities[key]['chainage'][ind])
+                objectsForPath, ind, isPipe, end_noeud = self.retrieveSubshapesforWire(copy, key, ind)
+                if self._verbose:
+                    print("************************* ind = {}".format(ind))
+                    print("************************* objectsForPath = {}".format(objectsForPath))
+                path = model.addWire(part, objectsForPath, False)
+                path.execute(True)
+                self.lfeatures.append(path)
+                value["paths"].append(path)
+                value["isPipe"].append(isPipe)
+                value["ends"].append(end_noeud)
+                if ind < len(value['chainage'])-1:
+                    copy = model.addCopy(part, [model.selection(copy.defaultResult())], 1)
+                    copy.execute(True)
+                    self.lfeatures.append(copy)
+
+    def createSketches(self, part):
+        """Création des sketchs"""
+        print("========================= Création des sketchs =========================")
+        for key, value in self.connectivities.items():
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            # Creating sketch
+            edge = model.addEdge(part, self.infoPoints[value["chainage"][0]]["point"], self.infoPoints[value["chainage"][1]]["point"])
+            edge.execute(True)
+            self.lfeatures.append(edge)
+            plane = model.addPlane(part, edge.result(), self.infoPoints[value["chainage"][0]]["point"], True)
+            plane.execute(True)
+            self.lfeatures.append(plane)
+            sketch = model.addSketch(part, plane.result())
+            sketch.execute(True)
+            self.lfeatures.append(sketch)
+            SketchProjection = sketch.addProjection(self.infoPoints[value["chainage"][0]]["point"], False)
+            SketchProjection.execute(True)
+            SketchPoint = SketchProjection.createdFeature()
+            SketchPoint.execute(True)
+            SketchCircle = sketch.addCircle(0,0,self.radius)
+            SketchCircle.execute(True)
+            sketch.setCoincident(SketchPoint.result(), SketchCircle.center())
+            sketch.setRadius(SketchCircle.results()[1], self.radius)
+            sketch.execute(True)
+            model.do()
+            value["sketch"] = sketch.result()
+
+    def createPipes(self, part, nameRes):
+        """Création des pipes"""
+        print("========================= Création des pipes =========================")
+        for key, value in self.connectivities.items():
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            pipe = self.createPipe(part, value)
+            value["pipe"] = pipe.result()
+
+        # Fusion des pipes
+        print("========================= Fusion des pipes =========================")
+        lPipes = list()
+        for key, value in self.connectivities.items():
+            lPipes.append(value["pipe"])
+        fuse = model.addFuse(part, lPipes, False)
+        fuse.execute(True)
+        fuse.setName(nameRes)
+        fuse.result().setName(nameRes)
+
+#==========================================================
+
+    def print_info (self, verbose):
+        if verbose:
+            texte = "\ninfos points ="
+            for key, value in self.infoPoints.items():
+                texte += "\n{} : {}".format(key, value)
+            texte += "\n\nconnectivities ="
+            for key, value in self.connectivities.items():
+                texte += "\n{} : {}".format(key, value)
+            print(texte+"\n")
+
 #==========================================================
 
 # Execution of the Import
@@ -530,7 +612,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                         if summary == 2 and line[:6] == "method" :
                             printverbose ("===================== summary == 2 method =========================", self._verbose_max)
                             method = line[7:-1]
-                            printverbose ("\tMéthode : '{}'".format(method), self._verbose)
+                            printverbose ("Méthode : '{}'".format(method), self._verbose)
                             if method not in (self.twopartwo, self.parligne):
                                 raiseException("Problem with type of connectivity")
                             continue
@@ -571,14 +653,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 for key, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
-                if self._verbose_max or True:
-                    texte = "infos points ="
-                    for key, value in self.infoPoints.items():
-                        texte += "\n{} : {}".format(key, value)
-                    texte += "\nconnectivities ="
-                    for key, value in self.connectivities.items():
-                        texte += "\n{} : {}".format(key, value)
-                    print(texte)
+                self.print_info (self._verbose_max or True)
 
                 # B.3. Creation des points
                 self.createPoints(part)
@@ -589,93 +664,21 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 # B.5. Creation des fillets
                 self.createFillets(part)
 
-                # Trouver les coudes droits
+                # B.6. Recherche des coudes droits
                 self.searchRightConnections(part)
 
+                # B.7. Création des paths pour le pipeNetwork
+                self.createPaths(part)
 
-                # Création des paths pour le pipeNetwork
-                print("========================= Création des paths =========================")
-                for key, value in self.connectivities.items():
-                    if self._verbose:
-                        print("================================================================================= key = {}".format(key), value['chainage'], value['fillet'])
-                    # recherche des noeuds fillets
-                    value["paths"] = list()
-                    value["isPipe"] = list()
-                    value["starts"] = list()
-                    value["ends"] = list()
-                    ind = 0
-                    copy = value['fillet']
-                    while ind < len(value['chainage'])-1:
-                        value["starts"].append(self.connectivities[key]['chainage'][ind])
-                        objectsForPath, ind, isPipe, end_noeud = self.retrieveSubshapesforWire(copy, key, ind)
-                        if self._verbose:
-                            print("************************* ind = {}".format(ind))
-                            print("************************* objectsForPath = {}".format(objectsForPath))
-                        path = model.addWire(part, objectsForPath, False)
-                        path.execute(True)
-                        self.lfeatures.append(path)
-                        value["paths"].append(path)
-                        value["isPipe"].append(isPipe)
-                        value["ends"].append(end_noeud)
-                        if ind < len(value['chainage'])-1:
-                            copy = model.addCopy(part, [model.selection(copy.defaultResult())], 1)
-                            copy.execute(True)
-                            self.lfeatures.append(copy)
+                # B.8. Création des sketchs pour le pipeNetwork
+                self.createSketches(part)
 
+                self.print_info (self._verbose_max or True)
 
-                # Création des sketchs pour le pipeNetwork
-                print("========================= Création des sketchs =========================")
-                for key, value in self.connectivities.items():
-                    if self._verbose:
-                        print("================================================================================= key = {}".format(key))
-                    # Creating sketch
-                    edge = model.addEdge(part, self.infoPoints[value["chainage"][0]]["point"], self.infoPoints[value["chainage"][1]]["point"])
-                    edge.execute(True)
-                    self.lfeatures.append(edge)
-                    plane = model.addPlane(part, edge.result(), self.infoPoints[value["chainage"][0]]["point"], True)
-                    plane.execute(True)
-                    self.lfeatures.append(plane)
-                    sketch = model.addSketch(part, plane.result())
-                    sketch.execute(True)
-                    self.lfeatures.append(sketch)
-                    SketchProjection = sketch.addProjection(self.infoPoints[value["chainage"][0]]["point"], False)
-                    SketchProjection.execute(True)
-                    SketchPoint = SketchProjection.createdFeature()
-                    SketchPoint.execute(True)
-                    SketchCircle = sketch.addCircle(0,0,self.radius)
-                    SketchCircle.execute(True)
-                    sketch.setCoincident(SketchPoint.result(), SketchCircle.center())
-                    sketch.setRadius(SketchCircle.results()[1], self.radius)
-                    sketch.execute(True)
-                    model.do()
-                    value["sketch"] = sketch.result()
+                # B.9. Création des pipes
+                self.createPipes(part, nameRes)
 
-
-                if self._verbose:
-                    print("infos points = " , self.infoPoints)
-                    print("********************************")
-                    print("connectivities = " , self.connectivities)
-
-
-                # Création des pipes
-                print("========================= Création des pipes =========================")
-                for key, value in self.connectivities.items():
-                    if self._verbose:
-                        print("================================================================================= key = {}".format(key))
-                    pipe = self.createPipe(part, value)
-                    value["pipe"] = pipe.result()
-
-                # Fusion des pipes
-                print("========================= Fusion des pipes =========================")
-                lPipes = list()
-                for key, value in self.connectivities.items():
-                    lPipes.append(value["pipe"])
-                fuse = model.addFuse(part, lPipes, False)
-                fuse.execute(True)
-                fuse.setName(nameRes)
-                fuse.result().setName(nameRes)
-
-                # Dossier pour les opérations internes
+                # B.10. Dossier pour les opérations internes
                 print("========================= Mise en dossier =========================")
                 self.folder = model.addFolder(part, self.lfeatures[0], self.lfeatures[-1])
                 self.folder.setName("{}_inter".format(nameRes))
