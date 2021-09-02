@@ -33,7 +33,6 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_Prism.h
     GeomAlgoAPI_Revolution.h
     GeomAlgoAPI_Boolean.h
-    GeomAlgoAPI_BasicProperties.h
     GeomAlgoAPI_ThroughAll.h
     GeomAlgoAPI_Rotation.h
     GeomAlgoAPI_Translation.h
@@ -74,7 +73,6 @@ SET(PROJECT_HEADERS
     GeomAlgoAPI_XAOImport.h
     GeomAlgoAPI_Copy.h
     GeomAlgoAPI_ConeSegment.h
-    GeomAlgoAPI_ContinuousFaces.h
     GeomAlgoAPI_Ellipsoid.h
     GeomAlgoAPI_Symmetry.h
     GeomAlgoAPI_Scale.h
@@ -105,7 +103,6 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_Prism.cpp
     GeomAlgoAPI_Revolution.cpp
     GeomAlgoAPI_Boolean.cpp
-    GeomAlgoAPI_BasicProperties.cpp
     GeomAlgoAPI_ThroughAll.cpp
     GeomAlgoAPI_Rotation.cpp
     GeomAlgoAPI_Translation.cpp
@@ -146,7 +143,6 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_XAOImport.cpp
     GeomAlgoAPI_Copy.cpp
     GeomAlgoAPI_ConeSegment.cpp
-    GeomAlgoAPI_ContinuousFaces.cpp
     GeomAlgoAPI_Ellipsoid.cpp
     GeomAlgoAPI_Symmetry.cpp
     GeomAlgoAPI_Scale.cpp

@@ -30,10 +30,8 @@
 
 #include <GeomAlgoAPI_ShapeTools.h>
 
-#include <Precision.hxx>
-
 #include <map>
-#include <iostream>
+#include <cmath>
 
 bool FiltersPlugin_EdgeSize::isSupported(GeomAPI_Shape::ShapeType theType) const
 {
@@ -70,6 +68,8 @@ bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   default:
     return false;
   }
+
+  double aTolerance = 0.0001;
   double aLength = anEdge->length();
 
   anAttr = theArgs.argument("comparatorType");
@@ -80,19 +80,21 @@ bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
 
   bool isOK = false;
   if (aCompString == "inf")
-    isOK = aLength < aVal && fabs(aLength - aVal) > Precision::Confusion();
+    isOK = aLength < aVal && fabs(aLength - aVal) > aTolerance;
   else if (aCompString == "infEq")
-    isOK = aLength < aVal || fabs(aLength - aVal) < Precision::Confusion();
+    isOK = aLength < aVal || fabs(aLength - aVal) < aTolerance;
   else if (aCompString == "sup")
-    isOK = aLength > aVal && fabs(aLength - aVal) > Precision::Confusion();
+    isOK = aLength > aVal && fabs(aLength - aVal) > aTolerance;
   else if (aCompString == "supEq")
-    isOK = aLength > aVal || fabs(aLength - aVal) < Precision::Confusion();
+    isOK = aLength > aVal || fabs(aLength - aVal) < aTolerance;
   else if (aCompString == "isBetween")
-    isOK = (aLength > aVal || fabs(aLength - aVal) < Precision::Confusion())
-          && (aLength < aValMax || fabs(aLength - aVal) < Precision::Confusion());
+    isOK = (aVal <= aValMax)
+           && (aLength > aVal || fabs(aLength - aVal) < aTolerance)
+           && (aLength < aValMax || fabs(aLength - aValMax) < aTolerance);
   else if (aCompString == "isStrictlyBetween")
-    isOK = (aLength > aVal && fabs(aLength - aVal) > Precision::Confusion())
-           && (aLength < aValMax && fabs(aLength - aValMax) > Precision::Confusion());
+    isOK = (aVal <= aValMax)
+           && (aLength > aVal && fabs(aLength - aVal) > aTolerance)
+           && (aLength < aValMax && fabs(aLength - aValMax) > aTolerance);
   return isOK;
 }
 

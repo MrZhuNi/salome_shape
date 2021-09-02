@@ -29,7 +29,6 @@
 #include <GeomAPI_ShapeExplorer.h>
 #include <GeomAPI_Wire.h>
 
-#include <GeomAlgoAPI_ContinuousFaces.h>
 #include <GeomAlgoAPI_ShapeTools.h>
 
 #include <map>
@@ -73,11 +72,11 @@ static void cacheContinuousFace(const GeomShapePtr theFace,
       std::string anError = "";
       if (theCache.find(*aFIt) == theCache.end()) {
        GeomPointPtr aPoint = anEdge->middlePoint();
-       if (isContinuousFaces(theFace,
-                             *aFIt,
-                             aPoint,
-                             theAngle,
-                             anError)) {
+       if (GeomAlgoAPI_ShapeTools::isContinuousFaces(theFace,
+                                                     *aFIt,
+                                                     aPoint,
+                                                     theAngle,
+                                                     anError)) {
           theCache.insert(*aFIt);
           cacheContinuousFace(*aFIt, theEdgeToFaces, theCache, theAngle);
         }
@@ -166,15 +165,18 @@ bool FiltersPlugin_ContinuousFaces::isOk(const GeomShapePtr& theShape, const Res
   }
 
   if (myCachedShapes.empty()) {
-    ResultBodyPtr aBaseResult = ModelAPI_Tools::bodyOwner(aList->value(0)->context(), true);
-    if (!aBaseResult.get()) {
-      aBaseResult = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aList->value(0)->context());
-      if (!aBaseResult.get())
-        return false;
+    for (size_t i = 0; i < aList->size(); i++)
+    {
+      ResultBodyPtr aBaseResult = ModelAPI_Tools::bodyOwner(aList->value(i)->context(), true);
+      if (!aBaseResult.get()) {
+        aBaseResult = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aList->value(i)->context());
+        if (!aBaseResult.get())
+          return false;
+      }
+      cacheContinuousFaces(aBaseResult->shape(),
+                          const_cast<FiltersPlugin_ContinuousFaces*>(this)->myFaces,
+                          const_cast<FiltersPlugin_ContinuousFaces*>(this)->myCachedShapes,anAngle);
     }
-    cacheContinuousFaces(aBaseResult->shape(),
-                         const_cast<FiltersPlugin_ContinuousFaces*>(this)->myFaces,
-                         const_cast<FiltersPlugin_ContinuousFaces*>(this)->myCachedShapes,anAngle);
   }
   return myCachedShapes.find(theShape) != myCachedShapes.end();
 }

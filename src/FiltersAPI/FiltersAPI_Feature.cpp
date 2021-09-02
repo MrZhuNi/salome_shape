@@ -48,7 +48,7 @@ static void separateArguments(const std::list<FiltersAPI_Argument>& theArguments
   for (; anIt != theArguments.end(); ++anIt) {
     if (anIt->selection().variantType() != ModelHighAPI_Selection::VT_Empty)
       theSelections.push_back(anIt->selection());
-    else if (anIt->dble().value() > -100000000000) {
+    else if (anIt->dble().value() > std::numeric_limits<double>::lowest()) {
       theDoubleArgs.push_back(anIt->dble());
     }
     else if (anIt->string().empty()) {

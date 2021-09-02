@@ -95,6 +95,8 @@
 
 #include <NCollection_Vector.hxx>
 
+#include <LocalAnalysis_SurfaceContinuity.hxx>
+
 //==================================================================================================
 static GProp_GProps props(const TopoDS_Shape& theShape)
 {
@@ -175,6 +177,105 @@ double GeomAlgoAPI_ShapeTools::area (const std::shared_ptr<GeomAPI_Shape> theSha
 
   BRepGProp::SurfaceProperties(aShape, aGProps, anEps);
   return aGProps.Mass();
+}
+
+//==================================================================================================
+bool GeomAlgoAPI_ShapeTools::isContinuousFaces(const GeomShapePtr& theFace1,
+                                               const GeomShapePtr& theFace2,
+                                               const GeomPointPtr& thePoint,
+                                               const double & theAngle,
+                                               std::string& theError)
+{
+
+  #ifdef _DEBUG
+  std::cout << "isContinuousFaces " << std::endl;
+  #endif
+
+  if (!thePoint.get()) {
+      theError = "isContinuousFaces : An invalid argument";
+      return false;
+  }
+  const gp_Pnt& aPoint = thePoint->impl<gp_Pnt>();
+
+  // Getting base shape.
+  if (!theFace1.get()) {
+    theError = "isContinuousFaces : An invalid argument";
+    return false;
+  }
+
+  TopoDS_Shape aShape1 = theFace1->impl<TopoDS_Shape>();
+
+  if (aShape1.IsNull()) {
+    theError = "isContinuousFaces : An invalid argument";
+    return false;
+  }
+
+  // Getting base shape.
+  if (!theFace2.get()) {
+    theError = "isContinuousFaces : An invalid argument";
+    return false;
+  }
+
+  TopoDS_Shape aShape2 = theFace2->impl<TopoDS_Shape>();
+
+  if (aShape2.IsNull()) {
+    theError = "isContinuousFaces : An invalid argument";
+    return false;
+  }
+
+  TopoDS_Face aFace1 = TopoDS::Face(aShape1);
+  if (aFace1.IsNull()) {
+    theError = "isContinuousFaces : An invalid argument";
+    return false;
+  }
+
+  Handle(Geom_Surface) aSurf1 = BRep_Tool::Surface(aFace1);
+  if (aSurf1.IsNull()) {
+    theError = "isContinuousFaces : An invalid surface";
+    return false;
+  }
+
+  ShapeAnalysis_Surface aSAS1(aSurf1);
+  gp_Pnt2d aPointOnFace1 = aSAS1.ValueOfUV(aPoint, Precision::Confusion());
+
+  TopoDS_Face aFace2 = TopoDS::Face(aShape2);
+  if (aFace2.IsNull()) {
+    theError = "isContinuousFaces : An invalid argument";
+    return false;
+  }
+
+  Handle(Geom_Surface) aSurf2 = BRep_Tool::Surface(aFace2);
+  if (aSurf2.IsNull()) {
+    theError = "isContinuousFaces : An invalid surface";
+    return false;
+  }
+
+  ShapeAnalysis_Surface aSAS2(aSurf2);
+  gp_Pnt2d aPointOnFace2= aSAS2.ValueOfUV(aPoint, Precision::Confusion());
+
+  bool aRes = false;
+  try {
+    OCC_CATCH_SIGNALS;
+    LocalAnalysis_SurfaceContinuity aLocAnal(aSurf1,
+                                             aPointOnFace1.X(),
+                                             aPointOnFace1.Y(),
+                                             aSurf2,
+                                             aPointOnFace2.X(),
+                                             aPointOnFace2.Y(),
+                                             GeomAbs_Shape::GeomAbs_G1, // Order
+                                             0.001, // EpsNul
+                                             0.001, // EpsC0
+                                             0.001, // EpsC1
+                                             0.001, // EpsC2
+                                             theAngle * M_PI / 180.0); //EpsG1
+    aRes = aLocAnal.IsG1();
+  }
+  catch (Standard_Failure const& anException) {
+    theError = "LocalAnalysis_SurfaceContinuity error :";
+    theError += anException.GetMessageString();
+  }
+
+  return aRes;
 }
 
 //==================================================================================================
