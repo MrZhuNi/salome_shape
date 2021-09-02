@@ -29,7 +29,7 @@
 #include <GeomAPI_ShapeExplorer.h>
 #include <GeomAPI_Wire.h>
 
-#include <GeomAlgoAPI_ContinuousFaces.h>
+#include <GeomAlgoAPI_ShapeTools.h>
 
 #include <map>
 #include <math.h>
@@ -72,11 +72,11 @@ static void cacheFeatureEdge(const GeomShapePtr theTopLevelShape,
       for (;aFIt2 != aIt->second.end(); ++aFIt2) {
         std::string anError;
         if (theCache.find(*aFIt) == theCache.end()) {
-          if (!isContinuousFaces(*aFIt,
-                                 *aFIt2,
-                                 anEdge->middlePoint(),
-                                 theAngle,
-                                 anError)) {
+          if (!GeomAlgoAPI_ShapeTools::isContinuousFaces(*aFIt,
+                                                         *aFIt2,
+                                                         anEdge->middlePoint(),
+                                                         theAngle,
+                                                         anError)) {
             if (anError.empty())
               theCache.insert(anEdge);
           }

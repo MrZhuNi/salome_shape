@@ -45,8 +45,6 @@
 %shared_ptr(FiltersAPI_Feature)
 %shared_ptr(FiltersAPI_Filter)
 
-%shared_ptr(ModelHighAPI_Interface)
-
 // function with named parameters
 %feature("kwargs") addFilter;
 
@@ -118,8 +116,8 @@
       } else
       if (PyBool_Check(item)) {
         temp.push_back(FiltersAPI_Argument(item == Py_True));
-      } else 
-      if(PyFloat_Check(item) || PyLong_Check(item)) { 
+      } else
+      if(PyFloat_Check(item) || PyLong_Check(item)) {
         temp.push_back(FiltersAPI_Argument(ModelHighAPI_Double(PyFloat_AsDouble(item))));
       } else {
         PyErr_SetString(PyExc_TypeError, "argument must be ModelHighAPI_Selection, string, double or boolean.4");

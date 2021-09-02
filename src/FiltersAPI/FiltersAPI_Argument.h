@@ -28,6 +28,8 @@
 #include <ModelHighAPI_Dumper.h>
 #include <ModelHighAPI_Selection.h>
 
+#include <limits>
+
 /**\class FiltersAPI_Argument
  * \ingroup CPPHighAPI
  * \brief Argument of the Filter
@@ -69,7 +71,7 @@ public:
 
 private:
   bool myBoolean;
-  ModelHighAPI_Double myDouble  = -100000000000;
+  ModelHighAPI_Double myDouble  = std::numeric_limits<double>::lowest() ;
   std::string myValue;
   ModelHighAPI_Selection mySelection;
   AttributeSelectionPtr mySelectionAttr;

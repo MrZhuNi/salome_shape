@@ -33,7 +33,7 @@
 #include <Precision.hxx>
 
 #include <map>
-#include <iostream>
+#include <cmath>
 
 bool FiltersPlugin_EdgeSize::isSupported(GeomAPI_Shape::ShapeType theType) const
 {
@@ -70,6 +70,7 @@ bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   default:
     return false;
   }
+
   double aLength = anEdge->length();
 
   anAttr = theArgs.argument("comparatorType");
@@ -88,10 +89,12 @@ bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   else if (aCompString == "supEq")
     isOK = aLength > aVal || fabs(aLength - aVal) < Precision::Confusion();
   else if (aCompString == "isBetween")
-    isOK = (aLength > aVal || fabs(aLength - aVal) < Precision::Confusion())
-          && (aLength < aValMax || fabs(aLength - aVal) < Precision::Confusion());
+    isOK = (aVal <= aValMax)
+           && (aLength > aVal || fabs(aLength - aVal) < Precision::Confusion())
+           && (aLength < aValMax || fabs(aLength - aValMax) < Precision::Confusion());
   else if (aCompString == "isStrictlyBetween")
-    isOK = (aLength > aVal && fabs(aLength - aVal) > Precision::Confusion())
+    isOK = (aVal <= aValMax)
+           && (aLength > aVal && fabs(aLength - aVal) > Precision::Confusion())
            && (aLength < aValMax && fabs(aLength - aValMax) > Precision::Confusion());
   return isOK;
 }

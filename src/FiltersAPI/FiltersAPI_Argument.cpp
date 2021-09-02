@@ -64,7 +64,7 @@ void FiltersAPI_Argument::dump(ModelHighAPI_Dumper& theDumper) const
     theDumper << "model.selection()"; // mySelectionAttr;
   }
   else if (mySelection.variantType() == ModelHighAPI_Selection::VT_Empty) {
-    if (myDouble.value() > -100000000000 ) {
+    if (myDouble.value() > std::numeric_limits<double>::lowest() ) {
       theDumper << myDouble.value();
     }
     else if (myValue.empty()) {

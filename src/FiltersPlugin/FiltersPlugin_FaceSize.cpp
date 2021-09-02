@@ -21,19 +21,17 @@
 
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_AttributeDouble.h>
+#include <GeomAlgoAPI_ShapeTools.h>
 #include <ModelAPI_Tools.h>
 
 #include <GeomAPI_Edge.h>
 #include <GeomAPI_Shape.h>
 #include <GeomAPI_Wire.h>
 
-#include <GeomAlgoAPI_BasicProperties.h>
-#include <GeomAlgoAPI_ShapeTools.h>
-
 #include <Precision.hxx>
 
 #include <map>
-#include <iostream>
+#include <cmath>
 
 
 bool FiltersPlugin_FaceSize::isSupported(GeomAPI_Shape::ShapeType theType) const
@@ -59,18 +57,7 @@ bool FiltersPlugin_FaceSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   if (aVal < 0.0)
     return false;
 
-  double aTolerance = 0.0001;
-  double aLength;
-  double aSurfArea;
-  double aVolume;
-  std::string aError;
-  if (!GetBasicProperties(theShape,
-                          aTolerance,
-                          aLength,
-                          aSurfArea,
-                          aVolume,
-                          aError))
-      return false;
+  double aSurfArea = GeomAlgoAPI_ShapeTools::area(theShape);
 
   anAttr = theArgs.argument("comparatorType");
   AttributeStringPtr aCompAttr = std::dynamic_pointer_cast<ModelAPI_AttributeString>(anAttr);
@@ -88,10 +75,12 @@ bool FiltersPlugin_FaceSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   else if (aCompString == "supEq")
     isOK = aSurfArea > aVal || fabs(aSurfArea - aVal) < Precision::Confusion();
   else if (aCompString == "isBetween")
-    isOK = (aSurfArea > aVal || fabs(aSurfArea - aVal) < Precision::Confusion())
-          && (aSurfArea < aValMax || fabs(aSurfArea - aVal) < Precision::Confusion());
+    isOK = (aVal <= aValMax)
+           && (aSurfArea > aVal || fabs(aSurfArea - aVal) < Precision::Confusion())
+           && (aSurfArea < aValMax || fabs(aSurfArea - aValMax) < Precision::Confusion());
   else if (aCompString == "isStrictlyBetween")
-    isOK = (aSurfArea > aVal && fabs(aSurfArea - aVal) > Precision::Confusion())
+    isOK = (aVal <= aValMax)
+           && (aSurfArea > aVal && fabs(aSurfArea - aVal) > Precision::Confusion())
            && (aSurfArea < aValMax && fabs(aSurfArea - aValMax) > Precision::Confusion());
   return isOK;
 }
