@@ -50,7 +50,7 @@ MODELAPI_EXPORT std::shared_ptr<GeomAPI_Shape> shape(
 MODELAPI_EXPORT std::string getFeatureError(const std::shared_ptr<ModelAPI_Feature>& theFeature);
 
 /*!
- * Searches for variable with name \param theName in \param theDocument. 
+ * Searches for variable with name \param theName in \param theDocument.
  * If found, set it value in the \param outValue and returns true.
  * theSearcher must be located later in the history than the found variable.
  */

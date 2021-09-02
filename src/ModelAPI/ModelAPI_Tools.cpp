@@ -1185,7 +1185,7 @@ void findRandomColor(std::vector<int>& theValues)
       std::vector<int> aRGBColor;
 
       do {
-        aHSVColor = {rand() % 360 , rand()%(100 - 75 + 1) + 60, rand()%(100 - 60 + 1) + 75};
+        aHSVColor = {rand() % 360 , rand() % (100 - 50 + 1) + 50, rand() % (100 - 50 + 1) + 50};
         aRGBColor = HSVtoRGB(aHSVColor[0], aHSVColor[1], aHSVColor[2]);
         timeout++;
       } while (
