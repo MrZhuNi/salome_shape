@@ -130,11 +130,11 @@ static GProp_GProps props(const TopoDS_Shape& theShape)
 double GeomAlgoAPI_ShapeTools::length(const std::shared_ptr<GeomAPI_Shape> theShape)
 {
   GProp_GProps aGProps;
-  if(!theShape.get()) {
+  if (!theShape.get()) {
     return 0.0;
   }
   const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
-  if(aShape.IsNull()) {
+  if (aShape.IsNull()) {
     return 0.0;
   }
 
@@ -145,11 +145,11 @@ double GeomAlgoAPI_ShapeTools::length(const std::shared_ptr<GeomAPI_Shape> theSh
 //==================================================================================================
 double GeomAlgoAPI_ShapeTools::volume(const std::shared_ptr<GeomAPI_Shape> theShape)
 {
-  if(!theShape.get()) {
+  if (!theShape.get()) {
     return 0.0;
   }
   const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
-  if(aShape.IsNull()) {
+  if (aShape.IsNull()) {
     return 0.0;
   }
   const Standard_Real anEps = 1.e-6;
@@ -166,11 +166,11 @@ double GeomAlgoAPI_ShapeTools::volume(const std::shared_ptr<GeomAPI_Shape> theSh
 double GeomAlgoAPI_ShapeTools::area (const std::shared_ptr<GeomAPI_Shape> theShape)
 {
   GProp_GProps aGProps;
-  if(!theShape.get()) {
+  if (!theShape.get()) {
     return 0.0;
   }
   const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
-  if(aShape.IsNull()) {
+  if (aShape.IsNull()) {
     return 0.0;
   }
   const Standard_Real anEps = 1.e-6;
@@ -283,15 +283,15 @@ std::shared_ptr<GeomAPI_Pnt>
   GeomAlgoAPI_ShapeTools::centreOfMass(const std::shared_ptr<GeomAPI_Shape> theShape)
 {
   GProp_GProps aGProps;
-  if(!theShape) {
+  if (!theShape) {
     return std::shared_ptr<GeomAPI_Pnt>();
   }
   const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
-  if(aShape.IsNull()) {
+  if (aShape.IsNull()) {
     return std::shared_ptr<GeomAPI_Pnt>();
   }
   gp_Pnt aCentre;
-  if(aShape.ShapeType() == TopAbs_VERTEX) {
+  if (aShape.ShapeType() == TopAbs_VERTEX) {
     aCentre = BRep_Tool::Pnt(TopoDS::Vertex(aShape));
   } else {
     aGProps = props(aShape);
@@ -362,17 +362,17 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
 
   GeomShapePtr aResult = theCompound;
 
-  if(!theCompound.get()) {
+  if (!theCompound.get()) {
     return aResult;
   }
 
-  if(theType != GeomAPI_Shape::SHELL && theType != GeomAPI_Shape::COMPSOLID) {
+  if (theType != GeomAPI_Shape::SHELL && theType != GeomAPI_Shape::COMPSOLID) {
     return aResult;
   }
 
   TopAbs_ShapeEnum aTS = TopAbs_EDGE;
   TopAbs_ShapeEnum aTA = TopAbs_FACE;
-  if(theType == GeomAPI_Shape::COMPSOLID) {
+  if (theType == GeomAPI_Shape::COMPSOLID) {
     aTS = TopAbs_FACE;
     aTA = TopAbs_SOLID;
   }
@@ -385,15 +385,15 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
   // Get free shapes.
   int anOrder = 0;
   const TopoDS_Shape& aShapesComp = theCompound->impl<TopoDS_Shape>();
-  for(TopoDS_Iterator anIter(aShapesComp); anIter.More(); anIter.Next(), anOrder++) {
+  for (TopoDS_Iterator anIter(aShapesComp); anIter.More(); anIter.Next(), anOrder++) {
     const TopoDS_Shape& aShape = anIter.Value();
-    if(aShape.ShapeType() > aTA) {
+    if (aShape.ShapeType() > aTA) {
       std::shared_ptr<GeomAPI_Shape> aGeomShape(new GeomAPI_Shape);
       aGeomShape->setImpl<TopoDS_Shape>(new TopoDS_Shape(aShape));
       aResFreeShapes.push_back(aGeomShape);
       anInputOrder[aGeomShape] = anOrder;
     } else {
-      for(TopExp_Explorer anExp(aShape, aTA); anExp.More(); anExp.Next()) {
+      for (TopExp_Explorer anExp(aShape, aTA); anExp.More(); anExp.Next()) {
         anAncestorsOrder.Bind(anExp.Current(), anOrder);
       }
     }
@@ -402,7 +402,7 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
   // Map sub-shapes and shapes.
   TopTools_IndexedDataMapOfShapeListOfShape aMapSA;
   TopExp::MapShapesAndAncestors(aShapesComp, aTS, aTA, aMapSA);
-  if(aMapSA.IsEmpty()) {
+  if (aMapSA.IsEmpty()) {
     return aResult;
   }
   theResuts.clear();
@@ -410,13 +410,13 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
   // Get all shapes with common sub-shapes and free shapes.
   NCollection_Map<TopoDS_Shape> aFreeShapes;
   NCollection_Vector<NCollection_Map<TopoDS_Shape>> aShapesWithCommonSubshapes;
-  for(TopTools_IndexedDataMapOfShapeListOfShape::Iterator
+  for (TopTools_IndexedDataMapOfShapeListOfShape::Iterator
       anIter(aMapSA); anIter.More(); anIter.Next()) {
     TopTools_ListOfShape& aListOfShape = anIter.ChangeValue();
-    if(aListOfShape.IsEmpty()) {
+    if (aListOfShape.IsEmpty()) {
       continue;
     }
-    else if(aListOfShape.Size() == 1) {
+    else if (aListOfShape.Size() == 1) {
       const TopoDS_Shape& aF = aListOfShape.First();
       aFreeShapes.Add(aF);
       aListOfShape.Clear();
@@ -429,17 +429,17 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
         aFreeShapes.Remove(aListIt.Value());
       }
       aListOfShape.Clear();
-      for(NCollection_List<TopoDS_Shape>::Iterator
+      for (NCollection_List<TopoDS_Shape>::Iterator
           aTempIter(aTempList); aTempIter.More(); aTempIter.Next()) {
         const TopoDS_Shape& aTempShape = aTempIter.Value();
-        for(TopTools_IndexedDataMapOfShapeListOfShape::Iterator
+        for (TopTools_IndexedDataMapOfShapeListOfShape::Iterator
             anIter2(aMapSA); anIter2.More(); anIter2.Next()) {
           TopTools_ListOfShape& aTempListOfShape = anIter2.ChangeValue();
-          if(aTempListOfShape.IsEmpty()) {
+          if (aTempListOfShape.IsEmpty()) {
             continue;
-          } else if(aTempListOfShape.Size() == 1 && aTempListOfShape.First() == aTempShape) {
+          } else if (aTempListOfShape.Size() == 1 && aTempListOfShape.First() == aTempShape) {
             aTempListOfShape.Clear();
-          } else if(aTempListOfShape.Size() > 1) {
+          } else if (aTempListOfShape.Size() > 1) {
             TopTools_ListOfShape::Iterator anIt1(aTempListOfShape);
             for (; anIt1.More(); anIt1.Next()) {
               if (anIt1.Value() == aTempShape) {
@@ -465,7 +465,7 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
   }
 
   // Combine shapes with common sub-shapes.
-  for(NCollection_Vector<NCollection_Map<TopoDS_Shape>>::Iterator
+  for (NCollection_Vector<NCollection_Map<TopoDS_Shape>>::Iterator
       anIter(aShapesWithCommonSubshapes); anIter.More(); anIter.Next()) {
     TopoDS_Shell aShell;
     TopoDS_CompSolid aCSolid;
@@ -474,9 +474,9 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
     theType ==
       GeomAPI_Shape::COMPSOLID ? aBuilder.MakeCompSolid(aCSolid) : aBuilder.MakeShell(aShell);
     NCollection_Map<TopoDS_Shape>& aShapesMap = anIter.ChangeValue();
-    for(TopExp_Explorer anExp(aShapesComp, aTA); anExp.More(); anExp.Next()) {
+    for (TopExp_Explorer anExp(aShapesComp, aTA); anExp.More(); anExp.Next()) {
       const TopoDS_Shape& aShape = anExp.Current();
-      if(aShapesMap.Contains(aShape)) {
+      if (aShapesMap.Contains(aShape)) {
         theType ==
           GeomAPI_Shape::COMPSOLID ? aBuilder.Add(aCSolid, aShape) : aBuilder.Add(aShell, aShape);
         aShapesMap.Remove(aShape);
@@ -494,9 +494,9 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
   }
 
   // Adding free shapes.
-  for(TopExp_Explorer anExp(aShapesComp, aTA); anExp.More(); anExp.Next()) {
+  for (TopExp_Explorer anExp(aShapesComp, aTA); anExp.More(); anExp.Next()) {
     const TopoDS_Shape& aShape = anExp.Current();
-    if(aFreeShapes.Contains(aShape)) {
+    if (aFreeShapes.Contains(aShape)) {
       std::shared_ptr<GeomAPI_Shape> aGeomShape(new GeomAPI_Shape);
       aGeomShape->setImpl<TopoDS_Shape>(new TopoDS_Shape(aShape));
       aResFreeShapes.push_back(aGeomShape);
@@ -504,10 +504,10 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
     }
   }
 
-  if(aResCombinedShapes.size() == 1 && aResFreeShapes.size() == 0) {
+  if (aResCombinedShapes.size() == 1 && aResFreeShapes.size() == 0) {
     aResult = aResCombinedShapes.front();
     theResuts.push_back(aResult);
-  } else if(aResCombinedShapes.size() == 0 && aResFreeShapes.size() == 1) {
+  } else if (aResCombinedShapes.size() == 0 && aResFreeShapes.size() == 1) {
     aResult = aResFreeShapes.front();
     theResuts.push_back(aResult);
   } else {
@@ -517,10 +517,10 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
     // put to result compound and result list in accordance to the order numbers
     std::map<GeomShapePtr, int>::iterator anInputIter = anInputOrder.begin();
     std::map<int, GeomShapePtr> aNums;
-    for(; anInputIter != anInputOrder.end(); anInputIter++)
+    for (; anInputIter != anInputOrder.end(); anInputIter++)
       aNums[anInputIter->second] = anInputIter->first;
     std::map<int, GeomShapePtr>::iterator aNumsIter = aNums.begin();
-    for(; aNumsIter != aNums.end(); aNumsIter++) {
+    for (; aNumsIter != aNums.end(); aNumsIter++) {
       aBuilder.Add(aResultComp, (aNumsIter->second)->impl<TopoDS_Shape>());
       theResuts.push_back(aNumsIter->second);
     }
@@ -534,12 +534,12 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::combineShapes(
 static void addSimpleShapeToList(const TopoDS_Shape& theShape,
                                  NCollection_List<TopoDS_Shape>& theList)
 {
-  if(theShape.IsNull()) {
+  if (theShape.IsNull()) {
     return;
   }
 
-  if(theShape.ShapeType() == TopAbs_COMPOUND) {
-    for(TopoDS_Iterator anIt(theShape); anIt.More(); anIt.Next()) {
+  if (theShape.ShapeType() == TopAbs_COMPOUND) {
+    for (TopoDS_Iterator anIt(theShape); anIt.More(); anIt.Next()) {
       addSimpleShapeToList(anIt.Value(), theList);
     }
   } else {
@@ -555,7 +555,7 @@ static TopoDS_Compound makeCompound(const NCollection_List<TopoDS_Shape> theShap
   BRep_Builder aBuilder;
   aBuilder.MakeCompound(aCompound);
 
-  for(NCollection_List<TopoDS_Shape>::Iterator anIt(theShapes); anIt.More(); anIt.Next()) {
+  for (NCollection_List<TopoDS_Shape>::Iterator anIt(theShapes); anIt.More(); anIt.Next()) {
     aBuilder.Add(aCompound, anIt.Value());
   }
 
@@ -666,7 +666,7 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::groupSharedTopology(
   for (NCollection_Vector<TopTools_MapOfShape>::Iterator anIt(aGroups); anIt.More(); anIt.Next()) {
     const TopTools_MapOfShape& aGroup = anIt.ChangeValue();
     GeomShapePtr aGeomShape(new GeomAPI_Shape());
-    if(aGroup.Size() == 1) {
+    if (aGroup.Size() == 1) {
       TopTools_MapOfShape::Iterator aOneShapeIter(aGroup);
       aGeomShape->setImpl(new TopoDS_Shape(aOneShapeIter.Value()));
     } else {
@@ -685,7 +685,7 @@ std::shared_ptr<GeomAPI_Shape> GeomAlgoAPI_ShapeTools::groupSharedTopology(
     aBuilder.Add(aCompound, aGeomShape->impl<TopoDS_Shape>());
   }
 
-  if(!aCompound.IsNull()) {
+  if (!aCompound.IsNull()) {
     aResult->setImpl(new TopoDS_Shape(aCompound));
   }
 
@@ -724,7 +724,7 @@ std::list<std::shared_ptr<GeomAPI_Pnt> >
     BRepBndLib::Add(aShape, aBndBox);
   }
 
-  if(theEnlarge != 0.0) {
+  if (theEnlarge != 0.0) {
     // We enlarge bounding box just to be sure that plane will be large enough to cut all objects.
     aBndBox.Enlarge(theEnlarge);
   }
@@ -733,9 +733,9 @@ std::list<std::shared_ptr<GeomAPI_Pnt> >
   Standard_Real aYArr[2] = {aBndBox.CornerMin().Y(), aBndBox.CornerMax().Y()};
   Standard_Real aZArr[2] = {aBndBox.CornerMin().Z(), aBndBox.CornerMax().Z()};
   std::list<std::shared_ptr<GeomAPI_Pnt> > aResultPoints;
-  for(int i = 0; i < 2; i++) {
-    for(int j = 0; j < 2; j++) {
-      for(int k = 0; k < 2; k++) {
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      for (int k = 0; k < 2; k++) {
         std::shared_ptr<GeomAPI_Pnt> aPnt(new GeomAPI_Pnt(aXArr[i], aYArr[j], aZArr[k]));
         aResultPoints.push_back(aPnt);
       }
@@ -752,27 +752,27 @@ std::shared_ptr<GeomAPI_Face> GeomAlgoAPI_ShapeTools::fitPlaneToBox(
 {
   std::shared_ptr<GeomAPI_Face> aResultFace;
 
-  if(!thePlane.get()) {
+  if (!thePlane.get()) {
     return aResultFace;
   }
 
   const TopoDS_Shape& aShape = thePlane->impl<TopoDS_Shape>();
-  if(aShape.ShapeType() != TopAbs_FACE) {
+  if (aShape.ShapeType() != TopAbs_FACE) {
     return aResultFace;
   }
 
   TopoDS_Face aFace = TopoDS::Face(aShape);
   Handle(Geom_Surface) aSurf = BRep_Tool::Surface(aFace);
-  if(aSurf.IsNull()) {
+  if (aSurf.IsNull()) {
     return aResultFace;
   }
 
   GeomLib_IsPlanarSurface isPlanar(aSurf);
-  if(!isPlanar.IsPlanar()) {
+  if (!isPlanar.IsPlanar()) {
     return aResultFace;
   }
 
-  if(thePoints.size() != 8) {
+  if (thePoints.size() != 8) {
     return aResultFace;
   }
 
@@ -789,10 +789,10 @@ std::shared_ptr<GeomAPI_Face> GeomAlgoAPI_ShapeTools::fitPlaneToBox(
     const gp_Pnt& aPntOnFace = anIntAna.Point(1);
     Standard_Real aPntU(0), aPntV(0);
     GeomLib_Tool::Parameters(aFacePlane, aPntOnFace, Precision::Confusion(), aPntU, aPntV);
-    if(aPntU < UMin) UMin = aPntU;
-    if(aPntU > UMax) UMax = aPntU;
-    if(aPntV < VMin) VMin = aPntV;
-    if(aPntV > VMax) VMax = aPntV;
+    if (aPntU < UMin) UMin = aPntU;
+    if (aPntU > UMax) UMax = aPntU;
+    if (aPntV < VMin) VMin = aPntV;
+    if (aPntV > VMax) VMax = aPntV;
   }
   aResultFace.reset(new GeomAPI_Face());
   aResultFace->setImpl(new TopoDS_Face(BRepLib_MakeFace(aFacePln, UMin, UMax, VMin, VMax).Face()));
@@ -839,7 +839,7 @@ void GeomAlgoAPI_ShapeTools::makeFacesWithHoles(const std::shared_ptr<GeomAPI_Pn
 
   BRepAlgo_FaceRestrictor aFRestrictor;
   aFRestrictor.Init(aFace, Standard_False, Standard_True);
-  for(ListOfShape::const_iterator anIt = theWires.cbegin();
+  for (ListOfShape::const_iterator anIt = theWires.cbegin();
       anIt != theWires.cend();
       ++anIt) {
     TopoDS_Wire aWire = TopoDS::Wire((*anIt)->impl<TopoDS_Shape>());
@@ -848,11 +848,11 @@ void GeomAlgoAPI_ShapeTools::makeFacesWithHoles(const std::shared_ptr<GeomAPI_Pn
 
   aFRestrictor.Perform();
 
-  if(!aFRestrictor.IsDone()) {
+  if (!aFRestrictor.IsDone()) {
     return;
   }
 
-  for(; aFRestrictor.More(); aFRestrictor.Next()) {
+  for (; aFRestrictor.More(); aFRestrictor.Next()) {
     GeomShapePtr aShape(new GeomAPI_Shape());
     aShape->setImpl(new TopoDS_Shape(aFRestrictor.Current()));
     theFaces.push_back(aShape);
@@ -866,12 +866,12 @@ std::shared_ptr<GeomAPI_Pln> GeomAlgoAPI_ShapeTools::findPlane(const ListOfShape
   BRep_Builder aBuilder;
   aBuilder.MakeCompound(aCompound);
 
-  for(ListOfShape::const_iterator anIt = theShapes.cbegin(); anIt != theShapes.cend(); ++anIt) {
+  for (ListOfShape::const_iterator anIt = theShapes.cbegin(); anIt != theShapes.cend(); ++anIt) {
     aBuilder.Add(aCompound, (*anIt)->impl<TopoDS_Shape>());
   }
   BRepBuilderAPI_FindPlane aFindPlane(aCompound);
 
-  if(aFindPlane.Found() != Standard_True) {
+  if (aFindPlane.Found() != Standard_True) {
     return std::shared_ptr<GeomAPI_Pln>();
   }
 
@@ -892,28 +892,28 @@ bool GeomAlgoAPI_ShapeTools::isSubShapeInsideShape(
   const std::shared_ptr<GeomAPI_Shape> theSubShape,
   const std::shared_ptr<GeomAPI_Shape> theBaseShape)
 {
-  if(!theSubShape.get() || !theBaseShape.get()) {
+  if (!theSubShape.get() || !theBaseShape.get()) {
     return false;
   }
 
   const TopoDS_Shape& aSubShape = theSubShape->impl<TopoDS_Shape>();
   const TopoDS_Shape& aBaseShape = theBaseShape->impl<TopoDS_Shape>();
 
-  if(aSubShape.ShapeType() == TopAbs_VERTEX) {
+  if (aSubShape.ShapeType() == TopAbs_VERTEX) {
     // If sub-shape is a vertex check distance to shape. If it is <= Precision::Confusion() then OK.
     BRepExtrema_DistShapeShape aDist(aBaseShape, aSubShape);
     aDist.Perform();
-    if(!aDist.IsDone() || aDist.Value() > Precision::Confusion()) {
+    if (!aDist.IsDone() || aDist.Value() > Precision::Confusion()) {
       return false;
     }
   } else if (aSubShape.ShapeType() == TopAbs_EDGE) {
-    if(aBaseShape.ShapeType() == TopAbs_FACE) {
+    if (aBaseShape.ShapeType() == TopAbs_FACE) {
       // Check that edge is on face surface.
       TopoDS_Face aFace = TopoDS::Face(aBaseShape);
       TopoDS_Edge anEdge = TopoDS::Edge(aSubShape);
       BRepLib_CheckCurveOnSurface aCheck(anEdge, aFace);
       aCheck.Perform();
-      if(!aCheck.IsDone() || aCheck.MaxDistance() > Precision::Confusion()) {
+      if (!aCheck.IsDone() || aCheck.MaxDistance() > Precision::Confusion()) {
         return false;
       }
 
@@ -922,15 +922,15 @@ bool GeomAlgoAPI_ShapeTools::isSubShapeInsideShape(
       ShapeAnalysis::FindBounds(anEdge, aV1, aV2);
       gp_Pnt aPnt1 = BRep_Tool::Pnt(aV1);
       gp_Pnt aPnt2 = BRep_Tool::Pnt(aV2);
-      for(TopExp_Explorer anExp(aBaseShape, TopAbs_EDGE); anExp.More(); anExp.Next()) {
+      for (TopExp_Explorer anExp(aBaseShape, TopAbs_EDGE); anExp.More(); anExp.Next()) {
         const TopoDS_Shape& anEdgeOnFace = anExp.Current();
         BRepExtrema_DistShapeShape aDist(anEdgeOnFace, anEdge);
         aDist.Perform();
-        if(aDist.IsDone() && aDist.Value() <= Precision::Confusion()) {
+        if (aDist.IsDone() && aDist.Value() <= Precision::Confusion()) {
           // Edge intersect face bound. Check that it is not on edge begin or end.
-          for(Standard_Integer anIndex = 1; anIndex <= aDist.NbSolution(); ++anIndex) {
+          for (Standard_Integer anIndex = 1; anIndex <= aDist.NbSolution(); ++anIndex) {
             gp_Pnt aPntOnSubShape = aDist.PointOnShape2(anIndex);
-            if(aPntOnSubShape.Distance(aPnt1) > Precision::Confusion()
+            if (aPntOnSubShape.Distance(aPnt1) > Precision::Confusion()
                 && aPntOnSubShape.Distance(aPnt2) > Precision::Confusion()) {
               return false;
             }
@@ -947,7 +947,7 @@ bool GeomAlgoAPI_ShapeTools::isSubShapeInsideShape(
       ShapeAnalysis_Surface aSAS(aSurface);
       gp_Pnt2d aPointOnFace = aSAS.ValueOfUV(aPointToCheck, Precision::Confusion());
       BRepTopAdaptor_FClass2d aFClass2d(aFace, Precision::Confusion());
-      if(aFClass2d.Perform(aPointOnFace) == TopAbs_OUT) {
+      if (aFClass2d.Perform(aPointOnFace) == TopAbs_OUT) {
         return false;
       }
 
@@ -964,7 +964,7 @@ bool GeomAlgoAPI_ShapeTools::isSubShapeInsideShape(
 //==================================================================================================
 bool GeomAlgoAPI_ShapeTools::isShapeValid(const std::shared_ptr<GeomAPI_Shape> theShape)
 {
-  if(!theShape.get()) {
+  if (!theShape.get()) {
     return false;
   }
 
@@ -978,7 +978,7 @@ std::shared_ptr<GeomAPI_Shape>
 {
   GeomShapePtr anOuterWire;
 
-  if(!theFace.get() || !theFace->isFace()) {
+  if (!theFace.get() || !theFace->isFace()) {
     return anOuterWire;
   }
 
@@ -1033,7 +1033,7 @@ bool GeomAlgoAPI_ShapeTools::isTangent(const std::shared_ptr<GeomAPI_Edge> theEd
 bool GeomAlgoAPI_ShapeTools::isParallel(const std::shared_ptr<GeomAPI_Edge> theEdge,
                                         const std::shared_ptr<GeomAPI_Face> theFace)
 {
-  if(!theEdge.get() || !theFace.get()) {
+  if (!theEdge.get() || !theFace.get()) {
     return false;
   }
 
@@ -1049,7 +1049,7 @@ std::list<std::shared_ptr<GeomAPI_Vertex> > GeomAlgoAPI_ShapeTools::intersect(
   const std::shared_ptr<GeomAPI_Edge> theEdge, const std::shared_ptr<GeomAPI_Face> theFace)
 {
   std::list<std::shared_ptr<GeomAPI_Vertex> > aResult;
-  if(!theEdge.get() || !theFace.get()) {
+  if (!theEdge.get() || !theFace.get()) {
     return aResult;
   }
 
@@ -1064,7 +1064,7 @@ std::list<std::shared_ptr<GeomAPI_Vertex> > GeomAlgoAPI_ShapeTools::intersect(
   if (!anIntAlgo.IsDone())
     return aResult;
   // searching for points-intersection
-  for(int anIntNum = 1; anIntNum <= anIntAlgo.NbPoints() + anIntAlgo.NbSegments(); anIntNum++) {
+  for (int anIntNum = 1; anIntNum <= anIntAlgo.NbPoints() + anIntAlgo.NbSegments(); anIntNum++) {
     gp_Pnt anInt;
     if (anIntNum <= anIntAlgo.NbPoints()) {
       anInt = anIntAlgo.Point(anIntNum);
@@ -1411,12 +1411,12 @@ void GeomAlgoAPI_ShapeTools::computeThroughAll(const ListOfShape& theObjects,
           TopExp_Explorer anExp(aBaseShape, TopAbs_FACE);
           const TopoDS_Shape& aFace = anExp.Current();
           Handle(Geom_Surface) aSurface = BRep_Tool::Surface(TopoDS::Face(aFace));
-          if(aSurface->DynamicType() == STANDARD_TYPE(Geom_RectangularTrimmedSurface)) {
+          if (aSurface->DynamicType() == STANDARD_TYPE(Geom_RectangularTrimmedSurface)) {
             Handle(Geom_RectangularTrimmedSurface) aTrimSurface =
               Handle(Geom_RectangularTrimmedSurface)::DownCast(aSurface);
             aSurface = aTrimSurface->BasisSurface();
           }
-          if(aSurface->DynamicType() != STANDARD_TYPE(Geom_Plane)) {
+          if (aSurface->DynamicType() != STANDARD_TYPE(Geom_Plane)) {
             return;
           }
           aPlane = Handle(Geom_Plane)::DownCast(aSurface);

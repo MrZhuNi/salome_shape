@@ -35,11 +35,13 @@
 #include <map>
 #include <cmath>
 
+//=================================================================================================
 bool FiltersPlugin_EdgeSize::isSupported(GeomAPI_Shape::ShapeType theType) const
 {
   return theType == GeomAPI_Shape::EDGE;
 }
 
+//=================================================================================================
 bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&,
                                   const ModelAPI_FiltersArgs& theArgs) const
 {
@@ -99,11 +101,13 @@ bool FiltersPlugin_EdgeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   return isOK;
 }
 
+//=================================================================================================
 std::string FiltersPlugin_EdgeSize::xmlRepresentation() const
 {
   return xmlFromFile("filter-EdgeSize.xml");
 }
 
+//=================================================================================================
 void FiltersPlugin_EdgeSize::initAttributes(ModelAPI_FiltersArgs& theArguments)
 {
   theArguments.initAttribute("comparatorType", ModelAPI_AttributeString::typeId());

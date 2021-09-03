@@ -31,6 +31,8 @@
 
 #include <GeomAlgoAPI_ShapeTools.h>
 
+#include <Precision.hxx>
+
 #include <map>
 #include <math.h>
 #include <iostream>
@@ -72,7 +74,8 @@ static void cacheFeatureEdge(const GeomShapePtr theTopLevelShape,
       for (;aFIt2 != aIt->second.end(); ++aFIt2) {
         std::string anError;
         if (theCache.find(*aFIt) == theCache.end()) {
-          if (!GeomAlgoAPI_ShapeTools::isContinuousFaces(*aFIt,
+          if (theAngle < Precision::Confusion()
+              || !GeomAlgoAPI_ShapeTools::isContinuousFaces(*aFIt,
                                                          *aFIt2,
                                                          anEdge->middlePoint(),
                                                          theAngle,

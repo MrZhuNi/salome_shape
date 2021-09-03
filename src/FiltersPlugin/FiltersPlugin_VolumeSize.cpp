@@ -29,14 +29,17 @@
 #include <GeomAPI_Wire.h>
 
 #include <Precision.hxx>
+
 #include <map>
 #include <cmath>
 
+//=================================================================================================
 bool FiltersPlugin_VolumeSize::isSupported(GeomAPI_Shape::ShapeType theType) const
 {
   return theType == GeomAPI_Shape::SOLID;
 }
 
+//=================================================================================================
 bool FiltersPlugin_VolumeSize::isOk(const GeomShapePtr& theShape, const ResultPtr&,
                                   const ModelAPI_FiltersArgs& theArgs) const
 {
@@ -83,11 +86,13 @@ bool FiltersPlugin_VolumeSize::isOk(const GeomShapePtr& theShape, const ResultPt
   return isOK;
 }
 
+//=================================================================================================
 std::string FiltersPlugin_VolumeSize::xmlRepresentation() const
 {
   return xmlFromFile("filter-VolumeSize.xml");
 }
 
+//=================================================================================================
 void FiltersPlugin_VolumeSize::initAttributes(ModelAPI_FiltersArgs& theArguments)
 {
   theArguments.initAttribute("comparatorType", ModelAPI_AttributeString::typeId());

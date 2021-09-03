@@ -73,7 +73,7 @@
         if (!temp_string) {
           $1 = 0;
         }
-      }else
+      } else
       if (!PyFloat_Check(item) && PyLong_Check(item))
         $1 = 0;
       else
@@ -117,7 +117,7 @@
       if (PyBool_Check(item)) {
         temp.push_back(FiltersAPI_Argument(item == Py_True));
       } else
-      if(PyFloat_Check(item) || PyLong_Check(item)) {
+      if (PyFloat_Check(item) || PyLong_Check(item)) {
         temp.push_back(FiltersAPI_Argument(ModelHighAPI_Double(PyFloat_AsDouble(item))));
       } else {
         PyErr_SetString(PyExc_TypeError, "argument must be ModelHighAPI_Selection, string, double or boolean.4");

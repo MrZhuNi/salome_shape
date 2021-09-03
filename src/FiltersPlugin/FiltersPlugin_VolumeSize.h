@@ -28,7 +28,7 @@
 
 /**\class FiltersPlugin_VolumeSize
 * \ingroup DataModel
-* \brief Filter for solid with specific area
+* \brief Filter for solid with specific volume
 */
 class FiltersPlugin_VolumeSize : public ModelAPI_Filter
 {
@@ -40,7 +40,7 @@ public:
     return kName;
   }
 
-  /// Returns true for face type
+  /// Returns true for solid type
   virtual bool isSupported(GeomAPI_Shape::ShapeType theType) const override;
 
   /// This method should contain the filter logic. It returns true if the given shape

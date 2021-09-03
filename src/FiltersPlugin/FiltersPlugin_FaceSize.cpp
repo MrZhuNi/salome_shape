@@ -33,12 +33,13 @@
 #include <map>
 #include <cmath>
 
-
+//=================================================================================================
 bool FiltersPlugin_FaceSize::isSupported(GeomAPI_Shape::ShapeType theType) const
 {
   return theType == GeomAPI_Shape::FACE;
 }
 
+//=================================================================================================
 bool FiltersPlugin_FaceSize::isOk(const GeomShapePtr& theShape, const ResultPtr&,
                                   const ModelAPI_FiltersArgs& theArgs) const
 {
@@ -85,11 +86,13 @@ bool FiltersPlugin_FaceSize::isOk(const GeomShapePtr& theShape, const ResultPtr&
   return isOK;
 }
 
+//=================================================================================================
 std::string FiltersPlugin_FaceSize::xmlRepresentation() const
 {
   return xmlFromFile("filter-FaceSize.xml");
 }
 
+//=================================================================================================
 void FiltersPlugin_FaceSize::initAttributes(ModelAPI_FiltersArgs& theArguments)
 {
   theArguments.initAttribute("comparatorType", ModelAPI_AttributeString::typeId());
