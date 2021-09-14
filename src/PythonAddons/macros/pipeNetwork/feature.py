@@ -23,7 +23,7 @@ Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.14"
+__revision__ = "V02.15"
 
 from salome.shaper import model
 import ModelAPI
@@ -35,9 +35,14 @@ def raiseException(texte):
     """En cas d'erreur"""
     print (texte)
 
-def printverbose (texte, verbose=False):
+def printverbose (texte, nb=0, verbose=False):
     """Impression controlée"""
     if verbose:
+        if nb:
+            texte_a = ""
+            for _ in range(nb):
+                texte_a += "="
+            print (texte_a)
         print (texte)
 
 class pipeNetwork(model.Feature):
@@ -136,7 +141,7 @@ Par défaut, on supposera que la connection est angulaire et que ce n'est pas un
                 self.infoPoints[splitLine[0]]["X"] = self.infoPoints[splitLine[1]]["X"] + float(splitLine[2])
                 self.infoPoints[splitLine[0]]["Y"] = self.infoPoints[splitLine[1]]["Y"] + float(splitLine[3])
                 self.infoPoints[splitLine[0]]["Z"] = self.infoPoints[splitLine[1]]["Z"] + float(splitLine[4])
-            printverbose ("Enregistrement du point ({},{},{})".format(self.infoPoints[splitLine[0]]["X"],self.infoPoints[splitLine[0]]["Y"],self.infoPoints[splitLine[0]]["Z"]), self._verbose)
+            printverbose ("Enregistrement du point ({},{},{})".format(self.infoPoints[splitLine[0]]["X"],self.infoPoints[splitLine[0]]["Y"],self.infoPoints[splitLine[0]]["Z"]), verbose=self._verbose)
             self.infoPoints[splitLine[0]]["Fillet"] = "angular_connection"
             self.infoPoints[splitLine[0]]["isEnd"] = False
         #print ("Retour de readNodeInfo = {}".format(diagno))
@@ -153,7 +158,7 @@ La ligne à décoder est formée des informations :
 Par défaut, on supposera que la méthode est par ligne.
         """
         splitLine = line.split(" ")
-        printverbose ("Enregistrement du tronçon : {}".format(line),self._verbose)
+        printverbose ("Enregistrement du tronçon : {}".format(line),verbose=self._verbose)
         diagno = 0
         if method == self.twopartwo :
             if self.connectivities:
@@ -325,7 +330,7 @@ La ligne est formée de deux informations :
         startFace = None
         fuse = None
         for ind in range(len(connectivityInfos['paths'])):
-            printverbose ("Step = {}".format(ind), self._verbose_max)
+            printverbose ("Step = {}".format(ind), 80, verbose=self._verbose_max)
             if ind == 0:
                 startFace = connectivityInfos['sketch']
             if connectivityInfos['isPipe'][ind] :
@@ -348,7 +353,7 @@ La ligne est formée de deux informations :
             pipe.execute(True)
             self.lfeatures.append(pipe)
             lPipes.append(pipe.result())
-            if ind < len(connectivityInfos['paths'])-1:
+            if ( ind < len(connectivityInfos['paths'])-1 ):
                 copy = model.addCopy(part, [model.selection(pipe.defaultResult())], 1)
                 copy.execute(True)
                 self.lfeatures.append(copy)
@@ -363,6 +368,8 @@ La ligne est formée de deux informations :
         return fuse
 
 #==========================================================
+
+#==========================================================
 # Création des différents éléments
     def createPoints(self, part):
         """Création des points
@@ -370,9 +377,9 @@ La ligne est formée de deux informations :
 Le point est créé en tant qu'objet de construction avec ses coordonnées.
 Il est nommé conformément au texte donné dans le fichier de données. Cela n'a qu'un intérêt graphique mais agréable en débogage.
 """
-        print("========================= Création des noeuds =========================")
+        print("========================= Création des noeuds ============================")
         for key, value in self.infoPoints.items():
-            printverbose ("Noeud : '{}'".format(key), self._verbose)
+            printverbose ("Noeud : '{}'".format(key), verbose=self._verbose)
             point = model.addPoint(part, value['X'], value['Y'], value['Z'])
             point.execute(True)
             point.setName(key)
@@ -388,7 +395,7 @@ Elle est nommée conformément aux 1er et dernier noeud. Cela n'a qu'un intérê
 """
         print("========================= Création des polylines =========================")
         for key, value in self.connectivities.items():
-            printverbose ("Ligne : {}".format(value['chainage']), self._verbose)
+            printverbose ("Ligne : {}".format(value['chainage']), verbose=self._verbose)
             lPoints = list()
             for id_noeud in value['chainage']:
                 lPoints.append(self.infoPoints[id_noeud]["point"])
@@ -407,14 +414,14 @@ Elle est nommée conformément aux 1er et dernier noeud. Cela n'a qu'un intérê
 Le fillet est créé en tant que résultat.
 Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt graphique mais agréable en débogage.
 """
-        print("========================= Création des fillets =========================")
+        print("========================= Création des fillets ===========================")
         for key, value in self.connectivities.items():
-            printverbose ("Examen de la ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            printverbose ("Examen de la ligne démarrant sur le noeud '{}'".format(key), verbose=self._verbose)
             # recherche des noeuds fillets
             value["fillet"] = value["polyline"]
             for id_noeud in value['chainage']:
                 if self.infoPoints[id_noeud]["Fillet"] == "radius" :
-                    printverbose ("\tFillet sur le noeud '{}'".format(id_noeud), self._verbose)
+                    printverbose ("\tFillet sur le noeud '{}'".format(id_noeud), verbose=self._verbose)
                     fillet1D = model.addFillet(part, [model.selection("VERTEX", (self.infoPoints[id_noeud]["X"],self.infoPoints[id_noeud]["Y"],self.infoPoints[id_noeud]["Z"]))], self.infoPoints[id_noeud]["Radius"])
                     fillet1D.execute(True)
                     nom = "F_{}".format(id_noeud)
@@ -423,15 +430,17 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                     self.lfeatures.append(fillet1D)
                     value["fillet"] = fillet1D
 
+#==========================================================
+
     def searchRightConnections(self, part):
         """Recherche des coudes droits"""
-        print("========================= Recherche des coudes droits =========================")
+        print("========================= Recherche des coudes droits ====================")
         for key, value in self.connectivities.items():
-            printverbose ("Examen de la ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            printverbose ("Examen de la ligne démarrant sur le noeud '{}'".format(key), verbose=self._verbose)
             # recherche des noeuds fillets
             for ind, id_noeud in enumerate(value['chainage']):
-                printverbose ("\tNoeud '{}' : {}".format(id_noeud,self.infoPoints[id_noeud]["Fillet"]), self._verbose)
-                if ind == 0 or ind == len(value['chainage'])-1 :
+                printverbose ("\tNoeud '{}' : {}".format(id_noeud,self.infoPoints[id_noeud]["Fillet"]), verbose=self._verbose)
+                if ( ( ind == 0 ) or ( ind == len(value['chainage'])-1 ) ):
                     self.infoPoints[id_noeud]["isAngular"] = False
                 else :
                     if self.infoPoints[id_noeud]["Fillet"] == "radius" :
@@ -443,7 +452,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                             self.infoPoints[id_noeud]["isAngular"] = True
                             # Axe d'extrusion
                             #print(ind-1, ind, ind+1)
-                            printverbose ("\t\tCréation du plan passant par les points : ('{}','{}','{}')".format(value["chainage"][ind-1], id_noeud, value["chainage"][ind+1]), self._verbose)
+                            printverbose ("\t\tCréation du plan passant par les points : ('{}','{}','{}')".format(value["chainage"][ind-1], id_noeud, value["chainage"][ind+1]), verbose=self._verbose)
                             #print(self.infoPoints[value["chainage"][ind-1]]["point"])
 
                             tmpPlane = model.addPlane(part, self.infoPoints[value["chainage"][ind-1]]["point"], self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
@@ -454,7 +463,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                             self.lfeatures.append(axis)
                             self.infoPoints[id_noeud]["axis"] = axis.result()
 
-                            # Edge a extruder
+                            # Edge à extruder
                             tmpEdge = model.addEdge(part, self.infoPoints[id_noeud]["point"], self.infoPoints[value["chainage"][ind+1]]["point"])
                             tmpEdge.execute(True)
                             self.lfeatures.append(tmpEdge)
@@ -481,9 +490,9 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
 
     def createPaths(self, part):
         """Création des paths pour le pipeNetwork"""
-        print("========================= Création des paths =========================")
+        print("========================= Création des paths =============================")
         for key, value in self.connectivities.items():
-            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), verbose=self._verbose)
             # recherche des noeuds fillets
             value["paths"] = list()
             value["isPipe"] = list()
@@ -512,7 +521,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
         """Création des sketchs"""
         print("========================= Création des sketchs =========================")
         for key, value in self.connectivities.items():
-            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), verbose=self._verbose)
             # Creating sketch
             edge = model.addEdge(part, self.infoPoints[value["chainage"][0]]["point"], self.infoPoints[value["chainage"][1]]["point"])
             edge.execute(True)
@@ -539,7 +548,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
         """Création des pipes"""
         print("========================= Création des pipes =========================")
         for key, value in self.connectivities.items():
-            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), self._verbose)
+            printverbose ("Ligne démarrant sur le noeud '{}'".format(key), verbose=self._verbose)
             pipe = self.createPipe(part, value)
             value["pipe"] = pipe.result()
 
@@ -548,26 +557,29 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
         lPipes = list()
         for key, value in self.connectivities.items():
             lPipes.append(value["pipe"])
-        fuse = model.addFuse(part, lPipes, False)
-        fuse.execute(True)
-        fuse.setName(nameRes)
-        fuse.result().setName(nameRes)
+        if len(lPipes) > 1 :
+            fuse = model.addFuse(part, lPipes, False)
+            fuse.execute(True)
+            fuse.setName(nameRes)
+            fuse.result().setName(nameRes)
+        else:
+            lPipes[0].setName(nameRes)
 
 #==========================================================
 
     def print_info (self, verbose, comment=""):
         if verbose:
-            texte = "\n++++++++++++++++++++++++++++++++++"
+            texte = "\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
             texte += "\nRécapitulatif"
             if comment:
                 texte += " {}".format(comment)
             texte += "\ninfos points ="
             for key, value in self.infoPoints.items():
                 texte += "\n{} : {}".format(key, value)
-            texte += "\n\nconnectivities ="
+            texte += "\nconnectivities ="
             for key, value in self.connectivities.items():
                 texte += "\n{} : {}".format(key, value)
-            texte += "\n++++++++++++++++++++++++++++++++++"
+            texte += "\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
             print(texte+"\n")
 
 #==========================================================
@@ -621,55 +633,55 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                     summary = 0
                     method = self.parligne
                     for line in afile:
-                        printverbose  (line[:-1], self._verbose_max)
+                        printverbose  (line[:-1], verbose=self._verbose_max)
 
                         # B.1.1. Repérages
                         if line == "\n":
-                            printverbose ("========================= Saut de ligne =========================", self._verbose_max)
+                            printverbose ("========================= Saut de ligne =========================", verbose=self._verbose_max)
                             continue
                         if line[0] == "#" or line[:3] == "...":
                             continue
                         if summary == 0 and line[:-1] == "nodes section" :
-                            printverbose ("========================= Lecture des coordonnées =========================", self._verbose)
+                            printverbose ("========================= Lecture des coordonnées ==============================", 80, verbose=self._verbose)
                             summary = 1
                             continue
                         if summary == 1 and line[:-1] == "connectivity section" :
-                            printverbose ("========================= Lecture de la connectivité =========================", self._verbose)
+                            printverbose ("========================= Lecture de la connectivité ===========================", 80, verbose=self._verbose)
                             summary = 2
                             continue
                         if summary == 2 and line[:6] == "method" :
-                            printverbose ("===================== summary == 2 method =========================", self._verbose_max)
+                            printverbose ("===================== summary == 2 method =========================", verbose=self._verbose_max)
                             method = line[7:-1]
-                            printverbose ("Méthode : '{}'".format(method), self._verbose)
+                            printverbose ("Méthode : '{}'".format(method), verbose=self._verbose)
                             if method not in (self.twopartwo, self.parligne):
                                 raiseException("Problem with type of connectivity")
                             continue
                         if summary == 2 and line[:-1] == "fillets section" :
-                            printverbose ("========================= Lecture des fillets =========================", self._verbose)
+                            printverbose ("========================= Lecture des fillets =========================", 80, verbose=self._verbose)
                             summary = 3
                             continue
 
                         # B.1.2. Enregistrement des données
                         if summary == 1:
-                            printverbose ("===================== summary == 1 =========================", self._verbose_max)
+                            printverbose ("===================== summary == 1 =========================", 80, verbose=self._verbose_max)
                             diagno, texte = self.readNodeInfo(line[:-1])
                             if diagno:
                                 raiseException("{}\nProblem with description of nodes.".format(texte))
                             continue
                         if summary == 2:
-                            printverbose ("===================== summary == 2 =========================", self._verbose_max)
+                            printverbose ("===================== summary == 2 =========================", 80, verbose=self._verbose_max)
                             diagno = self.readConnectivity(line[:-1],method)
                             if diagno:
                                 raiseException("Problem with description of connectivities")
                             continue
                         if summary == 3:
-                            printverbose ("===================== summary == 3 =========================", self._verbose_max)
+                            printverbose ("===================== summary == 3 =========================", 80, verbose=self._verbose_max)
                             diagno = self.readFillet(line[:-1])
                             if diagno:
                                 raiseException("Problem with description of fillets")
                             continue
 
-                        printverbose ("===================== Rien =========================", self._verbose_max)
+                        printverbose ("===================== Rien =========================", 80, verbose=self._verbose_max)
                         if diagno:
                             error = diagno
                             break
