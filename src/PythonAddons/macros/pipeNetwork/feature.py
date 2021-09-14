@@ -81,6 +81,7 @@ class pipeNetwork(model.Feature):
         return pipeNetwork.ID()
 
 
+#====================================================================================
 # Initialization of the dialog panel
 
     def initAttributes(self):
@@ -89,7 +90,7 @@ class pipeNetwork(model.Feature):
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
         #self.data().addAttribute(self.HEXAS_ID(), ModelAPI.ModelAPI_AttributeBoolean_typeId())
 
-
+#====================================================================================
 # Retrieve parent pipe
 
     def decodingCode(self, code):
@@ -101,10 +102,12 @@ class pipeNetwork(model.Feature):
             previousCode = code[:len(code)-len(splitCode[-1])-1]
         return previousCode
 
+#====================================================================================
+
     def readNodeInfo(self, line):
         """Lecture des noeuds
 
-La ligne est formée des informations :
+La ligne à décoder est formée des informations :
 . l'identifiant du noeud
 . si les coordonnées sont données en absolu : "-" suivi des 3 coordonnées
 . si les coordonnées sont données en relatif : l'identifiant du noeud de départ, suivi des 3 coordonnées de la translation
@@ -139,36 +142,48 @@ Par défaut, on supposera que la connection est angulaire et que ce n'est pas un
         #print ("Retour de readNodeInfo = {}".format(diagno))
         return diagno, texte
 
+#====================================================================================
+
     def readConnectivity(self, line, method):
-        """Lecture des connectivités"""
+        """Lecture des connectivités
+
+La ligne à décoder est formée des informations :
+. si la méthode est par ligne : la liste des identifiants des noeuds formant le trajet
+. si la méthode est 2 par 2 : chaque tronçon est décrit par les identifiants des 2 noeuds
+Par défaut, on supposera que la méthode est par ligne.
+        """
         splitLine = line.split(" ")
-        printverbose ("Enregistrement de la ligne : {}".format(line),self._verbose)
+        printverbose ("Enregistrement du tronçon : {}".format(line),self._verbose)
         diagno = 0
         if method == self.twopartwo :
             if self.connectivities:
-                # Recherche si ligne déjà existante ou si nouvelle ligne
+                # Recherche si le tronçon existe déjà ou s'il est nouveau
                 for key, val in self.connectivities.items():
                     print(key, " ******* {}".format(val))
                     if val['chainage'][-1] == splitLine[0]:
-                        # La ligne existe
+                        # Le tronçon existe
                         val['chainage'].append(splitLine[1])
-                        print("La ligne existe déjà")
+                        print("On complète le tronçon")
                         return diagno
-                # La ligne n'existe pas
-                print("nouvelle ligne - Cas 2")
+                # Le tronçon n'existe pas
+                print("On démarre un nouveau tronçon - Cas 2")
                 self.newConnectivity(splitLine[0], splitLine)
             else :
-                print("nouvelle ligne - Cas 1")
+                print("On démarre un nouveau tronçon - Cas 1")
                 self.newConnectivity(splitLine[0], splitLine)
         else :
             self.newConnectivity(splitLine[0], splitLine)
         #print ("Retour de readConnectivity = {}".format(diagno))
         return diagno
 
+#====================================================================================
+
     def newConnectivity(self, key, value):
         """newConnectivity"""
         self.connectivities[key] = dict()
         self.connectivities[key]['chainage'] = value
+
+#====================================================================================
 
     def readFillet(self, line):
         """Décodage des caractéristiques de la connection entre deux tuyaux
@@ -196,6 +211,8 @@ La ligne est formée de deux informations :
             diagno = 3
         #print ("Retour de readFillet = {}".format(diagno))
         return diagno
+
+#====================================================================================
 
     def retrieveSubshapesforWire(self, copy, key, ind):
         """retrieveSubshapesforWire"""
@@ -261,6 +278,8 @@ La ligne est formée de deux informations :
 
         return subshapesForWire, currentInd, isPipe, self.connectivities[key]['chainage'][currentInd]
 
+#====================================================================================
+
     def retrieveLastElement(self, obj, typeOfElement):
         """retrieveLastElement"""
         exp = GeomAPI_ShapeExplorer(obj.defaultResult().shape(), typeOfElement)
@@ -279,6 +298,8 @@ La ligne est formée de deux informations :
                 cur = model.selection(obj.defaultResult(), cur)
         return cur
 
+#====================================================================================
+
     def retrieveFirstElement(self, obj, typeOfElement):
         """retrieveFirstElement"""
         exp = GeomAPI_ShapeExplorer(obj.defaultResult().shape(), typeOfElement)
@@ -295,6 +316,8 @@ La ligne est formée de deux informations :
             exp.next()
             cur = model.selection(obj.defaultResult(), cur)
         return cur
+
+#====================================================================================
 
     def createPipe(self, part, connectivityInfos):
         """createPipe"""
@@ -532,14 +555,19 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
 
 #==========================================================
 
-    def print_info (self, verbose):
+    def print_info (self, verbose, comment=""):
         if verbose:
-            texte = "\ninfos points ="
+            texte = "\n++++++++++++++++++++++++++++++++++"
+            texte += "\nRécapitulatif"
+            if comment:
+                texte += " {}".format(comment)
+            texte += "\ninfos points ="
             for key, value in self.infoPoints.items():
                 texte += "\n{} : {}".format(key, value)
             texte += "\n\nconnectivities ="
             for key, value in self.connectivities.items():
                 texte += "\n{} : {}".format(key, value)
+            texte += "\n++++++++++++++++++++++++++++++++++"
             print(texte+"\n")
 
 #==========================================================
@@ -653,7 +681,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 for key, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
-                self.print_info (self._verbose_max or True)
+                self.print_info (self._verbose_max or True, "après les lectures")
 
                 # B.3. Creation des points
                 self.createPoints(part)
