@@ -16,9 +16,9 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-"""Test de la création du réseau de tuyaux"""
+"""Test de la création du réseau de tuyaux - Description par ligne entière"""
 
-__revision__ = "V01.03"
+__revision__ = "V01.04"
 
 import os
 
@@ -31,7 +31,6 @@ def getFilePath(fileName):
     path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "pipeNetwork")
     return os.path.join(path, fileName)
 
-#theFile = getFilePath("pipeNetwork_2par2.txt")
 theFile = getFilePath("pipeNetwork_ligne.txt")
 
 aSession.startOperation("Create part for pipe network")

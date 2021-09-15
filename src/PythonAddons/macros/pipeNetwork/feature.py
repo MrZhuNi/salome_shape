@@ -23,7 +23,7 @@ Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.15"
+__revision__ = "V02.16"
 
 from salome.shaper import model
 import ModelAPI
@@ -59,7 +59,7 @@ class pipeNetwork(model.Feature):
     infoPoints = dict()
     connectivities = dict()
 
-    _verbose = True
+    _verbose = False
     _verbose_max = False
 
 # Feature initializations

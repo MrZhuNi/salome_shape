@@ -16,9 +16,9 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-"""Test de la création du réseau de tuyaux"""
+"""Test de la création du réseau de tuyaux - Description des lignes par paquets de 2 noeuds"""
 
-__revision__ = "V01.03"
+__revision__ = "V02.01"
 
 import os
 
@@ -31,8 +31,7 @@ def getFilePath(fileName):
     path = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "pipeNetwork")
     return os.path.join(path, fileName)
 
-#theFile = getFilePath("pipeNetwork_2par2.txt")
-theFile = getFilePath("pipeNetwork_ligne.txt")
+theFile = getFilePath("pipeNetwork_2par2.txt")
 
 aSession.startOperation("Create part for pipe network")
 aPartFeature = aSession.moduleDocument().addFeature("Part")
@@ -47,6 +46,6 @@ aFile = anImportFeature.string(aFieldName)
 aFile.setValue(theFile)
 aSession.finishOperation()
 
-assert(aPart.size("Construction") == 46), "Right number of construction: {}".format(aPart.size("Construction"))
+assert(aPart.size("Construction") == 42), "Right number of construction: {}".format(aPart.size("Construction"))
 
 assert(aPart.size("Folders") == 1), "Right number of folders: {}".format(aPart.size("Folders"))
