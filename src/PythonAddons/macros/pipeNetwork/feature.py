@@ -23,7 +23,7 @@ Author: Nathalie GORE - Gérald NICOLAS
 Remarque : la fonction de partitionnement pour un futur maillage en hexa est désactivée.
 """
 
-__revision__ = "V02.16"
+__revision__ = "V02.17"
 
 from salome.shaper import model
 import ModelAPI
@@ -162,24 +162,24 @@ Par défaut, on supposera que la méthode est par ligne.
         splitLine = line.split()
         printverbose ("Enregistrement du tronçon : {}".format(splitLine),verbose=self._verbose)
         diagno = 0
-        if method == self.twopartwo :
+        if ( method == self.twopartwo ):
             if self.connectivities:
                 # Recherche si le tronçon existe déjà ou s'il est nouveau
                 existe = False
                 for key, val in self.connectivities.items():
-                    print(key, " ******* {}".format(val))
+                    #print(key, " ******* {}".format(val))
                     if val['chainage'][-1] == splitLine[0]:
                         # Le tronçon existe
                         val['chainage'].append(splitLine[1])
-                        print("On complète le tronçon")
+                        #print("On complète le tronçon")
                         existe = True
                         break
                 # Le tronçon n'existe pas
                 if not existe:
-                    print("On démarre un nouveau tronçon - Cas 2")
+                    #print("On démarre un nouveau tronçon - Cas 2")
                     self.newConnectivity(splitLine[0], splitLine)
             else :
-                print("On démarre un nouveau tronçon - Cas 1")
+                #print("On démarre un nouveau tronçon - Cas 1")
                 self.newConnectivity(splitLine[0], splitLine)
         else :
             self.newConnectivity(splitLine[0], splitLine)
@@ -298,59 +298,59 @@ La ligne est formée de deux informations :
         subshapesForWire = list()
         currentInd = 0
         isPipe = True
-        print("Current chainage : {}".format(self.connectivities[key]['chainage'][ind:]))
-        print("Indice de démarrage = {}".format(ind))
+        #print("Current chainage : {}".format(self.connectivities[key]['chainage'][ind:]))
+        #print("Indice de démarrage = {}".format(ind))
 
         while exp.more() and not end :
-            print("Analyse Edge n°", currentInd)
-            print(" => ", self.connectivities[key]['chainage'][currentInd], " - ", self.connectivities[key]['chainage'][currentInd+1])
-            print(" ==> ", self.infoPoints[self.connectivities[key]['chainage'][currentInd]]["isAngular"], " - ", self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["isAngular"])
+            #print("Analyse Edge n°", currentInd)
+            #print(" => ", self.connectivities[key]['chainage'][currentInd], " - ", self.connectivities[key]['chainage'][currentInd+1])
+            #print(" ==> ", self.infoPoints[self.connectivities[key]['chainage'][currentInd]]["isAngular"], " - ", self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["isAngular"])
             cur = exp.current().edge()
             if currentInd < ind:
-                print("Edge non prise en compte")
-                print("test si fillet : ", currentInd+1, ind, self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["Fillet"])
+                #print("Edge non prise en compte")
+                #print("test si fillet : ", currentInd+1, ind, self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["Fillet"])
                 if currentInd+1 <= ind and self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["Fillet"] == "radius" and not self.infoPoints[self.connectivities[key]['chainage'][currentInd]]["isAngular"]:
-                    print("Fillet à ne pas prendre en compte")
+                    #print("Fillet à ne pas prendre en compte")
                     exp.next()
                     cur = exp.current().edge()
             else :
                 subshapesForWire.append(model.selection(copy.defaultResult(), cur))
-                print("Mode normal - Nb segments dans le wire : {}".format(len(subshapesForWire)))
+                #print("Mode normal - Nb segments dans le wire : {}".format(len(subshapesForWire)))
                 # Cas du fillet : on récupère l'edge suivante
                 if self.infoPoints[self.connectivities[key]['chainage'][currentInd]]["isAngular"] or self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["isAngular"]:
                     end = True
-                    print("Nb segments dans le wire : {}".format(len(subshapesForWire)))
-                    if len(subshapesForWire) == 1:
-                        print("Coude droit en cours")
+                    #print("Nb segments dans le wire : {}".format(len(subshapesForWire)))
+                    if ( len(subshapesForWire) == 1 ):
+                        #print("Coude droit en cours")
                         currentInd += 1
                         isPipe = False
                     else :
-                        print("Coude droit à venir")
+                        #print("Coude droit à venir")
                         subshapesForWire = subshapesForWire[:-1]
                 elif self.infoPoints[self.connectivities[key]['chainage'][currentInd]]["Fillet"] == "radius":
-                    print("Ajout edge start Fillet")
+                    #print("Ajout edge start Fillet")
                     exp.next()
                     cur = exp.current().edge()
                     subshapesForWire.append(model.selection(copy.defaultResult(), cur))
                     #currentInd = currentInd+1
-                    print("Mode Fillet - Nb segments dans le wire : {}".format(len(subshapesForWire)))
+                    #print("Mode Fillet - Nb segments dans le wire : {}".format(len(subshapesForWire)))
                 elif self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["Fillet"] == "radius":
-                    print("Ajout edge end Fillet")
+                    #print("Ajout edge end Fillet")
                     exp.next()
                     cur = exp.current().edge()
                     subshapesForWire.append(model.selection(copy.defaultResult(), cur))
-                    print("Mode Fillet - Nb segments dans le wire : {}".format(len(subshapesForWire)))
+                    #print("Mode Fillet - Nb segments dans le wire : {}".format(len(subshapesForWire)))
                 else :
                     if self.infoPoints[self.connectivities[key]['chainage'][currentInd+1]]["isEnd"]:
-                        print("Fin detectee")
+                        #print("Fin détecte")
                         currentInd = currentInd+1
                         end = True
-                    else :
-                        print("Branchement")
+                    #else :
+                        #print("Branchement")
             if not end:
                 currentInd = currentInd+1
             exp.next()
-            print("End = {} {}".format(end,self.connectivities[key]['chainage'][currentInd]))
+            #print("End = {} {}".format(end,self.connectivities[key]['chainage'][currentInd]))
 
         return subshapesForWire, currentInd, isPipe, self.connectivities[key]['chainage'][currentInd]
 
@@ -639,6 +639,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
 #==========================================================
 
     def print_info (self, verbose, comment=""):
+        """Impression si verbose est valide. Avec un comentaire introductif éventuellement."""
         if verbose:
             texte = "\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
             texte += "\nRécapitulatif"
@@ -688,11 +689,6 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 nameRes = filename
 
             # Creating the construction points in the current document
-            lFeatures = list()
-            lVertices = list()
-            lCodesPipes = list()
-            lPipeSupports = dict()
-            lPipes = list()
 
             # B. Traitement du fichier
             print ("\n=============== Traitement du fichier {}".format(filepath))
@@ -767,7 +763,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 self.correctConnectivity ()
 
                 # B.3. Signalement de la fin d'une chaine
-                for key, value in self.connectivities.items():
+                for _, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
                 self.print_info (self._verbose_max, "avant les création de points, etc.")
@@ -801,10 +797,10 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 self.folder.setName("{}_inter".format(nameRes))
 
                 # B.12. Ménage des résultats inutiles
-                print("================== Ménage des résultats inutiles ==================")
+                print("========================= Ménage des résultats inutiles ==================")
                 laux = list()
                 for iaux in range(len(self.ledges)):
-                  laux.append(model.selection("EDGE", "Edge_{}_1".format(iaux)))
+                    laux.append(model.selection("EDGE", "Edge_{}_1".format(iaux)))
                 _ = model.addRemoveResults(part, laux)
 
                 break
