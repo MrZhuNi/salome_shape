@@ -29,6 +29,8 @@ from salome.shaper import model
 import ModelAPI
 from GeomAPI import *
 
+import numpy as np
+
 # Si erreur :
 
 def raiseException(texte):
@@ -120,7 +122,7 @@ Par défaut, on supposera que la connection est angulaire et que ce n'est pas un
         """
         #print(line)
         texte = line
-        splitLine = line.split(" ")
+        splitLine = line.split()
         if ( len(splitLine) != 5 ):
             diagno = 1
         elif splitLine[0] in self.infoPoints:
@@ -157,29 +159,98 @@ La ligne à décoder est formée des informations :
 . si la méthode est 2 par 2 : chaque tronçon est décrit par les identifiants des 2 noeuds
 Par défaut, on supposera que la méthode est par ligne.
         """
-        splitLine = line.split(" ")
-        printverbose ("Enregistrement du tronçon : {}".format(line),verbose=self._verbose)
+        splitLine = line.split()
+        printverbose ("Enregistrement du tronçon : {}".format(splitLine),verbose=self._verbose)
         diagno = 0
         if method == self.twopartwo :
             if self.connectivities:
                 # Recherche si le tronçon existe déjà ou s'il est nouveau
+                existe = False
                 for key, val in self.connectivities.items():
                     print(key, " ******* {}".format(val))
                     if val['chainage'][-1] == splitLine[0]:
                         # Le tronçon existe
                         val['chainage'].append(splitLine[1])
                         print("On complète le tronçon")
-                        return diagno
+                        existe = True
+                        break
                 # Le tronçon n'existe pas
-                print("On démarre un nouveau tronçon - Cas 2")
-                self.newConnectivity(splitLine[0], splitLine)
+                if not existe:
+                    print("On démarre un nouveau tronçon - Cas 2")
+                    self.newConnectivity(splitLine[0], splitLine)
             else :
                 print("On démarre un nouveau tronçon - Cas 1")
                 self.newConnectivity(splitLine[0], splitLine)
         else :
             self.newConnectivity(splitLine[0], splitLine)
         #print ("Retour de readConnectivity = {}".format(diagno))
+
         return diagno
+
+#====================================================================================
+
+    def correctConnectivity(self):
+        """Correction des connectivités pour tenir compte de points alignés
+
+Si 3 points sont alignés sur une ligne et qu'aucune ligne ne part du point central,
+il faut scinder la ligne au niveau de ce point pour traiter correctement la suite : on se mettrait
+à créer un plan avec ces 3 points alignés et tout s'effondre ensuite.
+        """
+        while True:
+            # On explore toutes les lignes et on cherche un cas où sur une ligne 3 points consécutifs sont alignés
+            for _, value in self.connectivities.items():
+                # Sur cette ligne, a-t-on 3 points consécutifs alignés ?
+                modif = self.correctConnectivity_a(value["chainage"])
+                # Si on a modifié la description des connectivités, on recommence l'analyse
+                if modif:
+                    break
+            # Si plus rien n'a été modifié, c'est fini
+            if not modif:
+                break
+
+    def correctConnectivity_a(self, l_noeuds):
+        """On explore toutes les lignes et on cherche un cas où sur une ligne 3 points consécutifs sont alignés
+
+Entrées :
+  :l_noeuds: liste des noeuds de la ligne
+
+Sorties :
+  :modif: on a modifié ou non la description des lignes
+        """
+        modif = False
+        nb_points = len(l_noeuds)
+        printverbose ("Analyse de {}".format(l_noeuds), verbose=self._verbose_max or True)
+        #print ("nb_points = {}".format(nb_points))
+
+        indice = 0
+        nb_test = nb_points - 2
+        for iaux in range(nb_test):
+            # Calcul de l'angle entre les 3 points de la séquence
+            vect = list()
+            #print ("({},{},{}".format(l_noeuds[iaux],l_noeuds[iaux+1],l_noeuds[iaux+2]))
+            for jaux in range(3):
+                coox = self.infoPoints[l_noeuds[iaux+jaux]]["X"]
+                cooy = self.infoPoints[l_noeuds[iaux+jaux]]["Y"]
+                cooz = self.infoPoints[l_noeuds[iaux+jaux]]["Z"]
+                vect.append(np.array((coox,cooy,cooz),np.float))
+            cosinus = np.dot(vect[1]-vect[0],vect[1]-vect[2])/(np.linalg.norm(vect[1]-vect[0])* np.linalg.norm(vect[1]-vect[2]))
+            #print ("cosinus = {}".format(cosinus))
+            # Si l'angle est plat, c'est que les 3 points sont alignés : on arrête... sauf si ce point est un départ d'une autre !
+            if ( (1.-np.abs(cosinus)) < 1.e-4 ):
+                indice = iaux+1
+                if l_noeuds[indice] not in self.connectivities:
+                    break
+                else:
+                    indice = 0
+        # Si un angle plat a été trouvé, on scinde la ligne
+        if indice:
+            #print ("id_noeud_debut = {}, {}".format(l_noeuds[0], l_noeuds[:indice+1]))
+            #print ("id_noeud_new   = {}, {}".format(l_noeuds[indice], l_noeuds[indice:]))
+            self.newConnectivity(l_noeuds[0], l_noeuds[:indice+1])
+            self.newConnectivity(l_noeuds[indice], l_noeuds[indice:])
+            modif = True
+
+        return modif
 
 #====================================================================================
 
@@ -197,7 +268,7 @@ La ligne est formée de deux informations :
 . l'identifiant du noeud
 . la caractérisation de la connection : "angular_connection" ou "radius=xxx"
         """
-        splitLine = line.split(" ")
+        splitLine = line.split()
         if len(splitLine) != 2:
             print(line)
             diagno = 1
@@ -503,7 +574,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
             while ind < len(value['chainage'])-1:
                 value["starts"].append(self.connectivities[key]['chainage'][ind])
                 objectsForPath, ind, isPipe, end_noeud = self.retrieveSubshapesforWire(copy, key, ind)
-                if self._verbose:
+                if self._verbose_max:
                     print("************************* ind = {}".format(ind))
                     print("************************* objectsForPath = {}".format(objectsForPath))
                 path = model.addWire(part, objectsForPath, False)
@@ -689,46 +760,52 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 if error:
                     break
 
-                # B.2. Signalement de la fin d'une chaine
+
+                # B.2. Gestion des points alignés
+                self.print_info (self._verbose_max or True, "avant gestion des points alignés")
+
+                self.correctConnectivity ()
+
+                # B.3. Signalement de la fin d'une chaine
                 for key, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
-                self.print_info (self._verbose_max or True, "après les lectures")
+                self.print_info (self._verbose_max or True, "avant les création de points, etc.")
 
-                # B.3. Creation des points
+                # B.4. Creation des points
                 self.createPoints(part)
 
-                # B.4. Creation des polylines
+                # B.5. Creation des polylines
                 self.createPolylines(part)
 
-                # B.5. Creation des fillets
+                # B.6. Creation des fillets
                 self.createFillets(part)
 
-                # B.6. Recherche des coudes droits
+                # B.7. Recherche des coudes droits
                 self.searchRightConnections(part)
 
-                # B.7. Création des paths pour le pipeNetwork
+                # B.8. Création des paths pour le pipeNetwork
                 self.createPaths(part)
 
-                # B.8. Création des sketchs pour le pipeNetwork
+                # B.9. Création des sketchs pour le pipeNetwork
                 self.createSketches(part)
 
-                self.print_info (self._verbose_max)
+                self.print_info (self._verbose_max or True, "après la création des sketchs")
 
-                # B.9. Création des pipes
+                # B.10. Création des pipes
                 self.createPipes(part, nameRes)
 
-                # B.10. Dossier pour les opérations internes
+                # B.11. Dossier pour les opérations internes
                 print("========================= Mise en dossier =========================")
                 self.folder = model.addFolder(part, self.lfeatures[0], self.lfeatures[-1])
                 self.folder.setName("{}_inter".format(nameRes))
 
-                # Ménage des résultats inutiles
-                #print("================== Ménage des résultats inutiles ==================")
-                #laux = list()
-                #for iaux in range(len(self.ledges)):
-                  #laux.append(model.selection("EDGE", "Edge_{}_1".format(iaux)))
-                #_ = model.addRemoveResults(part, laux)
+                # B.12. Ménage des résultats inutiles
+                print("================== Ménage des résultats inutiles ==================")
+                laux = list()
+                for iaux in range(len(self.ledges)):
+                  laux.append(model.selection("EDGE", "Edge_{}_1".format(iaux)))
+                _ = model.addRemoveResults(part, laux)
 
                 break
 
