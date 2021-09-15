@@ -47,6 +47,6 @@ aFile = anImportFeature.string(aFieldName)
 aFile.setValue(theFile)
 aSession.finishOperation()
 
-assert(aPart.size("Construction") == 35), "Right number of construction: {}".format(aPart.size("Construction"))
+assert(aPart.size("Construction") == 46), "Right number of construction: {}".format(aPart.size("Construction"))
 
 assert(aPart.size("Folders") == 1), "Right number of folders: {}".format(aPart.size("Folders"))

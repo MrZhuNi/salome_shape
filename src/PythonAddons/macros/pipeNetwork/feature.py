@@ -219,7 +219,7 @@ Sorties :
         """
         modif = False
         nb_points = len(l_noeuds)
-        printverbose ("Analyse de {}".format(l_noeuds), verbose=self._verbose_max or True)
+        printverbose ("Analyse de {}".format(l_noeuds), verbose=self._verbose_max)
         #print ("nb_points = {}".format(nb_points))
 
         indice = 0
@@ -762,7 +762,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
 
 
                 # B.2. Gestion des points alignés
-                self.print_info (self._verbose_max or True, "avant gestion des points alignés")
+                self.print_info (self._verbose_max, "avant gestion des points alignés")
 
                 self.correctConnectivity ()
 
@@ -770,7 +770,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 for key, value in self.connectivities.items():
                     self.infoPoints[value['chainage'][-1]]["isEnd"] = True
 
-                self.print_info (self._verbose_max or True, "avant les création de points, etc.")
+                self.print_info (self._verbose_max, "avant les création de points, etc.")
 
                 # B.4. Creation des points
                 self.createPoints(part)
@@ -790,7 +790,7 @@ Il est nommé conformément au noeud d'application. Cela n'a qu'un intérêt gra
                 # B.9. Création des sketchs pour le pipeNetwork
                 self.createSketches(part)
 
-                self.print_info (self._verbose_max or True, "après la création des sketchs")
+                self.print_info (self._verbose_max, "après la création des sketchs")
 
                 # B.10. Création des pipes
                 self.createPipes(part, nameRes)
