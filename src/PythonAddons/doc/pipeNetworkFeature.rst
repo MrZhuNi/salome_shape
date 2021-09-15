@@ -75,10 +75,10 @@ Si la jonction est directe : ``Identifiant du noeud, angular_connection``
 Si la jonction est courbe : ``Identifiant du noeud, radius=xxx`` où xxx est le rayon de courbure.
 
 .. note::
-  Par défaut, la jonction entre deux tuyaux est directe, sans rayon de courbure. On peut donc se passer de l'information ``angular_connection``.
+  Par défaut, la jonction entre deux tuyaux est directe, sans rayon de courbure. On peut donc se passer de l'information ``angular_connection``. Si toutes les jonctions sont directes, on peut se passer totalement de la rubrique **fillets section**.
 
 .. note::
-  Une jonction avec un rayon de courbure ne peut avoir lieu que sur un noeud auquel aboutit exactement 2 tuyaux. L'arc de cercle est tracé dans le plan formé par les deux tuyaux.
+  Une jonction avec un rayon de courbure ne peut avoir lieu que sur un noeud auquel aboutit exactement 2 tuyaux. L'arc de cercle est tracé dans le plan formé par les deux tuyaux. Les deux tuyaux ne doivent donc pas être colinéaires.
 
 Exemple
 -------
@@ -92,6 +92,14 @@ Exemple
 
    Exemple de réseau
 
-:download:`Téléchargement de cet exemple <examples/pipeNetwork_ligne.txt>`
+:download:`Téléchargement des données de cet exemple<examples/pipeNetwork_ligne.txt>`
+
+Le pilotage en TUI se fait ainsi :
+
+.. literalinclude:: examples/pipeNetwork.py
+    :linenos:
+    :language: python
+
+:download:`Téléchargement du pilotage en TUI<examples/pipeNetwork.py>`
 
 
