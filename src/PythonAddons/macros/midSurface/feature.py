@@ -63,6 +63,7 @@ class midSurface(model.Feature):
         return midSurface.ID()
 
 
+#====================================================================================
 # Initialization of the dialog panel
 
     def initAttributes(self):
@@ -70,11 +71,14 @@ class midSurface(model.Feature):
         # Creating the input argument of the feature
         self.data().addAttribute(self.FILE_ID(), ModelAPI.ModelAPI_AttributeString_typeId())
 
+#====================================================================================
 # Execution
 
     def execute(self):
         """F.execute() -- execute the Feature"""
+        # Retrieving the user input
         apath    = self.string(self.FILE_ID())
+
         filepath = apath.value()
         #print("filepath : '{}'".format(filepath))
         if filepath != "" :
@@ -82,7 +86,7 @@ class midSurface(model.Feature):
                 # Lancement du script de création des fibres neutres
                 l_options = list()
                 #l_options.append("-v")
-                #l_options.append("-vmax")
+                l_options.append("-vmax")
                 l_options.append("-retour_shaper")
                 #print("l_options : '{}'".format(l_options))
                 s_med = SurfaceMediane(l_options)

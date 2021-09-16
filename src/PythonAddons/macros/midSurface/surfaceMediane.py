@@ -390,6 +390,7 @@ Sorties :
         print (texte)
 #     Contrôle du solide
       d_shape_info = geompy.ShapeInfo(solide)
+      #print ("d_shape_info : {}".format(d_shape_info))
       n_solides = d_shape_info["SOLID"]
       if self._verbose_max:
         print ("Nombre de solides : {}".format(n_solides))
@@ -405,7 +406,7 @@ Sorties :
       if self._verbose_max:
         print ("Liste des {} faces qui composent le solide :".format(len(l_faces)))
         for iaux, face in enumerate(l_faces):
-          print ("Face n° {} :\n {}".format(iaux,geompy.WhatIs(face)))
+          print ("\tFace n° {} :\n\t{}".format(iaux,geompy.WhatIs(face)))
 
       break
 
