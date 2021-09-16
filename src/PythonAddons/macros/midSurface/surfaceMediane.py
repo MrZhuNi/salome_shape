@@ -34,7 +34,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.12"
+__revision__ = "V10.13"
 
 #========================= Les imports - Début ===================================
 
@@ -300,7 +300,7 @@ Sorties :
 #=========================== Début de la méthode =================================
 
   def _les_solides ( self, geompy, objet ):
-    """Les solides de l'objet à traiter
+    """Liste des solides de l'objet à traiter
 
 Entrées :
   :geompy: environnement de GEOM
@@ -324,8 +324,9 @@ Sorties :
 # 1. Nombre de solides composant l'objet à traiter
       d_shape_info = geompy.ShapeInfo(objet)
       n_solides = d_shape_info["SOLID"]
+      nom_objet = objet.GetName()
       if self._verbose_max:
-        print ("Nombre de solides : {}".format(n_solides))
+        print ("Nombre de solides de l'objet '{}' : {}".format(nom_objet,n_solides))
 
       nom_objet = objet.GetName()
       if self._verbose:
@@ -383,10 +384,10 @@ Sorties :
 
 # 1. Le solide est-il un solide unique ?
       if self._verbose_max:
-        print (geompy.WhatIs(solide))
         longueur, aire, volume = geompy.BasicProperties(solide)
-        if self._verbose_max:
-          print (". longueur, aire, volume : {}, {}, {}".format(longueur,aire,volume))
+        texte = "{}\n".format(geompy.WhatIs(solide))
+        texte += ". longueur, aire, volume : {}, {}, {}".format(longueur,aire,volume)
+        print (texte)
 #     Contrôle du solide
       d_shape_info = geompy.ShapeInfo(solide)
       n_solides = d_shape_info["SOLID"]
@@ -402,9 +403,9 @@ Sorties :
       for iaux, face in enumerate(l_faces):
         geompy.addToStudyInFather( solide, face, "Face_{}".format(iaux+1) )
       if self._verbose_max:
-        print ("l_faces : {}".format(l_faces))
+        print ("Liste des {} faces qui composent le solide :".format(len(l_faces)))
         for iaux, face in enumerate(l_faces):
-          print (geompy.WhatIs(face))
+          print ("Face n° {} :\n {}".format(iaux,geompy.WhatIs(face)))
 
       break
 
