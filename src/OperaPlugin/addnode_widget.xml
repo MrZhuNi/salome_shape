@@ -2,7 +2,8 @@
   <shape_selector id="main_object"
                   label="Main object"
                   tooltip="Select a main object"
-                  shape_types="solids">
+                  shape_types="solids"
+                  concealment="true">
     <validator id="GeomValidators_ShapeType" parameters="solid"/>
   </shape_selector>
   <multi_selector id="tools_list"

@@ -126,7 +126,6 @@ void OperaPlugin_AddNode::execute()
     return setError("Error: cannot perform an AddNode with no main object.");
   if(aToolList.empty())
     return setError("Error: Tools list cannot be empty.");
-  aMainObjectAttr->context()->setDisabled(aMainObjectAttr->context(), true); // To avoid activation of the Part result
 
   //Perform Algorithm
   performAlgo(GeomAlgoAPI_Tools::BOOL_CUT,
