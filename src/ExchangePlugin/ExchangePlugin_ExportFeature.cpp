@@ -20,8 +20,10 @@
 #include <ExchangePlugin_ExportFeature.h>
 
 #include <algorithm>
+#include <fstream>
 #include <iterator>
 #include <string>
+#include <iostream>
 #ifdef _DEBUG
 #include <iostream>
 #include <ostream>
@@ -34,6 +36,7 @@
 #include <GeomAlgoAPI_BREPExport.h>
 #include <GeomAlgoAPI_CompoundBuilder.h>
 #include <GeomAlgoAPI_IGESExport.h>
+#include <GeomAlgoAPI_ROOTExport.h>
 #include <GeomAlgoAPI_STEPExport.h>
 #include <GeomAlgoAPI_STLExport.h>
 #include <GeomAlgoAPI_Tools.h>
@@ -42,6 +45,8 @@
 #include <GeomAPI_Shape.h>
 #include <GeomAPI_ShapeExplorer.h>
 #include <GeomAPI_Trsf.h>
+
+#include <ExchangePlugin_ExportRoot.h>
 
 #include <Locale_Convert.h>
 
@@ -70,6 +75,12 @@
 #include <XAO_Geometry.hxx>
 
 #include <ExchangePlugin_Tools.h>
+
+#ifdef WIN32
+# define _separator_ '\\'
+#else
+# define _separator_ '/'
+#endif
 
 ExchangePlugin_ExportFeature::ExchangePlugin_ExportFeature()
 {
@@ -129,6 +140,19 @@ void ExchangePlugin_ExportFeature::initAttributes()
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(),
     ExchangePlugin_ExportFeature::XAO_SELECTION_LIST_ID());
 
+  data()->addAttribute(ExchangePlugin_ExportFeature::ROOT_FILE_PATH_ID(),
+    ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID(),
+    ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID(),
+    ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::EXP_NAME_FILE_ID(),
+    ModelAPI_AttributeString::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::MAIN_OBJECT_ID(),
+    ModelAPI_AttributeSelection::typeId());
+  data()->addAttribute(ExchangePlugin_ExportFeature::MAT_FILE_ID(),
+    ModelAPI_AttributeString::typeId());
+
   // to support previous version of document, move the selection list
   // if the type of export operation is XAO
   AttributeStringPtr aTypeAttr = string(EXPORT_TYPE_ID());
@@ -153,7 +177,10 @@ void ExchangePlugin_ExportFeature::attributeChanged(const std::string& theID)
     string(ExchangePlugin_ExportFeature::FILE_PATH_ID())->setValue(
       string(ExchangePlugin_ExportFeature::STL_FILE_PATH_ID())->value());
   }
-
+  else if (theID == ROOT_FILE_PATH_ID()) {
+    string(ExchangePlugin_ExportFeature::FILE_PATH_ID())->setValue(
+      string(ExchangePlugin_ExportFeature::ROOT_FILE_PATH_ID())->value());
+  }
 }
 
 /*
@@ -167,6 +194,7 @@ void ExchangePlugin_ExportFeature::execute()
 
   AttributeStringPtr aFilePathAttr =
       this->string(ExchangePlugin_ExportFeature::FILE_PATH_ID());
+
   std::string aFilePath = aFilePathAttr->value();
   if (aFilePath.empty())
     return;
@@ -188,6 +216,8 @@ void ExchangePlugin_ExportFeature::exportFile(const std::string& theFileName,
       aFormatName = "STEP";
     } else if (anExtension == "IGES" || anExtension == "IGS") {
       aFormatName = "IGES-5.1";
+    } else if (anExtension == "C") {
+      aFormatName = "ROOT";
     } else {
       aFormatName = anExtension;
     }
@@ -196,8 +226,11 @@ void ExchangePlugin_ExportFeature::exportFile(const std::string& theFileName,
   if (aFormatName == "XAO") {
     exportXAO(theFileName);
     return;
-  }else if (aFormatName == "STL") {
+  } else if (aFormatName == "STL") {
     exportSTL(theFileName);
+    return;
+  } else if (aFormatName == "ROOT") {
+    exportROOT(theFileName);
     return;
   }
 
@@ -661,6 +694,66 @@ void ExchangePlugin_ExportFeature::exportXAO(const std::string& theFileName)
 // LCOV_EXCL_STOP
 }
 
+void ExchangePlugin_ExportFeature::exportROOT(const std::string& theFileName)
+{
+  std::string aName = string(ExchangePlugin_ExportFeature::ROOT_MANAGER_NAME_ID())->value();
+  std::string aTitle = string(ExchangePlugin_ExportFeature::ROOT_MANAGER_TITLE_ID())->value();
+  std::string aFileMat = string(ExchangePlugin_ExportFeature::MAT_FILE_ID())->value();
+
+  FeaturePtr aFeature;
+
+  std::shared_ptr<GeomAlgoAPI_ROOTExport> anAlgo(new GeomAlgoAPI_ROOTExport(theFileName));
+
+  std::list<std::string> listNames = ExchangePlugin_Tools::split(theFileName, _separator_);
+  listNames = ExchangePlugin_Tools::split(listNames.back(), '.');
+
+  // Create the head of file
+  anAlgo->buildHead(listNames.front(), aName, aTitle);
+
+  // Materials and mediums
+  std::map<std::string, std::vector<std::string> > aMaterials;
+  std::map<std::string, std::vector<std::string> > aMedias;
+  readFileMat(aFileMat, aMaterials, aMedias);
+  anAlgo->buildMaterialsMedias(aMaterials, aMedias);
+
+  // Create the end of files
+  std::string aExportFileName = string(ExchangePlugin_ExportFeature::EXP_NAME_FILE_ID())->value();
+  AttributeSelectionPtr anObjectAttr = selection(MAIN_OBJECT_ID());
+  aFeature = anObjectAttr->contextFeature();
+  std::string aNameShape ="";
+  if (aFeature.get()) {
+    aNameShape = Locale::Convert::toString(aFeature->firstResult()->data()->name());
+  } else {
+    ObjectPtr anObject = anObjectAttr->contextObject();
+    aNameShape = Locale::Convert::toString(anObject->data()->name());
+  }
+
+  // Add feature in the file
+  std::list<FeaturePtr> aFeatures = document()->allFeatures();
+  std::list<FeaturePtr>::iterator itFeature = aFeatures.begin();
+  std::vector<std::wstring> aListNamesOfFeatures;
+  std::map<std::wstring, std::string> aMapFeauturesObject;
+  for(; itFeature != aFeatures.end(); ++itFeature)
+  {
+    aFeature = *itFeature;
+    if (aFeature->getKind() == "Box")
+    {
+      std::vector<double> aCenterDims;
+      aCenterDims = ExchangePlugin_ExportRoot::computeBox(aFeature);
+      std::wstring anObjectName = aFeature->firstResult()->data()->name();
+      anAlgo->buildBox(anObjectName, aCenterDims);
+      aListNamesOfFeatures.push_back(anObjectName);
+      aListNamesOfFeatures.push_back(aFeature->data()->name());
+    }
+  }
+
+  // Create the end of file
+  anAlgo->buildEnd(aNameShape, aExportFileName);
+
+  // Create the file with the content
+  anAlgo->write();
+}
+
 bool ExchangePlugin_ExportFeature::isMacro() const
 {
   if (!data().get() || !data()->isValid())
@@ -684,4 +777,42 @@ bool ExchangePlugin_ExportFeature::isMacro() const
     return !aList->isInitialized() || aList->size() == 0;
   }
   return true;
+}
+
+
+//=================================================================================================
+void ExchangePlugin_ExportFeature::readFileMat(const std::string theFileMat,
+                   std::map<std::string, std::vector<std::string> >& theMaterials,
+                   std::map<std::string, std::vector<std::string> >& theMedias)
+{
+  std::string aLine;
+  std::ifstream aFile(theFileMat);
+  if (aFile.is_open())
+  {
+    while(getline(aFile, aLine))
+    {
+      std::list<std::string> aList = ExchangePlugin_Tools::split(aLine, ' ');
+      std::list<std::string>::iterator itList = aList.begin();
+
+      bool isFirst = true;
+      std::string aName;
+      std::vector<std::string> aData;
+      for (; itList != aList.end(); ++itList)
+      {
+        std::string anElem = *itList;
+        if (isFirst)
+        {
+          aName = anElem;
+          isFirst = false;
+        } else {
+          aData.push_back(anElem);
+        }
+      }
+      if (aName == "mat")
+        theMaterials[aData[0]] = aData;
+      else if (aName == "medium")
+        theMedias[aData[0]] = aData;
+    }
+    aFile.close();
+  }
 }

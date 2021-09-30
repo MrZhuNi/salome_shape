@@ -1,0 +1,64 @@
+// Copyright (C) 2014-2021  CEA/DEN, EDF R&D
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
+
+#ifndef GEOMALGOAPI_ROOTEXPORT_H_
+#define GEOMALGOAPI_ROOTEXPORT_H_
+
+#include <GeomAlgoAPI.h>
+
+#include <map>
+#include <string>
+#include <sstream>
+#include <vector>
+
+/**\class GeomAlgoAPI_ROOTExport
+ * \ingroup DataAlgo
+ * \brief Allows to export results to a root file
+ */
+class GeomAlgoAPI_ROOTExport
+{
+ public:
+  GEOMALGOAPI_EXPORT GeomAlgoAPI_ROOTExport(const std::string& theFileName);
+
+  /// Build the head of file
+  GEOMALGOAPI_EXPORT void buildHead(const std::string& theMethodName, const std::string& theName,
+                                    const std::string& theTitle);
+
+  /// Build the end of file
+  GEOMALGOAPI_EXPORT void buildEnd(const std::string theSolidName,
+                                   const std::string theExportName);
+
+  /// Build the materials ans mediums
+  GEOMALGOAPI_EXPORT void buildMaterialsMedias(
+    const std::map<std::string, std::vector<std::string> > theMaterials,
+    const std::map<std::string, std::vector<std::string> > theMedias);
+
+  /// Build box
+  GEOMALGOAPI_EXPORT void buildBox(const std::wstring& theObjectName,
+                                   const std::vector<double> theCenterDims);
+
+  /// Write the file
+  GEOMALGOAPI_EXPORT bool write();
+
+ private:
+  std::string myFileName; /// File name for materials and medias
+  std::ostringstream myContent; /// X coordinate of the center to create a box.
+};
+
+#endif // GEOMALGOAPI_ROOTEXPORT_H_
