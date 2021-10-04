@@ -22,3 +22,4 @@ Some examples of already created custom features are:
    importParametersFeature.rst
    midSurfaceFeature.rst
    rectangleFeature.rst
+   pipeNetworkFeature.rst

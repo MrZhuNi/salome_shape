@@ -23,7 +23,11 @@ import ModelAPI
 from macros.rectangle.feature import SketchPlugin_Rectangle
 from macros.compoundVertices.feature import compoundVertices
 from macros.importParameters.feature import importParameters
+<<<<<<< HEAD
 from macros.midSurface.feature import midSurface
+=======
+from macros.pipeNetwork.feature import pipeNetwork
+>>>>>>> master
 
 
 class PythonFeaturesPlugin(ModelAPI.ModelAPI_Plugin):
@@ -51,6 +55,8 @@ class PythonFeaturesPlugin(ModelAPI.ModelAPI_Plugin):
             aFeature = importParameters().__disown__()
         elif theFeatureID == midSurface.ID():
             aFeature = midSurface().__disown__()
+        elif theFeatureID == pipeNetwork.ID():
+            aFeature = pipeNetwork().__disown__()
         else:
             raise Exception("No such feature %s" % theFeatureID)
 
