@@ -74,7 +74,8 @@ void ModelAPI_Feature::setResult(const std::shared_ptr<ModelAPI_Result>& theResu
   if (!isDisabled()) // disabled feature may be executed when it is added as not enabled (#2078)
     theResult->setDisabled(theResult, false);
 
-    if (Config_PropManager::getAutoColorStatus() && theResult->groupName() == ModelAPI_ResultGroup::group()) {
+    if (Config_PropManager::getAutoColorStatus()
+                            && theResult->groupName() == ModelAPI_ResultGroup::group()) {
       std::vector<int> aColor;
       ModelAPI_Tools::findRandomColor(aColor);
       ModelAPI_Tools::setColor(theResult,  aColor);
