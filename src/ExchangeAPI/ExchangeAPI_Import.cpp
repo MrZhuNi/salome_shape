@@ -26,11 +26,14 @@
 #include <ModelHighAPI_Tools.h>
 //--------------------------------------------------------------------------------------
 #include <ModelAPI_AttributeStringArray.h>
+#include <ModelAPI_AttributeImage.h>
 #include <ModelAPI_Session.h>
 #include <ModelAPI_Tools.h>
 #include <GeomAlgoAPI_Tools.h>
 //--------------------------------------------------------------------------------------
 #include <algorithm>
+//--------------------------------------------------------------------------------------
+#include <QPixmap>
 
 ExchangeAPI_Import::ExchangeAPI_Import(
     const std::shared_ptr<ModelAPI_Feature> & theFeature)
@@ -245,7 +248,40 @@ void ExchangeAPI_Import_Image::dump(ModelHighAPI_Dumper& theDumper) const
   std::string aPartName = theDumper.name(aBase->document());
 
   std::string aFilePath =
-      aBase->string(ExchangePlugin_Import_ImageFeature::FILE_PATH_ID())->value();
+    aBase->string(ExchangePlugin_Import_ImageFeature::FILE_PATH_ID())->value();
+
+  /*
+  // Store image from result into a tmp file
+  ResultPtr aResult = aBase->firstResult();
+  if (aResult.get() && aResult->hasTexture()) {
+    // get image data
+    int aWidth, aHeight;
+    std::string aFormat;
+    std::list<unsigned char> aByteList;
+    AttributeImagePtr anImageAttr =
+      aResult->data()->image(ModelAPI_ResultBody::IMAGE_ID());
+    anImageAttr->texture(aWidth, aHeight, aByteList, aFormat);
+
+    // convert image data to QPixmap
+    uchar* arr = new uchar[aByteList.size()];
+    std::copy(aByteList.begin(), aByteList.end(), arr);
+    QImage image (arr, aWidth, aHeight, QImage::Format_ARGB32);
+    QPixmap pixmap = QPixmap::fromImage( image );
+
+    // get tmp file name
+    std::string aTmpFilePath =
+      "/dn25/salome/jfa/BUGS/SHAPER/2_2_5_Saving_Images/tmp_image.";
+    aTmpFilePath += aFormat;
+
+    // write image to tmp file
+    if (pixmap.save(aTmpFilePath.c_str())) {
+
+      // dump tmp file name
+      aFilePath = aTmpFilePath;
+    }
+    delete [] arr;
+  }
+  */
 
   theDumper << aBase << " = model.addImportImage(" << aPartName << ", \""
             << aFilePath << "\")" << std::endl;

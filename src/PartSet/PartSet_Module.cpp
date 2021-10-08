@@ -82,6 +82,7 @@
 #include <ModelAPI_Tools.h>
 #include <ModelAPI_ResultConstruction.h>
 #include <ModelAPI_AttributeIntArray.h>
+#include <ModelAPI_AttributeImage.h>
 #include <ModelAPI_ResultGroup.h>
 
 #include <GeomDataAPI_Point2D.h>
@@ -147,9 +148,6 @@
 #include <SelectMgr_ListIteratorOfListOfFilter.hxx>
 #include <Graphic3d_Texture2Dmanual.hxx>
 
-#ifdef HAVE_SALOME
-#include <OCCViewer_Utilities.h>
-#endif
 
 #define FEATURE_ITEM_COLOR "0,0,225"
 
@@ -1404,13 +1402,46 @@ double getResultTransparency(const ResultPtr& theResult)
   return aTransparency;
 }
 
-//******************************************************
-void PartSet_Module::setTexture(const std::string & theTextureFile, const AISObjectPtr& thePrs)
+static AttributeImagePtr findImage(const ObjectPtr& theResult)
 {
-#ifdef HAVE_SALOME
+  AttributeImagePtr anImageAttr;
+
+  if (theResult.get()) {
+    ResultBodyPtr aResultBody =
+      std::dynamic_pointer_cast<ModelAPI_ResultBody>(theResult);
+    if (aResultBody.get()) {
+      anImageAttr = aResultBody->data()->image(ModelAPI_ResultBody::IMAGE_ID());
+      if (!anImageAttr.get() || !anImageAttr->hasTexture()) {
+        // try to find an image attribute in parents
+        ObjectPtr aParent = theResult->document()->parent(theResult);
+        anImageAttr = findImage(aParent);
+      }
+    }
+  }
+
+  return anImageAttr;
+}
+
+//******************************************************
+void PartSet_Module::setTexture(const AISObjectPtr& thePrs,
+                                const ResultPtr& theResult)
+{
+  ResultBodyPtr aResultBody =
+    std::dynamic_pointer_cast<ModelAPI_ResultBody>(theResult);
+  if (!aResultBody.get())
+    return;
+
+  AttributeImagePtr anImageAttr = findImage(theResult);
+  if (!anImageAttr.get() || !anImageAttr->hasTexture())
+    return;
+
+  int aWidth, aHeight;
+  std::string aFormat;
+  std::list<unsigned char> aByteList;
+  anImageAttr->texture(aWidth, aHeight, aByteList, aFormat);
+
   Handle(AIS_InteractiveObject) anAIS = thePrs->impl<Handle(AIS_InteractiveObject)>();
-  if (!anAIS.IsNull())
-  {
+  if (!anAIS.IsNull()) {
     /// set color to white and change material aspect,
     /// in order to keep a natural apect of the image.
     thePrs->setColor(255, 255, 255);
@@ -1427,11 +1458,21 @@ void PartSet_Module::setTexture(const std::string & theTextureFile, const AISObj
       myDrawer->ShadingAspect()->Aspect()->SetFrontMaterial(aMatAspect);
       myDrawer->ShadingAspect()->Aspect()->SetBackMaterial(aMatAspect);
 
-      Handle(Image_PixMap) aPixmap;
-      QPixmap px(theTextureFile.c_str());
+      //aPixmap = OCCViewer_Utilities::imageToPixmap( px.toImage());
+      Handle(Image_PixMap) aPixmap = new Image_PixMap();
+      aPixmap->InitTrash(Image_PixMap::ImgBGRA, aWidth, aHeight);
+      std::list<unsigned char>::iterator aByteIter = aByteList.begin();
+      for (int aLine = 0; aLine < aHeight; ++aLine) {
+        // convert pixels from ARGB to renderer-compatible RGBA
+        for (int aByte = 0; aByte < aWidth; ++aByte) {
+          Image_ColorBGRA& aPixmapBytes = aPixmap->ChangeValue<Image_ColorBGRA>(aLine, aByte);
 
-      if (!px.isNull() )
-        aPixmap = OCCViewer_Utilities::imageToPixmap( px.toImage());
+          aPixmapBytes.b() = (Standard_Byte) *aByteIter++;
+          aPixmapBytes.g() = (Standard_Byte) *aByteIter++;
+          aPixmapBytes.r() = (Standard_Byte) *aByteIter++;
+          aPixmapBytes.a() = (Standard_Byte) *aByteIter++;
+        }
+      }
 
       anAISShape->Attributes()->ShadingAspect()->Aspect()->SetTextureMap
           (new Graphic3d_Texture2Dmanual(aPixmap));
@@ -1440,7 +1481,6 @@ void PartSet_Module::setTexture(const std::string & theTextureFile, const AISObj
       anAISShape->SetDisplayMode(AIS_Shaded);
     }
   }
-#endif
 }
 
 //******************************************************
@@ -1485,10 +1525,8 @@ void PartSet_Module::customizePresentation(const ObjectPtr& theObject,
       thePrs->setDeflection(getResultDeflection(aResult));
       thePrs->setTransparency(getResultTransparency(aResult));
 
-      /// set texture  parameters
-      if(aResult->hasTextureFile()) {
-        setTexture(aResult->getTextureFile(), thePrs);
-      }
+      /// set texture parameters, if any
+      setTexture(thePrs, aResult);
     }
     if (aFeature.get() && (aFeature->getKind() == SketchPlugin_Sketch::ID())) {
         thePrs->setWidth(2);
