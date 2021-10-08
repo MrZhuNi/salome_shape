@@ -759,7 +759,21 @@
       <translation>Sens inverse</translation>
     </message>
   </context>
-
+  <context>
+    <name>Plane:nb_copies</name>
+    <message>
+      <source>Nb copies</source>
+      <translation>Nb de exemplaires</translation>
+    </message>
+    <message>
+      <source>Number of copies of the plane</source>
+      <translation>Nombre des exemplaires de la avion </translation>
+    </message>
+    <message>
+      <source>Attribute "%1" is not initialized.</source>
+      <translation>Sélectionnez le nombre de exemplaires.</translation>
+    </message>
+  </context>
   <context>
     <name>Point</name>
     <message>
