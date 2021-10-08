@@ -157,13 +157,11 @@
 #include <iterator>
 
 #ifdef TINSPECTOR
-#include <CDF_Session.hxx>
-#include <CDF_Application.hxx>
+#include <TDocStd_Application.hxx>
 #include <inspector/TInspector_Communicator.hxx>
 #include <inspector/VInspector_CallBack.hxx>
 static TInspector_Communicator* MyTCommunicator;
 static Handle(VInspector_CallBack) MyVCallBack;
-
 #endif
 
 #ifdef _DEBUG
@@ -680,6 +678,7 @@ void XGUI_Workshop::showHelpPage(const QString& thePage) const
 #endif
     QString aFileName = aDocDir + aSep + thePage;
     if (QFile::exists(aFileName)) {
+#ifdef HAVE_SALOME
       SUIT_Application* app = SUIT_Session::session()->activeApplication();
       if (app)
         app->onHelpContextModule("SHAPER", aFileName);
@@ -687,6 +686,10 @@ void XGUI_Workshop::showHelpPage(const QString& thePage) const
         QUrl aUrl = QUrl::fromLocalFile(aFileName);
         QDesktopServices::openUrl(aUrl);
       }
+#else
+      QUrl aUrl = QUrl::fromLocalFile(aFileName);
+      QDesktopServices::openUrl(aUrl);
+#endif
     }
   }
 }
@@ -1819,7 +1822,7 @@ void XGUI_Workshop::onContextMenuCommand(const QString& theId, bool isChecked)
   }
 #ifdef TINSPECTOR
   else if (theId == "TINSPECTOR_VIEW") {
-    Handle(CDF_Application) anApplication = CDF_Session::CurrentSession()->CurrentApplication();
+    Handle(TDocStd_Application) anApplication = ModelAPI_Session::get()->application();
     if (!anApplication.IsNull())
     {
       if (!MyTCommunicator)

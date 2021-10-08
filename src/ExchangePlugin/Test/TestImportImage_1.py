@@ -17,13 +17,18 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-import os
+import os, inspect
 from salome.shaper import model
 
-import salome
-salome.salome_init(1)
+from PyQt5.Qt import QApplication
 
-data_dir = os.path.join(os.path.dirname(sys.argv[0]), "data")
+import salome
+salome.salome_init_without_session()
+salome.salome_init(1)
+if QApplication.instance() is None:
+  app = QApplication([])
+
+data_dir = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "data")
 
 model.begin()
 partSet = model.moduleDocument()
