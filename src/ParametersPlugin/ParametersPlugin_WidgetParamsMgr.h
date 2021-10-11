@@ -109,6 +109,9 @@ private slots:
   /// Slot for reaction on remove parameter
   void onRemove();
 
+  /// Slot for reaction on import parameter
+  void onImport();
+
   /// Slot for reaction on shift up
   void onUp();
 
@@ -173,6 +176,7 @@ private:
   QPushButton* myAddBtn;
   QPushButton* myInsertBtn;
   QPushButton* myRemoveBtn;
+  QPushButton* myImportBtn;
   QToolButton* myUpBtn;
   QToolButton* myDownBtn;
 

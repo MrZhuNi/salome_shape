@@ -29,6 +29,11 @@ The following dialog box with parameter table appears:
 - **Add** button adds a new empty string in the end of table. Default  **Name** is *<NoName>*, **Expression** is   *<NoValue>* 
 - **Insert** button adds a new empty string before the selected parameter;
 - **Delete** button removes the selected parameter from the table;   
+- **Import** button import parameters from .txt files. Parameters must be written in file in separate lines like example: **Name** **Expression** #**Comment**
+Sample.txt:
+''Longueur 36. # Longueur de la pièce''
+''Largeur 24 #Largeur de la pièce''
+''Hauteur Longueur * Largeur''
 - **Modify parameter position** button moves the selected parameter
   
     | |param_up| one string higher in the table,

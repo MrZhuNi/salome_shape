@@ -20,3 +20,5 @@
 """
 
 from ParametersAPI import addParameter, removeParameter
+
+from .import_parameter import *

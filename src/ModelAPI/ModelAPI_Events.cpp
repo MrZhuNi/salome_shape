@@ -188,6 +188,27 @@ const std::string& ModelAPI_ParameterEvalMessage::error() const
   return myError;
 }
 
+/// Creates an empty message
+ModelAPI_PathEvalMessage::ModelAPI_PathEvalMessage(const Events_ID theID, const void* theSender)
+  :Events_Message(theID, theSender)
+{
+
+}
+
+ModelAPI_PathEvalMessage::~ModelAPI_PathEvalMessage()
+{
+}
+
+std::string ModelAPI_PathEvalMessage::parameter() const
+{
+  return myParam;
+}
+
+void ModelAPI_PathEvalMessage::setParameter(std::string theParam)
+{
+  myParam = theParam;
+}
+
 ModelAPI_BuildEvalMessage::ModelAPI_BuildEvalMessage(
   const Events_ID theID, const void* theSender)
   : Events_Message(theID, theSender), myIsProcessed(false)

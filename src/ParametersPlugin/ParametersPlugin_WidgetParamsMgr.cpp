@@ -54,6 +54,7 @@
 #include <QKeyEvent>
 #include <QDialogButtonBox>
 #include <QShortcut>
+#include <QFileDialog>
 
 enum ColumnType {
   Col_Name,
@@ -252,6 +253,10 @@ ParametersPlugin_WidgetParamsMgr::ParametersPlugin_WidgetParamsMgr(QWidget* theP
   myInsertBtn = new QPushButton(translate("Insert"), this);
   connect(myInsertBtn, SIGNAL(clicked(bool)), SLOT(onInsert()));
   aBtnLayout->addWidget(myInsertBtn);
+
+  myImportBtn = new QPushButton(translate("Import file"), this);
+  connect(myImportBtn, SIGNAL(clicked(bool)), SLOT(onImport()));
+  aBtnLayout->addWidget(myImportBtn);
 
   myRemoveBtn = new QPushButton(translate("Remove"), this);
   connect(myRemoveBtn, SIGNAL(clicked(bool)), SLOT(onRemove()));
@@ -689,6 +694,26 @@ void ParametersPlugin_WidgetParamsMgr::onRemove()
     updateFeaturesPart();
     updateParametersPart();
   }
+}
+
+void ParametersPlugin_WidgetParamsMgr::onImport()
+{
+  QStringList aPathes = QFileDialog::getOpenFileNames(nullptr, "Select txt file", "", "Text files (*.txt)", nullptr, {QFileDialog::ExistingFiles});
+  if (aPathes.empty())
+    return;
+
+  for (auto aPathIter = aPathes.begin(); aPathIter != aPathes.end(); ++aPathIter)
+  {
+    std::string aPath(aPathIter->toStdString());
+    std::shared_ptr<ModelAPI_PathEvalMessage> aMessage =
+      std::shared_ptr<ModelAPI_PathEvalMessage>(
+        new ModelAPI_PathEvalMessage(ModelAPI_PathEvalMessage::eventId()));
+    aMessage->setParameter(aPath);
+    Events_Loop::loop()->send(aMessage);
+  }
+  updateParametersFeatures();
+  /*updateFeaturesPart();*/
+  updateParametersPart();
 }
 
 void ParametersPlugin_WidgetParamsMgr::onUp()

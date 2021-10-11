@@ -1,0 +1,54 @@
+# Copyright (C) 2014-2021  CEA/DEN, EDF R&D
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+#
+# See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+#
+
+from salome.shaper import model
+
+def importParameters(theDocument, theFileName):
+
+    aResult = []
+    try:
+        aFile = open(theFileName, 'r')
+    except IOError:
+        return aResult
+
+    for aLine in aFile:
+        aLine = aLine.rstrip("\n")
+        aName = ""
+        aParameter = ""
+        aComment = ""
+        isOK = True
+        isComment = False
+        aFirstText = aLine.split(" ")[0]
+
+        aName = aFirstText.split("#")[0]
+
+        aLine = aLine.lstrip(aName)
+
+        aParameter = aLine.split("#")[0]
+
+        aLine = aLine.lstrip(aParameter)
+        aLine = aLine.lstrip("#")
+
+        aComment = aLine
+
+        if(len(aName) > 0):
+            aResult.append(model.addParameter(theDocument, aName.strip(), aParameter.strip(), aComment.strip()))
+
+    aFile.close()
+    return aResult

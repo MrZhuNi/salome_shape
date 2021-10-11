@@ -78,6 +78,7 @@ InitializationPlugin_EvalListener::InitializationPlugin_EvalListener()
   aLoop->registerListener(this, ModelAPI_ParameterEvalMessage::eventId(), NULL, true);
   aLoop->registerListener(this, ModelAPI_BuildEvalMessage::eventId(), NULL, true);
   aLoop->registerListener(this, ModelAPI_ComputePositionsMessage::eventId(), NULL, true);
+  aLoop->registerListener(this, ModelAPI_PathEvalMessage::eventId(), NULL, true);
 
   myInterp = std::shared_ptr<InitializationPlugin_PyInterp>(new InitializationPlugin_PyInterp());
   myInterp->initialize();
@@ -178,6 +179,13 @@ void InitializationPlugin_EvalListener::processEvent(
           anIsFirstTime = false;
     }
     aMsg->setResults(aParamsList, anError);
+  }
+  else if (theMessage->eventID() == ModelAPI_PathEvalMessage::eventId())
+  {
+    std::shared_ptr<ModelAPI_PathEvalMessage> aMsg =
+      std::dynamic_pointer_cast<ModelAPI_PathEvalMessage>(theMessage);
+    std::string aPath = aMsg->parameter();
+    myInterp->runString("from salome.shaper import model; doc = model.activeDocument(); model.importParameters(doc, \"" + aPath + "\")");
   }
 }
 
