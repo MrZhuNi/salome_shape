@@ -526,7 +526,7 @@ void ParametersPlugin_WidgetParamsMgr::onCloseEditor(QWidget* theEditor,
   case Col_Comment:
     {
       AttributeStringPtr aStringAttr = aFeature->string(ParametersPlugin_Parameter::COMMENT_ID());
-      aStringAttr->setValue(aText.toStdString());
+      aStringAttr->setValue(aText.toStdWString());
       isModified = true;
     }
     break;

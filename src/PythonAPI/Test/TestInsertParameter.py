@@ -31,10 +31,10 @@ nameFile = "PythonAPI_test_parametres1.txt"
 
 aDir = os.path.join(data_dir, nameFile)
 
-aFile = open(nameFile, 'w')
+aFile = open(nameFile, 'w', encoding = "utf_8")
 
-aFile.write("Longueur  36. # \"Comment\"\n")
-aFile.write("Largeur  24.  # Comment\n")
+aFile.write("Longueur  36. # \"Longueur de la pièce\"\n")
+aFile.write("Largeur  24.  # Largeur de la pièce\n")
 aFile.write("Hauteur  Longueur*Largeur\n")
 aFile.write("\n")
 aFile.write(" \n")

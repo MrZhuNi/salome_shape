@@ -23,6 +23,11 @@
 
 %{
   #include "ParametersAPI_swig.h"
+
+  // fix for SWIG v2.0.4
+  #define SWIGPY_SLICE_ARG(obj) ((PyObject*)(obj))
+
+  #define SWIGPY_UNICODE_ARG(obj) ((PyObject*) (obj))
 %}
 
 %include "doxyhelp.i"

@@ -18,12 +18,13 @@
 #
 
 from salome.shaper import model
+import codecs
 
 def importParameters(theDocument, theFileName):
 
     aResult = []
     try:
-        aFile = open(theFileName, 'r')
+        aFile = codecs.open(theFileName, 'r', encoding = 'utf_8_sig')
     except IOError:
         return aResult
 
@@ -36,7 +37,7 @@ def importParameters(theDocument, theFileName):
         isComment = False
         aFirstText = aLine.split(" ")[0]
 
-        aName = aFirstText.split("#")[0]
+        aName = aFirstText.split("#")[0].strip()
 
         aLine = aLine.lstrip(aName)
 
@@ -48,7 +49,7 @@ def importParameters(theDocument, theFileName):
         aComment = aLine
 
         if(len(aName) > 0):
-            aResult.append(model.addParameter(theDocument, aName.strip(), aParameter.strip(), aComment.strip()))
+            aResult.append(model.addParameter(theDocument, aName, aParameter.strip(), aComment.strip()))
 
     aFile.close()
     return aResult
