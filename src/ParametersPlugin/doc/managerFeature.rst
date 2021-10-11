@@ -20,6 +20,8 @@ The following dialog box with parameter table appears:
 .. |param_up| image:: images/parameters_up.png
 .. |param_down| image:: images/parameters_down.png
 
+To edit a parameter, double-click on parameter in object browser.
+
 **Input fields**:
 
 - **Name** defines parameter name. Name follows the naming rules of the python language for variables;
