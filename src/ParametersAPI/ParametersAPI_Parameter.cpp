@@ -90,7 +90,15 @@ ParameterPtr addParameter(const std::shared_ptr<ModelAPI_Document> & thePart,
                           const std::wstring & theComment)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(ParametersAPI_Parameter::ID());
-  return ParameterPtr(new ParametersAPI_Parameter(aFeature, theName, theExpression, theComment));
+  ParameterPtr aParam(new ParametersAPI_Parameter(aFeature, theName, theExpression, theComment));
+
+  if (!aParam->feature()->error().empty())
+  {
+    std::string anError("Error with parameter \"");
+    anError += theName + "\": " + aParam->feature()->error();
+    throw anError;
+  }
+  return aParam;
 }
 
 //--------------------------------------------------------------------------------------

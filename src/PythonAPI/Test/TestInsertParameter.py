@@ -49,8 +49,9 @@ aFile.write("Longueur2 36. #\"Comment\" #Comm  #Comm\n")
 aFile.close()
 
 aListOfParameters = model.importParameters(Part_1_doc, nameFile)
+
 Box_1 = model.addBox(Part_1_doc, "Longueur", "Largeur", "Hauteur")
 
 assert(len(Box_1.feature().error()) == 0)
 assert(len(aListOfParameters) > 0)
-assert(len(aListOfParameters) == 8)
+assert(len(aListOfParameters) == 5)

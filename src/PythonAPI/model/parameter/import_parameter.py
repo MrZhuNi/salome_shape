@@ -49,7 +49,10 @@ def importParameters(theDocument, theFileName):
         aComment = aLine
 
         if(len(aName) > 0):
-            aResult.append(model.addParameter(theDocument, aName, aParameter.strip(), aComment.strip()))
+            try:
+                aResult.append(model.addParameter(theDocument, aName, aParameter.strip(), aComment.strip()))
+            except SyntaxError as anError:
+                anError
 
     aFile.close()
     return aResult

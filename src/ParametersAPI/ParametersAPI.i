@@ -45,5 +45,15 @@
 // shared pointers
 %shared_ptr(ParametersAPI_Parameter)
 
+// exception handler
+%exception addParameter {
+  try {
+    $action
+  } catch (const std::string& str) {
+    PyErr_SetString(PyExc_SyntaxError, str.c_str());
+    return NULL;
+  }
+}
+
 // all supported interfaces
 %include "ParametersAPI_Parameter.h"
