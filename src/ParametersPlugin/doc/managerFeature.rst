@@ -41,4 +41,13 @@ Sample.txt:
     | |param_up| one string higher in the table,
     | |param_down| one string lower in the table.
 
+**TUI Command**:
+
+.. py:function:: model.importParameters(Part_doc, filename)
+
+    :param part: The current part object
+    :param filename: The txt file with parameters
+    :return: Created objects.
+
+**See Also** a sample TUI Script of a :ref:`tui_parameterFeature` operation.
 **See Also** :ref:`parameter` operation.
