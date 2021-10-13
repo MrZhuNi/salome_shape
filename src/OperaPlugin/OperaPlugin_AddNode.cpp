@@ -21,6 +21,8 @@
 
 #include <ModelAPI_Feature.h>
 
+#include <iostream>
+
 //=================================================================================================
 OperaPlugin_AddNode::OperaPlugin_AddNode() // Nothing to do during instantiation
 {
@@ -30,105 +32,103 @@ OperaPlugin_AddNode::OperaPlugin_AddNode() // Nothing to do during instantiation
 void OperaPlugin_AddNode::initAttributes()
 {
   data()->addAttribute(MAIN_OBJECT_ID(), ModelAPI_AttributeSelection::typeId());
-  data()->addAttribute(TOOLS_LIST_ID(), ModelAPI_AttributeSelectionList::typeId());
+  data()->addAttribute(TOOL_OBJECT_ID(), ModelAPI_AttributeSelection::typeId());
 }
 
-//=================================================================================================
-bool toolsIntersect(ListOfShape& theToolsList){
-
-  for(auto it = theToolsList.begin(); it != theToolsList.end(); it++)
-    for(auto jt = theToolsList.begin(); jt != theToolsList.end(); jt++)
-    {
-      GeomShapePtr first = *it;
-      GeomShapePtr second = *jt;
-      if (!(first == second))
-        if (first->isIntersect(second))
-          return true;
-    }
-  return false;
-}
 
 //=================================================================================================
-void OperaPlugin_AddNode::performAlgo(const GeomAlgoAPI_Tools::BOPType theBooleanType,
-                                      const GeomShapePtr& theObject,
-                                      const ListOfShape& theTools,
-                                      const ListOfShape& thePlanes,
-                                      int& theResultIndex)
+void OperaPlugin_AddNode::handleNaming(const GeomMakeShapePtr& theBoolAlgo,
+                                       const GeomShapePtr theTool,
+                                       const ListOfShape& theToolsList)
 {
-  //Perform algorithm
-  ListOfShape aListWithObject;
-  aListWithObject.push_back(theObject);
+  //Get result shape
+  int anIndexToRemove = 0;
+  GeomShapePtr theResShape = theBoolAlgo->shape();
+
   std::shared_ptr<GeomAlgoAPI_MakeShapeList> aMakeShapeList(new GeomAlgoAPI_MakeShapeList());
+  aMakeShapeList->appendAlgo(theBoolAlgo);
+
+  // Result list
+  ListOfShape aResList;
+  if (!theToolsList.empty())
+    for (auto it = theToolsList.begin(); it != theToolsList.end(); it++)
+      aResList.push_back(*it);
+  aResList.push_front(theResShape);
+  aResList.push_back(theTool);
+
+  //Build result compund
+  GeomShapePtr aCompound = GeomAlgoAPI_CompoundBuilder::compound(aResList);
+  if (aCompound) {
+    ResultBodyPtr aResultBody = document()->createBody(data(), anIndexToRemove++);
+    aResultBody->storeModified(aResList, aCompound, theBoolAlgo);
+    aResultBody->loadModifiedShapes(aMakeShapeList, aCompound, GeomAPI_Shape::VERTEX);
+    aResultBody->loadModifiedShapes(aMakeShapeList, aCompound, GeomAPI_Shape::EDGE);
+    aResultBody->loadModifiedShapes(aMakeShapeList, aCompound, GeomAPI_Shape::FACE);
+    setResult(aResultBody);
+  }
+}
+
+
+//=================================================================================================
+void OperaPlugin_AddNode::performAlgo(const GeomShapePtr& theObject,
+                                      GeomShapePtr theTool,
+                                      const ListOfShape& theToolsList)
+{
+  //Intersecting tool case
+  if (theObject->intersect(theTool)){
+    std::shared_ptr<GeomAlgoAPI_MakeShape> aCommonAlgo;
+    aCommonAlgo.reset(new GeomAlgoAPI_Boolean(theObject,
+                                              theTool,
+                                              GeomAlgoAPI_Tools::BOOL_COMMON));
+    theTool = aCommonAlgo->shape();
+  }
+
+  //Perform algorithm
   std::shared_ptr<GeomAlgoAPI_MakeShape> aBoolAlgo;
-  GeomShapePtr aResShape;
-  aBoolAlgo.reset(new GeomAlgoAPI_Boolean(aListWithObject,
-                                          theTools,
-                                          theBooleanType));
+  aBoolAlgo.reset(new GeomAlgoAPI_Boolean(theObject,
+                                          theTool,
+                                          GeomAlgoAPI_Tools::BOOL_CUT));
   //Check for error
   std::string anError;
   if (GeomAlgoAPI_Tools::AlgoError::isAlgorithmFailed(aBoolAlgo, getKind(), anError))
     return setError(anError);
 
   //Naming
-  handleNaming(aResShape, aBoolAlgo, aMakeShapeList, theTools);
-}
-
-//=================================================================================================
-void OperaPlugin_AddNode::handleNaming(GeomShapePtr theResShape,
-                                       GeomMakeShapePtr theBoolAlgo,
-                                       std::shared_ptr<GeomAlgoAPI_MakeShapeList> theMakeShapeList,
-                                       const ListOfShape& theTools)
-{
-  //Get result shape
-  int anIndexToRemove = 0;
-  theResShape = theBoolAlgo->shape();
-  theMakeShapeList->appendAlgo(theBoolAlgo);
-  ListOfShape aTestList = theTools;
-  aTestList.push_front(theResShape);
-
-  //Build result compund
-  GeomShapePtr aCompound = GeomAlgoAPI_CompoundBuilder::compound(aTestList);
-  if (aCompound) {
-    ResultBodyPtr aResultBody = document()->createBody(data(), anIndexToRemove++);
-    aResultBody->storeModified(aTestList, aCompound, theBoolAlgo);
-    aResultBody->loadModifiedShapes(theMakeShapeList, aCompound, GeomAPI_Shape::VERTEX);
-    aResultBody->loadModifiedShapes(theMakeShapeList, aCompound, GeomAPI_Shape::EDGE);
-    aResultBody->loadModifiedShapes(theMakeShapeList, aCompound, GeomAPI_Shape::FACE);
-    setResult(aResultBody);
-  }
+  handleNaming(aBoolAlgo, theTool, theToolsList);
 }
 
 //=================================================================================================
 void OperaPlugin_AddNode::execute()
 {
-  int aResultIndex = 0;
-  ListOfShape aPlanes, aToolList;
+  ListOfShape aToolList;
 
   //Get Selection and Shapes
   AttributeSelectionPtr aMainObjectAttr = selection(MAIN_OBJECT_ID());
-  AttributeSelectionListPtr aToolsAttrList = selectionList(TOOLS_LIST_ID());
+  AttributeSelectionPtr aToolsAttrList = selection(TOOL_OBJECT_ID());
 
-  // Get Shapes from selection and test intersection with Main Object
+  // Get Shapes from selection
   GeomShapePtr aMainObjectShape = shapeOfSelection(aMainObjectAttr);
-  for (int anObjectsIndex = 0; anObjectsIndex < aToolsAttrList->size(); anObjectsIndex++){
-    GeomShapePtr currentToolShape = shapeOfSelection(aToolsAttrList->value(anObjectsIndex));
-    if (!aMainObjectShape->isIntersect(currentToolShape) || aMainObjectShape->intersect(currentToolShape))
-      return setError("Error: All tools must be fully inside the main object");
-    aToolList.push_back(currentToolShape);
+  GeomShapePtr aToolShape = shapeOfSelection(aToolsAttrList);
+
+  // Get older tools and main shape
+  if (aMainObjectShape->shapeType() == GeomAPI_Shape::COMPOUND){
+    ListOfShape aMainObjectSubShapes = aMainObjectShape->subShapes(GeomAPI_Shape::SOLID);
+    for (auto it = aMainObjectSubShapes.begin(); it != aMainObjectSubShapes.end(); it++) {
+      if (it == aMainObjectSubShapes.begin())
+        aMainObjectShape = *it;
+      else
+        aToolList.push_back(*it);
+    }
   }
 
-  // Check tools intersections
-  if (toolsIntersect(aToolList))
-    return setError("Error: Tools must not intersect each others");
-
-  //Check for error then clean part results
+  // Get Case
+  if (!aMainObjectShape->isIntersect(aToolShape))
+    return setError("Error: All tools must intersect the main object");
   if(aMainObjectShape == nullptr )
     return setError("Error: cannot perform an AddNode with no main object.");
-  if(aToolList.empty())
-    return setError("Error: Tools list cannot be empty.");
+  if(aToolShape == nullptr)
+    return setError("Error: cannot perform an AddNode with no tool object.");
 
   //Perform Algorithm
-  performAlgo(GeomAlgoAPI_Tools::BOOL_CUT,
-              shapeOfSelection(aMainObjectAttr), aToolList, aPlanes,
-              aResultIndex);
+  performAlgo(aMainObjectShape, aToolShape, aToolList);
 }

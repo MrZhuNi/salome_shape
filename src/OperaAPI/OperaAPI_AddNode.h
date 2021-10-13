@@ -42,7 +42,7 @@ public:
   OPERAAPI_EXPORT
   explicit OperaAPI_AddNode(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                             const ModelHighAPI_Selection& theMainObject,
-                            const std::list<ModelHighAPI_Selection>& theToolsList);
+                            const ModelHighAPI_Selection& theTool);
 
   /// Destructor.
   OPERAAPI_EXPORT
@@ -51,8 +51,8 @@ public:
   INTERFACE_2(OperaPlugin_AddNode::ID(),
               mainObject, OperaPlugin_AddNode::MAIN_OBJECT_ID(),
               ModelAPI_AttributeSelection, /** Main Object */,
-              toolsList, OperaPlugin_AddNode::TOOLS_LIST_ID(),
-              ModelAPI_AttributeSelectionList, /** Tools list*/)
+              toolObject, OperaPlugin_AddNode::TOOL_OBJECT_ID(),
+              ModelAPI_AttributeSelection, /** Tool Object*/)
 
   /// Set main object
   OPERAAPI_EXPORT
@@ -60,7 +60,7 @@ public:
 
   /// Set tools list
   OPERAAPI_EXPORT
-  void setToolsList(const std::list<ModelHighAPI_Selection>& theToolsList);
+  void setToolObject(const ModelHighAPI_Selection& theTool);
 
   /// Dump wrapped feature
   OPERAAPI_EXPORT
@@ -75,6 +75,6 @@ typedef std::shared_ptr<OperaAPI_AddNode> AddNodePtr;
 OPERAAPI_EXPORT
 AddNodePtr addAddNode(const std::shared_ptr<ModelAPI_Document>& thePart,
                       const ModelHighAPI_Selection& theMainObject,
-                      const std::list<ModelHighAPI_Selection>& theToolsList);
+                      const ModelHighAPI_Selection& theTool);
 
 #endif // OPERAAPI_ADDNODE_H_

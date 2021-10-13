@@ -24,6 +24,7 @@
 #=========================================================================
 # Initialization of the test
 #=========================================================================
+from GeomAPI import GeomAPI_Shape
 from salome.shaper import model
 
 model.begin()
@@ -31,70 +32,44 @@ partSet = model.moduleDocument()
 Part_1 = model.addPart(partSet)
 Part_1_doc = Part_1.document()
 
-### Create two box (one inside the other)
+### Create Box
 Box_1 = model.addBox(Part_1_doc, 0, 0, 0, 20, 20, 20)
-Box_2 = model.addBox(Part_1_doc, 0, 0, 0, 10, 10, 10)
+Box_2 = model.addBox(Part_1_doc, 10, 0, -10, 5, 5, 5)
+Box_3 = model.addBox(Part_1_doc, 0, 0, 20, 10, 10, 10)
+Box_4 = model.addBox(Part_1_doc, 0, 0, 0, 2, 2, 2)
+Box_5 = model.addBox(Part_1_doc, -3, -3, -3, 3, 3, 3)
+Box_6 = model.addBox(Part_1_doc, -10, 13, -10, 7, 7, 7)
+Box_7 = model.addBox(Part_1_doc, 35, 35, 35, 10, 10, 10) #ERROR : Box is outside main Object
+Box_8 = model.addBox(Part_1_doc, 0, 0, 0, 10, 10, 10)    #ERROR : For test with no Main Object
+Box_9 = model.addBox(Part_1_doc, 0, 0, 0, 10, 10, 10)    #ERROR : For test with no Main Object
 
-### Create more boxes for error tests
-Box_3= model.addBox(Part_1_doc, 0, 0, 0, 10, 10, 10)
-Box_4 = model.addBox(Part_1_doc, 0, 0, 0, 20, 20, 20)
-Box_5 = model.addBox(Part_1_doc, 0, 0, 0, 20, 20, 20)
-Box_6 = model.addBox(Part_1_doc, 50, 50, 50, 10, 10, 10)
-Box_7 = model.addBox(Part_1_doc, 0, 0, 0, 20, 20, 20)
-Box_8 = model.addBox(Part_1_doc, 20, 0, 0, 10, 10, 10)
-Box_9 = model.addBox(Part_1_doc, 0, 0, 0, 20, 20, 20)
-Box_10 = model.addBox(Part_1_doc, 0, 0, 0, 10, 10, 10)
-Box_11 = model.addBox(Part_1_doc, 5, 5, 5, 10, 10, 10)
-Box_12 = model.addBox(Part_1_doc, 0, 0, 0, 20, 20, 20)
-Box_13 = model.addBox(Part_1_doc, 0, 0, 0, 10, 10, 10)
-Box_14 = model.addBox(Part_1_doc, 0, 0, 0, 5, 5, 5)
+### Create addNodes
+AddNode_1 = model.addAddNode(Part_1_doc, model.selection("SOLID", "Box_1_1"), model.selection("SOLID", "Box_2_1"))
+AddNode_2 = model.addAddNode(Part_1_doc, model.selection("SOLID", "AddNode_1_1"), model.selection("SOLID", "Box_3_1"))
+AddNode_3 = model.addAddNode(Part_1_doc, model.selection("SOLID", "AddNode_2_1"), model.selection("SOLID", "Box_4_1"))
+AddNode_4 = model.addAddNode(Part_1_doc, model.selection("SOLID", "AddNode_3_1"), model.selection("SOLID", "Box_5_1"))
+AddNode_5 = model.addAddNode(Part_1_doc, model.selection("SOLID", "AddNode_4_1"), model.selection("SOLID", "Box_6_1"))
 
+# # #Checks
+model.testNbResults(AddNode_5, 1)
+model.testNbSubResults(AddNode_5, [6])
+model.testNbSubShapes(AddNode_5, GeomAPI_Shape.SOLID, [6])
+model.testHaveNamingFaces(AddNode_5, model, Part_1_doc)
 
-### Create a volume from the cylinder and the sphere
-AddNode_1 = model.addAddNode(Part_1_doc, model.selection("SOLID", "Box_1_1"), [model.selection("SOLID", "Box_2_1")])
-
-#Checks
-from GeomAPI import GeomAPI_Shape
-
-model.testNbResults(AddNode_1, 1)
-model.testNbSubResults(AddNode_1, [2])
-model.testNbSubShapes(AddNode_1, GeomAPI_Shape.SOLID, [2])
-model.testNbSubShapes(AddNode_1, GeomAPI_Shape.FACE, [18])
-model.testHaveNamingFaces(AddNode_1, model, Part_1_doc)
+# ### Create a AddNode with tools outside the main object
+AddNode_6 = model.addAddNode(Part_1_doc, model.selection("SOLID", "AddNode_5_1"), model.selection("SOLID", "Box_7_1"))
+model.testNbResults(AddNode_6, 0)
+assert(AddNode_6.feature().error() == "Error: All tools must intersect the main object")
 
 ### Create a AddNode with no main object
-AddNode_2 = model.addAddNode(Part_1_doc, model.selection("SOLID", "None"), [model.selection("SOLID", "Box_3_1")])
-model.testNbResults(AddNode_2, 0)
-assert(AddNode_2.feature().error() == "Attribute \"main_object\" is not initialized.")
+AddNode_7 = model.addAddNode(Part_1_doc, model.selection("SOLID", "None"), model.selection("SOLID", "Box_8_1"))
+model.testNbResults(AddNode_7, 0)
+assert(AddNode_7.feature().error() == "Attribute \"main_object\" is not initialized.")
 
 ### Create a AddNode with no tools
-AddNode_3 = model.addAddNode(Part_1_doc, model.selection("SOLID", "Box_4_1"), [])
-model.testNbResults(AddNode_3, 0)
-assert(AddNode_3.feature().error() == "Attribute \"tools_list\" is not initialized.")
-
-### Create a AddNode with tools outside the main object
-AddNode_4 = model.addAddNode(Part_1_doc, model.selection("SOLID", "Box_5_1"), [model.selection("SOLID", "Box_6_1")])
-model.testNbResults(AddNode_4, 0)
-assert(AddNode_4.feature().error() == "Error: All tools must be fully inside the main object")
-
-### Create a AddNode with tools intersecting the main object
-AddNode_5 = model.addAddNode(Part_1_doc, model.selection("SOLID", "Box_7_1"), [model.selection("SOLID", "Box_8_1")])
-model.testNbResults(AddNode_5, 0)
-assert(AddNode_5.feature().error() == "Error: All tools must be fully inside the main object")
-
-### Create a AddNode with intersecting tools
-AddNode_6 = model.addAddNode(Part_1_doc, model.selection("SOLID", "Box_9_1"), [model.selection("SOLID", "Box_10_1"), model.selection("SOLID", "Box_11_1")])
-model.testNbResults(AddNode_6, 0)
-assert(AddNode_6.feature().error() == "Error: Tools must not intersect each others")
-
-### Create a AddNode with a tool inside another
-AddNode_7 = model.addAddNode(Part_1_doc, model.selection("SOLID", "Box_12_1"), [model.selection("SOLID", "Box_13_1"), model.selection("SOLID", "Box_14_1")])
-model.testNbResults(AddNode_7, 0)
-assert(AddNode_7.feature().error() == "Error: Tools must not intersect each others")
-
-
-# TODO : Test with out of bounds tools
-# TODO : Test with intersected tools
+AddNode_8 = model.addAddNode(Part_1_doc, model.selection("SOLID", "Box_9_1"), model.selection("SOLID", "None"))
+model.testNbResults(AddNode_8, 0)
+assert(AddNode_8.feature().error() == "Attribute \"tool_object\" is not initialized.")
 
 #=========================================================================
 # End of test

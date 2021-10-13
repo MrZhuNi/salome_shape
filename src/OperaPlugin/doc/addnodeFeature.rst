@@ -10,7 +10,7 @@ To create a AddNode in the active part:
 #. select in the Main Menu *Opera - > AddNode* item  or
 #. click |AddNode_button.icon| **AddNode** button in the toolbar:
 
-AddNode is created by a solid as main object and a list of solids as tools
+AddNode is created by a solid as main object and a tool object
 
 .. figure:: images/AddNode.png
    :align: center
@@ -18,22 +18,22 @@ AddNode is created by a solid as main object and a list of solids as tools
 Input fields:
 
 - **MainOject** defines the solid main object;
-- **Tools** defines the list of solid tools
+- **Tool** defines the tool object
 
 **TUI Command**:
 
 .. py:function::
-    model.addAddNode(Part_doc, model.selection("SOLID", main_object_name), model.selection[("SOLID", ...), ...])
+    model.addAddNode(Part_doc, model.selection("SOLID", main_object_name), model.selection("SOLID", main_object_name))
 
     :param part: The current part object.
     :param object: A main object solid.
-    :param list: A list of tools solids.
+    :param object: A tool object solid.
     :return: Result compound.
 
 Result
 """"""
 
-One compound with the boolean operation result and the tools objects below it, depending on geometry cases
+One compound with the boolean operation result and the tools objects used on the geometry below it. Depends on geometry cases
 
 .. figure:: images/AddNode1.png
    :align: center

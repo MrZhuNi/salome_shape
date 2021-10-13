@@ -60,25 +60,22 @@ class OperaPlugin_AddNode : public ModelAPI_Feature
       static const std::string MY_MAIN_OBJECT_ID("main_object");
       return MY_MAIN_OBJECT_ID;
     }
-    /// Attribute name of selected tools list
-    inline static const std::string& TOOLS_LIST_ID()
+    /// Attribute name of tool object.
+    inline static const std::string& TOOL_OBJECT_ID()
     {
-      static const std::string MY_TOOLS_LIST_ID("tools_list");
-      return MY_TOOLS_LIST_ID;
+      static const std::string MY_TOOL_OBJECT_ID("tool_object");
+      return MY_TOOL_OBJECT_ID;
     }
 
     /// Perform boolean alogrithm according to AddNode cases
-    void performAlgo(const GeomAlgoAPI_Tools::BOPType theBooleanType,
-                     const GeomShapePtr& theObject,
-                     const ListOfShape& theTools,
-                     const ListOfShape& thePlanes,
-                     int& theResultIndex);
+    void performAlgo(const GeomShapePtr& theObject,
+                     GeomShapePtr theTool,
+                     const ListOfShape& theToolsList);
 
     /// Creates naming for AddNode results
-    void OperaPlugin_AddNode::handleNaming(GeomShapePtr theResShape,
-                                           GeomMakeShapePtr theBoolAlgo,
-                                          std::shared_ptr<GeomAlgoAPI_MakeShapeList> theMakeShapeList,
-                                          const ListOfShape& theTools);
+    void OperaPlugin_AddNode::handleNaming(const GeomMakeShapePtr& theBoolAlgo,
+                                           const GeomShapePtr theTool,
+                                           const ListOfShape& theToolsList);
 
     /// Creates a new part document if needed
     OPERAPLUGIN_EXPORT virtual void execute();

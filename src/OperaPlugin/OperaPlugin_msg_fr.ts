@@ -66,10 +66,6 @@
     </message>
   </context>
 
-
-
-
-
   <context>
     <name>AddNode:main_object</name>
     <message>
@@ -83,14 +79,14 @@
   </context>
 
   <context>
-    <name>Volume:tools_list</name>
+    <name>Volume:tool_object</name>
     <message>
-      <source>Tools objects</source>
-      <translation>Outils</translation>
+      <source>Tool object</source>
+      <translation>Outil</translation>
     </message>
     <message>
-      <source>Select solid objects as tools</source>
-      <translation>Sélectionnez les outils</translation>
+      <source>Select a tool object</source>
+      <translation>Veuillez séléctioner un outil</translation>
     </message>
   </context>
 
@@ -102,10 +98,10 @@
     </message>
   </context>
   <context>
-    <name>Volume:tools_list</name>
+    <name>Volume:tool_object</name>
     <message>
       <source>Attribute "%2" is not initialized.</source>
-      <translation>Sélectionnez les outils.</translation>
+      <translation>Sélectionnez un outil.</translation>
     </message>
   </context>
 

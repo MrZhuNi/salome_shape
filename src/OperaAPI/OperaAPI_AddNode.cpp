@@ -32,12 +32,12 @@ OperaAPI_AddNode::OperaAPI_AddNode(const std::shared_ptr<ModelAPI_Feature>& theF
 //==================================================================================================
 OperaAPI_AddNode::OperaAPI_AddNode(const std::shared_ptr<ModelAPI_Feature>& theFeature,
                                    const ModelHighAPI_Selection& theMainObject,
-                                   const std::list<ModelHighAPI_Selection>& theToolsList)
-								   : ModelHighAPI_Interface(theFeature)
+                                   const ModelHighAPI_Selection& theTool)
+						                       : ModelHighAPI_Interface(theFeature)
 {
   if(initialize()) {
     fillAttribute(theMainObject, mainObject());
-    setToolsList(theToolsList);
+    setToolObject(theTool);
   }
 }
 
@@ -54,9 +54,9 @@ void OperaAPI_AddNode::setMainObject(const ModelHighAPI_Selection& theMainObject
 }
 
 //==================================================================================================
-void OperaAPI_AddNode::setToolsList(const std::list<ModelHighAPI_Selection>& theToolsList)
+void OperaAPI_AddNode::setToolObject(const ModelHighAPI_Selection& theTool)
 {
-  fillAttribute(theToolsList, toolsList());
+  fillAttribute(theTool, toolObject());
   execute();
 }
 
@@ -69,16 +69,16 @@ void OperaAPI_AddNode::dump(ModelHighAPI_Dumper& theDumper) const
   AttributeSelectionPtr anAttrObject = aBase->selection(OperaPlugin_AddNode::MAIN_OBJECT_ID());
   theDumper << aBase << " = model.addAddNode(" << aDocName << ", " << anAttrObject << ", ";
 
-  AttributeSelectionListPtr anAttrList =
-    aBase->selectionList(OperaPlugin_AddNode::TOOLS_LIST_ID());
-  theDumper << anAttrList << ")" << std::endl;
+  AttributeSelectionPtr anAttrTool =
+    aBase->selection(OperaPlugin_AddNode::TOOL_OBJECT_ID());
+  theDumper << anAttrTool << ")" << std::endl;
 }
 
 //==================================================================================================
 AddNodePtr addAddNode(const std::shared_ptr<ModelAPI_Document>& thePart,
                       const ModelHighAPI_Selection& theMainObject,
-                      const std::list<ModelHighAPI_Selection>& theToolsList)
+                      const ModelHighAPI_Selection& theTool)
 {
   std::shared_ptr<ModelAPI_Feature> aFeature = thePart->addFeature(OperaAPI_AddNode::ID());
-  return AddNodePtr(new OperaAPI_AddNode(aFeature, theMainObject, theToolsList));
+  return AddNodePtr(new OperaAPI_AddNode(aFeature, theMainObject, theTool));
 }
