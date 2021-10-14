@@ -9,5 +9,5 @@ Create Parameter
     :language: python
 
 :download:`Download this script <examples/parameter.py>` 
-:download:`Download file for script <examples/File.txt>`
+:download:`Download parameters file sample <examples/File.txt>`
    

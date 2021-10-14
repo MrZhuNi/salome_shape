@@ -698,21 +698,24 @@ void ParametersPlugin_WidgetParamsMgr::onRemove()
 
 void ParametersPlugin_WidgetParamsMgr::onImport()
 {
-  QStringList aPathes = QFileDialog::getOpenFileNames(nullptr, "Select txt file", "", "Text files (*.txt)", nullptr, {QFileDialog::ExistingFiles});
-  if (aPathes.empty())
+  std::string aWinText("Select txt file");
+  std::string aFileType("Text files (*.txt);;All files (*.*)");
+  QFlags<QFileDialog::Option> aOption = {QFileDialog::ExistingFile};
+  QString aQPath = QFileDialog::getOpenFileName(nullptr,
+                                                aWinText.c_str(), "",
+                                                aFileType.c_str(), nullptr,
+                                                aOption);
+  if (aQPath.size() == 0)
     return;
 
-  for (auto aPathIter = aPathes.begin(); aPathIter != aPathes.end(); ++aPathIter)
-  {
-    std::string aPath(aPathIter->toStdString());
-    std::shared_ptr<ModelAPI_PathEvalMessage> aMessage =
-      std::shared_ptr<ModelAPI_PathEvalMessage>(
-        new ModelAPI_PathEvalMessage(ModelAPI_PathEvalMessage::eventId()));
-    aMessage->setParameter(aPath);
-    Events_Loop::loop()->send(aMessage);
-  }
+  std::string aPath(aQPath.toStdString());
+  std::shared_ptr<ModelAPI_ImportParametersMessage> aMessage =
+    std::shared_ptr<ModelAPI_ImportParametersMessage>(
+      new ModelAPI_ImportParametersMessage(ModelAPI_ImportParametersMessage::eventId()));
+  aMessage->setFilename(aPath);
+  Events_Loop::loop()->send(aMessage);
+
   updateParametersFeatures();
-  /*updateFeaturesPart();*/
   updateParametersPart();
 }
 

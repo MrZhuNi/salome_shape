@@ -20,6 +20,11 @@
 from salome.shaper import model
 import codecs
 
+def changeTab(theLine):
+    aResult = theLine.split("#")[0].replace("\t"," ")
+    aResult += theLine[len(aResult):]
+    return aResult
+
 def importParameters(theDocument, theFileName):
 
     aResult = []
@@ -30,11 +35,12 @@ def importParameters(theDocument, theFileName):
 
     for aLine in aFile:
         aLine = aLine.rstrip("\n")
+        aLine = changeTab(aLine)
+
         aName = ""
         aParameter = ""
         aComment = ""
-        isOK = True
-        isComment = False
+
         aFirstText = aLine.split(" ")[0]
 
         aName = aFirstText.split("#")[0].strip()
@@ -52,7 +58,7 @@ def importParameters(theDocument, theFileName):
             try:
                 aResult.append(model.addParameter(theDocument, aName, aParameter.strip(), aComment.strip()))
             except SyntaxError as anError:
-                anError
+                print(anError)
 
     aFile.close()
     return aResult

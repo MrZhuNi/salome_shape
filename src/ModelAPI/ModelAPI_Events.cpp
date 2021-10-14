@@ -189,24 +189,24 @@ const std::string& ModelAPI_ParameterEvalMessage::error() const
 }
 
 /// Creates an empty message
-ModelAPI_PathEvalMessage::ModelAPI_PathEvalMessage(const Events_ID theID, const void* theSender)
+ModelAPI_ImportParametersMessage::ModelAPI_ImportParametersMessage(const Events_ID theID, const void* theSender)
   :Events_Message(theID, theSender)
 {
 
 }
 
-ModelAPI_PathEvalMessage::~ModelAPI_PathEvalMessage()
+ModelAPI_ImportParametersMessage::~ModelAPI_ImportParametersMessage()
 {
 }
 
-std::string ModelAPI_PathEvalMessage::parameter() const
+std::string ModelAPI_ImportParametersMessage::filename() const
 {
-  return myParam;
+  return myFilename;
 }
 
-void ModelAPI_PathEvalMessage::setParameter(std::string theParam)
+void ModelAPI_ImportParametersMessage::setFilename(std::string theFilename)
 {
-  myParam = theParam;
+  myFilename = theFilename;
 }
 
 ModelAPI_BuildEvalMessage::ModelAPI_BuildEvalMessage(

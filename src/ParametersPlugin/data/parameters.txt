@@ -1,0 +1,11 @@
+Longueur  36. # "Longueur de la pièce"
+Largeur  24.  # Largeur de la pièce
+Hauteur  Longueur*Largeur
+
+Largeur2
+Largeur3 #Comment
+A12  5. * 5.
+# Comment
+Name#Comment
+ # Comm
+Longueur2 36. #\"Comment\" #Comm  #Comm
