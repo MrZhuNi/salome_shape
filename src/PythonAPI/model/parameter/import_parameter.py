@@ -58,7 +58,7 @@ def importParameters(theDocument, theFileName):
             try:
                 aResult.append(model.addParameter(theDocument, aName, aParameter.strip(), aComment.strip()))
             except SyntaxError as anError:
-                print(anError)
+                print(anError, file = sys.stderr)
 
     aFile.close()
     return aResult

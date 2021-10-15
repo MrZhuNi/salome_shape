@@ -1,4 +1,4 @@
-# Copyright (C) 2021  CEA/DEN, EDF R&D
+# Copyright (C) 2014-2021  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,17 +17,29 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-SET(TEST_NAMES
-               TestParameterCreation.py
-               TestParameterRename.py
-               TestParameterChangeValue.py
-               TestParameterDelete.py
-               TestParameterErrorMsg.py
-               TestParametersMgr.py
-               Test1806.py
-               Test2392.py
-               Test2474.py
-               Test19036.py
-               TestImportParameters.py
-               TestImportInvalidParameters.py
-)
+from salome.shaper import model
+import os, sys
+
+from PyQt5.Qt import QApplication
+
+import salome
+salome.salome_init_without_session()
+salome.salome_init(1)
+if QApplication.instance() is None:
+  app = QApplication([])
+
+data_dir = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "data")
+
+model.begin()
+partSet = model.moduleDocument()
+Part_1 = model.addPart(partSet)
+Part_1_doc = Part_1.document()
+
+nameFile = "invalid_parameters.txt"
+
+aDir = os.path.join(data_dir, nameFile)
+
+aListOfParameters = model.importParameters(Part_1_doc, aDir)
+
+assert(len(aListOfParameters) == 0)
+assert(model.checkPythonDump())

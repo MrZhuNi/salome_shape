@@ -44,6 +44,5 @@ aListOfParameters = model.importParameters(Part_1_doc, aDir)
 Box_1 = model.addBox(Part_1_doc, "Longueur", "Largeur", "Hauteur")
 
 assert(len(Box_1.feature().error()) == 0)
-assert(len(aListOfParameters) > 0)
 assert(len(aListOfParameters) == 5)
 assert(model.checkPythonDump())
