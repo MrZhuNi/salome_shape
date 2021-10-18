@@ -24,6 +24,7 @@
 
 #include "ModuleBase_IWorkshop.h"
 #include "ModuleBase_Tools.h"
+#include "ModuleBase_Preferences.h"
 
 #include <TopoDS_Shape.hxx>
 #include <ModelAPI_Object.h>
@@ -36,8 +37,12 @@
 #include <ModelAPI_CompositeFeature.h>
 #include <ModelAPI_Tools.h>
 #include <ModelAPI_ResultConstruction.h>
+#include <ModelAPI_ResultGroup.h>
 #include <ModelAPI_ResultBody.h>
+#include <ModelAPI_ResultField.h>
 #include <Events_InfoMessage.h>
+
+#include <SUIT_ResourceMgr.h>
 
 #include <GeomAPI_Shape.h>
 #include <GeomAlgoAPI_CompoundBuilder.h>
@@ -399,6 +404,46 @@ void removeTemporaryFiles(const std::string& theDirectory,
     rmdir(aDirName.c_str());
 #endif
   }
+}
+
+// Set displaying status to every element on group
+static void setDisplayingByLoop(DocumentPtr theDoc, int theSize,
+  std::string theGroup, bool theDisplayFromScript)
+{
+  int aDisplayingId = -1;
+  if (theDisplayFromScript) {
+    aDisplayingId = ModuleBase_Preferences::resourceMgr()->integerValue("General",
+      "part_visualization_script", -1);
+    // Increase ID to prevert using "As stored in HDF"
+    ++aDisplayingId;
+  }
+  else {
+    aDisplayingId = ModuleBase_Preferences::resourceMgr()->integerValue("General",
+      "part_visualization_study", -1);
+
+    // if chosen "As stored in HDF" then don't change displaying
+    if (aDisplayingId == 0)
+      return;
+  }
+
+  for (int anIndex = theSize - 1; anIndex >= 0; --anIndex) {
+    ObjectPtr anObject = theDoc->object(theGroup, anIndex);
+    anObject->setDisplayed((aDisplayingId == 1 && anIndex == theSize - 1) || aDisplayingId == 2);
+  }
+}
+
+void setDisplaying(ResultPartPtr thePart, bool theDisplayFromScript)
+{
+  DocumentPtr aDoc = thePart->partDoc();
+  int aConstructionSize = aDoc->size(ModelAPI_ResultConstruction::group());
+  int aGroupSize = aDoc->size(ModelAPI_ResultGroup::group());
+  int aFieldSize = aDoc->size(ModelAPI_ResultField::group());
+  int aResultSize = aDoc->size(ModelAPI_ResultBody::group());
+  setDisplayingByLoop(aDoc, aConstructionSize,
+                      ModelAPI_ResultConstruction::group(), theDisplayFromScript);
+  setDisplayingByLoop(aDoc, aGroupSize, ModelAPI_ResultGroup::group(), theDisplayFromScript);
+  setDisplayingByLoop(aDoc, aFieldSize, ModelAPI_ResultField::group(), theDisplayFromScript);
+  setDisplayingByLoop(aDoc, aResultSize, ModelAPI_ResultBody::group(), theDisplayFromScript);
 }
 
 }

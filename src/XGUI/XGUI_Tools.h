@@ -25,6 +25,7 @@
 #include <QRect>
 
 #include <ModelAPI_Feature.h>
+#include <ModelAPI_ResultPart.h>
 #include <ModuleBase_ViewerPrs.h>
 
 #include <ModuleBase_Definitions.h>
@@ -135,6 +136,10 @@ std::string getTmpDirByEnv( const char* thePathEnv);
 /// Removes files and directory where they are located
 void removeTemporaryFiles(const std::string& theDirectory,
   const std::list<std::string>& theFiles);
+
+/// Set displaying status for elements from part depending on the settings
+/// \param thePart a pointer of part
+XGUI_EXPORT void setDisplaying(ResultPartPtr thePart, bool theDisplayFromScript = false);
 };
 
 #endif
