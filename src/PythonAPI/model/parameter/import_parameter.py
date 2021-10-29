@@ -18,7 +18,7 @@
 #
 
 from salome.shaper import model
-import codecs
+import codecs, sys
 
 def changeTab(theLine):
     aResult = theLine.split("#")[0].replace("\t"," ")

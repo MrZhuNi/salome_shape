@@ -151,7 +151,7 @@ private:
   bool isValid();
 
   /// Returns true if parameter with the given name already exists
-  bool hasName(const QString& theName) const;
+  bool hasName(const QString& theName, int theIndex) const;
 
   /// Enable or disable buttons for parameters managemnt
   void enableButtons(bool theEnable);
