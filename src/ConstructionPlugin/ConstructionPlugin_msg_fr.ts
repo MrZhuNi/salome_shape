@@ -763,15 +763,15 @@
     <name>Plane:nb_copies</name>
     <message>
       <source>Nb copies</source>
-      <translation>Nb de exemplaires</translation>
+      <translation>Nb d'exemplaires</translation>
     </message>
     <message>
       <source>Number of copies of the plane</source>
-      <translation>Nombre des exemplaires de la avion </translation>
+      <translation>Nombre de plans</translation>
     </message>
     <message>
       <source>Attribute "%1" is not initialized.</source>
-      <translation>Sélectionnez le nombre de exemplaires.</translation>
+      <translation>Sélectionnez le nombre d'exemplaires.</translation>
     </message>
   </context>
   <context>
