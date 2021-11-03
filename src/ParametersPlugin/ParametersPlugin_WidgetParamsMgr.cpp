@@ -701,11 +701,9 @@ void ParametersPlugin_WidgetParamsMgr::onImport()
 {
   std::string aWinText("Select txt file");
   std::string aFileType("Text files (*.txt);;All files (*.*)");
-  QFlags<QFileDialog::Option> aOption = {QFileDialog::ExistingFile};
   QString aQPath = QFileDialog::getOpenFileName(nullptr,
                                                 aWinText.c_str(), "",
-                                                aFileType.c_str(), nullptr,
-                                                aOption);
+                                                aFileType.c_str());
   if (aQPath.size() == 0)
     return;
 
