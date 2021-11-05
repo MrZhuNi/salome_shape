@@ -18,7 +18,7 @@
 #
 
 from salome.shaper import model
-import os, sys
+import inspect, os, sys
 
 from PyQt5.Qt import QApplication
 
