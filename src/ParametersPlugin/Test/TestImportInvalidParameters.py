@@ -18,15 +18,7 @@
 #
 
 from salome.shaper import model
-import inspect, os, sys
-
-from PyQt5.Qt import QApplication
-
-import salome
-salome.salome_init_without_session()
-salome.salome_init(1)
-if QApplication.instance() is None:
-  app = QApplication([])
+import inspect, os
 
 data_dir = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "data")
 
@@ -42,4 +34,3 @@ aDir = os.path.join(data_dir, nameFile)
 aListOfParameters = model.importParameters(Part_1_doc, aDir)
 
 assert(len(aListOfParameters) == 0)
-assert(model.checkPythonDump())
