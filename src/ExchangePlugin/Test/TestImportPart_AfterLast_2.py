@@ -65,7 +65,7 @@ model.do()
 
 model.end()
 
-filename = 'check_export.shaperpart'
+filename = 'check_export.shaperpart7'
 model.removeFile(filename)
 
 featureToExport = Sketch_1

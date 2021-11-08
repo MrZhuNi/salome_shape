@@ -65,7 +65,7 @@ model.do()
 
 model.end()
 
-filename = 'check_export.shaperpart'
+filename = 'check_export.shaperpart16'
 model.removeFile(filename)
 
 # store the reference data

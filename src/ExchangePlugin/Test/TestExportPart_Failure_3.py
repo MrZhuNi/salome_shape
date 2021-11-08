@@ -31,7 +31,7 @@ model.end()
 
 import os
 
-filename = 'check_export.shaperpart'
+filename = 'check_export.shaperpart10'
 model.removeFile(filename)
 
 model.begin()

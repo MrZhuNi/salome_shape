@@ -34,7 +34,7 @@ Plane_4 = model.addPlane(Part_1_doc, model.selection("FACE", "PartSet/YOZ"), mod
 model.do()
 model.end()
 
-filename = 'check_export.shaperpart'
+filename = 'check_export.shaperpart25'
 model.removeFile(filename)
 
 # store the reference data

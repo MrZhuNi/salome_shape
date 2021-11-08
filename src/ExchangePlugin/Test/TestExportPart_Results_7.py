@@ -63,7 +63,7 @@ model.end()
 
 import os
 
-filename = 'check_export.shaperpart'
+filename = 'check_export.shaperpart26'
 model.removeFile(filename)
 
 featureToExport = Box_1

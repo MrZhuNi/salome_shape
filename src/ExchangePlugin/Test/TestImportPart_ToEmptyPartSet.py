@@ -67,7 +67,7 @@ for feat in features:
         res.append(GeomAlgoAPI_ShapeTools.volume(r.shape()))
     refData.append( (feat.getKind(), res) )
 
-filename = 'check_export.shaperpart'
+filename = 'check_export.shaperpart1'
 model.removeFile(filename)
 
 # emport the document
