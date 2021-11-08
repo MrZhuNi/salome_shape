@@ -454,10 +454,11 @@ bool Model_AttributeSelection::isInitialized()
 
 Model_AttributeSelection::Model_AttributeSelection(TDF_Label& theLabel)
 : myRef(theLabel),
+  myTmpCenterType(NOT_CENTER),
+  myParent(NULL),
   myIsGeometricalSelection(false)
 {
   myIsInitialized = myRef.isInitialized();
-  myParent = NULL;
 }
 
 void Model_AttributeSelection::setID(const std::string theID)
@@ -2006,6 +2007,23 @@ bool Model_AttributeSelection::restoreContext(std::wstring theName,
               }
             }
           }
+        }
+      }
+    }
+  }
+
+  // Fix for opened study (aDoc->myNamingNames is empty)
+  if (theValue.IsNull() && aCont->groupName() != ModelAPI_ResultConstruction::group()) {
+    std::wstring::size_type aSlash = aSubShapeName.rfind(L'/');
+    if (aSlash != std::wstring::npos) {
+      std::wstring aCompName = aSubShapeName.substr(aSlash + 1);
+      TDF_Label aLab = std::dynamic_pointer_cast<Model_Data>(aCont->data())->shapeLab();
+      TDF_ChildIDIterator aSubNames (aLab, TDataStd_Name::GetID());
+      for (; aSubNames.More(); aSubNames.Next()) {
+        if (Handle(TDataStd_Name)::DownCast(aSubNames.Value())->Get().IsEqual(aCompName.c_str())) {
+          theValue = aSubNames.Value()->Label();
+          aDoc->addNamingName(theValue, aSubShapeName);
+          break;
         }
       }
     }
