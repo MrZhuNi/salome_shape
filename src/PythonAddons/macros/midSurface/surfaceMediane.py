@@ -235,8 +235,6 @@ Options facultatives
   nom_solide_aux = None
   _epsilon = 5.e-2
   part_doc = None
-  folder = None
-  lfeatures = list()
 
   ficcao = None
   rep_step = None
