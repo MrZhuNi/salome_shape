@@ -37,7 +37,7 @@ Gérald NICOLAS
 +33.1.78.19.43.52
 """
 
-__revision__ = "V10.47"
+__revision__ = "V10.48"
 
 #========================= Les imports - Début ===================================
 
@@ -450,6 +450,9 @@ Sorties :
 
     if ( solide.name() != self.objet_principal.name() ):
 
+      if self._verbose_max:
+        print (". Extraction du solide")
+
 # 1. Extraction du solide
       remove_subshapes = model.addRemoveSubShapes(self.part_doc, model.selection("COMPOUND", self.objet_principal.name()))
       remove_subshapes.setSubShapesToKeep([model.selection("SOLID", solide.name())])
@@ -467,13 +470,17 @@ Sorties :
 
     else:
 
+      if self._verbose_max:
+        print (". Mise en place du solide")
+
       objet = solide
       self.nom_solide_aux = self.objet_principal.name()
       self.fonction_0 = None
       recover = None
 
     if self._verbose_max:
-      texte = "objet : '{}'\n".format(objet.name())
+      texte = "objet final : '{}'\n".format(objet.name())
+      texte += "fonction_0 : {}".format(self.fonction_0)
       texte += "recover : {}".format(recover)
       print (texte)
 
@@ -1814,22 +1821,24 @@ Sorties :
       texte += "de type '{}'".format(objet.shapeType())
       print (texte)
     bbox = model.getBoundingBox(self.part_doc, model.selection("{}".format(objet.shapeType()), "{}".format(objet.name())))
-    bbox_nom = "bbox_{}".format(objet.name())
-    bbox.result().setName(bbox_nom)
+
+    bbox_nom = bbox.name()
+    if self._verbose_max:
+      print ("Boîte englobante : '{}' '{}'".format(bbox.name(), bbox.result().name()))
 
     if self._verbose_max:
       coo_min = model.getPointCoordinates(self.part_doc, \
-      model.selection("VERTEX", "[{}/Back][{}/Left][{}/Bottom]".format(bbox_nom,bbox_nom,bbox_nom)))
+      model.selection("VERTEX", "[{}_1/Back][{}_1/Left][{}_1/Bottom]".format(bbox_nom,bbox_nom,bbox_nom)))
       coo_max = model.getPointCoordinates(self.part_doc, \
-      model.selection("VERTEX", "[{}/Front][{}/Right][{}/Top]".format(bbox_nom,bbox_nom,bbox_nom)))
+      model.selection("VERTEX", "[{}_1/Front][{}_1/Right][{}_1/Top]".format(bbox_nom,bbox_nom,bbox_nom)))
       texte = "\tXmin = {}, Xmax = {}\n".format(coo_min[0],coo_max[0])
       texte += "\tYmin = {}, Ymax = {}\n".format(coo_min[1],coo_max[1])
       texte += "\tZmin = {}, Zmax = {}".format(coo_min[2],coo_max[2])
       print(texte)
 
     l_diag = model.measureDistance(self.part_doc, \
-      model.selection("VERTEX", "[{}/Back][{}/Left][{}/Bottom]".format(bbox_nom,bbox_nom,bbox_nom)), \
-      model.selection("VERTEX", "[{}/Front][{}/Right][{}/Top]".format(bbox_nom,bbox_nom,bbox_nom)) )
+      model.selection("VERTEX", "[{}_1/Back][{}_1/Left][{}_1/Bottom]".format(bbox_nom,bbox_nom,bbox_nom)), \
+      model.selection("VERTEX", "[{}_1/Front][{}_1/Right][{}_1/Top]".format(bbox_nom,bbox_nom,bbox_nom)) )
     if self._verbose_max:
       print ("Longueur de la diagonale : {}".format(l_diag))
 
@@ -2017,6 +2026,10 @@ Sorties :
 # 4. En cas d'exportation step, répertoire de travail associé à l'éventuel fichier de départ
 #    Attention à ne pas recréer le répertoire à chaque fois
       if self._export_step:
+
+        if self._verbose_max:
+          print ("Préparation de l'export STEP")
+
         if self.rep_step is None:
           if self.ficcao is None:
             self.rep_step = tempfile.mkdtemp(prefix="{}_".format(self.objet_principal.name()))
@@ -2069,14 +2082,13 @@ Sorties :
     erreur = 0
     message = ""
 
+    model.begin()
+
     while not erreur :
 
 # 1. Définition de la pièce
 
-      model.begin()
-      partset = model.moduleDocument()
-      part_1 = model.addPart(partset)
-      self.part_doc = part_1.document()
+      self.part_doc = model.activeDocument()
 
 # 2. Import de la CAO
 
@@ -2092,7 +2104,7 @@ Sorties :
       erreur, message = self.surf_objet_shaper ( objet )
       if erreur:
         break
-      print (message)
+      #print (message)
 
       break
 
@@ -2355,7 +2367,7 @@ Sorties :
       os.remove(fichier)
 
 # 4. Traitement de l'objet correspondant
-      erreur, message = self._traitement_objet ( solide_aux, objet_geom )
+      erreur, message = self._traitement_objet ( solide=solide_aux, objet_geom=objet_geom )
 
       if ( erreur and self._verbose_max ):
         print (blabla, message)
@@ -2440,18 +2452,22 @@ if __name__ == "__main__" :
 # 1. Options
 
   L_OPTIONS = list()
-  #L_OPTIONS.append("-h")
-  #L_OPTIONS.append("-v")
-  #L_OPTIONS.append("-vmax")
+  L_OPTIONS.append("-vmax")
   #L_OPTIONS.append("-export_step")
+  FIC_CAO = os.path.join(os.getenv("SHAPER_ROOT_DIR"), "bin", "salome", "macros", "midSurface", "midSurface.stp")
+  #FIC_CAO = os.path.join(os.getenv("HOME"), "salome-dev", "DEV_package", "modules", "src", "SHAPER", "src", "PythonAddons", "macros", "midSurface", "Objet_1.stp")
 
 # 2. Lancement de la classe
 
   #print ("L_OPTIONS :", L_OPTIONS)
+
   SURFACE_MEDIANE = SurfaceMediane(L_OPTIONS)
   if SURFACE_MEDIANE.affiche_aide_globale:
     sys.stdout.write(SURFACE_MEDIANE.__doc__+"\n")
   else:
+    model.begin()
+    PARTSET = model.moduleDocument()
+    _ = model.addPart(PARTSET)
     ERREUR, MESSAGE_ERREUR = SURFACE_MEDIANE.surf_fic_cao(FIC_CAO)
     if ERREUR:
       MESSAGE_ERREUR += "\n Code d'erreur : %d\n" % ERREUR

@@ -29,7 +29,7 @@ On sait traiter les faces :
 
 Author: Gérald NICOLAS
 """
-__revision__ = "V02.03"
+__revision__ = "V02.04"
 
 import os
 
@@ -87,11 +87,12 @@ class midSurface(model.Feature):
                 l_options = list()
                 #l_options.append("-v")
                 l_options.append("-vmax")
-                l_options.append("-retour_shaper")
-                #print("l_options : '{}'".format(l_options))
+                #l_options.append("-export_step")
+                print("l_options : '{}'".format(l_options))
                 s_med = SurfaceMediane(l_options)
                 with open("/tmp/grr_1", "w") as fic :
                       fic.write("{}".format(dir(s_med)))
+                      fic.write("\n{}".format(filepath))
                 erreur, message = s_med.surf_fic_cao (filepath)
                 with open("/tmp/grr_2", "w") as fic :
                       fic.write("erreur = {}, message = '{}'".format(erreur, message))

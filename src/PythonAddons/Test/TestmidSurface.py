@@ -18,7 +18,7 @@
 #
 """Test de la création de surfaces médianes"""
 
-__revision__ = "V01.02"
+__revision__ = "V01.03"
 
 import os
 
@@ -32,6 +32,7 @@ def getFilePath(fileName):
     return os.path.join(path, fileName)
 
 theFile = getFilePath("midSurface.stp")
+theFile = getFilePath("Objet_1.stp")
 
 aSession.startOperation("Create part for mid surface")
 aPartFeature = aSession.moduleDocument().addFeature("Part")
