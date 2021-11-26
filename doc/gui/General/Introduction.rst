@@ -476,24 +476,25 @@ This tab defines what parts to be activated and what elements to be visible afte
    **Preferences**: General tab
 
 **Input fields**:
+
 - **Activate** relates to activation of part when opening a HDF document. Its could be one of the following:
 
-  - “Last part” – activate last part in the document (**default value**);
-  - “All parts” – activate all parts within the document;
-  - “No activation” – do not activate any part.
+  - "Last part" - activate last part in the document (**default value**);
+  - "All parts" - activate all parts within the document;
+  - "No activation" - do not activate any part.
 
 - **Display** in "Opening a study". It specifies the shapes, which should be visualized when activating a part. It could be one of the following:
 
-  - “As stored in HDF” – display only the shapes visible before the document is saved (**default value**);
-  - “Last item in each folder” – show only the last result in each folder of the part: Constructions, Results, Groups, Fields;
-  - “All items” – show all shapes from each folder;
-  - “No visualization” – do not display any shape.
+  - "As stored in HDF" - display only the shapes visible before the document is saved (**default value**);
+  - "Last item in each folder" - show only the last result in each folder of the part: Constructions, Results, Groups, Fields;
+  - "All items" - show all shapes from each folder;
+  - "No visualization" - do not display any shape.
 
 - **Display** in "Launching a python script". It specifies the shapes, which should be visualized when loading a script using "File -> Load Script..." menu. It could be one of the following:
 
-  - “Last item in each folder” – show only the last result in each folder of the part: Constructions, Results, Groups, Fields;
-  - “All items” – show all shapes from each folder(**default value**);
-  - “No visualization” – do not display any shape.
+  - "Last item in each folder" - show only the last result in each folder of the part: Constructions, Results, Groups, Fields;
+  - "All items" - show all shapes from each folder(**default value**);
+  - "No visualization" - do not display any shape.
 
 .. _visualization_preferences:
 
