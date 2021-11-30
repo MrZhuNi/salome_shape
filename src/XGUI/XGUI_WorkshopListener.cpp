@@ -62,10 +62,10 @@
 #include "XGUI_OperationMgr.h"
 #include "XGUI_ModuleConnector.h"
 #include "XGUI_PropertyPanel.h"
-
 #include "XGUI_QtEvents.h"
 #include "XGUI_SalomeConnector.h"
 #include "XGUI_SelectionMgr.h"
+#include "XGUI_Tools.h"
 #include "XGUI_Workshop.h"
 
 #include <QAction>
@@ -378,6 +378,21 @@ void XGUI_WorkshopListener::
       }
     }
   }
+
+  // If the python script is being loaded now, the preferences should be used
+  // to display the required object
+  SUIT_Application * app = SUIT_Session::session()->activeApplication();
+  QVariant aVar = app->property("IsLoadedScript");
+  if (!aVar.isNull() && aVar.toBool()) {
+    DocumentPtr aRootDoc = ModelAPI_Session::get()->moduleDocument();
+    int aSize = aRootDoc->size(ModelAPI_ResultPart::group());
+    if (aSize > 0) {
+      ObjectPtr anPartObject = aRootDoc->object(ModelAPI_ResultPart::group(), aSize - 1);
+      ResultPartPtr aPart = std::dynamic_pointer_cast<ModelAPI_ResultPart>(anPartObject);
+      XGUI_Tools::setDisplaying(aPart, true);
+    }
+  }
+
   // this processing should be moved in another place in order to do not cause problems in
   // flush messages chain
   //if (aHiddenObjects.size() > 0)

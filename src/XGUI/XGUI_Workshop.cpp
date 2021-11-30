@@ -706,21 +706,6 @@ void XGUI_Workshop::deactivateActiveObject(const ObjectPtr& theObject, const boo
       myDisplayer->deactivateObjects(anObjects, theUpdateViewer);
     }
   }
-
-  SUIT_Application * app = SUIT_Session::session()->activeApplication();
-
-  QVariant aVar = app->property("IsLoadedScript");
-
-  if (!aVar.isNull() && aVar.toBool()) {
-    DocumentPtr aRootDoc = ModelAPI_Session::get()->moduleDocument();
-    int aSize = aRootDoc->size(ModelAPI_ResultPart::group());
-    if (aSize > 0) {
-      ObjectPtr anPartObject = aRootDoc->object(ModelAPI_ResultPart::group(), aSize - 1);
-      ResultPartPtr aPart = std::dynamic_pointer_cast<ModelAPI_ResultPart>(anPartObject);
-      XGUI_Tools::setDisplaying(aPart, true);
-      Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
-    }
-  }
 }
 
 //******************************************************
