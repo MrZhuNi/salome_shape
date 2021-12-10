@@ -501,7 +501,7 @@ void PartSet_MenuMgr::activatePart(ResultPartPtr thePart) const
   if (isFirstLoad) {
     XGUI_Workshop* aWorkshop = myModule->getWorkshop();
     XGUI_ObjectsBrowser* aObjBrowser = aWorkshop->objectBrowser();
-    XGUI_Tools::setDisplaying(thePart);
+    ModuleBase_Tools::setDisplaying(thePart);
     Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
     aObjBrowser->onSelectionChanged();
     DocumentPtr aDoc = thePart->partDoc();

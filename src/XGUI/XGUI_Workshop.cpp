@@ -1076,7 +1076,7 @@ void XGUI_Workshop::openFile(const QString& theDirectory)
     ResultPartPtr aPart = std::dynamic_pointer_cast<ModelAPI_ResultPart>(anObject);
     if (aPart.get()) {
       aPart->activate();
-      XGUI_Tools::setDisplaying(aPart);
+      ModuleBase_Tools::setDisplaying(aPart);
     }
   }
   else if (anActivationId == 1) {
@@ -1085,7 +1085,7 @@ void XGUI_Workshop::openFile(const QString& theDirectory)
       ResultPartPtr aPart = std::dynamic_pointer_cast<ModelAPI_ResultPart>(anObject);
       if (aPart.get()) {
         aPart->activate();
-        XGUI_Tools::setDisplaying(aPart);
+        ModuleBase_Tools::setDisplaying(aPart);
 
         if (anIndex < aSize - 1) {
           SessionPtr aMgr = ModelAPI_Session::get();
