@@ -138,7 +138,6 @@ SET(PROJECT_LIBRARIES
     ${QT_LIBRARIES}
     ${OpenCASCADE_FoundationClasses_LIBRARIES}
     ${OpenCASCADE_ApplicationFramework_LIBRARIES}
-    ${OCCViewer}
 )
 
 # sources / moc wrappings

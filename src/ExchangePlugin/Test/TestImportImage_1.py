@@ -66,6 +66,9 @@ tol=1e-06
 assert(abs(dx-400) <= tol)
 assert(abs(dy-258.5) <= tol)
 assert(abs(dz-0) <= tol)
+assert(ImportImage_1.result().resultSubShapePair()[0].hasTexture())
+assert(Translation_1.result().resultSubShapePair()[0].hasTexture())
+assert(Scale_1.result().resultSubShapePair()[0].hasTexture())
 
 #=============================================================================
 # Change the image :
@@ -95,7 +98,11 @@ tol=1e-06
 assert(abs(dx-448) <= tol)
 assert(abs(dy-296.8) <= tol)
 assert(abs(dz-0) <= tol)
+assert(ImportImage_1.result().resultSubShapePair()[0].hasTexture())
+assert(Translation_1.result().resultSubShapePair()[0].hasTexture())
+assert(Scale_1.result().resultSubShapePair()[0].hasTexture())
 
+assert(model.checkPythonDump())
 
 # Close SALOME GUI
 import salome_utils

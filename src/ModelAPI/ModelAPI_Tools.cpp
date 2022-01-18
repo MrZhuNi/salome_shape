@@ -20,6 +20,7 @@
 #include <ModelAPI_AttributeBoolean.h>
 #include <ModelAPI_AttributeDocRef.h>
 #include <ModelAPI_AttributeDouble.h>
+#include <ModelAPI_AttributeImage.h>
 #include <ModelAPI_AttributeIntArray.h>
 #include <ModelAPI_AttributeSelectionList.h>
 #include <ModelAPI_CompositeFeature.h>
@@ -39,6 +40,7 @@
 #include <Events_Loop.h>
 #include <Locale_Convert.h>
 
+#include <GeomAlgoAPI_MakeShape.h>
 #include <GeomAPI_ShapeHierarchy.h>
 #include <GeomAPI_ShapeIterator.h>
 
@@ -195,6 +197,125 @@ ObjectPtr objectByName(const DocumentPtr& theDocument, const std::string& theGro
   }
   // not found
   return ObjectPtr();
+}
+
+//==================================================================================================
+void loadModifiedShapes(ResultBodyPtr theResultBody,
+                        const ListOfShape& theBaseShapes,
+                        const ListOfShape& theTools,
+                        const GeomMakeShapePtr& theMakeShape,
+                        const GeomShapePtr theResultShape,
+                        const std::string& theNamePrefix)
+{
+  theResultBody->storeModified(theBaseShapes, theResultShape, theMakeShape);
+
+  ListOfShape aShapes = theBaseShapes;
+  ListOfShape::const_iterator aToolIter = theTools.cbegin();
+  for (; aToolIter != theTools.cend(); aToolIter++)
+    aShapes.push_back(*aToolIter);
+
+  for (ListOfShape::const_iterator anIter = aShapes.begin(); anIter != aShapes.end(); ++anIter)
+  {
+    theResultBody->loadModifiedShapes(theMakeShape, *anIter, GeomAPI_Shape::VERTEX, theNamePrefix);
+    theResultBody->loadModifiedShapes(theMakeShape, *anIter, GeomAPI_Shape::EDGE, theNamePrefix);
+    theResultBody->loadModifiedShapes(theMakeShape, *anIter, GeomAPI_Shape::FACE, theNamePrefix);
+  }
+}
+
+//==================================================================================================
+void loadModifiedShapes(ResultBodyPtr theResultBody,
+                        const GeomShapePtr& theBaseShape,
+                        const GeomMakeShapePtr& theMakeShape,
+                        const std::string theName)
+{
+  switch (theBaseShape->shapeType()) {
+  case GeomAPI_Shape::COMPOUND: {
+    for (GeomAPI_ShapeIterator anIt(theBaseShape); anIt.more(); anIt.next())
+    {
+      loadModifiedShapes(theResultBody,
+        anIt.current(),
+        theMakeShape,
+        theName);
+    }
+    break;
+  }
+  case GeomAPI_Shape::COMPSOLID:
+  case GeomAPI_Shape::SOLID:
+  case GeomAPI_Shape::SHELL: {
+    theResultBody->loadModifiedShapes(theMakeShape,
+      theBaseShape,
+      GeomAPI_Shape::FACE,
+      theName);
+  }
+  case GeomAPI_Shape::FACE:
+  case GeomAPI_Shape::WIRE: {
+    theResultBody->loadModifiedShapes(theMakeShape,
+      theBaseShape,
+      GeomAPI_Shape::EDGE,
+      theName);
+  }
+  case GeomAPI_Shape::EDGE: {
+    theResultBody->loadModifiedShapes(theMakeShape,
+      theBaseShape,
+      GeomAPI_Shape::VERTEX,
+      theName);
+  }
+  default: // [to avoid compilation warning]
+    break;
+  }
+}
+
+//==================================================================================================
+void loadDeletedShapes(ResultBodyPtr theResultBody,
+                      const GeomShapePtr theBaseShape,
+                      const ListOfShape& theTools,
+                      const GeomMakeShapePtr& theMakeShape,
+                      const GeomShapePtr theResultShapesCompound)
+{
+  ListOfShape aShapes = theTools;
+  if (theBaseShape.get())
+    aShapes.push_front(theBaseShape);
+
+  for (ListOfShape::const_iterator anIter = aShapes.begin(); anIter != aShapes.end(); anIter++)
+  {
+    theResultBody->loadDeletedShapes(theMakeShape,
+      *anIter,
+      GeomAPI_Shape::VERTEX,
+      theResultShapesCompound);
+    theResultBody->loadDeletedShapes(theMakeShape,
+      *anIter,
+      GeomAPI_Shape::EDGE,
+      theResultShapesCompound);
+    theResultBody->loadDeletedShapes(theMakeShape,
+      *anIter,
+      GeomAPI_Shape::FACE,
+      theResultShapesCompound);
+    // store information about deleted solids because of unittest TestBooleanCommon_SolidsHistory
+    // on OCCT 7.4.0 : common produces modified compsolid, so, move to the end for removed solids
+    // starts to produce whole compsolid
+    theResultBody->loadDeletedShapes(theMakeShape,
+      *anIter,
+      GeomAPI_Shape::SOLID,
+      theResultShapesCompound);
+  }
+}
+
+//==================================================================================================
+void loadDeletedShapes(std::vector<ResultBaseAlgo>& theResultBaseAlgoList,
+                        const ListOfShape& theTools,
+                        const GeomShapePtr theResultShapesCompound)
+{
+  for (std::vector<ResultBaseAlgo>::iterator anIt = theResultBaseAlgoList.begin();
+    anIt != theResultBaseAlgoList.end();
+    ++anIt)
+  {
+    ResultBaseAlgo& aRCA = *anIt;
+    loadDeletedShapes(aRCA.resultBody,
+      aRCA.baseShape,
+      theTools,
+      aRCA.makeShape,
+      theResultShapesCompound);
+  }
 }
 
 bool findVariable(const DocumentPtr& theDocument, FeaturePtr theSearcher,
@@ -1021,6 +1142,30 @@ void copyVisualizationAttrs(
     AttributeDoublePtr aDestTransp = theDest->data()->real(ModelAPI_Result::TRANSPARENCY_ID());
     if (aDestTransp.get()) {
       aDestTransp->setValue(aSourceTransp->value());
+    }
+  }
+}
+
+
+void copyImageAttribute (std::shared_ptr<ModelAPI_Result> theSource,
+                         std::shared_ptr<ModelAPI_Result> theDest)
+{
+  if (!theSource.get() || !theDest.get())
+    return;
+
+  // images allowed only for ResultBody
+  ResultBodyPtr aSourceBody = std::dynamic_pointer_cast<ModelAPI_ResultBody>(theSource);
+  ResultBodyPtr aDestBody   = std::dynamic_pointer_cast<ModelAPI_ResultBody>(theDest);
+  if (!aSourceBody.get() || !aDestBody.get())
+    return;
+
+  AttributeImagePtr aSourceImage =
+    theSource->data()->image(ModelAPI_ResultBody::IMAGE_ID());
+  if (aSourceImage.get() && aSourceImage->hasTexture()) {
+    AttributeImagePtr aDestImage =
+      theDest->data()->image(ModelAPI_ResultBody::IMAGE_ID());
+    if (aDestImage.get()) {
+      aSourceImage->copyTo(aDestImage);
     }
   }
 }

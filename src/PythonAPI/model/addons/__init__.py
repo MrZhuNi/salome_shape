@@ -1,4 +1,4 @@
-# Copyright (C) 2021  CEA/DEN, EDF R&D
+# Copyright (C) 2015-2020  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,8 +17,17 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-SET(TEST_WITH_GUI_NAMES
-  TestImportImage_1.py
-  TestImportImage_2.py
-  TestImportImage_3.py
-)
+import pkgutil, inspect
+
+__all__ = []
+for loader, module_name, is_pkg in pkgutil.walk_packages(__path__):
+    __all__.append(module_name)
+    module = loader.find_module(module_name).load_module(module_name)
+    globals()[module_name] = module
+
+    for attribute_name in dir(module):
+        attribute = getattr(module, attribute_name)
+        if inspect.isfunction(attribute):
+            globals()[attribute_name] = attribute
+
+del pkgutil, inspect

@@ -44,6 +44,7 @@
 #include <ModelAPI_AttributeString.h>
 #include <ModelAPI_ResultBody.h>
 #include <ModelAPI_ResultPart.h>
+#include <ModelAPI_Tools.h>
 
 #include <math.h>
 #include <iostream>
@@ -166,9 +167,9 @@ void FeaturesPlugin_MultiRotation::performRotation1D()
 
   GeomAPI_ShapeHierarchy anObjects;
   std::list<ResultPtr> aParts;
-  std::string theTextureFile;
-  if (!FeaturesPlugin_Tools::shapesFromSelectionList(
-       anObjectsSelList, isKeepSubShapes, anObjects, aParts, theTextureFile))
+  ResultPtr aTextureSource;
+  if (!FeaturesPlugin_Tools::shapesFromSelectionList
+      (anObjectsSelList, isKeepSubShapes, anObjects, aParts, aTextureSource))
     return;
 
   // Parameters of rotation.
@@ -223,9 +224,10 @@ void FeaturesPlugin_MultiRotation::performRotation1D()
   anObjects.topLevelObjects(aTopLevel);
   for (ListOfShape::iterator anIt = aTopLevel.begin(); anIt != aTopLevel.end(); ++anIt) {
     ResultBodyPtr aResultBody = document()->createBody(data(), aResultIndex);
-    FeaturesPlugin_Tools::loadModifiedShapes(aResultBody, anOriginalShapes, ListOfShape(),
-                                             aMakeShapeList, *anIt, "Rotated");
-    aResultBody->setTextureFile(theTextureFile);
+    ModelAPI_Tools::loadModifiedShapes(aResultBody, anOriginalShapes, ListOfShape(),
+                                       aMakeShapeList, *anIt, "Rotated");
+    // Copy image data, if any
+    ModelAPI_Tools::copyImageAttribute(aTextureSource, aResultBody);
     setResult(aResultBody, aResultIndex++);
   }
 

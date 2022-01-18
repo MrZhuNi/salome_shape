@@ -28,15 +28,10 @@ salome.salome_init(1)
 if QApplication.instance() is None:
   app = QApplication([])
 
-data_dir = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "data")
-
 from tempfile import TemporaryDirectory
-tmp_dir = TemporaryDirectory()
-img_file = os.path.join(tmp_dir.name, "1.jpg")
+from ModelAPI import *
 
-from shutil import copyfile
-copyfile(os.path.join(data_dir, "1.jpg"), img_file)
-
+data_dir = os.path.join(os.path.dirname(inspect.getfile(lambda: None)), "data")
 
 model.begin()
 partSet = model.moduleDocument()
@@ -46,16 +41,18 @@ Part_1 = model.addPart(partSet)
 Part_1_doc = Part_1.document()
 
 ### Create ImportImage
-ImportImage_1 = model.addImportImage(Part_1_doc, img_file)
+ImportImage_1 = model.addImportImage(Part_1_doc, os.path.join(data_dir, "1.jpg"))
 model.do()
 ImportImage_1.setName("drawing")
 ImportImage_1.result().setName("drawing")
 
 ### Create Translation
 Translation_1 = model.addTranslation(Part_1_doc, [model.selection("FACE", "drawing")], startPoint = model.selection("VERTEX", "[drawing/Shape_1]e[drawing/Shape_4]e"), endPoint = model.selection("VERTEX", "PartSet/Origin"), keepSubResults = True)
+Translation_1.setName("translation")
 
 ### Create Scale
 Scale_1 = model.addScale(Part_1_doc, [model.selection("FACE", "drawing")] , model.selection("VERTEX", "PartSet/Origin"), 0.5, keepSubResults = True)
+Scale_1.setName("scale")
 
 model.end()
 
@@ -78,41 +75,34 @@ assert(ImportImage_1.result().resultSubShapePair()[0].hasTexture())
 assert(Translation_1.result().resultSubShapePair()[0].hasTexture())
 assert(Scale_1.result().resultSubShapePair()[0].hasTexture())
 
-#=============================================================================
-# Change the image :
-#=============================================================================
-os.rename(img_file, os.path.join(tmp_dir.name, "1_new.jpg"))
+aDr = objectToFeature(Part_1_doc.objectByName("Features", "drawing"))
+assert(aDr.firstResult().hasTexture())
 
-model.begin()
-Scale_1.setScaleFactor(0.7)
-Scale_1.execute()
-model.do()
-model.end()
-
-#=============================================================================
-# Tests :
-#=============================================================================
-model.checkResult(Scale_1, model, 1, [0], [0], [1], [4], [8])
-r=Scale_1.defaultResult()
-s=r.shape()
-dim=s.computeSize()
-dim=dim[1:]
-dx=abs(dim[3]-dim[0])
-dy=abs(dim[4]-dim[1])
-dz=abs(dim[5]-dim[2])
-tol=1e-06
-assert(abs(dx-560) <= tol)
-assert(abs(dy-361.9) <= tol)
-assert(abs(dz-0) <= tol)
-assert(ImportImage_1.result().resultSubShapePair()[0].hasTexture())
-assert(Translation_1.result().resultSubShapePair()[0].hasTexture())
-assert(Scale_1.result().resultSubShapePair()[0].hasTexture())
-
+# check save/load document with an image
+with TemporaryDirectory() as tmp_dir:
+  aSession = ModelAPI_Session.get()
+  aFiles = StringList()
+  aSession.save(tmp_dir, aFiles)
+  aSession.closeAll()
+  assert(aSession.load(tmp_dir))
+  model.begin()
+  partSet = model.moduleDocument()
+  assert(partSet.size("Features") == 1)
+  aPart = objectToFeature(partSet.object("Features", 0))
+  aPartResult = modelAPI_ResultPart(aPart.results()[0])
+  aPartResult.activate()
+  aPartDoc = aPartResult.partDoc()
+  aSession.setActiveDocument(aPartDoc, True)
+  model.end()
+  aDr = objectToFeature(aPartDoc.objectByName("Features", "drawing"))
+  aTr = objectToFeature(aPartDoc.objectByName("Features", "translation"))
+  aSc = objectToFeature(aPartDoc.objectByName("Features", "scale"))
+  assert(aDr.firstResult().hasTexture())
+  assert(aTr.firstResult().hasTexture())
+  assert(aSc.firstResult().hasTexture())
 
 # Close SALOME GUI
 import salome_utils
-import killSalomeWithPort
-
-port = salome_utils.getPortNumber(False)
-if port:
-  killSalomeWithPort.killMyPort(port)
+import subprocess
+port = salome_utils.getPortNumber()
+proc = subprocess.Popen(["killSalomeWithPort.py", "{}".format(port)])
