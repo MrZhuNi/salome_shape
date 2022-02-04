@@ -17,9 +17,9 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
+#include <OperaPlugin_AddNode.h>
 #include <OperaPlugin_Plugin.h>
 #include <OperaPlugin_Volume.h>
-#include <OperaPlugin_AddNode.h>
 
 #include <ModelAPI_Session.h>
 

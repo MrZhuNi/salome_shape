@@ -21,8 +21,6 @@
 
 #include <ModelAPI_Feature.h>
 
-#include <iostream>
-
 //=================================================================================================
 OperaPlugin_AddNode::OperaPlugin_AddNode() // Nothing to do during instantiation
 {
