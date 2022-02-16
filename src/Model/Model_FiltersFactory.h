@@ -46,6 +46,9 @@ public:
   virtual bool isValid(FeaturePtr theFiltersFeature,
                        ResultPtr theResult,
                        GeomShapePtr theShape);
+  virtual std::list< std::pair<ResultPtr, GeomShapePtr> > select
+    (const FiltersFeaturePtr& theFilterFeature,
+     const GeomAPI_Shape::ShapeType theShapeType);
 
   /// Returns the filters that support the given shape type
   virtual std::list<FilterPtr> filters(GeomAPI_Shape::ShapeType theType);

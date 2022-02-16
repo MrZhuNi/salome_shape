@@ -157,7 +157,8 @@ public:
 
   /// Returns list of sub-shapes of the given type
   GEOMAPI_EXPORT
-  std::list<std::shared_ptr<GeomAPI_Shape> > subShapes(ShapeType theSubShapeType) const;
+    std::list< std::shared_ptr<GeomAPI_Shape> > subShapes(const ShapeType theSubShapeType,
+                                                          const bool theOnlyUnique = false) const;
 
   /// Returns the shape type
   GEOMAPI_EXPORT
