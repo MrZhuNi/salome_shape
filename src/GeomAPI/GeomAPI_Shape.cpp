@@ -432,11 +432,12 @@ GeomAPI_Shape::subShapes(const ShapeType theSubShapeType, const bool theOnlyUniq
   if (shapeType() == COMPOUND && theSubShapeType == COMPOUND) {
     for (TopoDS_Iterator anIt(aShape); anIt.More(); anIt.Next()) {
       const TopoDS_Shape& aCurrent = anIt.Value();
-      if (aCurrent.ShapeType() == TopAbs_COMPOUND &&
-          alreadyThere.Add(aCurrent)) {
-        GeomShapePtr aSub(new GeomAPI_Shape);
-        aSub->setImpl(new TopoDS_Shape(aCurrent));
-        aSubs.push_back(aSub);
+      if (aCurrent.ShapeType() == TopAbs_COMPOUND) {
+        if (!theOnlyUnique || alreadyThere.Add(aCurrent)) {
+          GeomShapePtr aSub(new GeomAPI_Shape);
+          aSub->setImpl(new TopoDS_Shape(aCurrent));
+          aSubs.push_back(aSub);
+        }
       }
     }
     // add self
@@ -447,7 +448,7 @@ GeomAPI_Shape::subShapes(const ShapeType theSubShapeType, const bool theOnlyUniq
   else {
     for (TopExp_Explorer anExp(aShape, (TopAbs_ShapeEnum)theSubShapeType);
          anExp.More(); anExp.Next()) {
-      if (alreadyThere.Add(anExp.Current())) {
+      if (!theOnlyUnique || alreadyThere.Add(anExp.Current())) {
         GeomShapePtr aSub(new GeomAPI_Shape);
         aSub->setImpl(new TopoDS_Shape(anExp.Current()));
         aSubs.push_back(aSub);
