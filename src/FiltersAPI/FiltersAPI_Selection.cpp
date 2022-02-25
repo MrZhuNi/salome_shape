@@ -22,6 +22,7 @@
 #include "GeomAPI_Edge.h"
 #include "ModelAPI_Session.h"
 #include "ModelAPI_FiltersFactory.h"
+#include "ModelHighAPI_Services.h"
 
 FiltersAPI_Selection::FiltersAPI_Selection(const FiltersPtr & theFeature)
 {
@@ -47,6 +48,9 @@ std::list<ModelHighAPI_Selection> FiltersAPI_Selection::select
 std::list<ModelHighAPI_Selection> FiltersAPI_Selection::select
                                   (const GeomAPI_Shape::ShapeType theShapeType) const
 {
+  // finish operation to make sure the selection is done on the current state of the history
+  apply();
+
   std::list<ModelHighAPI_Selection> aSelList;
   static SessionPtr aSession = ModelAPI_Session::get();
   std::list< std::pair<ResultPtr, GeomShapePtr> > aResList =
