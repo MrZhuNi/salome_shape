@@ -69,7 +69,7 @@ bool SketchPlugin_OverConstraintsResolver::checkHorizontalOrVerticalConflict()
       if (aFeature) {
         std::string aType = aFeature->getKind();
         if ((aType == SketchPlugin_ConstraintHorizontal::ID()) ||
-          (aType == SketchPlugin_ConstraintVertical::ID()))
+            (aType == SketchPlugin_ConstraintVertical::ID()))
         {
           myConstraintsToRemove.insert(*anIt);
           isHVConstraint = true;
@@ -95,6 +95,8 @@ bool SketchPlugin_OverConstraintsResolver::checkArcsAboutTangentialConflict()
                                                              aConstain->ENTITY_A());
       std::shared_ptr<ModelAPI_AttributeRefAttr> aRefAttrB = aConstain->refattr(
                                                              aConstain->ENTITY_B());
+      if (!aRefAttrA || !aRefAttrB)
+        continue;
 
       FeaturePtr aFeatureA = ModelAPI_Feature::feature(aRefAttrA->object());
       FeaturePtr aFeatureB = ModelAPI_Feature::feature(aRefAttrB->object());
@@ -130,7 +132,7 @@ bool SketchPlugin_OverConstraintsResolver::checkArcsAboutTangentialConflict()
 
         for (auto aFeatIter = aFeaturesA.begin(); aFeatIter != aFeaturesA.end(); ++aFeatIter) {
           if (aFeaturesB.find(aFeatIter.operator*()) != aFeaturesB.end()){
-            std::string aType = (*aFeatIter)->getKind();
+            const std::string& aType = (*aFeatIter)->getKind();
             if (aType == SketchPlugin_ConstraintCoincidence::ID()) {
               ConstraintPtr aCoincidence =
                   std::dynamic_pointer_cast<SketchPlugin_ConstraintCoincidence>(*aFeatIter);
