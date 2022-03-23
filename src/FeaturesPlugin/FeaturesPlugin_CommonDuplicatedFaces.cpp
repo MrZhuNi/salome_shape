@@ -54,14 +54,14 @@ void explode(const GeomShapePtr& theCompound, ListOfShape& theSubs)
 //=================================================================================================
 void FeaturesPlugin_CommonDuplicatedFaces::updateFaces()
 {
-  AttributeSelectionPtr ancompSolidAttr =
+  AttributeSelectionPtr aCompSolidAttr =
               std::dynamic_pointer_cast<ModelAPI_AttributeSelection>(attributObject());
 
   AttributeSelectionListPtr aFacesListAttr =
               std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
                                                 (attributListFaces());
 
-  GeomShapePtr aShape = ancompSolidAttr->value();
+  GeomShapePtr aShape = aCompSolidAttr->value();
 
   AttributeDoublePtr aToleranceAttr =
               std::dynamic_pointer_cast<ModelAPI_AttributeDouble>
@@ -73,13 +73,13 @@ void FeaturesPlugin_CommonDuplicatedFaces::updateFaces()
     myShape = aShape;
     anIsCompute->setValue(true);
   }
-  if (aShape.get() && ancompSolidAttr->context().get()
+  if (aShape.get() && aCompSolidAttr->context().get()
                    && aToleranceAttr.get() && !aShape->isEqual(myShape)) {
 
     if (aFacesListAttr->isInitialized())
       aFacesListAttr->clear();
 
-    aShape = ancompSolidAttr->context()->shape();
+    aShape = aCompSolidAttr->context()->shape();
     if (aShape) {
       std::string anError;
       ListOfShape aFaces;
@@ -103,7 +103,7 @@ void FeaturesPlugin_CommonDuplicatedFaces::updateFaces()
         if (!aFacePtr.get()) {
           setError("GetDuplicatedFaces : An invalid face found " +  anError);
         }
-        aFacesListAttr->append(ancompSolidAttr->context(), aFacePtr);
+        aFacesListAttr->append(aCompSolidAttr->context(), aFacePtr);
       }
       std::stringstream alabel;
       alabel << aFacesListAttr->size();

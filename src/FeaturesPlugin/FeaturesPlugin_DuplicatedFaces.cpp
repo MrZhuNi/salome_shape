@@ -131,8 +131,8 @@ void FeaturesPlugin_DuplicatedFaces::execute()
   }
 
   if (selection(OBJECT_ID())->isInitialized()) {
-    AttributeSelectionPtr ancompSolidAttr = selection(OBJECT_ID());
-    ResultPtr aResult = ancompSolidAttr->context();
+    AttributeSelectionPtr aCompSolidAttr = selection(OBJECT_ID());
+    ResultPtr aResult = aCompSolidAttr->context();
 
     double aTranparency = integer(TRANSPARENCY_ID())->value()/100.0;
     ModelAPI_Tools::setTransparency(aResult, aTranparency);

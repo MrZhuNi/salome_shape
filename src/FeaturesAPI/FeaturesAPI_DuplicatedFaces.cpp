@@ -21,10 +21,8 @@
 
 #include <FeaturesPlugin_GroupDuplicatedFaces.h>
 
-#include <ModelHighAPI_Services.h>
-#include <ModelHighAPI_Tools.h>
-
 #include <ModelHighAPI_Dumper.h>
+#include <ModelHighAPI_Services.h>
 #include <ModelHighAPI_Selection.h>
 #include <ModelHighAPI_Tools.h>
 
