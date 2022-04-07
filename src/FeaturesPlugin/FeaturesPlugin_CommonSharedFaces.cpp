@@ -69,8 +69,6 @@ void FeaturesPlugin_CommonSharedFaces::updateFaces()
       ListOfShape::const_iterator anIt = aFaces.cbegin();
       for(; anIt != aFaces.cend(); ++anIt) {
         GeomShapePtr aFacePtr = *anIt;
-        if (!aFacePtr.get())
-          setError("GetSharedFaces : An invalid face found " +  anError);
         aFacesListAttr->append( aCompSolidAttr->context(), aFacePtr);
       }
       std::stringstream aLabel;

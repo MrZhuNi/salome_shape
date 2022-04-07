@@ -69,8 +69,7 @@ bool GetSharedFaces(const ListOfShape& theShapes,
   #ifdef _DEBUG
   std::cout << "GetSharedFaces " << std::endl;
   #endif
-  int aLen = theShapes.size();
-  if (aLen < 1) return NULL;
+  if (theShapes.empty()) return false;
 
   TopAbs_ShapeEnum aShapeType = TopAbs_FACE;
 

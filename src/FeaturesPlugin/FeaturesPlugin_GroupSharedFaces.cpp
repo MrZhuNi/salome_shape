@@ -31,11 +31,6 @@
 #include <ModelAPI_Tools.h>
 #include <ModelAPI_Validator.h>
 
-#include <GeomAPI_ShapeIterator.h>
-
-#include <GeomAlgoAPI_CompoundBuilder.h>
-#include <GeomAlgoAPI_ShapeTools.h>
-
 #include <Locale_Convert.h>
 
 //=================================================================================================

@@ -26,10 +26,6 @@
 #include <ModelAPI_Feature.h>
 #include <ModelAPI_ResultGroup.h>
 
-#include <GeomAPI_IPresentable.h>
-#include <GeomAPI_IScreenParams.h>
-
-
 /// \class FeaturesPlugin_CommonSharedFaces
 /// \ingroup Plugins
 /// \brief Feature to check the shared faces of solid

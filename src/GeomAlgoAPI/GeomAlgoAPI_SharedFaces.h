@@ -23,9 +23,7 @@
 #include <GeomAlgoAPI.h>
 #include <GeomAPI_Shape.h>
 
-#include <Standard_TypeDef.hxx>
-
-/// get the boundin box of theshape.
+/// get the object shared faces
 /// \param theShape   the shape
 /// \param theTolerance precise TRUE for precise computation; FALSE for fast one.
 /// \param theFaces  the faces shared

@@ -29,6 +29,5 @@
   </integervalue>
   <optionalbox id="create_group" title="Create group" show_title="true">
     <stringvalue id="group_name" label="Group name"/>
-    <label/>
   </optionalbox>
 </source>
