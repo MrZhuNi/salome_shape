@@ -76,6 +76,7 @@
 #include <QToolBar>
 
 #include <ModelAPI_Session.h>
+#include <Events_MessageBool.h>
 
 #if OCC_VERSION_HEX < 0x070400
   #define SALOME_PATCH_FOR_CTRL_WHEEL
@@ -991,6 +992,13 @@ void SHAPERGUI::preferencesChanged(const QString& theSection, const QString& the
       }
     }
   }
+  else if (theSection == ModuleBase_Preferences::GENERAL_SECTION && theParam == "create_init_part") {
+    bool aCreate = ModuleBase_Preferences::resourceMgr()->booleanValue(
+      ModuleBase_Preferences::GENERAL_SECTION, "create_init_part", true);
+    Events_MessageBool aCreateMsg(Events_Loop::eventByName(EVENT_CREATE_PART_ON_START), aCreate);
+    aCreateMsg.send();
+  }
+
   myWorkshop->displayer()->redisplayObjects();
 }
 
