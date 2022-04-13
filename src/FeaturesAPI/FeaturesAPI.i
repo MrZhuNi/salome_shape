@@ -94,6 +94,7 @@
 %shared_ptr(FeaturesAPI_ImportResult)
 %shared_ptr(FeaturesAPI_Defeaturing)
 %shared_ptr(FeaturesAPI_BoundingBox)
+%shared_ptr(FeaturesAPI_SharedFaces)
 
 
 %typecheck(SWIG_TYPECHECK_POINTER) std::pair<std::list<ModelHighAPI_Selection>, bool>, const std::pair<std::list<ModelHighAPI_Selection>, bool> & {
@@ -235,3 +236,4 @@
 %include "FeaturesAPI_PointCoordinates.h"
 %include "FeaturesAPI_GeometryCalculation.h"
 %include "FeaturesAPI_BoundingBox.h"
+%include "FeaturesAPI_SharedFaces.h"

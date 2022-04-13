@@ -55,6 +55,7 @@ SET(PROJECT_HEADERS
   FeaturesAPI_PointCoordinates.h
   FeaturesAPI_GeometryCalculation.h
   FeaturesAPI_BoundingBox.h
+  FeaturesAPI_SharedFaces.h
 )
 
 SET(PROJECT_SOURCES
@@ -92,6 +93,7 @@ SET(PROJECT_SOURCES
   FeaturesAPI_PointCoordinates.cpp
   FeaturesAPI_GeometryCalculation.cpp
   FeaturesAPI_BoundingBox.cpp
+  FeaturesAPI_SharedFaces.cpp
 )
 
 SET(PROJECT_LIBRARIES

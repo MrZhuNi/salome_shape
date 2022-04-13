@@ -57,5 +57,6 @@
   #include "FeaturesAPI_PointCoordinates.h"
   #include "FeaturesAPI_GeometryCalculation.h"
   #include "FeaturesAPI_BoundingBox.h"
+  #include "FeaturesAPI_SharedFaces.h"
 
 #endif // FeaturesAPI_swig_H_
