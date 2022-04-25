@@ -57,19 +57,21 @@ void FeaturesPlugin_CommonSharedFaces::updateFaces()
       ListOfShape::const_iterator anIt = aFaces.cbegin();
       for(; anIt != aFaces.cend(); ++anIt) {
         GeomShapePtr aFacePtr = *anIt;
-        aFacesListAttr->append(aCompSolidAttr->context(), aFacePtr);
+        if (!(aFacesListAttr->isInList(aCompSolidAttr->context(), aFacePtr))) {
+          aFacesListAttr->append(aCompSolidAttr->context(), aFacePtr);
+        }
       }
-      std::stringstream alabel;
-      alabel << aFacesListAttr->size();
+      std::stringstream aLabel;
+      aLabel << aFacesListAttr->size();
       AttributeStringPtr aNumberFacesAttr =
         std::dynamic_pointer_cast<ModelAPI_AttributeString>(attributNumberFaces());
-      aNumberFacesAttr->setValue(alabel.str());
+      aNumberFacesAttr->setValue(aLabel.str());
     }
   }
 }
 
 //=================================================================================================
-void FeaturesPlugin_CommonSharedFaces::setFacesGroup(const std::wstring& theName )
+void FeaturesPlugin_CommonSharedFaces::setFacesGroup(const std::wstring& theName)
 {
   std::vector<int> aColor;
   ResultGroupPtr aGroup = document()->createGroup(data());

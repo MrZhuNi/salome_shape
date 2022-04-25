@@ -30,6 +30,8 @@
 
 #include <Locale_Convert.h>
 
+#include <sstream>
+
 //=================================================================================================
 FeaturesPlugin_GroupSharedFaces::FeaturesPlugin_GroupSharedFaces()
 {
@@ -38,11 +40,8 @@ FeaturesPlugin_GroupSharedFaces::FeaturesPlugin_GroupSharedFaces()
 //=================================================================================================
 void FeaturesPlugin_GroupSharedFaces::initAttributes()
 {
-  // attribute for object selected
   data()->addAttribute(OBJECT_ID(), ModelAPI_AttributeSelection::typeId());
-  AttributeSelectionListPtr aList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(
-    data()->addAttribute(LIST_FACES_ID(), ModelAPI_AttributeSelectionList::typeId()));
-
+  data()->addAttribute(LIST_FACES_ID(), ModelAPI_AttributeSelectionList::typeId());
   data()->addAttribute(NUMBER_FACES_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(TRANSPARENCY_ID(), ModelAPI_AttributeInteger::typeId());
   data()->addAttribute(GROUP_NAME_ID(), ModelAPI_AttributeString::typeId());
@@ -51,6 +50,8 @@ void FeaturesPlugin_GroupSharedFaces::initAttributes()
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), TRANSPARENCY_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), COMPUTE_ID());
   ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), NUMBER_FACES_ID());
+  ModelAPI_Session::get()->validators()->registerNotObligatory(getKind(), LIST_FACES_ID());
+
   data()->boolean(COMPUTE_ID())->setValue(true);
 }
 
@@ -83,7 +84,7 @@ void FeaturesPlugin_GroupSharedFaces::execute()
 {
   if (selectionList(LIST_FACES_ID())->isInitialized()
     && string(GROUP_NAME_ID())->value() != "") {
-    AttributeStringPtr aNameAtt = string( GROUP_NAME_ID() ) ;
+    AttributeStringPtr aNameAtt = string(GROUP_NAME_ID()) ;
     std::wstring aNameFace = aNameAtt->isUValue() ?
                              Locale::Convert::toWString(aNameAtt->valueU()) :
                              Locale::Convert::toWString(aNameAtt->value());
@@ -111,11 +112,20 @@ void FeaturesPlugin_GroupSharedFaces::execute()
       ModelAPI_Tools::setTransparency(*aRes, aTranparency);
     }
   }
+
+  // Update the number of shared faces
+  AttributeSelectionListPtr aFacesListAttr =
+    std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList> (attributListFaces());
+  AttributeStringPtr aNumberFacesAttr =
+    std::dynamic_pointer_cast<ModelAPI_AttributeString> (attributNumberFaces());
+  std::stringstream aLabel;
+  aLabel << aFacesListAttr->size();
+  aNumberFacesAttr->setValue(aLabel.str());
 }
 
 //=================================================================================================
 void FeaturesPlugin_GroupSharedFaces::attributeChanged(const std::string& theID)
 {
-  if (theID == OBJECT_ID())
+  if (theID == OBJECT_ID() || theID == LIST_FACES_ID())
     updateFaces();
 }

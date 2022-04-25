@@ -30,6 +30,8 @@
 #include <ModelAPI_Tools.h>
 #include <ModelAPI_Validator.h>
 
+#include <sstream>
+
 //=================================================================================================
 FeaturesPlugin_SharedFaces::FeaturesPlugin_SharedFaces()
 {
@@ -38,10 +40,8 @@ FeaturesPlugin_SharedFaces::FeaturesPlugin_SharedFaces()
 //=================================================================================================
 void FeaturesPlugin_SharedFaces::initAttributes()
 {
-  // attribute for object selected
   data()->addAttribute(OBJECT_ID(), ModelAPI_AttributeSelection::typeId());
-  AttributeSelectionListPtr aList = std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>(
-    data()->addAttribute(LIST_FACES_ID(), ModelAPI_AttributeSelectionList::typeId()));
+  data()->addAttribute(LIST_FACES_ID(), ModelAPI_AttributeSelectionList::typeId());
 
   data()->addAttribute(NUMBER_FACES_ID(), ModelAPI_AttributeString::typeId());
   data()->addAttribute(TRANSPARENCY_ID(), ModelAPI_AttributeInteger::typeId());
@@ -127,13 +127,21 @@ void FeaturesPlugin_SharedFaces::execute()
       ModelAPI_Tools::setTransparency(*aRes, aTranparency);
     }
   }
+
+  // Update the number of shared faces
+  AttributeSelectionListPtr aFacesListAttr =
+    std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList> (attributListFaces());
+  AttributeStringPtr aNumberFacesAttr =
+    std::dynamic_pointer_cast<ModelAPI_AttributeString> (attributNumberFaces());
+  std::stringstream aLabel;
+  aLabel << aFacesListAttr->size();
+  aNumberFacesAttr->setValue(aLabel.str());
 }
 
 //=================================================================================================
 void FeaturesPlugin_SharedFaces::attributeChanged(const std::string& theID)
 {
   if (theID == OBJECT_ID()) {
-
     updateFaces();
     if (myCreateGroupFeature.get())
       updateGroup();
@@ -158,11 +166,10 @@ void FeaturesPlugin_SharedFaces::updateGroup()
 {
     myCreateGroupFeature->boolean(FeaturesPlugin_GroupSharedFaces::COMPUTE_ID())->setValue(false);
     myCreateGroupFeature->string(FeaturesPlugin_GroupSharedFaces::GROUP_NAME_ID())
-                          ->setValue( string(GROUP_NAME_ID())->value());
+      ->setValue(string(GROUP_NAME_ID())->value());
 
     myCreateGroupFeature->selection(FeaturesPlugin_GroupSharedFaces::OBJECT_ID())
-                          ->setValue( selection(OBJECT_ID())->context() ,
-                                      selection(OBJECT_ID())->value() );
+      ->setValue(selection(OBJECT_ID())->context(), selection(OBJECT_ID())->value());
     AttributeSelectionListPtr aFacesFeatures =
       std::dynamic_pointer_cast<ModelAPI_AttributeSelectionList>
                                (myCreateGroupFeature->attribute(LIST_FACES_ID()));
