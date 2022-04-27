@@ -1866,6 +1866,15 @@ void XGUI_Workshop::onContextMenuCommand(const QString& theId, bool isChecked)
   } else if (theId == "SET_VIEW_INVERTEDNORMAL_CMD") {
     setNormalView(true);
   }
+  else if (theId == "SHOW_EDGES_DIRECTION_CMD") {
+    foreach(ObjectPtr aObj, anObjects) {
+      ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(aObj);
+      if (aResult.get())
+        ModelAPI_Tools::showEdgesDirection(aResult, !ModelAPI_Tools::isShowEdgesDirection(aResult));
+    }
+    mySelector->clearSelection();
+    Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
+  }
 #ifdef TINSPECTOR
   else if (theId == "TINSPECTOR_VIEW") {
     std::shared_ptr<Model_Session> aSession =

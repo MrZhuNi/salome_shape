@@ -65,6 +65,7 @@ SET(PROJECT_HEADERS
   ModuleBase_ParamSpinBox.h
   ModuleBase_Preferences.h
   ModuleBase_ResultPrs.h
+  ModuleBase_ArrowPrs.h
   ModuleBase_SelectionValidator.h
   ModuleBase_ToolBox.h
   ModuleBase_Tools.h
@@ -190,6 +191,7 @@ SET(PROJECT_SOURCES
   ModuleBase_ParamSpinBox.cpp
   ModuleBase_Preferences.cpp
   ModuleBase_ResultPrs.cpp
+  ModuleBase_ArrowPrs.cpp
   ModuleBase_ToolBox.cpp
   ModuleBase_Tools.cpp
   ModuleBase_ViewerFilters.cpp
