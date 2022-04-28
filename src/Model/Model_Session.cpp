@@ -674,3 +674,8 @@ void Model_Session::blockAutoUpdate(const bool theBlock)
     }
   }
 }
+
+Handle(TDocStd_Application) Model_Session::application()
+{
+  return Model_Application::getApplication();
+}
