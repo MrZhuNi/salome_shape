@@ -64,7 +64,8 @@ void GeomAlgoAPI_Offset::generated(const GeomShapePtr theOldShape,
 
 GeomAlgoAPI_Offset::GeomAlgoAPI_Offset(const GeomPlanePtr& thePlane,
                                        const GeomShapePtr& theEdgeOrWire,
-                                       const double theOffsetValue)
+                                       const double theOffsetValue,
+                                       const GeomAlgoAPI_OffsetJoint theJoint)
 {
   // 1. Make wire from edge, if need
   TopoDS_Wire aWire;
@@ -92,11 +93,23 @@ GeomAlgoAPI_Offset::GeomAlgoAPI_Offset(const GeomPlanePtr& thePlane,
   setImpl(aParal);
   setBuilderType(OCCT_BRepBuilderAPI_MakeShape);
 
+  // Joint type
+  GeomAbs_JoinType aJoin = GeomAbs_Arc; // default mode, corresponding to KeepDistance
+  if (theJoint == GeomAlgoAPI_OffsetJoint::Lines)
+    aJoin = GeomAbs_Intersection;
+  // for GeomAlgoAPI_OffsetJoint::Arcs do the same as for KeepDistance
+
   Standard_Boolean isOpenResult = !aWire.Closed();
-  aParal->Init(aFace, GeomAbs_Arc, isOpenResult);
+  aParal->Init(aFace, aJoin, isOpenResult);
   aParal->Perform(theOffsetValue, 0.);
   if (aParal->IsDone()) {
     TopoDS_Shape anOffset = aParal->Shape();
+
+    if (theJoint == GeomAlgoAPI_OffsetJoint::Arcs) {
+      // TODO: process Arcs case - make fillets on straight
+      //       edges intersections, except too short edges
+    }
+
     GeomShapePtr aResult(new GeomAPI_Shape());
     aResult->setImpl(new TopoDS_Shape(anOffset));
     setShape(aResult);
