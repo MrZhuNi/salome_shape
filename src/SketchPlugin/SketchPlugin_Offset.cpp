@@ -821,39 +821,31 @@ void SketchPlugin_Offset::makeFillet
 
   // find vertices for fillet
   std::set<GeomShapePtr, GeomAPI_Shape::Comparator> aFilletVertices;
-  // ??? TODO: if aResWire is a compound of wires - process each wire ???
-  if (aResWire->isWire()) {
-    for (MapShapeToShapes::const_iterator anIt = aSubshapes.begin();
-         anIt != aSubshapes.end(); ++anIt) {
-      // vertex should have 2 adjacent edges
-      if (anIt->second.size() != 2)
-        continue;
+  for (MapShapeToShapes::const_iterator anIt = aSubshapes.begin();
+       anIt != aSubshapes.end(); ++anIt) {
+    // vertex should have 2 adjacent edges
+    if (anIt->second.size() != 2)
+      continue;
 
-      // both edges should be linear
-      ListOfShape anEdges;
-      anEdges.insert(anEdges.end(), anIt->second.begin(), anIt->second.end());
-      GeomEdgePtr anEdge1 (new GeomAPI_Edge(anEdges.front()));
-      GeomEdgePtr anEdge2 (new GeomAPI_Edge(anEdges.back()));
-      if (!anEdge1->isLine() || !anEdge2->isLine())
-        continue;
+    // both edges should be linear
+    ListOfShape anEdges;
+    anEdges.insert(anEdges.end(), anIt->second.begin(), anIt->second.end());
+    GeomEdgePtr anEdge1 (new GeomAPI_Edge(anEdges.front()));
+    GeomEdgePtr anEdge2 (new GeomAPI_Edge(anEdges.back()));
+    if (!anEdge1->isLine() || !anEdge2->isLine())
+      continue;
 
-      // skip vertices, which smoothly connect adjacent edges
-      GeomVertexPtr aSharedVertex(new GeomAPI_Vertex(anIt->first));
-      if (GeomAlgoAPI_ShapeTools::isTangent(anEdge1, anEdge2, aSharedVertex))
-        continue;
+    // skip vertices, which smoothly connect adjacent edges
+    GeomVertexPtr aSharedVertex(new GeomAPI_Vertex(anIt->first));
+    if (GeomAlgoAPI_ShapeTools::isTangent(anEdge1, anEdge2, aSharedVertex))
+      continue;
 
-      aFilletVertices.insert(anIt->first);
-    }
+    aFilletVertices.insert(anIt->first);
   }
 
   if (!aFilletVertices.empty()) {
     isOK = false; // the wire needs correction
-    ListOfShape aVerticesList;
-    for (GeomAPI_WireExplorer anExp (aResWire->wire()); anExp.more(); anExp.next()) {
-      GeomShapePtr aVertex = anExp.currentVertex();
-      if (aFilletVertices.find(aVertex) != aFilletVertices.end())
-        aVerticesList.push_back(aVertex);
-    }
+    ListOfShape aVerticesList (aFilletVertices.begin(), aFilletVertices.end());
 
     // Fillet1D on all linear edges intersections
     std::shared_ptr<GeomAlgoAPI_Fillet1D> aFilletBuilder
@@ -867,8 +859,7 @@ void SketchPlugin_Offset::makeFillet
     }
     else {
       ListOfShape aFailedVertices = aFilletBuilder->failedVertices();
-      if (aFailedVertices.size() != 0 &&
-          aFailedVertices.size() != aVerticesList.size()) {
+      if (aFailedVertices.size() != 0) {
         // Exclude failed vertices and also vertices, joined
         // with failed by one edge, and run algorithm once again
         ListOfShape::iterator itVertices = aFailedVertices.begin();
@@ -897,12 +888,7 @@ void SketchPlugin_Offset::makeFillet
         }
         else {
           // Fillet1D one more try
-          ListOfShape aVerticesList1;
-          for (GeomAPI_WireExplorer anExp (aResWire->wire()); anExp.more(); anExp.next()) {
-            GeomShapePtr aVertex = anExp.currentVertex();
-            if (aFilletVertices.find(aVertex) != aFilletVertices.end())
-              aVerticesList1.push_back(aVertex);
-          }
+          ListOfShape aVerticesList1 (aFilletVertices.begin(), aFilletVertices.end());
 
           std::shared_ptr<GeomAlgoAPI_Fillet1D> aFilletBuilder1
             (new GeomAlgoAPI_Fillet1D(aResWire, aVerticesList1, theValue));
