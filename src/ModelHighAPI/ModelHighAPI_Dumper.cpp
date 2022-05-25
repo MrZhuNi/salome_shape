@@ -73,6 +73,7 @@
 #include <fstream>
 #include <iomanip>
 #include <cctype>
+#include <cmath>
 
 // ===========    Implementation of storage of dumped data    ===========
 static const int THE_DUMP_PRECISION = 16;
