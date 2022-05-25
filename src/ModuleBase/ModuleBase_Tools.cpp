@@ -480,36 +480,6 @@ void checkObjects(const QObjectPtrList& theObjects, bool& hasResult, bool& hasFe
   }
 }
 
-/*bool setDefaultDeviationCoefficient(std::shared_ptr<GeomAPI_Shape> theGeomShape)
-{
-  if (!theGeomShape.get())
-    return false;
-  // if the shape could not be exploded on faces, it contains only wires, edges, and vertices
-  // correction of deviation for them should not influence to the application performance
-  GeomAPI_ShapeExplorer anExp(theGeomShape, GeomAPI_Shape::FACE);
-  bool anEmpty = anExp.empty();
-  return !anExp.more();
-}*/
-
-/*void setDefaultDeviationCoefficient(const std::shared_ptr<ModelAPI_Result>& theResult,
-                                    const Handle(Prs3d_Drawer)& theDrawer)
-{
-  if (!theResult.get())
-    return;
-  bool aUseDeviation = false;
-
-  std::string aResultGroup = theResult->groupName();
-  if (aResultGroup == ModelAPI_ResultConstruction::group())
-    aUseDeviation = true;
-  else if (aResultGroup == ModelAPI_ResultBody::group()) {
-    GeomShapePtr aGeomShape = theResult->shape();
-    if (aGeomShape.get())
-      aUseDeviation = setDefaultDeviationCoefficient(aGeomShape);
-  }
-  if (aUseDeviation)
-    theDrawer->SetDeviationCoefficient(DEFAULT_DEVIATION_COEFFICIENT);
-}
-*/
 void setDefaultDeviationCoefficient(const TopoDS_Shape& theShape,
                                     const Handle(Prs3d_Drawer)& theDrawer)
 {
@@ -1104,10 +1074,7 @@ bool askToDelete(const std::set<FeaturePtr> theFeatures,
     aText += QString(QObject::tr(aMsg));
     aDetailedText += QString(QObject::tr(aMsgDetails))
                      .arg(aParamFeatureNames.join(aSep));
-#ifdef _DEBUG
-    QPushButton *aReplaceButton =
-#endif
-      aMessageBox.addButton(QObject::tr("Replace"), QMessageBox::ActionRole);
+    aMessageBox.addButton(QObject::tr("Replace"), QMessageBox::ActionRole);
   }
 
   if (!aText.isEmpty()) {
