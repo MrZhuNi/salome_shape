@@ -20,10 +20,6 @@
         <translation>Aller à la fin et diviser</translation>
     </message>
     <message>
-      <source>Recover</source>
-      <translation>Récupérer</translation>
-    </message>
-    <message>
         <source>SHAPER files (*.shaper *.cadbld)</source>
         <translation>Fichiers SHAPER (*.shaper *.cadbld)</translation>
     </message>
@@ -215,6 +211,10 @@
     <message>
         <source>Show Isos</source>
         <translation>Show Isos</translation>
+    </message>
+    <message>
+      <source>Recover</source>
+      <translation>Récupérer</translation>
     </message>
 </context>
 <context>
