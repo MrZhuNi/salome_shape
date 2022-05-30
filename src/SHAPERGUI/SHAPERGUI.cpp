@@ -790,6 +790,8 @@ QAction* SHAPERGUI::addFeatureOfNested(const QString& theWBName,
   createTool(separator(), aWBTool); /// nested action is always separated of others
   registerCommandToolbar(theWBName, -1);
 
+  connect(anAction, SIGNAL(triggered(bool)), this, SLOT(logShaperGUIEvent()));
+
   return anAction;
 }
 
@@ -818,6 +820,9 @@ QAction* SHAPERGUI::addDesktopCommand(const QString& theId, const QString& theTi
   aAction->setStatusTip(theTip);
   aAction->setData(theId);
   createMenu(aId, aMenu, theMenuPosition);
+
+  connect(aAction, SIGNAL(triggered(bool)), this, SLOT(logShaperGUIEvent()));
+
   return aAction;
 }
 
