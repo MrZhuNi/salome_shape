@@ -1378,10 +1378,10 @@ void SHAPERGUI::updateInfoPanel()
   if (aOpList.size() > 0)
     isSketcher = (aOpList.first() == "Sketch");
 
-  if (aActiveDoc == aModuleDoc) // Part set mode
-    fillPartSetInfoPanel(aInfoPanel);
-  else if (isSketcher) // Sketcher mode
+  if (isSketcher) // Sketcher mode
     fillSketcherInfoPanel(aInfoPanel);
-  else // Part mode
+  else if (aActiveDoc == aModuleDoc) // Part set mode
+    fillPartSetInfoPanel(aInfoPanel);
+  else
     fillPartInfoPanel(aInfoPanel);
 }
