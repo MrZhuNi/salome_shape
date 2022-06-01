@@ -104,12 +104,6 @@ GeomAlgoAPI_Offset::GeomAlgoAPI_Offset(const GeomPlanePtr& thePlane,
   aParal->Perform(theOffsetValue, 0.);
   if (aParal->IsDone()) {
     TopoDS_Shape anOffset = aParal->Shape();
-
-    if (theJoint == GeomAlgoAPI_OffsetJoint::Arcs) {
-      // TODO: process Arcs case - make fillets on straight
-      //       edges intersections, except too short edges
-    }
-
     GeomShapePtr aResult(new GeomAPI_Shape());
     aResult->setImpl(new TopoDS_Shape(anOffset));
     setShape(aResult);
