@@ -177,10 +177,6 @@ void ModuleBase_Preferences::createGeneralTab(ModuleBase_IPrefMgr* thePref, int 
 
   int actId = thePref->addPreference(QObject::tr("Create new part"), group, SUIT_PreferenceMgr::Bool,
                                      ModuleBase_Preferences::GENERAL_SECTION, "create_init_part");
-  if (!resourceMgr()->hasValue(ModuleBase_Preferences::GENERAL_SECTION, "create_init_part"))
-  { // set default value: true
-    resourceMgr()->setValue(ModuleBase_Preferences::GENERAL_SECTION, "create_init_part", true);
-  }
 
   // Group related to running a python script
   group = thePref->addPreference(QObject::tr("Launching a python script"), generalTab,

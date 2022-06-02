@@ -947,6 +947,8 @@ void SHAPERGUI::preferencesChanged(const QString& theSection, const QString& the
   QString aVal = aResMgr->stringValue(theSection, theParam);
   Config_Prop* aProp = Config_PropManager::findProp(theSection.toStdString(),
                                                     theParam.toStdString());
+  if (!aProp)
+    return; // invalid case, the property default value must be registered in XML file
   std::string aValue = aVal.toStdString();
   if (aValue.empty()) {
     aValue = aProp->defaultValue();
