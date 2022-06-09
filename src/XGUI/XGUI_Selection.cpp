@@ -72,17 +72,6 @@ QList<ModuleBase_ViewerPrsPtr> XGUI_Selection::getSelected(const SelectionPlace&
   QList<ModuleBase_ViewerPrsPtr> aPresentations;
   QList<ModuleBase_ViewerPrsPtr> aToRemove;
 
-  Handle(AIS_InteractiveContext) aContext = myWorkshop->viewer()->AISContext();
-  if (!aContext.IsNull()) {
-    AIS_ListOfInteractive aListOfObjects;
-    aContext->DisplayedObjects(aListOfObjects);
-    for (auto anObject = aListOfObjects.begin(); anObject != aListOfObjects.end(); ++anObject) {
-      Handle(ModuleBase_ResultPrs) aResPrs = Handle(ModuleBase_ResultPrs)::DownCast(*anObject);
-      if(aResPrs.get())
-        aResPrs->UpdateEdgesDir();
-    }
-  }
-
   switch (thePlace) {
     case Browser:
       getSelectedInBrowser(aPresentations);
@@ -184,10 +173,7 @@ void XGUI_Selection::getSelectedInViewer(QList<ModuleBase_ViewerPrsPtr>& thePres
       aSelectedIds.append((size_t)anOwner.get());
 
       fillPresentation(aPrs, anOwner);
-      AISObjectPtr anAISObject = myWorkshop->displayer()->getAISObject(aPrs->object());
-      Handle(ModuleBase_ResultPrs) aResPrs = Handle(ModuleBase_ResultPrs)::DownCast(anAISObject->
-                                                                 impl<Handle(AIS_InteractiveObject)>());
-      aResPrs->UpdateEdgesDir();
+
       if (!thePresentations.contains(aPrs)) // TODO: check whether the presentation in a list
         thePresentations.append(aPrs);
     }

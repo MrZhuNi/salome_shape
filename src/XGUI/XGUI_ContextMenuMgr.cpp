@@ -157,13 +157,14 @@ void XGUI_ContextMenuMgr::createActions()
                                            aDesktop);
   addAction("WIREFRAME_CMD", anAction);
 
+  anAction = ModuleBase_Tools::createAction(QIcon(":pictures/edges_dir.png"), tr("Show edges direction"),
+                                           aDesktop);
+  anAction->setCheckable(true);
+  addAction("SHOW_EDGES_DIRECTION_CMD", anAction);
+
   anAction = ModuleBase_Tools::createAction(QIcon(":pictures/iso_lines.png"), tr("Define Isos..."),
                                            aDesktop);
   addAction("ISOLINES_CMD", anAction);
-
-  anAction = ModuleBase_Tools::createAction(QIcon(), tr("Show edges direction"), aDesktop);
-  anAction->setCheckable(true);
-  addAction("SHOW_EDGES_DIRECTION_CMD", anAction);
 
   anAction = ModuleBase_Tools::createAction(QIcon(), tr("Show Isos"), aDesktop);
   anAction->setCheckable(true);
@@ -346,6 +347,7 @@ void XGUI_ContextMenuMgr::updateObjectBrowserMenu()
           }
           action("SHOW_EDGES_DIRECTION_CMD")->setEnabled(true);
           action("SHOW_EDGES_DIRECTION_CMD")->setChecked(ModelAPI_Tools::isShowEdgesDirection(aResult));
+
           action("SHOW_ISOLINES_CMD")->setEnabled(true);
           action("SHOW_ISOLINES_CMD")->setChecked(ModelAPI_Tools::isShownIsoLines(aResult));
           action("ISOLINES_CMD")->setEnabled(true);
@@ -595,11 +597,12 @@ void XGUI_ContextMenuMgr::updateViewerMenu()
         if (aPrsList.size() == 1) {
           ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(aObject);
           if (aResult.get()) {
-            action("SHOW_EDGES_DIRECTION_CMD")->setEnabled(true);
-            action("SHOW_EDGES_DIRECTION_CMD")->setChecked(
-                ModelAPI_Tools::isShowEdgesDirection(aResult));
             action("SHOW_ISOLINES_CMD")->setEnabled(true);
             action("SHOW_ISOLINES_CMD")->setChecked(ModelAPI_Tools::isShownIsoLines(aResult));
+
+            action("SHOW_EDGES_DIRECTION_CMD")->setEnabled(true);
+            action("SHOW_EDGES_DIRECTION_CMD")->setChecked(
+              ModelAPI_Tools::isShowEdgesDirection(aResult));
           }
         }
       }
@@ -731,6 +734,7 @@ void XGUI_ContextMenuMgr::buildObjBrowserMenu()
   aList.clear();
   aList.append(action("WIREFRAME_CMD"));
   aList.append(action("SHADING_CMD"));
+  aList.append(action("SHOW_EDGES_DIRECTION_CMD"));
   aList.append(mySeparator1); // this separator is not shown as this action is added after show only
   // qt list container contains only one instance of the same action
   aList.append(action("SHOW_CMD"));

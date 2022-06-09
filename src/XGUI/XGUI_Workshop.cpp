@@ -1822,6 +1822,8 @@ void XGUI_Workshop::onContextMenuCommand(const QString& theId, bool isChecked)
     setDisplayMode(anObjects, XGUI_Displayer::Shading);
   else if (theId == "WIREFRAME_CMD")
     setDisplayMode(anObjects, XGUI_Displayer::Wireframe);
+  else if (theId == "SHOW_EDGES_DIRECTION_CMD")
+    toggleEdgesDirection(anObjects);
   else if (theId == "HIDEALL_CMD") {
     QObjectPtrList aList = myDisplayer->displayedObjects();
     foreach (ObjectPtr aObj, aList) {
@@ -1865,15 +1867,6 @@ void XGUI_Workshop::onContextMenuCommand(const QString& theId, bool isChecked)
     setNormalView();
   } else if (theId == "SET_VIEW_INVERTEDNORMAL_CMD") {
     setNormalView(true);
-  }
-  else if (theId == "SHOW_EDGES_DIRECTION_CMD") {
-    foreach(ObjectPtr aObj, anObjects) {
-      ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(aObj);
-      if (aResult.get())
-        ModelAPI_Tools::showEdgesDirection(aResult, !ModelAPI_Tools::isShowEdgesDirection(aResult));
-    }
-    mySelector->clearSelection();
-    Events_Loop::loop()->flush(Events_Loop::eventByName(EVENT_OBJECT_TO_REDISPLAY));
   }
 #ifdef TINSPECTOR
   else if (theId == "TINSPECTOR_VIEW") {
@@ -3009,6 +3002,32 @@ void XGUI_Workshop::setDisplayMode(const QObjectPtrList& theList, int theMode)
       for(std::list<ResultPtr>::iterator aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
         myDisplayer->setDisplayMode(*aRes, (XGUI_Displayer::DisplayMode)theMode, false);
       }
+    }
+  }
+  if (theList.size() > 0)
+    myDisplayer->updateViewer();
+}
+
+//**************************************************************
+void XGUI_Workshop::toggleEdgesDirection(const QObjectPtrList& theList)
+{
+  foreach(ObjectPtr anObj, theList) {
+    ResultPtr aResult = std::dynamic_pointer_cast<ModelAPI_Result>(anObj);
+    if (aResult.get() != NULL)
+    {
+      bool aToShow = !ModelAPI_Tools::isShowEdgesDirection(aResult);
+      ResultBodyPtr aBodyResult = std::dynamic_pointer_cast<ModelAPI_ResultBody>(aResult);
+      if (aBodyResult.get() != NULL) { // change property for all sub-solids
+        std::list<ResultPtr> allRes;
+        ModelAPI_Tools::allSubs(aBodyResult, allRes);
+        std::list<ResultPtr>::iterator aRes;
+        for (aRes = allRes.begin(); aRes != allRes.end(); aRes++) {
+          ModelAPI_Tools::showEdgesDirection(*aRes, aToShow);
+          myDisplayer->redisplay(*aRes, false);
+        }
+      }
+      ModelAPI_Tools::showEdgesDirection(aResult, aToShow);
+      myDisplayer->redisplay(anObj, false);
     }
   }
   if (theList.size() > 0)

@@ -55,13 +55,16 @@
 #include <StdPrs_ShadedShape.hxx>
 #include <StdSelect_BRepSelectionTool.hxx>
 #include <TColStd_ListIteratorOfListOfInteger.hxx>
-#include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 #include <TopoDS_Builder.hxx>
 #include <TopoDS_Edge.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
 #include <Standard_Version.hxx>
+#include <Prs3d_Arrow.hxx>
+#include <GeomAdaptor_Curve.hxx>
+#include <TopExp.hxx>
+#include <GCPnts_AbscissaPoint.hxx>
 
 #if OCC_VERSION_HEX > 0x070400
 #include <StdPrs_ToolTriangulatedShape.hxx>
@@ -297,10 +300,52 @@ void ModuleBase_ResultPrs::Compute(
   // change deviation coefficient to provide more precise circle
   try {
     AIS_Shape::Compute(thePresentationManager, thePresentation, theMode);
-    AddRemoveEdgesDir(GetContext()->CurrentViewer());
   }
   catch (...) {
     return;
+  }
+  if (myResult.get() && ModelAPI_Tools::isShowEdgesDirection(myResult))
+  {
+    TopExp_Explorer Exp(myshape, TopAbs_EDGE);
+    for (; Exp.More(); Exp.Next()) {
+      TopoDS_Edge anEdgeE = TopoDS::Edge(Exp.Current());
+      if (anEdgeE.IsNull())
+        continue;
+
+      // draw curve direction (issue 0021087)
+      anEdgeE.Orientation(TopAbs_FORWARD);
+
+      TopoDS_Vertex aV1, aV2;
+      TopExp::Vertices(anEdgeE, aV1, aV2);
+      gp_Pnt aP1 = BRep_Tool::Pnt(aV1);
+      gp_Pnt aP2 = BRep_Tool::Pnt(aV2);
+
+      double fp, lp;
+      gp_Vec aDirVec;
+      Handle(Geom_Curve) C = BRep_Tool::Curve(anEdgeE, fp, lp);
+
+      if (C.IsNull()) continue;
+
+      if (anEdgeE.Orientation() == TopAbs_FORWARD)
+        C->D1(lp, aP2, aDirVec);
+      else {
+        C->D1(fp, aP1, aDirVec);
+        aP2 = aP1;
+      }
+      GeomAdaptor_Curve aAdC;
+      aAdC.Load(C, fp, lp);
+      Standard_Real aDist = GCPnts_AbscissaPoint::Length(aAdC, fp, lp);
+
+      if (aDist > gp::Resolution()) {
+        gp_Dir aDir;
+        if (anEdgeE.Orientation() == TopAbs_FORWARD)
+          aDir = aDirVec;
+        else
+          aDir = -aDirVec;
+
+        Prs3d_Arrow::Draw(thePresentation->CurrentGroup(), aP2, aDir, M_PI / 180.*5., aDist / 10.);
+      }
+    }
   }
 
   // visualize hidden sub-shapes transparent
@@ -539,50 +584,4 @@ void ModuleBase_ResultPrs::updateIsoLines()
   }
   myUIsoAspect->SetNumber(aIsoValues[0]);
   myVIsoAspect->SetNumber(aIsoValues[1]);
-}
-
-bool ModuleBase_ResultPrs::AddRemoveEdgesDir(const Handle(V3d_Viewer)& theViewer)
-{
-  bool isShow = ModelAPI_Tools::isShowEdgesDirection(myResult);
-  if (isShow) {
-    std::list<GeomShapePtr> aSubEdges = myResult->shape()->subShapes(GeomAPI_Shape::EDGE);
-
-    for (auto anEdgeIter = aSubEdges.begin(); anEdgeIter != aSubEdges.end(); ++anEdgeIter) {
-      GeomEdgePtr anEdgePtr = (*anEdgeIter)->edge();
-      if (myEdgesDirection.find(anEdgePtr) != myEdgesDirection.end()) {
-        myEdgesDirection.at(anEdgePtr)->DrawArrow(Presentation(), Quantity_NOC_BLACK);
-      }
-      else {
-        Handle(ModuleBase_ArrowPrs) anArrowPrs = new ModuleBase_ArrowPrs(theViewer, anEdgePtr);
-        myEdgesDirection.insert(EdgeDirection(anEdgePtr, anArrowPrs));
-        anArrowPrs->DrawArrow(Presentation(), Quantity_NOC_BLACK);
-      }
-    }
-  }
-  else
-    myEdgesDirection.clear();
-
-  GetContext()->UpdateCurrentViewer();
-  return isShow;
-}
-
-Standard_EXPORT void ModuleBase_ResultPrs::UpdateEdgesDir()
-{
-  TopoDS_Shape aSelectedShape = GetContext()->SelectedShape();
-  for (auto anEdgeDir = myEdgesDirection.begin(); anEdgeDir != myEdgesDirection.end(); ++anEdgeDir) {
-    TopoDS_Edge anEdge = anEdgeDir->first->impl<TopoDS_Edge>();
-    bool isSelect = false;
-    TopExp_Explorer Exp(aSelectedShape, TopAbs_EDGE);
-    for (; Exp.More(); Exp.Next()) {
-      if (TopoDS::Edge(Exp.Current()).IsSame(anEdge)) {
-        isSelect = true;
-        break;
-      }
-    }
-    if(isSelect)
-      anEdgeDir->second->DrawArrow(Presentation(), Quantity_NOC_WHITE);
-    else
-      anEdgeDir->second->DrawArrow(Presentation(), Quantity_NOC_BLACK);
-  }
-  GetContext()->UpdateCurrentViewer();
 }

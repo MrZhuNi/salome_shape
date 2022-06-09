@@ -22,8 +22,6 @@
 
 #include "ModuleBase.h"
 
-#include "ModuleBase_ArrowPrs.h"
-
 #include <ModelAPI_Result.h>
 #include <ModelAPI_ResultField.h>
 
@@ -123,10 +121,6 @@ public:
 
   Standard_EXPORT void updateIsoLines();
 
-  Standard_EXPORT bool AddRemoveEdgesDir(const Handle(V3d_Viewer)& theViewer);
-
-  Standard_EXPORT void UpdateEdgesDir();
-
   DEFINE_STANDARD_RTTIEXT(ModuleBase_ResultPrs, ViewerData_AISShape)
 
 protected:
@@ -184,9 +178,6 @@ private:
 
   Handle(Prs3d_IsoAspect) myUIsoAspect;
   Handle(Prs3d_IsoAspect) myVIsoAspect;
-
-
-  EdgesDirectionMap myEdgesDirection;
 };
 
 

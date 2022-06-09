@@ -327,10 +327,8 @@ bool XGUI_Displayer::redisplay(ObjectPtr theObject, bool theUpdateViewer)
 
       // Set Iso-Lines
       Handle(ModuleBase_ResultPrs) aResPrs = Handle(ModuleBase_ResultPrs)::DownCast(aAISIO);
-      if (!aResPrs.IsNull()) {
+      if (!aResPrs.IsNull())
         aResPrs->updateIsoLines();
-        aResPrs->AddRemoveEdgesDir(AISContext()->CurrentViewer());
-      }
     }
     //myWorkshop->module()->storeSelection();
 
