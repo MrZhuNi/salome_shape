@@ -48,7 +48,9 @@
 #include <BRepCheck_Analyzer.hxx>
 #include <BRepExtrema_DistShapeShape.hxx>
 #include <BRepExtrema_ExtCF.hxx>
+#include <BRepExtrema_ShapeProximity.hxx>
 #include <BRepGProp.hxx>
+#include <BRepMesh_IncrementalMesh.hxx>
 #include <BRepTools.hxx>
 #include <BRepTools_WireExplorer.hxx>
 #include <BRepTopAdaptor_FClass2d.hxx>
@@ -57,6 +59,10 @@
 #include <BRepLProp.hxx>
 
 #include <BOPAlgo_Builder.hxx>
+
+#include <Extrema_GenLocateExtCS.hxx>
+#include <Extrema_GenLocateExtSS.hxx>
+#include <Extrema_LocateExtCC.hxx>
 
 #include <Geom2d_Curve.hxx>
 #include <Geom2d_Curve.hxx>
@@ -334,7 +340,130 @@ auto getExtemaDistShape = [](const GeomShapePtr& theShape1,
   aDist.Perform();
   return aDist;
 };
+
+static void tessellateShape(const TopoDS_Shape& theShape)
+{
+  Standard_Boolean isTessellate = Standard_False;
+  TopLoc_Location aLoc;
+  for (TopExp_Explorer anExp(theShape, TopAbs_FACE); anExp.More() && !isTessellate; anExp.Next()) {
+    Handle(Poly_Triangulation) aTria = BRep_Tool::Triangulation(TopoDS::Face(anExp.Value()), aLoc);
+    isTessellate = aTria.IsNull();
+  }
+  for (TopExp_Explorer anExp(theShape, TopAbs_EDGE); anExp.More() && !isTessellate; anExp.Next()) {
+    Handle(Poly_Polygon3D) aPoly = BRep_Tool::Polygon3D(TopoDS::Edge(anExp.Value()), aLoc);
+    isTessellate = aPoly.IsNull();
+  }
+
+  if (isTessellate) {
+    BRepMesh_IncrementalMesh aMesher(theShape, 0.1);
+    Standard_ProgramError_Raise_if(!aMesher.IsDone(), "Meshing failed");
+  }
 }
+
+static Standard_Real paramOnCurve(const BRepAdaptor_Curve& theCurve,
+                                  const gp_Pnt&            thePoint,
+                                  const Standard_Real      theTol)
+{
+  Extrema_ExtPC aParamSearch(thePoint,
+                             theCurve,
+                             theCurve.FirstParameter(),
+                             theCurve.LastParameter());
+  if (aParamSearch.IsDone()) {
+    Standard_Integer anIndMin = 0, aNbExt = aParamSearch.NbExt();
+    Standard_Real aSqDistMin = RealLast();
+    for (Standard_Integer i = 1; i <= aNbExt; ++i) {
+      if (aParamSearch.SquareDistance(i) < aSqDistMin) {
+        anIndMin = i;
+        aSqDistMin = aParamSearch.SquareDistance(i);
+      }
+    }
+    if (anIndMin != 0 && aSqDistMin <= theTol * theTol)
+      return aParamSearch.Point(anIndMin).Parameter();
+  }
+  return 0.5 * (theCurve.FirstParameter() + theCurve.LastParameter());
+}
+
+static void paramsOnSurf(const BRepAdaptor_Surface& theSurf,
+                         const gp_Pnt&              thePoint,
+                         const Standard_Real        theTol,
+                         Standard_Real&             theU,
+                         Standard_Real&             theV)
+{
+  Extrema_ExtPS aParamSearch(thePoint, theSurf, Precision::PConfusion(), Precision::PConfusion());
+  if (aParamSearch.IsDone()) {
+    Standard_Integer anIndMin = 0, aNbExt = aParamSearch.NbExt();
+    Standard_Real aSqDistMin = RealLast();
+    for (Standard_Integer i = 1; i <= aNbExt; ++i) {
+      if (aParamSearch.SquareDistance(i) < aSqDistMin) {
+        anIndMin = i;
+        aSqDistMin = aParamSearch.SquareDistance(i);
+      }
+    }
+    if (anIndMin != 0 && aSqDistMin <= theTol * theTol)
+      return aParamSearch.Point(anIndMin).Parameter(theU, theV);
+  }
+  theU = 0.5 * (theSurf.FirstUParameter() + theSurf.LastUParameter());
+  theV = 0.5 * (theSurf.FirstVParameter() + theSurf.LastVParameter());
+}
+
+static Standard_Real extremaEE(const TopoDS_Edge& theEdge1,
+                               const TopoDS_Edge& theEdge2,
+                               const gp_Pnt&      thePoint1,
+                               const gp_Pnt&      thePoint2)
+{
+  BRepAdaptor_Curve aCurve1(theEdge1);
+  BRepAdaptor_Curve aCurve2(theEdge2);
+
+  Standard_Real aU1 = paramOnCurve(aCurve1, thePoint1, BRep_Tool::Tolerance(theEdge1));
+  Standard_Real aU2 = paramOnCurve(aCurve2, thePoint2, BRep_Tool::Tolerance(theEdge2));
+
+  Standard_Real aValue = -1.0;
+  Extrema_LocateExtCC anExtr(aCurve1, aCurve2, aU1, aU2);
+  if (anExtr.IsDone() && aValue > Precision::Confusion())
+    aValue = Sqrt(anExtr.SquareDistance());
+  return aValue;
+}
+
+static Standard_Real extremaEF(const TopoDS_Edge& theEdge,
+                               const TopoDS_Face& theFace,
+                               const gp_Pnt&      thePonE,
+                               const gp_Pnt&      thePonF)
+{
+  BRepAdaptor_Curve aCurve(theEdge);
+  BRepAdaptor_Surface aSurf(theFace);
+
+  Standard_Real aP = paramOnCurve(aCurve, thePonE, BRep_Tool::Tolerance(theEdge));
+  Standard_Real aU, aV;
+  paramsOnSurf(aSurf, thePonF, BRep_Tool::Tolerance(theFace), aU, aV);
+
+  Standard_Real aValue = -1.0;
+  Extrema_GenLocateExtCS anExtr(aCurve, aSurf, aP, aU, aV, Precision::PConfusion(), Precision::PConfusion());
+  if (anExtr.IsDone() && aValue > Precision::Confusion())
+    aValue = Sqrt(anExtr.SquareDistance());
+  return aValue;
+}
+
+static Standard_Real extremaFF(const TopoDS_Face& theFace1,
+                               const TopoDS_Face& theFace2,
+                               const gp_Pnt&      thePoint1,
+                               const gp_Pnt&      thePoint2)
+{
+  BRepAdaptor_Surface aSurf1(theFace1);
+  BRepAdaptor_Surface aSurf2(theFace2);
+
+  Standard_Real aU1, aV1;
+  paramsOnSurf(aSurf1, thePoint1, BRep_Tool::Tolerance(theFace1), aU1, aV1);
+  Standard_Real aU2, aV2;
+  paramsOnSurf(aSurf2, thePoint2, BRep_Tool::Tolerance(theFace2), aU2, aV2);
+
+  Standard_Real aValue = -1.0;
+  Extrema_GenLocateExtSS anExtr(aSurf1, aSurf2, aU1, aV1, aU2, aV2, Precision::PConfusion(), Precision::PConfusion());
+  if (anExtr.IsDone() && aValue > Precision::Confusion())
+    aValue = Sqrt(anExtr.SquareDistance());
+  return aValue;
+}
+
+} // namespace
 
 double GeomAlgoAPI_ShapeTools::minimalDistance(const GeomShapePtr& theShape1,
                                                const GeomShapePtr& theShape2)
@@ -354,6 +483,54 @@ double GeomAlgoAPI_ShapeTools::minimalDistance(const GeomShapePtr& theShape1,
   fromShape1To2[1] = pt2.Y() - pt1.Y();
   fromShape1To2[2] = pt2.Z() - pt1.Z();
   return aDist.IsDone() ? aDist.Value() : Precision::Infinite();
+}
+
+//==================================================================================================
+double GeomAlgoAPI_ShapeTools::shapeProximity(const GeomShapePtr& theShape1,
+                                              const GeomShapePtr& theShape2)
+{
+  double aResult = Precision::Infinite();
+  if (!theShape1.get() || !theShape2.get())
+    return aResult;
+
+  const TopoDS_Shape& aShape1 = theShape1->impl<TopoDS_Shape>();
+  const TopoDS_Shape& aShape2 = theShape2->impl<TopoDS_Shape>();
+
+  TopAbs_ShapeEnum aType1 = aShape1.ShapeType();
+  TopAbs_ShapeEnum aType2 = aShape2.ShapeType();
+
+  // tessellate shapes if there is no mesh exists
+  tessellateShape(aShape1);
+  tessellateShape(aShape2);
+
+  BRepExtrema_ShapeProximity aDist (aShape1, aShape2);
+  aDist.Perform();
+  if (aDist.IsDone()) {
+    aResult = aDist.Proximity();
+
+    // refine the result
+    const gp_Pnt& aPonS1 = aDist.ProximityPoint1();
+    const gp_Pnt& aPonS2 = aDist.ProximityPoint2();
+
+    double anExtrema = -1.0;
+    if (aType1 == TopAbs_EDGE)
+    {
+      if (aType2 == TopAbs_EDGE)
+        anExtrema = extremaEE(TopoDS::Edge(aShape1), TopoDS::Edge(aShape2), aPonS1, aPonS2);
+      else if (aType2 == TopAbs_FACE)
+        anExtrema = extremaEF(TopoDS::Edge(aShape1), TopoDS::Face(aShape2), aPonS1, aPonS2);
+    }
+    else if (aType1 == TopAbs_FACE)
+    {
+      if (aType2 == TopAbs_EDGE)
+        anExtrema = extremaEF(TopoDS::Edge(aShape2), TopoDS::Face(aShape1), aPonS2, aPonS1);
+      else if (aType2 == TopAbs_FACE)
+        anExtrema = extremaFF(TopoDS::Face(aShape1), TopoDS::Face(aShape2), aPonS1, aPonS2);
+    }
+    if (anExtrema > 0.0)
+      aResult = anExtrema;
+  }
+  return aResult;
 }
 
 //==================================================================================================
