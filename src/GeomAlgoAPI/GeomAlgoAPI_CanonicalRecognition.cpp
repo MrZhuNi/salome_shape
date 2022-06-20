@@ -1,0 +1,342 @@
+// Copyright (C) 2014-2022  CEA/DEN, EDF R&D
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
+
+#include "GeomAlgoAPI_CanonicalRecognition.h"
+
+#include <ShapeAnalysis_CanonicalRecognition.hxx>
+#include <gp_Pln.hxx>
+#include <gp_Sphere.hxx>
+#include <gp_Cone.hxx>
+#include <gp_Cylinder.hxx>
+#include <gp_Circ.hxx>
+#include <gp_Elips.hxx>
+
+bool GeomAlgoAPI_CanonicalRecognition::isPlane(const GeomShapePtr& theShape, double theTolerance,
+  std::vector<double>& theNormal, std::vector<double>& theOrigin)
+{
+  if (!theShape.get())
+    return false;
+
+  const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
+  if (aShape.IsNull())
+    return false;
+
+  bool aIsValidNormal = theNormal.size() == 3;
+  bool aIsValidOrigin = theOrigin.size() == 3;
+  gp_Pln aPln;
+  if (aIsValidNormal && aIsValidOrigin) {
+    aPln = gp_Pln(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]),
+      gp_Dir(theNormal[0], theNormal[1], theNormal[2]));
+  }
+
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+  bool aResult = false;
+  try {
+    aResult = aRecognition.IsPlane(theTolerance, aPln);
+  }
+  catch (...) {
+    return false;
+  }
+  if (aResult && aIsValidNormal && aIsValidOrigin)
+  {
+    gp_Pnt aOrig = aPln.Location();
+    theOrigin[0] = aOrig.X();
+    theOrigin[1] = aOrig.Y();
+    theOrigin[2] = aOrig.Z();
+
+    gp_Dir aNorm = aPln.Axis().Direction();
+    theNormal[0] = aNorm.X();
+    theNormal[1] = aNorm.Y();
+    theNormal[2] = aNorm.Z();
+  }
+  return aResult;
+}
+
+bool GeomAlgoAPI_CanonicalRecognition::isSphere(const GeomShapePtr& theShape, double theTolerance,
+  std::vector<double>& theOrigin, double& theRadius)
+{
+  if (!theShape.get())
+    return false;
+
+  const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
+  if (aShape.IsNull())
+    return false;
+
+  bool aIsValidOrigin = theOrigin.size() == 3;
+  bool aIsValidRadius = theRadius > 0;
+  gp_Sphere aSphere;
+  if (aIsValidOrigin && aIsValidRadius)
+  {
+    aSphere.SetLocation(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]));
+    aSphere.SetRadius(theRadius);
+  }
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+  bool aResult = false;
+  try {
+    aResult = aRecognition.IsSphere(theTolerance, aSphere);
+  }
+  catch (...) {
+    return false;
+  }
+  if (aResult && aIsValidOrigin && aIsValidRadius)
+  {
+    gp_Pnt aLoc = aSphere.Location();
+    theOrigin[0] = aLoc.X();
+    theOrigin[1] = aLoc.Y();
+    theOrigin[2] = aLoc.Z();
+    theRadius = aSphere.Radius();
+  }
+  return aResult;
+}
+
+bool GeomAlgoAPI_CanonicalRecognition::isCone(const GeomShapePtr& theShape, double theTolerance,
+  std::vector<double>& theAxis, std::vector<double>& theApex,
+  double& theHalfAngle)
+{
+  if (!theShape.get())
+    return false;
+
+  const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
+  if (aShape.IsNull())
+    return false;
+
+  bool aIsValidAxis = theAxis.size() == 3;
+  bool aIsValidApex = theApex.size() == 3;
+  bool aIsValidAngle = theHalfAngle > 0;
+  gp_Cone aCone;
+  if (aIsValidAxis && aIsValidApex && aIsValidAngle)
+  {
+    gp_Pnt aLoc(theApex[0], theApex[1], theApex[2]);
+    aCone.SetLocation(aLoc);
+    aCone.SetAxis(gp_Ax1(aLoc, gp_Dir(theAxis[0], theAxis[1], theAxis[2])));
+  }
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+  bool aResult = false;
+  try {
+    aResult = aRecognition.IsCone(theTolerance, aCone);
+  }
+  catch (...) {
+    return false;
+  }
+  if (aResult && aIsValidAxis && aIsValidApex && aIsValidAngle)
+  {
+    gp_Dir aDir = aCone.Axis().Direction();
+    theAxis[0] = aDir.X();
+    theAxis[1] = aDir.Y();
+    theAxis[2] = aDir.Z();
+
+    gp_Pnt aApex = aCone.Apex();
+    theApex[0] = aApex.X();
+    theApex[1] = aApex.Y();
+    theApex[2] = aApex.Z();
+
+    theHalfAngle = aCone.SemiAngle();
+  }
+  return aResult;
+}
+
+bool GeomAlgoAPI_CanonicalRecognition::isCylinder(const GeomShapePtr& theShape, double theTolerance,
+  std::vector<double>& theAxis, std::vector<double>& theOrigin,
+  double& theRadius)
+{
+  if (!theShape.get())
+    return false;
+
+  const TopoDS_Shape& aShape = theShape->impl<TopoDS_Shape>();
+  if (aShape.IsNull())
+    return false;
+
+  bool aIsValidAxis = theAxis.size() == 3;
+  bool aIsValidOrigin = theOrigin.size() == 3;
+  bool aIsValidRadius = theRadius > 0;
+  gp_Cylinder aCylinder;
+  if (aIsValidAxis && aIsValidOrigin && aIsValidRadius)
+  {
+    gp_Pnt aLoc(theOrigin[0], theOrigin[0], theOrigin[0]);
+    aCylinder.SetLocation(aLoc);
+    aCylinder.SetAxis(gp_Ax1(aLoc, gp_Dir(theAxis[0], theAxis[1], theAxis[2])));
+    aCylinder.SetRadius(theRadius);
+  }
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+  bool aResult = false;
+  try {
+    aResult = aRecognition.IsCylinder(theTolerance, aCylinder);
+  }
+  catch (...) {
+    return false;
+  }
+  if (aResult && aIsValidAxis && aIsValidOrigin && aIsValidRadius)
+  {
+    gp_Dir aDir = aCylinder.Axis().Direction();
+    theAxis[0] = aDir.X();
+    theAxis[1] = aDir.Y();
+    theAxis[2] = aDir.Z();
+
+    gp_Pnt aLoc = aCylinder.Location();
+    theOrigin[0] = aLoc.X();
+    theOrigin[1] = aLoc.Y();
+    theOrigin[2] = aLoc.Z();
+
+    theRadius = aCylinder.Radius();
+  }
+  return aResult;
+}
+
+bool GeomAlgoAPI_CanonicalRecognition::isLine(const GeomShapePtr& theEdge, double theTolerance,
+  std::vector<double>& theDir, std::vector<double>& theOrigin)
+{
+  if (!theEdge.get())
+    return false;
+
+  const TopoDS_Shape& aShape = theEdge->impl<TopoDS_Shape>();
+  if (aShape.IsNull())
+    return false;
+
+  bool aIsValidDir = theDir.size() == 3;
+  bool aIsValidOrigin = theOrigin.size() == 3;
+  gp_Lin aLine;
+  if (aIsValidDir && aIsValidOrigin)
+  {
+    aLine.SetLocation(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]));
+    aLine.SetDirection(gp_Dir(theDir[0], theDir[1], theDir[2]));
+  }
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+  bool aResult = false;
+  try {
+    aResult = aRecognition.IsLine(theTolerance, aLine);
+  }
+  catch (...) {
+    return false;
+  }
+  if (aResult && aIsValidDir && aIsValidOrigin)
+  {
+    gp_Pnt aLoc = aLine.Location();
+    theOrigin[0] = aLoc.X();
+    theOrigin[1] = aLoc.Y();
+    theOrigin[2] = aLoc.Z();
+
+    gp_Dir aDir = aLine.Direction();
+    theDir[0] = aDir.X();
+    theDir[1] = aDir.Y();
+    theDir[2] = aDir.Z();
+  }
+  return aResult;
+}
+
+bool GeomAlgoAPI_CanonicalRecognition::isCircle(const GeomShapePtr& theEdge, double theTolerance,
+  std::vector<double>& theNormal, std::vector<double>& theOrigin,
+  double& theRadius)
+{
+  if (!theEdge.get())
+    return false;
+
+  const TopoDS_Shape& aShape = theEdge->impl<TopoDS_Shape>();
+  if (aShape.IsNull())
+    return false;
+
+  bool aIsValidNormal = theNormal.size() == 3;
+  bool aIsValidOrigin = theOrigin.size() == 3;
+  bool aIsValidRadius = theRadius > 0;
+  gp_Circ aCircle;
+  if (aIsValidNormal && aIsValidOrigin && aIsValidRadius)
+  {
+    aCircle.SetAxis(gp_Ax1(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]),
+      gp_Dir(theNormal[0], theNormal[1], theNormal[2])));
+    aCircle.SetRadius(theRadius);
+  }
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+  bool aResult = false;
+  try {
+    aResult = aRecognition.IsCircle(theTolerance, aCircle);
+  }
+  catch (...) {
+    return false;
+  }
+  if (aResult && aIsValidNormal && aIsValidOrigin && aIsValidRadius)
+  {
+    gp_Pnt aLoc = aCircle.Location();
+    theOrigin[0] = aLoc.X();
+    theOrigin[1] = aLoc.Y();
+    theOrigin[2] = aLoc.Z();
+
+    gp_Dir aDir = aCircle.Axis().Direction();
+    theNormal[0] = aDir.X();
+    theNormal[1] = aDir.Y();
+    theNormal[2] = aDir.Z();
+    theRadius = aCircle.Radius();
+  }
+  return aResult;
+}
+
+bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, double theTolerance,
+  std::vector<double>& theNormal, std::vector<double>& theDirX,
+  std::vector<double>& theOrigin,
+  double& theMajorRadius, double& theMinorRadius)
+{
+  if (!theEdge.get())
+    return false;
+
+  const TopoDS_Shape& aShape = theEdge->impl<TopoDS_Shape>();
+  if (aShape.IsNull())
+    return false;
+
+  bool aIsValidNormal = theNormal.size() == 3;
+  bool aIsValidOrigin = theOrigin.size() == 3;
+  bool aIsValidDirX = theDirX.size() == 3;
+  bool aIsValidRad1 = (theMajorRadius > 0) && (theMajorRadius > theMinorRadius);
+  bool aIsValidRad2 = (theMinorRadius > 0) && (theMajorRadius > theMinorRadius);
+
+  gp_Elips aElips;
+  if (aIsValidNormal && aIsValidOrigin && aIsValidDirX && aIsValidRad1 && aIsValidRad2)
+  {
+    gp_Ax2 aAx2(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]),
+      gp_Dir(theNormal[0], theNormal[1], theNormal[2]),
+      gp_Dir(theDirX[0], theDirX[1], theDirX[2]));
+    aElips = gp_Elips(aAx2, theMajorRadius, theMinorRadius);
+  }
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+  bool aResult = false;
+  try {
+    aResult = aRecognition.IsEllipse(theTolerance, aElips);
+  }
+  catch (...) {
+    return false;
+  }
+  if (aResult && aIsValidNormal && aIsValidOrigin && aIsValidDirX && aIsValidRad1 && aIsValidRad2)
+  {
+    gp_Pnt aLoc = aElips.Position().Location();
+    theOrigin[0] = aLoc.X();
+    theOrigin[1] = aLoc.Y();
+    theOrigin[2] = aLoc.Z();
+
+    gp_Dir aNorm = aElips.Position().Direction();
+    theNormal[0] = aNorm.X();
+    theNormal[1] = aNorm.Y();
+    theNormal[2] = aNorm.Z();
+
+    gp_Dir aDirX = aElips.Position().XDirection();
+    theDirX[0] = aDirX.X();
+    theDirX[1] = aDirX.Y();
+    theDirX[2] = aDirX.Z();
+
+    theMajorRadius = aElips.MajorRadius();
+    theMinorRadius = aElips.MinorRadius();
+  }
+  return aResult;
+}
