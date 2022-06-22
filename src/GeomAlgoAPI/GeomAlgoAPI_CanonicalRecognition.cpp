@@ -27,6 +27,11 @@
 #include <gp_Circ.hxx>
 #include <gp_Elips.hxx>
 
+static bool isValidDirection(const std::vector<double>& theDir)
+{
+  return (theDir.size() == 3) && (gp_Vec(theDir[0], theDir[1], theDir[2]).Magnitude() > 0.);
+}
+
 bool GeomAlgoAPI_CanonicalRecognition::isPlane(const GeomShapePtr& theShape, double theTolerance,
   std::vector<double>& theNormal, std::vector<double>& theOrigin)
 {
@@ -37,7 +42,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isPlane(const GeomShapePtr& theShape, dou
   if (aShape.IsNull())
     return false;
 
-  bool aIsValidNormal = theNormal.size() == 3;
+  bool aIsValidNormal = isValidDirection(theNormal);
   bool aIsValidOrigin = theOrigin.size() == 3;
   gp_Pln aPln;
   if (aIsValidNormal && aIsValidOrigin) {
@@ -53,18 +58,21 @@ bool GeomAlgoAPI_CanonicalRecognition::isPlane(const GeomShapePtr& theShape, dou
   catch (...) {
     return false;
   }
-  if (aResult && aIsValidNormal && aIsValidOrigin)
-  {
-    gp_Pnt aOrig = aPln.Location();
-    theOrigin[0] = aOrig.X();
-    theOrigin[1] = aOrig.Y();
-    theOrigin[2] = aOrig.Z();
 
-    gp_Dir aNorm = aPln.Axis().Direction();
-    theNormal[0] = aNorm.X();
-    theNormal[1] = aNorm.Y();
-    theNormal[2] = aNorm.Z();
-  }
+  gp_Pnt aOrig = aPln.Location();
+  if (theOrigin.size() != 3)
+    theOrigin.resize(3);
+  theOrigin[0] = aOrig.X();
+  theOrigin[1] = aOrig.Y();
+  theOrigin[2] = aOrig.Z();
+
+  gp_Dir aNorm = aPln.Axis().Direction();
+  if (theNormal.size() != 3)
+    theNormal.resize(3);
+  theNormal[0] = aNorm.X();
+  theNormal[1] = aNorm.Y();
+  theNormal[2] = aNorm.Z();
+
   return aResult;
 }
 
@@ -94,14 +102,15 @@ bool GeomAlgoAPI_CanonicalRecognition::isSphere(const GeomShapePtr& theShape, do
   catch (...) {
     return false;
   }
-  if (aResult && aIsValidOrigin && aIsValidRadius)
-  {
-    gp_Pnt aLoc = aSphere.Location();
-    theOrigin[0] = aLoc.X();
-    theOrigin[1] = aLoc.Y();
-    theOrigin[2] = aLoc.Z();
-    theRadius = aSphere.Radius();
-  }
+
+  gp_Pnt aLoc = aSphere.Location();
+  if (theOrigin.size() != 3)
+    theOrigin.resize(3);
+  theOrigin[0] = aLoc.X();
+  theOrigin[1] = aLoc.Y();
+  theOrigin[2] = aLoc.Z();
+  theRadius = aSphere.Radius();
+
   return aResult;
 }
 
@@ -116,15 +125,15 @@ bool GeomAlgoAPI_CanonicalRecognition::isCone(const GeomShapePtr& theShape, doub
   if (aShape.IsNull())
     return false;
 
-  bool aIsValidAxis = theAxis.size() == 3;
+  bool aIsValidAxis = isValidDirection(theAxis);
   bool aIsValidApex = theApex.size() == 3;
   bool aIsValidAngle = theHalfAngle > 0;
   gp_Cone aCone;
   if (aIsValidAxis && aIsValidApex && aIsValidAngle)
   {
     gp_Pnt aLoc(theApex[0], theApex[1], theApex[2]);
-    aCone.SetLocation(aLoc);
-    aCone.SetAxis(gp_Ax1(aLoc, gp_Dir(theAxis[0], theAxis[1], theAxis[2])));
+    gp_Ax3 aAx3(aLoc, gp_Dir(theAxis[0], theAxis[1], theAxis[2]));
+    aCone.SetPosition(aAx3);
   }
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
@@ -134,20 +143,23 @@ bool GeomAlgoAPI_CanonicalRecognition::isCone(const GeomShapePtr& theShape, doub
   catch (...) {
     return false;
   }
-  if (aResult && aIsValidAxis && aIsValidApex && aIsValidAngle)
-  {
-    gp_Dir aDir = aCone.Axis().Direction();
-    theAxis[0] = aDir.X();
-    theAxis[1] = aDir.Y();
-    theAxis[2] = aDir.Z();
 
-    gp_Pnt aApex = aCone.Apex();
-    theApex[0] = aApex.X();
-    theApex[1] = aApex.Y();
-    theApex[2] = aApex.Z();
+  gp_Dir aDir = aCone.Axis().Direction();
+  if (theAxis.size() != 3)
+    theAxis.resize(3);
+  theAxis[0] = aDir.X();
+  theAxis[1] = aDir.Y();
+  theAxis[2] = aDir.Z();
 
-    theHalfAngle = aCone.SemiAngle();
-  }
+  gp_Pnt aApex = aCone.Apex();
+  if (theApex.size() != 3)
+    theApex.resize(3);
+  theApex[0] = aApex.X();
+  theApex[1] = aApex.Y();
+  theApex[2] = aApex.Z();
+
+  theHalfAngle = aCone.SemiAngle();
+
   return aResult;
 }
 
@@ -162,15 +174,15 @@ bool GeomAlgoAPI_CanonicalRecognition::isCylinder(const GeomShapePtr& theShape, 
   if (aShape.IsNull())
     return false;
 
-  bool aIsValidAxis = theAxis.size() == 3;
+  bool aIsValidAxis = isValidDirection(theAxis);
   bool aIsValidOrigin = theOrigin.size() == 3;
   bool aIsValidRadius = theRadius > 0;
   gp_Cylinder aCylinder;
   if (aIsValidAxis && aIsValidOrigin && aIsValidRadius)
   {
     gp_Pnt aLoc(theOrigin[0], theOrigin[0], theOrigin[0]);
-    aCylinder.SetLocation(aLoc);
-    aCylinder.SetAxis(gp_Ax1(aLoc, gp_Dir(theAxis[0], theAxis[1], theAxis[2])));
+    gp_Ax3 aAx3(aLoc, gp_Dir(theAxis[0], theAxis[1], theAxis[2]));
+    aCylinder.SetPosition(aAx3);
     aCylinder.SetRadius(theRadius);
   }
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
@@ -181,20 +193,23 @@ bool GeomAlgoAPI_CanonicalRecognition::isCylinder(const GeomShapePtr& theShape, 
   catch (...) {
     return false;
   }
-  if (aResult && aIsValidAxis && aIsValidOrigin && aIsValidRadius)
-  {
-    gp_Dir aDir = aCylinder.Axis().Direction();
-    theAxis[0] = aDir.X();
-    theAxis[1] = aDir.Y();
-    theAxis[2] = aDir.Z();
 
-    gp_Pnt aLoc = aCylinder.Location();
-    theOrigin[0] = aLoc.X();
-    theOrigin[1] = aLoc.Y();
-    theOrigin[2] = aLoc.Z();
+  gp_Dir aDir = aCylinder.Axis().Direction();
+  if (theAxis.size() != 3)
+    theAxis.resize(3);
+  theAxis[0] = aDir.X();
+  theAxis[1] = aDir.Y();
+  theAxis[2] = aDir.Z();
 
-    theRadius = aCylinder.Radius();
-  }
+  gp_Pnt aLoc = aCylinder.Location();
+  if (theOrigin.size() != 3)
+    theOrigin.resize(3);
+  theOrigin[0] = aLoc.X();
+  theOrigin[1] = aLoc.Y();
+  theOrigin[2] = aLoc.Z();
+
+  theRadius = aCylinder.Radius();
+
   return aResult;
 }
 
@@ -208,7 +223,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isLine(const GeomShapePtr& theEdge, doubl
   if (aShape.IsNull())
     return false;
 
-  bool aIsValidDir = theDir.size() == 3;
+  bool aIsValidDir = isValidDirection(theDir);
   bool aIsValidOrigin = theOrigin.size() == 3;
   gp_Lin aLine;
   if (aIsValidDir && aIsValidOrigin)
@@ -224,18 +239,21 @@ bool GeomAlgoAPI_CanonicalRecognition::isLine(const GeomShapePtr& theEdge, doubl
   catch (...) {
     return false;
   }
-  if (aResult && aIsValidDir && aIsValidOrigin)
-  {
-    gp_Pnt aLoc = aLine.Location();
-    theOrigin[0] = aLoc.X();
-    theOrigin[1] = aLoc.Y();
-    theOrigin[2] = aLoc.Z();
 
-    gp_Dir aDir = aLine.Direction();
-    theDir[0] = aDir.X();
-    theDir[1] = aDir.Y();
-    theDir[2] = aDir.Z();
-  }
+  gp_Pnt aLoc = aLine.Location();
+  if (theOrigin.size() != 3)
+    theOrigin.resize(3);
+  theOrigin[0] = aLoc.X();
+  theOrigin[1] = aLoc.Y();
+  theOrigin[2] = aLoc.Z();
+
+  gp_Dir aDir = aLine.Direction();
+  if (theDir.size() != 3)
+    theDir.resize(3);
+  theDir[0] = aDir.X();
+  theDir[1] = aDir.Y();
+  theDir[2] = aDir.Z();
+
   return aResult;
 }
 
@@ -250,14 +268,15 @@ bool GeomAlgoAPI_CanonicalRecognition::isCircle(const GeomShapePtr& theEdge, dou
   if (aShape.IsNull())
     return false;
 
-  bool aIsValidNormal = theNormal.size() == 3;
+  bool aIsValidNormal = isValidDirection(theNormal);
   bool aIsValidOrigin = theOrigin.size() == 3;
   bool aIsValidRadius = theRadius > 0;
   gp_Circ aCircle;
   if (aIsValidNormal && aIsValidOrigin && aIsValidRadius)
   {
-    aCircle.SetAxis(gp_Ax1(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]),
-      gp_Dir(theNormal[0], theNormal[1], theNormal[2])));
+    gp_Ax2 aAx2(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]),
+      gp_Dir(theNormal[0], theNormal[1], theNormal[2]));
+    aCircle.SetPosition(aAx2);
     aCircle.SetRadius(theRadius);
   }
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
@@ -268,19 +287,21 @@ bool GeomAlgoAPI_CanonicalRecognition::isCircle(const GeomShapePtr& theEdge, dou
   catch (...) {
     return false;
   }
-  if (aResult && aIsValidNormal && aIsValidOrigin && aIsValidRadius)
-  {
-    gp_Pnt aLoc = aCircle.Location();
-    theOrigin[0] = aLoc.X();
-    theOrigin[1] = aLoc.Y();
-    theOrigin[2] = aLoc.Z();
 
-    gp_Dir aDir = aCircle.Axis().Direction();
-    theNormal[0] = aDir.X();
-    theNormal[1] = aDir.Y();
-    theNormal[2] = aDir.Z();
-    theRadius = aCircle.Radius();
-  }
+  gp_Pnt aLoc = aCircle.Location();
+  if (theOrigin.size() != 3)
+    theOrigin.resize(3);
+  theOrigin[0] = aLoc.X();
+  theOrigin[1] = aLoc.Y();
+  theOrigin[2] = aLoc.Z();
+
+  gp_Dir aDir = aCircle.Axis().Direction();
+  if (theNormal.size() != 3)
+    theNormal.resize(3);
+  theNormal[0] = aDir.X();
+  theNormal[1] = aDir.Y();
+  theNormal[2] = aDir.Z();
+  theRadius = aCircle.Radius();
   return aResult;
 }
 
@@ -296,9 +317,9 @@ bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, do
   if (aShape.IsNull())
     return false;
 
-  bool aIsValidNormal = theNormal.size() == 3;
+  bool aIsValidNormal = isValidDirection(theNormal);
   bool aIsValidOrigin = theOrigin.size() == 3;
-  bool aIsValidDirX = theDirX.size() == 3;
+  bool aIsValidDirX = isValidDirection(theDirX);
   bool aIsValidRad1 = (theMajorRadius > 0) && (theMajorRadius > theMinorRadius);
   bool aIsValidRad2 = (theMinorRadius > 0) && (theMajorRadius > theMinorRadius);
 
@@ -318,25 +339,30 @@ bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, do
   catch (...) {
     return false;
   }
-  if (aResult && aIsValidNormal && aIsValidOrigin && aIsValidDirX && aIsValidRad1 && aIsValidRad2)
-  {
-    gp_Pnt aLoc = aElips.Position().Location();
-    theOrigin[0] = aLoc.X();
-    theOrigin[1] = aLoc.Y();
-    theOrigin[2] = aLoc.Z();
 
-    gp_Dir aNorm = aElips.Position().Direction();
-    theNormal[0] = aNorm.X();
-    theNormal[1] = aNorm.Y();
-    theNormal[2] = aNorm.Z();
+  gp_Pnt aLoc = aElips.Position().Location();
+  if (theOrigin.size() != 3)
+    theOrigin.resize(3);
+  theOrigin[0] = aLoc.X();
+  theOrigin[1] = aLoc.Y();
+  theOrigin[2] = aLoc.Z();
 
-    gp_Dir aDirX = aElips.Position().XDirection();
-    theDirX[0] = aDirX.X();
-    theDirX[1] = aDirX.Y();
-    theDirX[2] = aDirX.Z();
+  gp_Dir aNorm = aElips.Position().Direction();
+  if (theNormal.size() != 3)
+    theNormal.resize(3);
+  theNormal[0] = aNorm.X();
+  theNormal[1] = aNorm.Y();
+  theNormal[2] = aNorm.Z();
 
-    theMajorRadius = aElips.MajorRadius();
-    theMinorRadius = aElips.MinorRadius();
-  }
+  gp_Dir aDirX = aElips.Position().XDirection();
+  if (theDirX.size() != 3)
+    theDirX.resize(3);
+  theDirX[0] = aDirX.X();
+  theDirX[1] = aDirX.Y();
+  theDirX[2] = aDirX.Z();
+
+  theMajorRadius = aElips.MajorRadius();
+  theMinorRadius = aElips.MinorRadius();
+
   return aResult;
 }
