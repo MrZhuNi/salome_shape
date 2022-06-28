@@ -33,6 +33,8 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/Events
                     ${PROJECT_SOURCE_DIR}/src/ConstructionPlugin
                     ${PROJECT_SOURCE_DIR}/src/PartSetPlugin
                     ${QT_INCLUDES}
+                    ${PROJECT_SOURCE_DIR}/src/PrimitivesPlugin
+                    ${OpenCASCADE_INCLUDE_DIR}
 )
 
 # additional preprocessor / compiler flags
@@ -49,6 +51,7 @@ SET(PROJECT_HEADERS
     ExchangePlugin_ImportPart.h
     ExchangePlugin_ExportPart.h
     ExchangePlugin_Import.h
+    ExchangePlugin_ExportRoot.h
 )
 
 SET(PROJECT_SOURCES
@@ -61,6 +64,7 @@ SET(PROJECT_SOURCES
     ExchangePlugin_ImportPart.cpp
     ExchangePlugin_ExportPart.cpp
     ExchangePlugin_Import.cpp
+    ExchangePlugin_ExportRoot.cpp
 )
 
 SET(XML_RESOURCES

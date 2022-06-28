@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022  CEA/DEN, EDF R&D
+# Copyright (C) 2016-2021  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -16,34 +16,8 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+"""Package for Opera plugin for SHAPER Opera.
+"""
 
-SET(COMPONENT_NAME SHAPER)
-set(SALOME_TEST_LABEL_ADV SHAPR_ADV)
-
-# Add all test subdirs
-SUBDIRS(ConnectorAPI
-        HDFs
-        FeaturesPlugin
-        ConstructionPlugin
-        SketchPlugin
-        ModelAPI
-        FiltersPlugin
-        CollectionPlugin
-        BuildPlugin
-        ExchangePlugin
-        PythonAPI
-        GeomAPI
-        ModelHighAPI
-        ParametersPlugin
-        PythonAddons
-        SketchAPI
-        ConstructionAPI
-        PartSetAPI
-        GeomDataAPI
-        Config
-        ExchangeAPI
-        ModelGeomAlgo
-        Locale
-        test_API
-        OperaPlugin
-)
+from OperaAPI import addVolume
+from OperaAPI import addAddNode

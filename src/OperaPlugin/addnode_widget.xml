@@ -1,0 +1,16 @@
+<source>
+  <shape_selector id="main_object"
+                  label="Main object"
+                  tooltip="Select a main object"
+                  shape_types="solids"
+                  concealment="true">
+    <validator id="GeomValidators_ShapeType" parameters="solid"/>
+  </shape_selector>
+  <shape_selector id="tool_object"
+                  label="Tool object"
+                  tooltip="Select a tool object"
+                  shape_types="solids"
+                  concealment="true">
+    <validator id="GeomValidators_ShapeType" parameters="solid"/>
+  </shape_selector>
+</source>

@@ -28,7 +28,7 @@
  * \ingroup Plugins
  * \brief Feature for creation of a tube primitive using various methods.
  *
- * Tube creates a tuboid - Holed cylinder. It can be built via two methods : 
+ * Tube creates a tuboid - Holed cylinder. It can be built via two methods :
  * using an inner raidus, an outer radius and a heigth or radii (inner and outer)
  * and angles.
  */

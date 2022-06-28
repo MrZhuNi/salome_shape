@@ -8,5 +8,5 @@ Create Tube
     :linenos:
     :language: python
 
-:download:`Download this script <examples/tube.py>` 
-   
+:download:`Download this script <examples/tube.py>`
+

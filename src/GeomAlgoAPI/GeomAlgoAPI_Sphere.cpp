@@ -17,7 +17,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-// File:        GeomAlgoAPI_Sphere.h
+// File:        GeomAlgoAPI_Sphere.cpp
 // Created:     16 Mar 2017
 // Author:      Clarisse Genrault (CEA)
 

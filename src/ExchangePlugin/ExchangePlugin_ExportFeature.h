@@ -150,6 +150,43 @@ public:
     static const std::string MY_XAO_GEOMETRY_NAME_ID("xao_geometry_name");
     return MY_XAO_GEOMETRY_NAME_ID;
   }
+  /// attribute name of root file path
+  inline static const std::string& ROOT_FILE_PATH_ID()
+  {
+    static const std::string MY_ROOT_FILE_PATH_ID("root_file_path");
+    return MY_ROOT_FILE_PATH_ID;
+  }
+  /// attribute name of author for XAO format
+  inline static const std::string& ROOT_MANAGER_NAME_ID()
+  {
+    static const std::string MY_ROOT_MANAGER_NAME_ID("root_manager_name");
+    return MY_ROOT_MANAGER_NAME_ID;
+  }
+  /// attribute name of geometry name for XAO format
+  inline static const std::string& ROOT_MANAGER_TITLE_ID()
+  {
+    static const std::string MY_ROOT_MANAGER_TITLE_ID("root_manager_title");
+    return MY_ROOT_MANAGER_TITLE_ID;
+  }
+  /// attribute name of file export
+  inline static const std::string& EXP_NAME_FILE_ID()
+  {
+    static const std::string MY_EXP_NAME_FILE_ID("root_name_file");
+    return MY_EXP_NAME_FILE_ID;
+  }
+  /// Attribute name of the main solid.
+  inline static const std::string& MAIN_OBJECT_ID()
+  {
+    static const std::string MY_MAIN_OBJECT_ID("root_main_object");
+    return MY_MAIN_OBJECT_ID;
+  }
+  /// attribute name of materials file
+  inline static const std::string& MAT_FILE_ID()
+  {
+    static const std::string MY_MAT_FILE_ID("mat_file");
+    return MY_MAT_FILE_ID;
+  }
+
   /// Default constructor
   EXCHANGEPLUGIN_EXPORT ExchangePlugin_ExportFeature();
   /// Default destructor
@@ -192,6 +229,15 @@ protected:
 
   /// Performs export to STL file
   EXCHANGEPLUGIN_EXPORT void exportSTL(const std::string& theFileName);
+
+  /// Performs export to ROOT file
+  EXCHANGEPLUGIN_EXPORT void exportROOT(const std::string& theFileName);
+
+private:
+  /// Read materials and mediums in a file
+  void readFileMat(const std::string theFileMat,
+                   std::map<std::string, std::vector<std::string> >& theMaterials,
+                   std::map<std::string, std::vector<std::string> >& theMediums);
 };
 
 #endif /* EXPORT_EXPORTFEATURE_H_ */

@@ -1,0 +1,22 @@
+<plugin>
+  <workbench id="Opera" document="Part">
+    <group id="Opera">
+      <feature id="Volume"
+               title="Volume"
+               tooltip="Create a volume"
+               icon="icons/Opera/Volume.png"
+               auto_preview="true"
+               helpfile="volumeFeature.html">
+        <source path="volume_widget.xml"/>
+      </feature>
+      <feature id="AddNode"
+               title="AddNode"
+               tooltip="Perform OPERA Add Node"
+               icon="icons/Opera/AddNode.png"
+               auto_preview="true"
+               helpfile="addnodeFeature.html">
+        <source path="addnode_widget.xml"/>
+      </feature>
+    </group>
+  </workbench>
+</plugin>
