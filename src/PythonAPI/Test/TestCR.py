@@ -14,6 +14,10 @@ from salome.shaper import model, geom
 def GetShapeType(theShape):
     CR = geom.CanonicalRecognition()
     if CR.isPlane(theShape, 0.1)[0]:
+        if CR.isCircle(theShape, 0.1)[0]:
+            return ("Plane","Circle")
+        if CR.isEllipse(theShape, 0.1)[0]:
+            return ("Plane","Ellipse")
         return "Plane"
     if CR.isSphere(theShape, 0.1)[0]:
         return "Sphere"
@@ -23,10 +27,6 @@ def GetShapeType(theShape):
         return "Cylinder"
     if CR.isLine(theShape, 0.1)[0]:
         return "Line"
-    if CR.isCircle(theShape, 0.1)[0]:
-        return "Circle"
-    if CR.isEllipse(theShape, 0.1)[0]:
-        return "Ellipse"
     return "Not defined"
 
 
@@ -97,9 +97,9 @@ aEllipseShape = EllipseWire_1.defaultResult().shape()
 
 ### Check shapes types
 assert (GetShapeType(aPlaneShape) == "Plane")
-assert (GetShapeType(aCircleShape) == "Circle")
+assert (GetShapeType(aCircleShape)[1] == "Circle")
 assert (GetShapeType(aLineShape) == "Line")
 assert (GetShapeType(aCylinderShape) == "Cylinder")
 assert (GetShapeType(aSphereShape) == "Sphere")
 assert (GetShapeType(aConeShape) == "Cone")
-assert (GetShapeType(aEllipseShape) == "Ellipse")
+assert (GetShapeType(aEllipseShape)[1] == "Ellipse")
