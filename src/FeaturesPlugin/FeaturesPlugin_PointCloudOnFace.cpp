@@ -42,6 +42,7 @@ void FeaturesPlugin_PointCloudOnFace::initAttributes()
 {
   // attribute for object selected
   data()->addAttribute(FACE_SELECTED_ID(), ModelAPI_AttributeSelection::typeId());
+  data()->addAttribute(NUMBER_ID(), ModelAPI_AttributeInteger::typeId());
 }
 
 //=================================================================================================

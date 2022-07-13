@@ -76,8 +76,8 @@ typedef std::shared_ptr<FeaturesAPI_PointCloudOnFace> PointCloudPtr;
 /// \param theFace the selected face
 /// \param theNumberOfPoints the selected point
 FEATURESAPI_EXPORT
-PointCloudPtr getPointCloud(const std::shared_ptr<ModelAPI_Document>& thePart,
-			    const ModelHighAPI_Selection& theFace,
-			    const ModelHighAPI_Integer& theNumber);
+PointCloudPtr makeVertexInsideFace(const std::shared_ptr<ModelAPI_Document>& thePart,
+                                   const ModelHighAPI_Selection& theFace,
+                                   const ModelHighAPI_Integer& theNumber);
 
 #endif // FeaturesAPI_PointCloudOnFace_H_

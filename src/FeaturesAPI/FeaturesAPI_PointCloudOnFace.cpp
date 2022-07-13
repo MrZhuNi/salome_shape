@@ -39,10 +39,7 @@ FeaturesAPI_PointCloudOnFace::FeaturesAPI_PointCloudOnFace(
 {
   if (initialize()) {
     fillAttribute(theFace, myfaceSelected);
-    //fillAttribute(theOptionalPoint, myvertexSelected);
-    //feature()->string(FeaturesPlugin_NormalToFace::VERTEX_OPTION_ID())->setValue("true");
     setNumberOfPoints(theNumber);
-    execute();
   }
 }
 
@@ -66,20 +63,19 @@ void FeaturesAPI_PointCloudOnFace::dump(ModelHighAPI_Dumper& theDumper) const
   FeaturePtr aBase = feature();
   const std::string& aDocName = theDumper.name(aBase->document());
 
-  AttributeSelectionPtr anAttrObject;
-    anAttrObject = aBase->selection(FeaturesPlugin_PointCloudOnFace::FACE_SELECTED_ID());
+  AttributeSelectionPtr anAttrObject =
+    aBase->selection(FeaturesPlugin_PointCloudOnFace::FACE_SELECTED_ID());
+  int aNbPnts = aBase->integer(FeaturesPlugin_PointCloudOnFace::NUMBER_ID())->value();
 
-  theDumper << aBase << " = model.getPointCloud(" << aDocName << ", " << anAttrObject;
-
-  theDumper << ")" << std::endl;
+  theDumper << aBase << " = model.makeVertexInsideFace(" << aDocName
+            << ", " << anAttrObject << ", " << aNbPnts << ")" << std::endl;
 }
 
 //==================================================================================================
-PointCloudPtr getPointCloud(const std::shared_ptr<ModelAPI_Document>& thePart,
-                            const ModelHighAPI_Selection& theFace,
-                            const ModelHighAPI_Integer& theNumber)
+PointCloudPtr makeVertexInsideFace(const std::shared_ptr<ModelAPI_Document>& thePart,
+                                   const ModelHighAPI_Selection& theFace,
+                                   const ModelHighAPI_Integer& theNumber)
 {
-
   FeaturePtr aFeature = thePart->addFeature(FeaturesPlugin_PointCloudOnFace::ID());
   PointCloudPtr aPointCloud;
   aPointCloud.reset(new FeaturesAPI_PointCloudOnFace(aFeature, theFace, theNumber));

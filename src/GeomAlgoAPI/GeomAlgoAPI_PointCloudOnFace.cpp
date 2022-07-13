@@ -47,7 +47,8 @@
 #include <GeomLProp_SLProps.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <TopTools_DataMapOfShapeReal.hxx>
-//#include <GeomAPI_Edge.h>
+
+#include <algorithm>
 
 Standard_Boolean comp(const std::pair<TopoDS_Shape, Standard_Real>& theA,
                       const std::pair<TopoDS_Shape, Standard_Real>& theB)
