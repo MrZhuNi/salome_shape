@@ -340,9 +340,12 @@ bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, do
   gp_Elips aElips;
   if (aIsValidNormal && aIsValidOrigin && aIsValidDirX && aIsValidRad1 && aIsValidRad2)
   {
-    gp_Ax2 aAx2(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]),
-      gp_Dir(theNormal[0], theNormal[1], theNormal[2]),
-      gp_Dir(theDirX[0], theDirX[1], theDirX[2]));
+    gp_Pnt anOrigin(theOrigin[0], theOrigin[1], theOrigin[2]);
+    gp_XYZ aNormal(theNormal[0], theNormal[1], theNormal[2]);
+    gp_XYZ aDirX(theDirX[0], theDirX[1], theDirX[2]);
+    Standard_Boolean isCollinear =
+        aNormal.CrossSquareMagnitude(aDirX) < Precision::SquareConfusion();
+    gp_Ax2 aAx2 = isCollinear ? gp_Ax2(anOrigin, aNormal) : gp_Ax2(anOrigin, aNormal, aDirX);
     aElips = gp_Elips(aAx2, theMajorRadius, theMinorRadius);
   }
   else
