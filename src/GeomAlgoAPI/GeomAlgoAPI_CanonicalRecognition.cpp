@@ -53,7 +53,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isPlane(const GeomShapePtr& theShape, dou
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
-    aResult = aRecognition.IsPlane(theTolerance, aPln);
+    if (aRecognition.GetStatus() == 0)
+      aResult = aRecognition.IsPlane(theTolerance, aPln);
   }
   catch (...) {
     return false;
@@ -97,7 +98,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isSphere(const GeomShapePtr& theShape, do
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
-    aResult = aRecognition.IsSphere(theTolerance, aSphere);
+    if (aRecognition.GetStatus() == 0)
+      aResult = aRecognition.IsSphere(theTolerance, aSphere);
   }
   catch (...) {
     return false;
@@ -138,7 +140,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isCone(const GeomShapePtr& theShape, doub
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
-    aResult = aRecognition.IsCone(theTolerance, aCone);
+    if (aRecognition.GetStatus() == 0)
+      aResult = aRecognition.IsCone(theTolerance, aCone);
   }
   catch (...) {
     return false;
@@ -188,7 +191,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isCylinder(const GeomShapePtr& theShape, 
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
-    aResult = aRecognition.IsCylinder(theTolerance, aCylinder);
+    if (aRecognition.GetStatus() == 0)
+      aResult = aRecognition.IsCylinder(theTolerance, aCylinder);
   }
   catch (...) {
     return false;
@@ -234,7 +238,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isLine(const GeomShapePtr& theEdge, doubl
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
-    aResult = aRecognition.IsLine(theTolerance, aLine);
+    if (aRecognition.GetStatus() == 0)
+      aResult = aRecognition.IsLine(theTolerance, aLine);
   }
   catch (...) {
     return false;
@@ -282,7 +287,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isCircle(const GeomShapePtr& theEdge, dou
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
-    aResult = aRecognition.IsCircle(theTolerance, aCircle);
+    if (aRecognition.GetStatus() == 0)
+      aResult = aRecognition.IsCircle(theTolerance, aCircle);
   }
   catch (...) {
     return false;
@@ -334,7 +340,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, do
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
-    aResult = aRecognition.IsEllipse(theTolerance, aElips);
+    if (aRecognition.GetStatus() == 0)
+      aResult = aRecognition.IsEllipse(theTolerance, aElips);
   }
   catch (...) {
     return false;
