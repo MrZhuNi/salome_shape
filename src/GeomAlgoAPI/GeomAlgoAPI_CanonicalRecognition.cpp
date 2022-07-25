@@ -95,6 +95,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isSphere(const GeomShapePtr& theShape, do
     aSphere.SetLocation(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]));
     aSphere.SetRadius(theRadius);
   }
+  else
+    aSphere.SetRadius(1.0);
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
@@ -137,6 +139,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isCone(const GeomShapePtr& theShape, doub
     gp_Ax3 aAx3(aLoc, gp_Dir(theAxis[0], theAxis[1], theAxis[2]));
     aCone.SetPosition(aAx3);
   }
+  else
+    aCone.SetRadius(1.0);
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
@@ -188,6 +192,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isCylinder(const GeomShapePtr& theShape, 
     aCylinder.SetPosition(aAx3);
     aCylinder.SetRadius(theRadius);
   }
+  else
+    aCylinder.SetRadius(1.0);
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
@@ -284,6 +290,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isCircle(const GeomShapePtr& theEdge, dou
     aCircle.SetPosition(aAx2);
     aCircle.SetRadius(theRadius);
   }
+  else
+    aCircle.SetRadius(1.0);
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
@@ -337,6 +345,8 @@ bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, do
       gp_Dir(theDirX[0], theDirX[1], theDirX[2]));
     aElips = gp_Elips(aAx2, theMajorRadius, theMinorRadius);
   }
+  else
+    aElips.SetMajorRadius(1.0);
   ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
   try {
