@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022  CEA/DEN, EDF R&D
+# Copyright (C) 2021-2022  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,33 +17,26 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-SET(COMPONENT_NAME SHAPER)
-set(SALOME_TEST_LABEL_ADV SHAPR_ADV)
+include(tests.set)
 
-# Add all test subdirs
-SUBDIRS(ConnectorAPI
-        HDFs
-        FeaturesPlugin
-        ConstructionPlugin
-        SketchPlugin
-        ModelAPI
-        FiltersPlugin
-        CollectionPlugin
-        BuildPlugin
-        ExchangePlugin
-        PythonAPI
-        GeomAPI
-        ModelHighAPI
-        ParametersPlugin
-        PythonAddons
-        SketchAPI
-        SAMPlugin
-        ConstructionAPI
-        PartSetAPI
-        GeomDataAPI
-        Config
-        ExchangeAPI
-        ModelGeomAlgo
-        Locale
-        test_API
-)
+ADD_UNIT_TESTS(${TEST_NAMES})
+
+if(${HAVE_SALOME})
+  enable_testing()
+  set(TEST_INSTALL_DIRECTORY "${SALOME_SHAPER_INSTALL_TESTS}/SAMPlugin")
+  
+  install(FILES CTestTestfileInstall.cmake
+          DESTINATION ${TEST_INSTALL_DIRECTORY}
+          RENAME CTestTestfile.cmake)
+  install(FILES tests.set DESTINATION ${TEST_INSTALL_DIRECTORY})
+  
+  set(TMP_TESTS_NAMES)
+  foreach(tfile ${TEST_NAMES})
+    list(APPEND TMP_TESTS_NAMES "${tfile}")
+  endforeach(tfile ${TEST_NAMES})
+  
+  # tests which require SHAPER_SUGGESTION_GENERATOR
+  install(DIRECTORY data DESTINATION ${TEST_INSTALL_DIRECTORY})
+  
+  install(FILES ${TMP_TESTS_NAMES} DESTINATION ${TEST_INSTALL_DIRECTORY})
+endif(${HAVE_SALOME})

@@ -19,7 +19,7 @@
                 SketchConstraintMirror SketchConstraintAngle
                 SketchMultiRotation SketchMultiTranslation
                 SketchOffset
-                SketchConstraintCollinear SketchConstraintMiddle"
+                SketchConstraintCollinear SketchConstraintMiddle SuggestConstraints"
         when_nested="accept abort"
         title="Sketch"
         tooltip="Create sketch"

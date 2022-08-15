@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022  CEA/DEN, EDF R&D
+# Copyright (C) 2014-2022  CEA/DEN, EDF R&D
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,33 +17,31 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-SET(COMPONENT_NAME SHAPER)
-set(SALOME_TEST_LABEL_ADV SHAPR_ADV)
+INCLUDE(Common)
+INCLUDE(UnitTest)
 
-# Add all test subdirs
-SUBDIRS(ConnectorAPI
-        HDFs
-        FeaturesPlugin
-        ConstructionPlugin
-        SketchPlugin
-        ModelAPI
-        FiltersPlugin
-        CollectionPlugin
-        BuildPlugin
-        ExchangePlugin
-        PythonAPI
-        GeomAPI
-        ModelHighAPI
-        ParametersPlugin
-        PythonAddons
-        SketchAPI
-        SAMPlugin
-        ConstructionAPI
-        PartSetAPI
-        GeomDataAPI
-        Config
-        ExchangeAPI
-        ModelGeomAlgo
-        Locale
-        test_API
+SET(PYTHON_FILES
+    SAMPlugin.py
+    SAMPlugin_SuggestConstraintsFeature.py
+    SAMPlugin_ConvertSketch.py
+    SAMPlugin_ConvertPrimitives.py
+    SAMPlugin_ConvertConstraints.py
 )
+
+SET(XML_RESOURCES
+  plugin-SAM.xml
+)
+
+SET(TEXT_RESOURCES
+    SAMPlugin_msg_fr.ts
+)
+
+SOURCE_GROUP ("Resource Files" FILES ${TEXT_RESOURCES})
+
+ADD_CUSTOM_TARGET(SAMPlugin SOURCES ${PYTHON_FILES} ${XML_RESOURCES} ${TEXT_RESOURCES})
+
+INSTALL(FILES ${PYTHON_FILES} DESTINATION ${SHAPER_INSTALL_PYTHON_FILES})
+INSTALL(FILES ${XML_RESOURCES} ${TEXT_RESOURCES} DESTINATION ${SHAPER_INSTALL_XML_RESOURCES})
+INSTALL(DIRECTORY icons/ DESTINATION ${SHAPER_INSTALL_XML_RESOURCES}/icons/Connector)
+
+ADD_SUBDIRECTORY(Test)

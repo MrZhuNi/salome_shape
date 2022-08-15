@@ -1,0 +1,12 @@
+<plugin>
+  <workbench id="Sketch">
+    <group id="Automatic constraints">
+      <feature
+        id="SuggestConstraints"
+        title="Suggest constraints"
+        tooltip="Suggest constraints using a Machine Learning model"
+        icon="icons/SAM/suggest_constraints.png"
+        helpfile="SAMPlugin/SAMPlugin.html"/>
+    </group>
+  </workbench>
+</plugin>

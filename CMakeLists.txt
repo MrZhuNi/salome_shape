@@ -188,6 +188,7 @@ ADD_SUBDIRECTORY (src/SamplePanelPlugin)
 ADD_SUBDIRECTORY (src/SketcherPrs)
 ADD_SUBDIRECTORY (src/SketchPlugin)
 ADD_SUBDIRECTORY (src/SketchSolver)
+ADD_SUBDIRECTORY (src/SAMPlugin)
 ADD_SUBDIRECTORY (src/ModuleBase)
 ADD_SUBDIRECTORY (src/PartSet)
 
