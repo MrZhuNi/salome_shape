@@ -40,11 +40,17 @@ PC_1 = model.makeVertexInsideFace(Part_1_doc, model.selection("FACE", "Sphere_1_
 model.end()
 
 ### Check result
-model.testNbResults(PC_1, 1)
-model.testNbSubResults(PC_1, [0])
-model.testNbSubShapes(PC_1, GeomAPI_Shape.SOLID, [0])
-model.testNbSubShapes(PC_1, GeomAPI_Shape.FACE, [0])
-model.testNbSubShapes(PC_1, GeomAPI_Shape.EDGE, [0])
-model.testNbSubShapes(PC_1, GeomAPI_Shape.VERTEX, [100])
+err = PC_1.feature().error()
+if err != "":
+    print(err)
+    # this test should not fail with old OCCT
+    assert("Improper OCCT version" in err)
+else:
+    model.testNbResults(PC_1, 1)
+    model.testNbSubResults(PC_1, [0])
+    model.testNbSubShapes(PC_1, GeomAPI_Shape.SOLID, [0])
+    model.testNbSubShapes(PC_1, GeomAPI_Shape.FACE, [0])
+    model.testNbSubShapes(PC_1, GeomAPI_Shape.EDGE, [0])
+    model.testNbSubShapes(PC_1, GeomAPI_Shape.VERTEX, [100])
 
-assert(model.checkPythonDump())
+    assert(model.checkPythonDump())

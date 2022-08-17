@@ -48,6 +48,18 @@
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <TopTools_DataMapOfShapeReal.hxx>
 
+#include <Standard_Version.hxx>
+// code from KERNEL_SRC/src/Basics/Basics_OCCTVersion.hxx
+#ifdef OCC_VERSION_SERVICEPACK
+#  define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
+#else
+#  ifdef OCC_VERSION_DEVELOPMENT
+#    define OCC_VERSION_LARGE ((OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)-1)
+#  else
+#    define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
+#  endif
+#endif
+
 #include <algorithm>
 
 Standard_Boolean comp(const std::pair<TopoDS_Shape, Standard_Real>& theA,
@@ -377,9 +389,12 @@ void ModifyFacesForGlobalResult(const TopoDS_Face&     theInputFace,
     TopoDS_Shape aUnifiedShape = aUnifier.Shape();
     //Splitting
     TopoDS_Shape aLocalResult = aUnifiedShape;
-    Standard_Integer aNbFacesInLocalResult;
+    Standard_Integer aNbFacesInLocalResult = 1;
     if (aNumberToSplit > 1)
     {
+#if OCC_VERSION_LARGE < 0x07050304
+      aNbFacesInLocalResult = 1;
+#else
       ShapeUpgrade_ShapeDivideArea aLocalTool (aUnifiedShape);
       aLocalTool.SetSplittingByNumber (Standard_True);
       aLocalTool.MaxArea() = -1;
@@ -390,10 +405,10 @@ void ModifyFacesForGlobalResult(const TopoDS_Face&     theInputFace,
       aLocalTool.Perform();
       aLocalResult = aLocalTool.Result();
       aNbFacesInLocalResult = aNumberToSplit;
+#endif
     }
     else
     {
-      aNbFacesInLocalResult = 1;
       if (aNumberToSplit == 0)
       {
         theExtremalFaces.Add (theFacesAndAreas[theNbExtremalFaces].first);
@@ -454,6 +469,9 @@ void ModifyFacesForGlobalResult(const TopoDS_Face&     theInputFace,
     Standard_Integer aNumberToSplit = (theIsToAddFaces)? aMaxNbFaces + (aDiff-aSum) : aMaxNbFaces - (aDiff-aSum);
     if (aNumberToSplit > 1)
     {
+#if OCC_VERSION_LARGE < 0x07050304
+      aNumberToSplit = 1;
+#else
       ShapeUpgrade_ShapeDivideArea aLocalTool (aUnifiedShape);
       aLocalTool.SetSplittingByNumber (Standard_True);
       aLocalTool.MaxArea() = -1;
@@ -463,6 +481,7 @@ void ModifyFacesForGlobalResult(const TopoDS_Face&     theInputFace,
         aLocalTool.SetNumbersUVSplits (1, aNumberToSplit);
       aLocalTool.Perform();
       aLocalResult = aLocalTool.Result();
+#endif
     }
     else
       aNumberToSplit = 1;
@@ -482,9 +501,14 @@ bool GeomAlgoAPI_PointCloudOnFace::PointCloud(GeomShapePtr theFace,
                                               GeomShapePtr thePoints,
                                               std::string& theError)
 {
-  #ifdef _DEBUG
+#ifdef _DEBUG
   std::cout << "GeomAlgoAPI_PointCloudOnFace::PointCloud" << std::endl;
-  #endif
+#endif
+
+#if OCC_VERSION_LARGE < 0x07050304
+  theError = "Improper OCCT version: please, use OCCT 7.5.3p4 or newer.";
+  return false;
+#else
 
   if (!theFace.get()) {
     theError = "Face for point cloud calculation is null";
@@ -644,4 +668,5 @@ bool GeomAlgoAPI_PointCloudOnFace::PointCloud(GeomShapePtr theFace,
   thePoints->setImpl(new TopoDS_Shape(aCompound));
 
   return true;
+#endif
 }
