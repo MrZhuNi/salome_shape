@@ -75,3 +75,11 @@ class CanonicalRecognition:
         > CR.isEllipse(edge, tolerance, normal, dirX, origin, majorRadius, minorRadius)
         """
         return GeomAlgoAPI_CanonicalRecognition.isEllipse(edge, tolerance, normal, dirX, origin, majorRadius, minorRadius)
+
+    def isImplemented(self):
+        """
+        Check if the CanonicalRecognition is implemented (built with appropriate OCCT version)
+        Usage:
+        > CR.isImplemented()
+        """
+        return GeomAlgoAPI_CanonicalRecognition.isImplemented()

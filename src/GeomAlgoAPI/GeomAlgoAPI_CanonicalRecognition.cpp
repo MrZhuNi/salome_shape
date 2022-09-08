@@ -19,7 +19,24 @@
 
 #include "GeomAlgoAPI_CanonicalRecognition.h"
 
+#include <Standard_Version.hxx>
+// code from KERNEL_SRC/src/Basics/Basics_OCCTVersion.hxx
+#ifdef OCC_VERSION_SERVICEPACK
+#  define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
+#else
+#  ifdef OCC_VERSION_DEVELOPMENT
+#    define OCC_VERSION_LARGE ((OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)-1)
+#  else
+#    define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
+#  endif
+#endif
+
+#if OCC_VERSION_LARGE > 0x07050303
 #include <ShapeAnalysis_CanonicalRecognition.hxx>
+#endif
+
+#include <TopoDS_Shape.hxx>
+
 #include <gp_Pln.hxx>
 #include <gp_Sphere.hxx>
 #include <gp_Cone.hxx>
@@ -50,8 +67,10 @@ bool GeomAlgoAPI_CanonicalRecognition::isPlane(const GeomShapePtr& theShape, dou
       gp_Dir(theNormal[0], theNormal[1], theNormal[2]));
   }
 
-  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   bool aResult = false;
+
+#if OCC_VERSION_LARGE > 0x07050303
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   try {
     if (aRecognition.GetStatus() == 0)
       aResult = aRecognition.IsPlane(theTolerance, aPln);
@@ -59,6 +78,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isPlane(const GeomShapePtr& theShape, dou
   catch (...) {
     return false;
   }
+#endif
 
   gp_Pnt aOrig = aPln.Location();
   if (theOrigin.size() != 3)
@@ -97,8 +117,11 @@ bool GeomAlgoAPI_CanonicalRecognition::isSphere(const GeomShapePtr& theShape, do
   }
   else
     aSphere.SetRadius(1.0);
-  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+
   bool aResult = false;
+
+#if OCC_VERSION_LARGE > 0x07050303
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   try {
     if (aRecognition.GetStatus() == 0)
       aResult = aRecognition.IsSphere(theTolerance, aSphere);
@@ -106,6 +129,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isSphere(const GeomShapePtr& theShape, do
   catch (...) {
     return false;
   }
+#endif
 
   gp_Pnt aLoc = aSphere.Location();
   if (theOrigin.size() != 3)
@@ -141,8 +165,11 @@ bool GeomAlgoAPI_CanonicalRecognition::isCone(const GeomShapePtr& theShape, doub
   }
   else
     aCone.SetRadius(1.0);
-  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+
   bool aResult = false;
+
+#if OCC_VERSION_LARGE > 0x07050303
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   try {
     if (aRecognition.GetStatus() == 0)
       aResult = aRecognition.IsCone(theTolerance, aCone);
@@ -150,6 +177,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isCone(const GeomShapePtr& theShape, doub
   catch (...) {
     return false;
   }
+#endif
 
   gp_Dir aDir = aCone.Axis().Direction();
   if (theAxis.size() != 3)
@@ -194,8 +222,11 @@ bool GeomAlgoAPI_CanonicalRecognition::isCylinder(const GeomShapePtr& theShape, 
   }
   else
     aCylinder.SetRadius(1.0);
-  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+
   bool aResult = false;
+
+#if OCC_VERSION_LARGE > 0x07050303
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   try {
     if (aRecognition.GetStatus() == 0)
       aResult = aRecognition.IsCylinder(theTolerance, aCylinder);
@@ -203,6 +234,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isCylinder(const GeomShapePtr& theShape, 
   catch (...) {
     return false;
   }
+#endif
 
   gp_Dir aDir = aCylinder.Axis().Direction();
   if (theAxis.size() != 3)
@@ -241,8 +273,11 @@ bool GeomAlgoAPI_CanonicalRecognition::isLine(const GeomShapePtr& theEdge, doubl
     aLine.SetLocation(gp_Pnt(theOrigin[0], theOrigin[1], theOrigin[2]));
     aLine.SetDirection(gp_Dir(theDir[0], theDir[1], theDir[2]));
   }
-  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+
   bool aResult = false;
+
+#if OCC_VERSION_LARGE > 0x07050303
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   try {
     if (aRecognition.GetStatus() == 0)
       aResult = aRecognition.IsLine(theTolerance, aLine);
@@ -250,6 +285,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isLine(const GeomShapePtr& theEdge, doubl
   catch (...) {
     return false;
   }
+#endif
 
   gp_Pnt aLoc = aLine.Location();
   if (theOrigin.size() != 3)
@@ -292,8 +328,11 @@ bool GeomAlgoAPI_CanonicalRecognition::isCircle(const GeomShapePtr& theEdge, dou
   }
   else
     aCircle.SetRadius(1.0);
-  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+
   bool aResult = false;
+
+#if OCC_VERSION_LARGE > 0x07050303
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   try {
     if (aRecognition.GetStatus() == 0)
       aResult = aRecognition.IsCircle(theTolerance, aCircle);
@@ -301,6 +340,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isCircle(const GeomShapePtr& theEdge, dou
   catch (...) {
     return false;
   }
+#endif
 
   gp_Pnt aLoc = aCircle.Location();
   if (theOrigin.size() != 3)
@@ -350,8 +390,11 @@ bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, do
   }
   else
     aElips.SetMajorRadius(1.0);
-  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
+
   bool aResult = false;
+
+#if OCC_VERSION_LARGE > 0x07050303
+  ShapeAnalysis_CanonicalRecognition aRecognition(aShape);
   try {
     if (aRecognition.GetStatus() == 0)
       aResult = aRecognition.IsEllipse(theTolerance, aElips);
@@ -359,6 +402,7 @@ bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, do
   catch (...) {
     return false;
   }
+#endif
 
   gp_Pnt aLoc = aElips.Position().Location();
   if (theOrigin.size() != 3)
@@ -385,4 +429,13 @@ bool GeomAlgoAPI_CanonicalRecognition::isEllipse(const GeomShapePtr& theEdge, do
   theMinorRadius = aElips.MinorRadius();
 
   return aResult;
+}
+
+bool GeomAlgoAPI_CanonicalRecognition::isImplemented()
+{
+#if OCC_VERSION_LARGE > 0x07050303
+  return true;
+#else
+  return false;
+#endif
 }

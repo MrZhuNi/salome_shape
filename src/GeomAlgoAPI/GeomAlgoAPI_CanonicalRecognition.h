@@ -75,6 +75,11 @@ public:
     std::vector<double>& theOrigin,
     double& theMajorRadius, double& theMinorRadius);
 
+  /*!
+   * \brief Check if the algorithm is implemented (Shaper is built with appropriate OCCT version)
+   */
+  GEOMALGOAPI_EXPORT static bool isImplemented();
+
 };
 
 #endif
