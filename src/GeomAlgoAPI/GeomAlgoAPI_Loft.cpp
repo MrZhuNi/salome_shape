@@ -19,6 +19,7 @@
 
 #include "GeomAlgoAPI_DFLoader.h"
 #include "GeomAlgoAPI_Loft.h"
+#include "GeomAlgoAPI_WireBuilder.h"
 
 #include <BRepOffsetAPI_ThruSections.hxx>
 #include <Precision.hxx>
@@ -26,8 +27,7 @@
 #include <TopoDS.hxx>
 
 //==================================================================================================
-GeomAlgoAPI_Loft::GeomAlgoAPI_Loft(const GeomShapePtr theFirstShape,
-                                   const GeomShapePtr theSecondShape)
+GeomAlgoAPI_Loft::GeomAlgoAPI_Loft(const GeomShapePtr theFirstShape, const GeomShapePtr theSecondShape)
 {
   build(theFirstShape, theSecondShape);
 }
@@ -49,7 +49,7 @@ void GeomAlgoAPI_Loft::build(const GeomShapePtr theFirstShape,
     return;
   }
 
-  bool anIsSolid = true;
+  bool anIsSolid = false;
 
   TopoDS_Shape aFirstShapeOut;
   TopoDS_Shape aSecondShapeOut;
@@ -58,12 +58,31 @@ void GeomAlgoAPI_Loft::build(const GeomShapePtr theFirstShape,
     aFirstShapeOut = anExp.Current();
     TopExp_Explorer anExp2(aSecondShape, TopAbs_WIRE);
     aSecondShapeOut = anExp2.Current();
+    anIsSolid = true;
   }
 
   if (aFirstShape.ShapeType() == TopAbs_WIRE) {
     aFirstShapeOut = aFirstShape;
     aSecondShapeOut = aSecondShape;
-    anIsSolid = false;
+  }
+
+  if (aFirstShape.ShapeType() == TopAbs_EDGE)
+  {
+    GeomShapePtr aFirstWire, aSecondWire;
+    ListOfShape aFirstEdge, aSecondEdge;
+
+    // Convert first edge to wire
+    aFirstEdge.push_back(theFirstShape);
+    aFirstWire = GeomAlgoAPI_WireBuilder::wire(aFirstEdge);
+    TopoDS_Shape aFirstShape = aFirstWire->impl<TopoDS_Shape>();
+
+    // Convert first edge to wire
+    aSecondEdge.push_back(theSecondShape);
+    aSecondWire = GeomAlgoAPI_WireBuilder::wire(aSecondEdge);
+    TopoDS_Shape aSecondShape = aSecondWire->impl<TopoDS_Shape>();
+
+    aFirstShapeOut = aFirstShape;
+    aSecondShapeOut = aSecondShape;
   }
 
   // Initialize and build
