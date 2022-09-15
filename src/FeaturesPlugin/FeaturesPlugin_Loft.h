@@ -77,14 +77,6 @@ public:
 
   /// Use plugin manager for features creation
   FeaturesPlugin_Loft();
-
-  private:
-  /// Convert shape to edge
-  std::shared_ptr<GeomAPI_Edge> toEdge(const std::shared_ptr<GeomAPI_Shape>& theShape);
-
-  private:
-  std::shared_ptr<GeomAPI_Pnt> myLastEdgeStartPoint;
-  std::shared_ptr<GeomAPI_Pnt> myLastEdgeEndPoint;
 };
 
 #endif
