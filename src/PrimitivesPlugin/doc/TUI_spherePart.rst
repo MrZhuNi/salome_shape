@@ -8,4 +8,4 @@ Create Part of sphere
     :linenos:
     :language: python
 
-:download:`Download this script <examples/sphere2.py>` 
+:download:`Download this script <examples/sphere2.py>`
