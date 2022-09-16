@@ -175,7 +175,7 @@ SET(PROJECT_SOURCES
     GeomAlgoAPI_ShapeInfo.cpp
     GeomAlgoAPI_Tube.cpp
     GeomAlgoAPI_ROOTExport.cpp
-	GeomAlgoAPI_CanonicalRecognition.cpp
+	  GeomAlgoAPI_CanonicalRecognition.cpp
 )
 
 SET(PROJECT_LIBRARIES
