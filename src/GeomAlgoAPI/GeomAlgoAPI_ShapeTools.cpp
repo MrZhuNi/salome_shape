@@ -62,7 +62,9 @@
 
 #include <Extrema_GenLocateExtCS.hxx>
 #include <Extrema_GenLocateExtSS.hxx>
+#include <Extrema_GenLocateExtPS.hxx>
 #include <Extrema_LocateExtCC.hxx>
+#include <Extrema_LocateExtPC.hxx>
 
 #include <Geom2d_Curve.hxx>
 #include <Geom2d_Curve.hxx>
@@ -424,6 +426,60 @@ static Standard_Real extremaEE(const TopoDS_Edge& theEdge1,
   return aValue;
 }
 
+static Standard_Real extremaPE(const gp_Pnt&      thePoint,
+                               const TopoDS_Edge& theEdge,
+                               gp_Pnt&            thePointOnEdge)
+{
+  BRepAdaptor_Curve aCurve (theEdge);
+
+  TopLoc_Location aLoc;
+  Standard_Real aTol = BRep_Tool::Tolerance(theEdge);
+  Handle(Poly_Polygon3D) aPoly = BRep_Tool::Polygon3D (theEdge, aLoc);
+  if (!aPoly.IsNull())
+    aTol = Max (aTol, aPoly->Deflection());
+
+  Standard_Real aParam = paramOnCurve (aCurve, thePointOnEdge, 2*aTol);
+
+  Standard_Real aValue = -1.0;
+  Extrema_LocateExtPC anExtr (thePoint, aCurve, aParam, Precision::PConfusion());
+  if (anExtr.IsDone())
+  {
+    aValue = Sqrt(anExtr.SquareDistance());
+
+    Extrema_POnCurv aPointOnCurve = anExtr.Point();
+    thePointOnEdge = aPointOnCurve.Value();
+  }
+  return aValue;
+}
+  
+static Standard_Real extremaPF(const gp_Pnt&      thePoint,
+                               const TopoDS_Face& theFace,
+                               gp_Pnt&            thePointOnFace)
+{
+  BRepAdaptor_Surface aSurf (theFace);
+
+  TopLoc_Location aLoc;
+  Standard_Real aTol = BRep_Tool::Tolerance(theFace);
+  Handle(Poly_Triangulation) aTria = BRep_Tool::Triangulation (theFace, aLoc);
+  if (!aTria.IsNull())
+    aTol = Max (aTol, aTria->Deflection());
+
+  Standard_Real aU, aV;
+  paramsOnSurf(aSurf, thePointOnFace, 2*aTol, aU, aV);
+
+  Standard_Real aValue = -1.0;
+  Extrema_GenLocateExtPS anExtr (aSurf);
+  anExtr.Perform (thePoint, aU, aV);
+  if (anExtr.IsDone())
+  {
+    aValue = Sqrt(anExtr.SquareDistance());
+
+    Extrema_POnSurf aPointOnSurf = anExtr.Point();
+    thePointOnFace = aPointOnSurf.Value();
+  }
+  return aValue;
+}
+
 static Standard_Real extremaEF(const TopoDS_Edge& theEdge,
                                const TopoDS_Face& theFace,
                                const gp_Pnt&      thePonE,
@@ -489,7 +545,7 @@ double GeomAlgoAPI_ShapeTools::minimalDistance(const GeomShapePtr& theShape1,
 double GeomAlgoAPI_ShapeTools::shapeProximity(const GeomShapePtr& theShape1,
                                               const GeomShapePtr& theShape2)
 {
-  double aResult = Precision::Infinite();
+  double aResult = -1.0;
   if (!theShape1.get() || !theShape2.get())
     return aResult;
 
@@ -509,26 +565,95 @@ double GeomAlgoAPI_ShapeTools::shapeProximity(const GeomShapePtr& theShape1,
     aResult = aDist.Proximity();
 
     // refine the result
-    const gp_Pnt& aPonS1 = aDist.ProximityPoint1();
-    const gp_Pnt& aPonS2 = aDist.ProximityPoint2();
+    gp_Pnt aPnt1 = aDist.ProximityPoint1();
+    gp_Pnt aPnt2 = aDist.ProximityPoint2();
 
-    double anExtrema = -1.0;
+    BRepExtrema_ProximityDistTool::ProxPnt_Status aStatus1 = aDist.ProxPntStatus1();
+    BRepExtrema_ProximityDistTool::ProxPnt_Status aStatus2 = aDist.ProxPntStatus2();
+
+    double aValue = -1.0;
+
     if (aType1 == TopAbs_EDGE)
     {
       if (aType2 == TopAbs_EDGE)
-        anExtrema = extremaEE(TopoDS::Edge(aShape1), TopoDS::Edge(aShape2), aPonS1, aPonS2);
+      {
+        if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE &&
+            aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+        {
+          aValue = extremaEE(TopoDS::Edge(aShape1), TopoDS::Edge(aShape2), aPnt1, aPnt2);
+        }
+        else if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER &&
+                 aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+        {
+          aValue = extremaPE(aPnt1, TopoDS::Edge(aShape2), aPnt2);
+        }
+        else if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE &&
+                 aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER)
+        {
+          aValue = extremaPE(aPnt2, TopoDS::Edge(aShape1), aPnt1);
+        }
+      }
       else if (aType2 == TopAbs_FACE)
-        anExtrema = extremaEF(TopoDS::Edge(aShape1), TopoDS::Face(aShape2), aPonS1, aPonS2);
+      {
+        if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE &&
+            aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+        {
+          aValue = extremaEF(TopoDS::Edge(aShape1), TopoDS::Face(aShape2), aPnt1, aPnt2);
+        }
+        else if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER &&
+                 aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+        {
+          aValue = extremaPF(aPnt1, TopoDS::Face(aShape2), aPnt2);
+        }
+        else if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE &&
+                 aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER)
+        {
+          aValue = extremaPE(aPnt2, TopoDS::Edge(aShape1), aPnt1);
+        }
+      }
     }
     else if (aType1 == TopAbs_FACE)
     {
       if (aType2 == TopAbs_EDGE)
-        anExtrema = extremaEF(TopoDS::Edge(aShape2), TopoDS::Face(aShape1), aPonS2, aPonS1);
+      {
+        if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE &&
+            aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+        {
+          aValue = extremaEF(TopoDS::Edge(aShape2), TopoDS::Face(aShape1), aPnt2, aPnt1);
+        }
+        else if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER &&
+                 aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+        {
+          aValue = extremaPE(aPnt1, TopoDS::Edge(aShape2), aPnt2);
+        }
+        else if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE &&
+                 aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER)
+        {
+          aValue = extremaPF(aPnt2, TopoDS::Face(aShape1), aPnt1);
+        }
+      }
       else if (aType2 == TopAbs_FACE)
-        anExtrema = extremaFF(TopoDS::Face(aShape1), TopoDS::Face(aShape2), aPonS1, aPonS2);
+      {
+        if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE &&
+            aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+        {
+          aValue = extremaFF(TopoDS::Face(aShape1), TopoDS::Face(aShape2), aPnt1, aPnt2);
+        }
+        else if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER &&
+                 aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE)
+        {
+          aValue = extremaPF(aPnt1, TopoDS::Face(aShape2), aPnt2);
+        }
+        else if (aStatus1 == BRepExtrema_ProximityDistTool::ProxPnt_Status_MIDDLE &&
+                 aStatus2 == BRepExtrema_ProximityDistTool::ProxPnt_Status_BORDER)
+        {
+          aValue = extremaPF(aPnt2, TopoDS::Face(aShape1), aPnt1);
+        }
+      }
     }
-    if (anExtrema > 0.0)
-      aResult = anExtrema;
+
+    if (aValue > 0.0)
+      aResult = aValue;
   }
   return aResult;
 }
